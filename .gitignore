@@ -1,0 +1,10 @@
+/node_modules
+/.vscode
+/coverage
+/.nyc*
+/*.swp
+/*.log*
+/tmp
+/tgz
+/fyn-data.yaml
+/.cache
