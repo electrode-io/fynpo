@@ -163,6 +163,7 @@ function resolvePackage(item, meta) {
         requests: [],
         src: item.src,
         dsrc: item.dsrc,
+        dist: meta.versions[v].dist,
         $res: {}
       };
       addDepOfDep(meta.versions[v], item);
@@ -245,6 +246,10 @@ function checkAndQueuePackage(item) {
   const { name, semver } = item;
   const kpkg = knownPackages[name];
   if (kpkg) {
+    const distTagVer = findVersionFromDistTag(knownMeta, item.semver);
+    if (distTagVer !== undefined) {
+      return resolve(distTagVer);
+    }
     // todo: do semver sort
     const versions = Object.keys(kpkg).sort().reverse();
     const resolve = v => {
@@ -252,10 +257,6 @@ function checkAndQueuePackage(item) {
       addRequestToPkg(kpkg[v], item);
       addResolutionToParent(item);
     };
-    const distTagVer = findVersionFromDistTag(knownMeta, item.semver);
-    if (distTagVer !== undefined) {
-      return resolve(distTagVer);
-    }
     const foundVer = versions.find(kver => Semver.satisfies(kver, semver));
     if (foundVer) {
       return resolve(foundVer);
