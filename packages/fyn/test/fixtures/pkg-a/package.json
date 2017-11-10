@@ -1,0 +1,15 @@
+{
+  "name": "pkg-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "mod-a": "^1.1.0",
+    "mod-c": "^1.0.0",
+    "mod-d": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "mod-e": "^2.0.0"
+  },
+  "devDependencies": {
+    "mod-b": "^1.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+name: mod-e
+versions:
+  2.1.1:
+    name: mod-e
+    description: test fixture mod-e
+    version: 2.1.1
+    dependencies:
+      mod-f: ^2.0.0
+    dist:
+      shasum: 33333
+      tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+dist-tags:
+  latest: 2.1.1
+_rev: 9-f5a60b1743717bf9
+readme: >
+  #mod-e
+_attachments: {}

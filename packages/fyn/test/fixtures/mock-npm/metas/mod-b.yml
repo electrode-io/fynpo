@@ -1,0 +1,17 @@
+name: mod-b
+versions:
+  1.0.0:
+    name: mod-b
+    description: test fixture mod-b
+    version: 1.0.0
+    dependencies:
+      mod-a: ^0.2.0
+    dist:
+      shasum: 33333
+      tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: >
+  #mod-b
+_attachments: {}

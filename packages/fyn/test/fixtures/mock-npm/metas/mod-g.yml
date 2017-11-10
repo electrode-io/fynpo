@@ -1,0 +1,16 @@
+name: mod-g
+versions:
+  3.0.11:
+    name: mod-g
+    description: test fixture mod-g
+    version: 3.0.11
+    dependencies: {}
+    dist:
+      shasum: 33333
+      tarball: 'http://localhost:4873/mod-g/-/mod-g-3.0.11.tgz'
+dist-tags:
+  latest: 3.0.11
+_rev: 9-f5a60b1743717bf9
+readme: >
+  #mod-g
+_attachments: {}
