@@ -1,10 +1,10 @@
 {
   "name": "fyn",
   "version": "1.0.0",
-  "description": "Flatten Your Node_modules",
+  "description": "Node Module Package Manager for the flat node_modules design",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "clap check"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +14,35 @@
     "electrode-keepalive": "^0.2.0",
     "js-yaml": "^3.9.0",
     "lodash": "^4.17.4",
-    "node-fetch": "^1.6.3",
+    "mkdirp": "^0.5.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
-    "semver": "^5.3.0"
+    "semver": "^5.3.0",
+    "tar": "^4.0.0",
+    "xsh": "^0.4.0"
+  },
+  "devDependencies": {
+    "electrode-archetype-njs-module-dev": "^2.2.0",
+    "electrode-server": "^1.2.2",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.2",
+    "xstdout": "^0.1.1"
+  },
+  "nyc": {
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "*clap.js",
+      "gulpfile.js",
+      "dist",
+      "test",
+      "xout",
+      "tmp"
+    ]
   }
 }

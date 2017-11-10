@@ -1,0 +1,8 @@
+{
+  "config": {
+    "test_c1": "foo-bar"
+  },
+  "scripts": {
+    "test": "echo $npm_config_test_c1"
+  }
+}

@@ -6,5 +6,6 @@
 /*.log*
 /tmp
 /tgz
-/fyn-data.yaml
+/*.yaml
 /.cache
+/xout

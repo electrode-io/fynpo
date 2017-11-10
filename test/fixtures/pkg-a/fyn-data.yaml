@@ -1,0 +1,192 @@
+pkgs:
+  mod-a:
+    1.1.2:
+      dep: 2
+      requests:
+        - - dep
+          - dep;^1.1.0
+        - - dep
+          - dep;mod-d;^3.0.0;3.0.1
+          - dep;^1.0.1
+      src: dep
+      dsrc: dep
+      dist:
+        shasum: 88888
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
+      res: {}
+    2.0.0:
+      dep: 1
+      requests:
+        - - dep
+          - dep;mod-c;^1.0.0;1.2.0
+          - dep;latest
+      src: dep
+      dsrc: dep
+      dist:
+        shasum: 88888
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
+      res: {}
+      promoted: true
+    0.2.0:
+      dev: 1
+      requests:
+        - - dev
+          - dev;mod-b;^1.0.0;1.0.0
+          - dep;^0.2.0
+      src: dev
+      dsrc: dep
+      dist:
+        shasum: 22222
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
+      res: {}
+    0.3.2:
+      opt: 1
+      requests:
+        - - opt
+          - opt;mod-e;^2.0.0;2.1.1
+          - dep;mod-f;^2.0.0;2.1.1
+          - per;^0.3.0
+      src: opt
+      dsrc: per
+      dist:
+        shasum: 22222
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
+      res:
+        dep:
+          mod-g:
+            semver: ^3.0.0
+            resolved: 3.0.11
+  mod-b:
+    1.0.0:
+      dev: 1
+      requests:
+        - - dev
+          - dev;^1.0.0
+        - - dep
+          - dep;mod-c;^1.0.0;1.2.0
+          - dep;^1.0.0
+        - - dep
+          - dep;mod-d;^3.0.0;3.0.1
+          - dep;^1.0.0
+      src: dev;dep
+      dsrc: dev;dep
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
+      res:
+        dep:
+          mod-a:
+            semver: ^0.2.0
+            resolved: 0.2.0
+      dep: 2
+      promoted: true
+  mod-c:
+    1.2.0:
+      dep: 1
+      requests:
+        - - dep
+          - dep;^1.0.0
+      src: dep
+      dsrc: dep
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-c/-/mod-c-1.2.0.tgz'
+      res:
+        dep:
+          mod-a:
+            semver: latest
+            resolved: 2.0.0
+          mod-b:
+            semver: ^1.0.0
+            resolved: 1.0.0
+      promoted: true
+  mod-d:
+    3.0.1:
+      dep: 1
+      requests:
+        - - dep
+          - dep;^3.0.0
+      src: dep
+      dsrc: dep
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz'
+      res:
+        dep:
+          mod-a:
+            semver: ^1.0.1
+            resolved: 1.1.2
+          mod-b:
+            semver: ^1.0.0
+            resolved: 1.0.0
+      promoted: true
+  mod-e:
+    2.1.1:
+      opt: 1
+      requests:
+        - - opt
+          - opt;^2.0.0
+      src: opt
+      dsrc: opt
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+      res:
+        dep:
+          mod-f:
+            semver: ^2.0.0
+            resolved: 2.1.1
+      promoted: true
+  mod-f:
+    2.1.1:
+      opt: 1
+      requests:
+        - - opt
+          - opt;mod-e;^2.0.0;2.1.1
+          - dep;^2.0.0
+      src: opt
+      dsrc: dep
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
+      res:
+        per:
+          mod-a:
+            semver: ^0.3.0
+            resolved: 0.3.2
+      promoted: true
+  mod-g:
+    3.0.11:
+      opt: 1
+      requests:
+        - - opt
+          - opt;mod-e;^2.0.0;2.1.1
+          - dep;mod-f;^2.0.0;2.1.1
+          - per;mod-a;^0.3.0;0.3.2
+          - dep;^3.0.0
+      src: opt
+      dsrc: dep
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-g/-/mod-g-3.0.11.tgz'
+      res: {}
+      promoted: true
+res:
+  dep:
+    mod-a:
+      semver: ^1.1.0
+      resolved: 1.1.2
+    mod-c:
+      semver: ^1.0.0
+      resolved: 1.2.0
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
+  dev:
+    mod-b:
+      semver: ^1.0.0
+      resolved: 1.0.0
+  opt:
+    mod-e:
+      semver: ^2.0.0
+      resolved: 2.1.1

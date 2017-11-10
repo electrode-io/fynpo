@@ -1,0 +1,18 @@
+name: mod-f
+versions:
+  2.1.1:
+    name: mod-f
+    description: test fixture mod-f
+    version: 2.1.1
+    dependencies: {}
+    peerDependencies:
+      mod-a: ^0.3.0
+    dist:
+      shasum: 33333
+      tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
+dist-tags:
+  latest: 2.1.1
+_rev: 9-f5a60b1743717bf9
+readme: >
+  #mod-f
+_attachments: {}
