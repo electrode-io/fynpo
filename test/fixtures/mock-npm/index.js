@@ -4,6 +4,8 @@ const electrodeServer = require("electrode-server");
 const Fs = require("fs");
 const Yaml = require("js-yaml");
 const Path = require("path");
+const chalk = require("chalk");
+const _ = require("lodash");
 
 function mockNpm(port) {
   return electrodeServer({
@@ -18,9 +20,22 @@ function mockNpm(port) {
       path: "/{pkgName}",
       handler: (request, reply) => {
         const pkgName = request.params.pkgName;
-        const meta = Fs.readFileSync(Path.join(__dirname, "metas", `${pkgName}.yml`));
-        console.log(new Date().toLocaleString() + ":", "retrieving meta", pkgName);
-        reply(Yaml.safeLoad(meta));
+        const metaData = Fs.readFileSync(Path.join(__dirname, "metas", `${pkgName}.yml`));
+        console.log(
+          chalk.blue("mock npm: ") + new Date().toLocaleString() + ":",
+          "retrieving meta",
+          pkgName
+        );
+        const meta = Yaml.safeLoad(metaData);
+        const pkgMeta = _.omit(meta, "etag");
+        let etag = request.headers["if-none-match"];
+        etag = etag && etag.split(`"`)[1];
+        if (etag && pkgName !== "always-change") {
+          return reply()
+            .code(304)
+            .header("ETag", etag);
+        }
+        return reply(pkgMeta).header("ETag", `${meta.etag}_${Date.now()}`);
       }
     });
 

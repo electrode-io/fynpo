@@ -21,5 +21,37 @@ To get newer versions of your dependencies, you can:
 
 -   Remove all the meta data and install all packages that have updates.
 -   Selectively remove the meta for any packages and have only those updated.
+-   Refresh meta during install
+
+# DESIGN
+
+## Incremental Install
+
+-   Be able to take an existing installation, refresh, and remove any package that's not needed anymore.
+
+## Optional Dependencies
+
+-   Before resolving dependencies of an optional package, fetch it and execute the `preinstall` script.
+-   If `preinstall` script passed, then add all its dependencies to the resolving pipeline.
+-   If it failed, then remove it from installation.
+
+## Peer Dependencies
+
+-   Each peer dep is added to a queue and checked at the end.
+-   Need to honor lock information when resolving.
+
+## Dependencies Promotion
+
+-   Auto promote latest version.
+-   Specify which version of a package to promote.
+-   Remove existing promoted version
+-   Remove any old copy of newly promoted version.
+
+## Lock Dependencies
+
+-   Lock each package by `name@semver` to a fixed version.
+-   Local lock dependencies of a package.
+-   All non-locked dep resolving is subjected to change.
+-   Interactively select package and its version to lock.
 
 [flat node_modules design here]: https://github.com/jchip/node-flat-module

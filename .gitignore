@@ -9,3 +9,4 @@
 /*.yaml
 /.cache
 /xout
+.tmp*
