@@ -11,7 +11,7 @@ const PromiseQueue = require("./util/promise-queue");
 const Promise = require("bluebird");
 
 class PkgDistExtractor {
-  constructor() {
+  constructor(options) {
     this._promise = new Promise((resolve, reject) => {
       this._resolve = resolve;
       this._reject = reject;
@@ -24,6 +24,7 @@ class PkgDistExtractor {
     this._promiseQ.on("fail", data => {
       this._reject(data.error);
     });
+    this._fyn = options.fyn;
   }
 
   addPkgDist(data) {
@@ -41,7 +42,7 @@ class PkgDistExtractor {
 
   processItem(data) {
     const pkg = data.pkg;
-    const fullOutDir = Path.resolve("xout", pkg.name, pkg.promoted ? "" : `__fv_/${pkg.version}`);
+    const fullOutDir = this._fyn.getInstalledPkgDir(pkg.name, pkg.version, pkg);
     mkdirp.sync(fullOutDir);
     return Tar.x({
       file: data.fullTgzFile,

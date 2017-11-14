@@ -23,7 +23,7 @@ class PkgDistFetcher {
       optional: [],
       byOptionalParent: []
     };
-    this._distExtractor = new PkgDistExtractor();
+    this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
     this._promise = new Promise((resolve, reject) => {
       this._resolve = resolve;
       this._reject = reject;

@@ -29,11 +29,20 @@ pkgs:
       promoted: true
     0.2.0:
       dev: 1
+      dep: 2
       requests:
         - - dev
           - dev;mod-b;^1.0.0;1.0.0
           - dep;^0.2.0
-      src: dev
+        - - dep
+          - dep;mod-c;^1.0.0;1.2.0
+          - dep;mod-b;^1.0.0;1.0.0
+          - dep;^0.2.0
+        - - dep
+          - dep;mod-d;^3.0.0;3.0.1
+          - dep;mod-b;^1.0.0;1.0.0
+          - dep;^0.2.0
+      src: dev;dep
       dsrc: dep
       dist:
         shasum: 22222

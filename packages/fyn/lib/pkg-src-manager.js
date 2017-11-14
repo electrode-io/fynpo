@@ -19,18 +19,30 @@ const Yaml = require("js-yaml");
 const logger = require("./logger");
 const mkdirp = require("mkdirp");
 const Path = require("path");
-const access = Promise.promisify(Fs.access);
 const Url = require("url");
+const access = Promise.promisify(Fs.access);
+const readFile = Promise.promisify(Fs.readFile);
 
 class PkgSrcManager {
   constructor(options) {
-    this._options = _.defaults({}, options, { fynCacheDir: "" });
+    this._options = _.defaults({}, options, {
+      registry: "",
+      fynCacheDir: ""
+    });
     this._meta = {};
-    mkdirp.sync(this._options.fynCacheDir, ".cache");
+    this._cacheDir = this._options.fynCacheDir;
+    mkdirp.sync(this._cacheDir);
+    this._inflights = {
+      meta: {},
+      tarball: {}
+    };
+    this._registry =
+      this._options.registry &&
+      _.pick(Url.parse(this._options.registry), ["protocol", "auth", "host", "port", "hostname"]);
   }
 
   makePkgCacheDir(pkgName) {
-    const pkgCacheDir = Path.resolve(".cache", pkgName);
+    const pkgCacheDir = Path.join(this._cacheDir, pkgName);
     mkdirp.sync(pkgCacheDir);
     return pkgCacheDir;
   }
@@ -51,29 +63,72 @@ class PkgSrcManager {
       return Promise.resolve(this._meta[pkgName]);
     }
 
+    if (this._inflights.meta[pkgName]) {
+      return this._inflights.meta[pkgName];
+    }
+
     const metaUrl = this.formatMetaUrl(item);
     logger.log("fetching meta", metaUrl);
 
-    return request(metaUrl).then(body => {
-      logger.log(`fetch ${pkgName} meta data`);
-      const meta = (this._meta[pkgName] = JSON.parse(body));
-      const pkgCacheDir = this.makePkgCacheDir(pkgName);
-      Fs.writeFileSync(`${pkgCacheDir}/meta.yaml`, Yaml.safeDump(this._meta[pkgName]));
-      return meta;
-    });
+    const pkgCacheDir = this.makePkgCacheDir(pkgName);
+    const cacheMetaFile = `${pkgCacheDir}/meta.yaml`;
+
+    const doRequest = cached => {
+      const headers = {};
+      if (cached.etag) {
+        headers["if-none-match"] = `"${cached.etag}"`;
+      }
+      const promise = request({
+        uri: metaUrl,
+        headers,
+        resolveWithFullResponse: true
+      })
+        .then(response => {
+          const body = response.body;
+          const etag = response.headers.etag;
+          logger.log(`fetch ${pkgName} meta data`);
+          const meta = (this._meta[pkgName] = JSON.parse(body));
+          meta.etag = etag;
+          Fs.writeFileSync(cacheMetaFile, Yaml.safeDump(this._meta[pkgName]));
+          return meta;
+        })
+        .catch(err => {
+          if (err.statusCode === 304) {
+            this._meta[pkgName] = cached;
+            return cached;
+          }
+          throw err;
+        });
+
+      this._inflights.meta[pkgName] = promise;
+
+      return promise;
+    };
+
+    const promise = access(cacheMetaFile)
+      .then(() => readFile(cacheMetaFile).then(data => Yaml.load(data.toString())))
+      .then(doRequest)
+      .catch(err => {
+        if (!this._inflights.meta[pkgName]) {
+          return doRequest({});
+        }
+        throw err;
+      })
+      .finally(() => {
+        delete this._inflights.meta[pkgName];
+      });
+
+    return promise;
   }
 
   formatTarballUrl(item) {
     const tgzFile = `${item.name}-${item.version}.tgz`;
 
     const tarball = Url.parse(_.get(item, "dist.tarball", ""));
-    const registry = this._options.registry
-      ? _.pick(Url.parse(this._options.registry), ["protocol", "auth", "host", "port", "hostname"])
-      : {};
 
     const result = Object.assign(
       _.defaults(tarball, { pathname: `${item.name}/-/${tgzFile}` }),
-      registry
+      this._registry
     );
 
     return Url.format(result);
@@ -92,34 +147,47 @@ class PkgSrcManager {
       .then(() => ({ fullTgzFile }))
       .catch(err => {
         if (err.code !== "ENOENT") throw err;
+        if (this._inflights.tarball[fullTgzFile]) {
+          return this._inflights.tarball[fullTgzFile];
+        }
         const stream = Fs.createWriteStream(fullTgzFile);
-        return new Promise((resolve, reject) => {
+        const fetchPromise = new Promise((resolve, reject) => {
           request(pkgUrl)
             .on("response", resolve)
             .on("error", reject)
             .pipe(stream);
-        }).then(resp => {
-          // logger.log("response code", resp.statusCode);
-          if (resp.statusCode === 200) {
-            return new Promise((resolve, reject) => {
-              let closed;
-              let finish;
-              const close = () => {
-                clearTimeout(finish);
-                if (closed) return;
-                closed = true;
-                const elapse = Date.now() - startTime;
-                logger.log(`fetch ${pkgName} result ${resp.statusCode} time: ${elapse / 1000}sec`);
-                resolve({ fullTgzFile });
-              };
-              stream.on("finish", () => (finish = setTimeout(close, 1000)));
-              stream.on("error", reject);
-              stream.on("close", close);
-            });
-          }
-          logger.log(`fetch ${pkgName} response error`, resp.statusCode);
-          return false;
-        });
+        })
+          .then(resp => {
+            // logger.log("response code", resp.statusCode);
+            if (resp.statusCode === 200) {
+              return new Promise((resolve, reject) => {
+                let closed;
+                let finish;
+                const close = () => {
+                  clearTimeout(finish);
+                  if (closed) return;
+                  closed = true;
+                  const elapse = Date.now() - startTime;
+                  logger.log(
+                    `fetch ${pkgName} result ${resp.statusCode} time: ${elapse / 1000}sec`
+                  );
+                  resolve({ fullTgzFile });
+                };
+                stream.on("finish", () => (finish = setTimeout(close, 1000)));
+                stream.on("error", reject);
+                stream.on("close", close);
+              });
+            }
+            logger.log(`fetch ${pkgName} response error`, resp.statusCode);
+            return false;
+          })
+          .finally(() => {
+            delete this._inflights.tarball[fullTgzFile];
+          });
+
+        this._inflights.tarball[fullTgzFile] = fetchPromise;
+
+        return fetchPromise;
       });
 
     return { promise, pkgUrl, startTime, fullTgzFile };

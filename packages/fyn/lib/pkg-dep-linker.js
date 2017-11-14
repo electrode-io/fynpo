@@ -1,10 +1,11 @@
 "use strict";
 
+/* eslint-disable no-magic-numbers */
+
 const Path = require("path");
 const Fs = require("fs");
 const _ = require("lodash");
 const logger = require("./logger");
-/* eslint-disable */
 
 /*
  * generate data to link all packages' resolution
@@ -13,14 +14,11 @@ const logger = require("./logger");
 
 class PkgDepLinker {
   constructor(options) {
-    this._data = options.data;
     this._fyn = options.fyn;
+    this._data = options.data || options.fyn._data;
   }
 
-  _linkTopLevel(options) {
-    const res = this._data.res;
-  }
-
+  // insert _depResolutions into package.json of all versions of package `name`
   _linkPkg(name) {
     const pkg = this._data.pkgs[name];
     Object.keys(pkg).forEach(version => {
@@ -29,7 +27,16 @@ class PkgDepLinker {
     });
   }
 
-  link(options) {
+  // insert _depResolutions into package.json of package `name`@`version`
+  linkResolution(name, version, pkg) {
+    // console.log("linking", name, version, pkg, pkg.promoted);
+    const pkgDir = this._fyn.getInstalledPkgDir(name, version, pkg);
+    logger.log("loading package.json from", pkgDir);
+    const pkgJsonFile = Path.join(pkgDir, "package.json");
+    this.linkPackageFile(pkgJsonFile);
+  }
+
+  link() {
     this._data.cleanLinked();
     // go through each package and insert
     // _depResolutions into its package.json
@@ -40,13 +47,14 @@ class PkgDepLinker {
   // link top level package
   linkApp() {
     const resData = this._data.res;
-    console.log(resData);
     const depRes = {};
+
     _.each(["dep", "dev", "opt"], section => {
       _.each(resData[section], (resInfo, depName) => {
         depRes[depName] = Object.assign({}, resInfo);
       });
     });
+
     Fs.writeFileSync(
       Path.join(this._fyn.getOutputDir(), "__dep_resolution.json"),
       `${JSON.stringify(depRes, null, 2)}\n`
@@ -73,14 +81,6 @@ class PkgDepLinker {
     if (this.linkPackage(pkgJson)) {
       Fs.writeFileSync(pkgJsonFile, `${JSON.stringify(pkgJson, null, 2)}\n`);
     }
-  }
-
-  linkResolution(name, version, pkg) {
-    // console.log("linking", name, version, pkg, pkg.promoted);
-    const pkgDir = this._fyn.getInstalledPkgDir(name, version, pkg);
-    logger.log("loading package.json from", pkgDir);
-    const pkgJsonFile = Path.join(pkgDir, "package.json");
-    this.linkPackageFile(pkgJsonFile);
   }
 }
 

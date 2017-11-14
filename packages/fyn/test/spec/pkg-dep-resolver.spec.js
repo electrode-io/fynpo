@@ -18,10 +18,19 @@ describe("pkg-dep-resolver", function() {
     server.stop(done);
   });
 
+  const sortSrc = src => {
+    return src
+      .split(";")
+      .sort()
+      .join(";");
+  };
+
   const sortRequests = data => {
     _.each(data.pkgs, pkg => {
       _.each(pkg, v => {
         v.requests = v.requests.map(r => r.join("!")).sort();
+        if (v.src) v.src = sortSrc(v.src);
+        if (v.dsrc) v.dsrc = sortSrc(v.dsrc);
       });
     });
     return data;
@@ -40,7 +49,7 @@ describe("pkg-dep-resolver", function() {
     return fyn.resolveDependencies().then(() => {
       checkResolvedData(fyn, Path.join(__dirname, "../fixtures/pkg-a/fyn-data.yaml"));
     });
-  }).timeout(10000);
+  }).timeout(100000);
 
   it("should fail when semver doesn't resolve", () => {
     const fyn = new Fyn({

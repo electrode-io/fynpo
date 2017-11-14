@@ -8,11 +8,11 @@ const PkgDepResolver = require("./pkg-dep-resolver");
 const PkgDistFetcher = require("./pkg-dist-fetcher");
 const PkgSrcManager = require("./pkg-src-manager");
 const DepData = require("./dep-data");
-const config = require("./fyn-config");
+const fynConfig = require("./fyn-config");
 
 class Fyn {
   constructor(options) {
-    options = this._options = Object.assign({}, config, options);
+    options = this._options = fynConfig(options);
     this._pkgSrcMgr = options.pkgSrcMgr || new PkgSrcManager(options);
     if (options.pkgFile) {
       const pkgFile = Path.resolve(options.pkgFile);
@@ -34,7 +34,8 @@ class Fyn {
   fetchPackages(data) {
     this._distFetcher = new PkgDistFetcher({
       data: data || this._data || this._depResolver._data,
-      pkgSrcMgr: this._pkgSrcMgr
+      pkgSrcMgr: this._pkgSrcMgr,
+      fyn: this
     });
     this._distFetcher.start();
     return this._distFetcher.wait().then(() => {
@@ -43,11 +44,11 @@ class Fyn {
   }
 
   getInstalledPkgDir(name, version, pkg) {
-    return Path.join(this._cwd, "xout", name, pkg.promoted ? "" : `__fv_/${version}`);
+    return Path.join(this.getOutputDir(), name, pkg.promoted ? "" : `__fv_/${version}`);
   }
 
   getOutputDir() {
-    return Path.join(this._cwd, "xout");
+    return Path.join(this._cwd, this._options.targetDir);
   }
 }
 
