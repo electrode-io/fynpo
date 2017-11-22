@@ -7,8 +7,10 @@
     "mod-d": "^3.0.0"
   },
   "optionalDependencies": {
-    "mod-e": "^2.0.0"
+    "mod-e": "^2.0.0",
+    "mod-err": "^4.0.0"
   },
+
   "devDependencies": {
     "mod-b": "^1.0.0"
   }

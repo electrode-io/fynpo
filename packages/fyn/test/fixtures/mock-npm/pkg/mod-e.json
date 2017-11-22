@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "preinstall": "echo hello there from mod-e"
+  }
+}

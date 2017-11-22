@@ -26,12 +26,11 @@ describe("pkg-dist-fetcher", function() {
   });
 
   it("should fetch packages for pkg-a fixture", () => {
-    const cwd = Path.join(__dirname, "..");
     const targetDir = `xout_${Date.now()}`;
     const fyn = new Fyn({
       registry: `http://localhost:${server.info.port}`,
       pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
-      cwd,
+      cwd: fynDir,
       targetDir,
       fynDir
     });
@@ -41,9 +40,6 @@ describe("pkg-dist-fetcher", function() {
       .then(() => {
         const linker = new PkgDepLinker({ fyn });
         return linker.link();
-      })
-      .finally(() => {
-        return xsh.$.rm("-rf", Path.join(cwd, targetDir));
       });
   }).timeout(10000);
 });

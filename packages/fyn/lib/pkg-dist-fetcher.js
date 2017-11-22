@@ -4,7 +4,7 @@
 
 const _ = require("lodash");
 // const Fs = require("fs");
-const Promise = require("bluebird");
+// const Promise = require("bluebird");
 // const Path = require("path");
 // const request = require("request");
 const logger = require("./logger");
@@ -24,20 +24,15 @@ class PkgDistFetcher {
       byOptionalParent: []
     };
     this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
-    this._promise = new Promise((resolve, reject) => {
-      this._resolve = resolve;
-      this._reject = reject;
-    });
     this._promiseQ = new PromiseQueue({
       processItem: x => this.fetchItem(x)
     });
-    this._promiseQ.on("doneItem", x => this.handleItemDone(x));
     this._promiseQ.on("done", x => this.done(x));
-    this._promiseQ.on("fail", data => this._reject(data.error));
+    this._promiseQ.on("doneItem", x => this.handleItemDone(x));
   }
 
   wait() {
-    return this._promise.then(() => this._distExtractor.wait());
+    return this._promiseQ.wait().then(() => this._distExtractor.wait());
   }
 
   start() {
@@ -69,7 +64,6 @@ class PkgDistFetcher {
 
   done(data) {
     logger.log("done fetch dist", data.totalTime / 1000);
-    this._resolve();
   }
 
   handleItemDone(data) {
@@ -84,7 +78,7 @@ class PkgDistFetcher {
 
     const r = this._pkgSrcMgr.fetchTarball(pkg);
     // const id = `${pkg.name}@${pkg.version}-${r.startTime}`;
-    return r.promise.then(() => ({ fullTgzFile: r.fullTgzFile, pkg })).catch(err => {
+    return r.then(() => ({ fullTgzFile: r.fullTgzFile, pkg })).catch(err => {
       logger.log(`fetch '${pkgName}' failed`, err);
       throw err;
     });

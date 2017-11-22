@@ -7,15 +7,25 @@ const Fyn = require("../../lib/fyn");
 const mockNpm = require("../fixtures/mock-npm");
 const expect = require("chai").expect;
 const _ = require("lodash");
+const rimraf = require("rimraf");
 
 describe("pkg-dep-resolver", function() {
   let server;
+  let fynDir;
   before(() => {
     return mockNpm().then(s => (server = s));
   });
 
   after(done => {
     server.stop(done);
+  });
+
+  beforeEach(() => {
+    fynDir = Path.join(__dirname, "..", `.tmp_${Date.now()}`);
+  });
+
+  afterEach(() => {
+    rimraf.sync(fynDir);
   });
 
   const sortSrc = src => {
@@ -41,15 +51,30 @@ describe("pkg-dep-resolver", function() {
     expect(sortRequests(fyn._data)).to.deep.equal(sortRequests(expected));
   };
 
-  it("should resolve dependencies for pkg-a fixture", () => {
+  const testPkgAFixture = () => {
     const fyn = new Fyn({
       registry: `http://localhost:${server.info.port}`,
-      pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json")
+      pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
+      cwd: fynDir,
+      fynDir
     });
     return fyn.resolveDependencies().then(() => {
       checkResolvedData(fyn, Path.join(__dirname, "../fixtures/pkg-a/fyn-data.yaml"));
     });
-  }).timeout(100000);
+  };
+
+  it("should resolve dependencies for pkg-a fixture", () => {
+    return testPkgAFixture()
+      .then(() => testPkgAFixture())
+      .then(() => {
+        rimraf.sync(Path.join(fynDir, "xout"));
+        return testPkgAFixture();
+      })
+      .then(() => {
+        rimraf.sync(Path.join(fynDir, "cache"));
+        return testPkgAFixture();
+      });
+  }).timeout(10000);
 
   it("should fail when semver doesn't resolve", () => {
     const fyn = new Fyn({
@@ -59,9 +84,11 @@ describe("pkg-dep-resolver", function() {
         name: "test",
         version: "1.0.0",
         dependencies: {
-          "mod-a": "^3.0.0"
+          "mod-a": "^14.0.0"
         }
-      }
+      },
+      fynDir,
+      cwd: fynDir
     });
     let error;
     return fyn
@@ -69,7 +96,7 @@ describe("pkg-dep-resolver", function() {
       .catch(err => (error = err))
       .then(() => {
         expect(error).to.exist;
-        expect(error.message).includes("No version of mod-a satisfied semver ^3.0.0");
+        expect(error.message).includes("No version of mod-a satisfied semver ^14.0.0");
       });
   }).timeout(10000);
 
@@ -83,7 +110,9 @@ describe("pkg-dep-resolver", function() {
         dependencies: {
           "mod-a": "blah"
         }
-      }
+      },
+      fynDir,
+      cwd: fynDir
     });
     let error;
     return fyn
