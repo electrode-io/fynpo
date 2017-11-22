@@ -40,6 +40,25 @@ To get newer versions of your dependencies, you can:
 -   Each peer dep is added to a queue and checked at the end.
 -   Need to honor lock information when resolving.
 
+## Local FS semver
+
+-   <https://docs.npmjs.com/files/package.json#local-paths>
+
+If a dep specifies semver as a local FS path, then need load its `package.json` into meta and resolve with FS ops.
+
+## git URL semver
+
+-   <https://docs.npmjs.com/files/package.json#git-urls-as-dependencies>
+-   <https://docs.npmjs.com/files/package.json#github-urls>
+
+If a dep specifies semver as a git URL, then need to retrieve it locally and load its `package.json` into meta and resolve with FS ops.
+
+## tarball URL semver
+
+-   <https://docs.npmjs.com/files/package.json#urls-as-dependencies>
+
+If a dep specifies a semver as a URL to a tarball, then need to retrieve it locally and load its `package.json` into meta and resolve with FS ops.
+
 ## Dependencies Promotion
 
 -   Auto promote latest version.

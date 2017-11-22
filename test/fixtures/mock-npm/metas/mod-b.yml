@@ -7,6 +7,8 @@ versions:
     version: 1.0.0
     dependencies:
       mod-a: ^0.2.0
+    optionalDependencies:
+      mod-e: ^2.0.0
     dist:
       shasum: 33333
       tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
