@@ -51,7 +51,7 @@ class PkgDepResolver {
   }
 
   start() {
-    this._promiseQ._process();
+    setTimeout(() => this._promiseQ.addItem(null), 0);
   }
 
   wait() {
@@ -91,13 +91,17 @@ class PkgDepResolver {
   }
 
   done(data) {
-    if (this._optResolver.isEmpty()) {
-      logger.log("done", data.totalTime / 1000);
+    if (this._promiseQ.isPending()) {
+      return;
+    }
+
+    if (!this._optResolver.isEmpty()) {
+      this._optResolver.resolve();
+    } else {
+      logger.log("dep resolver done", data.totalTime / 1000);
       this._data.sortPackagesByKeys();
       this.promotePackages();
       this._defer.resolve();
-    } else {
-      this._optResolver.resolve();
     }
   }
 
@@ -178,6 +182,7 @@ class PkgDepResolver {
 
   processItem(item) {
     // always fetch the item and let pkg src manager deal with caching
+    if (!item) return Promise.resolve();
     return this._pkgSrcMgr.fetchMeta(item).then(meta => this.resolvePackage(item, meta));
   }
 }

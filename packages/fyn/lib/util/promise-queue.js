@@ -5,6 +5,7 @@
 const EventEmitter = require("events");
 const assert = require("assert");
 const Promise = require("bluebird");
+const _ = require("lodash");
 
 class PromiseQueue extends EventEmitter {
   constructor(options) {
@@ -24,10 +25,12 @@ class PromiseQueue extends EventEmitter {
   }
 
   wait() {
-    return new Promise((resolve, reject) => {
-      this.on("done", resolve);
-      this.on("fail", reject);
-    });
+    return this.isPending()
+      ? new Promise((resolve, reject) => {
+          this.on("done", resolve);
+          this.on("fail", reject);
+        })
+      : Promise.resolve();
   }
 
   setItemQ(itemQ) {
@@ -58,19 +61,16 @@ class PromiseQueue extends EventEmitter {
 
     if (this._itemQ.length > 0) {
       this._process();
-    } else {
-      const pending = Object.keys(this._pendingPromises);
-      if (pending.length === 0) {
-        const endTime = Date.now();
-        const totalTime = endTime - this._startTime;
-        const res = {
-          item: data.item,
-          startTime: this._startTime,
-          endTime,
-          totalTime
-        };
-        this.emit("done", res);
-      }
+    } else if (_.isEmpty(this._pendingPromises)) {
+      const endTime = Date.now();
+      const totalTime = endTime - this._startTime;
+      const res = {
+        item: data.item,
+        startTime: this._startTime,
+        endTime,
+        totalTime
+      };
+      this.emit("done", res);
     }
   }
 
@@ -90,6 +90,10 @@ class PromiseQueue extends EventEmitter {
         }
       );
     }
+  }
+
+  isPending() {
+    return !_.isEmpty(this._pendingPromises) || this._itemQ.length !== 0;
   }
 }
 

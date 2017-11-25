@@ -84,6 +84,34 @@ pkgs:
             resolved: 3.0.11
       opt: 1
       dev: 1
+    0.4.5:
+      dep: 2
+      requests:
+        - - dep
+          - dep;mod-d;^3.0.0;3.0.1
+          - dep;mod-b;^1.0.0;1.0.0
+          - opt;mod-e;^2.0.0;2.1.1
+          - opt;^0.4.0
+        - - opt
+          - opt;mod-e;^2.0.0;2.1.1
+          - opt;^0.4.0
+        - - dev
+          - dev;mod-b;^1.0.0;1.0.0
+          - opt;mod-e;^2.0.0;2.1.1
+          - opt;^0.4.0
+        - - dep
+          - dep;mod-c;^1.0.0;1.2.0
+          - dep;mod-b;^1.0.0;1.0.0
+          - opt;mod-e;^2.0.0;2.1.1
+          - opt;^0.4.0
+      src: dep;opt;dev
+      dsrc: opt
+      dist:
+        shasum: 88888
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
+      res: {}
+      opt: 1
+      dev: 1
   mod-b:
     1.0.0:
       dep: 2
@@ -179,6 +207,10 @@ pkgs:
           mod-f:
             semver: ^2.0.0
             resolved: 2.1.1
+        opt:
+          mod-a:
+            semver: ^0.4.0
+            resolved: 0.4.5
       opt: 1
       dev: 1
       promoted: true
@@ -256,12 +288,12 @@ pkgs:
       promoted: true
 res:
   dep:
-    mod-a:
-      semver: ^1.1.0
-      resolved: 1.1.2
     mod-d:
       semver: ^3.0.0
       resolved: 3.0.1
+    mod-a:
+      semver: ^1.1.0
+      resolved: 1.1.2
     mod-c:
       semver: ^1.0.0
       resolved: 1.2.0
