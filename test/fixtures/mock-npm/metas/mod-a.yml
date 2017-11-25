@@ -24,6 +24,13 @@ versions:
     dist:
       shasum: 22222
       tarball: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
+  0.4.5:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.4.5
+    dist:
+      shasum: 88888
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'      
   1.0.0:
     name: mod-a
     description: test fixture mod-a
