@@ -7,6 +7,7 @@ versions:
     version: 1.0.0
     dependencies:
       mod-a: ^0.2.0
+      mod-d: ^3.0.0
     optionalDependencies:
       mod-e: ^2.0.0
     dist:
