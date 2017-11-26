@@ -86,7 +86,6 @@ class PkgSrcManager {
         .then(response => {
           const body = response.body;
           const etag = response.headers.etag;
-          logger.log(`fetched ${pkgName} meta data`);
           const meta = (this._meta[pkgName] = JSON.parse(body));
           meta.etag = etag;
           return writeFile(cacheMetaFile, Yaml.safeDump(this._meta[pkgName]))

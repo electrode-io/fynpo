@@ -127,19 +127,41 @@ class PkgDepResolver {
     return undefined;
   }
 
+  /* eslint-disable max-statements */
   addPackageResolution(item, meta, resolved) {
     item.resolved = resolved;
+
+    let pkgV; // specific version of the known package
+    let kpkg = this._data.pkgs[item.name]; // known package
+
+    if (kpkg) {
+      pkgV = kpkg[resolved];
+
+      // if package is already seen, then check parents to make sure
+      // it's not one of them because that would be a circular dependencies
+      if (pkgV && item.isCircular()) {
+        logger.log(
+          "circular dep detected",
+          item.name,
+          item.resolved,
+          "parents:",
+          item.request.join(", ")
+        );
+        return;
+      }
+    }
+
     // specified as optionalDependencies
     // add to opt resolver to resolve later
     if (item.dsrc === "opt" && !item.optChecked) {
       this._optResolver.add({ item, meta });
       return;
     }
-    let kpkg = this._data.pkgs[item.name];
+
     if (!kpkg) {
       kpkg = this._data.pkgs[item.name] = {};
     }
-    let pkgV = kpkg[resolved];
+
     if (!pkgV) {
       pkgV = kpkg[resolved] = {
         [item.src]: 0,

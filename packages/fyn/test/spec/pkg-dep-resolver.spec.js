@@ -59,6 +59,7 @@ describe("pkg-dep-resolver", function() {
       fynDir
     });
     return fyn.resolveDependencies().then(() => {
+      // Fs.writeFileSync(Path.resolve("fyn-data.yaml"), Yaml.safeDump(fyn._data));
       checkResolvedData(fyn, Path.join(__dirname, "../fixtures/pkg-a/fyn-data.yaml"));
     });
   };
