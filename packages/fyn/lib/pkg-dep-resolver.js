@@ -11,6 +11,9 @@ const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 
+const RSEMVERS = Symbol("rsemvers");
+const SORTED_VERSIONS = Symbol("sorted versions");
+
 const mapTopDep = (dep, src) =>
   Object.keys(dep || {}).map(name => new DepItem({ name, semver: dep[name], src, dsrc: src }));
 
@@ -42,12 +45,15 @@ class PkgDepResolver {
       itemQ: mapTopDep(pkg.dependencies, "dep")
         .concat(mapTopDep(pkg.devDependencies, "dev"))
         .concat(mapTopDep(pkg.optionalDependencies, "opt"))
-        .concat(mapTopDep(pkg.peerDependencies, "per"))
+      // .concat(mapTopDep(pkg.peerDependencies, "per"))
     });
     this._defer = defer();
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
+    this._promiseQ.on("empty", () => {
+      this._optResolver.start();
+    });
   }
 
   start() {
@@ -115,7 +121,8 @@ class PkgDepResolver {
 
     add(mPkg.dependencies, "dep");
     add(mPkg.optionalDependencies, "opt");
-    add(mPkg.peerDependencies, "per");
+    // add(mPkg.peerDependencies, "per");
+    // logger.log("addDepOfDep Q size", this._promiseQ._itemQ.length);
   }
 
   findVersionFromDistTag(meta, semver) {
@@ -129,7 +136,7 @@ class PkgDepResolver {
 
   /* eslint-disable max-statements */
   addPackageResolution(item, meta, resolved) {
-    item.resolved = resolved;
+    item.resolve(resolved);
 
     let pkgV; // specific version of the known package
     let kpkg = this._data.pkgs[item.name]; // known package
@@ -139,14 +146,10 @@ class PkgDepResolver {
 
       // if package is already seen, then check parents to make sure
       // it's not one of them because that would be a circular dependencies
-      if (pkgV && item.isCircular()) {
-        logger.log(
-          "circular dep detected",
-          item.name,
-          item.resolved,
-          "parents:",
-          item.request.join(", ")
-        );
+      if (pkgV && !item.optChecked && item.isCircular()) {
+        // logger.log("circular dep detected", item.name, item.resolved);
+        item.unref();
+        item = undefined;
         return;
       }
     }
@@ -159,7 +162,7 @@ class PkgDepResolver {
     }
 
     if (!kpkg) {
-      kpkg = this._data.pkgs[item.name] = {};
+      kpkg = this._data.pkgs[item.name] = { [RSEMVERS]: {} };
     }
 
     if (!pkgV) {
@@ -173,6 +176,8 @@ class PkgDepResolver {
       };
     }
 
+    kpkg[RSEMVERS][item.semver] = resolved;
+
     //
     // Follow dependencies regardless if pkg has been resolved because
     // there may be a different request path that lead to this same
@@ -184,22 +189,30 @@ class PkgDepResolver {
   }
 
   resolvePackage(item, meta) {
-    const distTagVer = this.findVersionFromDistTag(meta, item.semver);
-    if (distTagVer !== undefined) {
-      this.addPackageResolution(item, meta, distTagVer);
-      return;
-    }
-    const versions = Object.keys(meta.versions).sort(Semver.rcompare);
-    const fver = versions.find(v => {
-      if (Semver.satisfies(v, item.semver)) {
-        this.addPackageResolution(item, meta, v);
-        return true;
+    const kpkg = this._data.pkgs[item.name]; // known package
+
+    let resolved =
+      (kpkg && kpkg[RSEMVERS][item.semver]) || this.findVersionFromDistTag(meta, item.semver);
+
+    if (!resolved) {
+      //
+      // This sorting and semver searching is the most expensive part of the
+      // resolve process, so caching them is very important for performance.
+      //
+      if (!meta[SORTED_VERSIONS]) {
+        meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(Semver.rcompare);
       }
-      return false;
-    });
-    if (!fver) {
-      throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
+
+      resolved = _.find(meta[SORTED_VERSIONS], v => {
+        return Semver.satisfies(v, item.semver);
+      });
+
+      if (!resolved) {
+        throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
+      }
     }
+
+    this.addPackageResolution(item, meta, resolved);
   }
 
   processItem(item) {

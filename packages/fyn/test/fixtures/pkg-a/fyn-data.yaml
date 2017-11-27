@@ -4,19 +4,15 @@ pkgs:
       dep: 3
       requests:
         - - dep
-          - dep;^1.1.0
         - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;^1.0.1
-        - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;^1.0.1
+          - dep;^3.0.0;mod-d@3.0.1
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;^1.0.1
+          - dev;^1.0.0;mod-b@1.0.0
+          - dep;^3.0.0;mod-d@3.0.1
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+          - dep;^3.0.0;mod-d@3.0.1
       src: dep;dev
       dsrc: dep
       dist:
@@ -28,8 +24,7 @@ pkgs:
       dep: 1
       requests:
         - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;latest
+          - dep;^1.0.0;mod-c@1.2.0
       src: dep
       dsrc: dep
       dist:
@@ -38,104 +33,58 @@ pkgs:
       res: {}
       promoted: true
     0.2.0:
-      dep: 2
+      dev: 1
       requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - dep;^0.2.0
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - dep;^0.2.0
+          - dev;^1.0.0;mod-b@1.0.0
         - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - dep;^0.2.0
-      src: dep;dev
+          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-b@1.0.0
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+      src: dev;dep
       dsrc: dep
       dist:
         shasum: 22222
         tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
       res: {}
-      dev: 1
-    0.3.2:
       dep: 2
-      requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;^0.3.0
-        - - opt
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;^0.3.0
-        - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;^0.3.0
-        - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;^0.3.0
-      src: dep;opt;dev
-      dsrc: per
-      dist:
-        shasum: 22222
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
-      res:
-        dep:
-          mod-g:
-            semver: ^3.0.0
-            resolved: 3.0.11
-      opt: 1
-      dev: 1
     0.4.5:
-      dep: 2
+      opt: 1
       requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - opt;^0.4.0
         - - opt
-          - opt;mod-e;2.1.1;^2.0.0
-          - opt;^0.4.0
+          - opt;^2.0.0;mod-e@2.1.1
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - opt;^0.4.0
+          - dev;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - opt;^0.4.0
-      src: dep;opt;dev
+          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+      src: opt;dev;dep
       dsrc: opt
       dist:
         shasum: 88888
         tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
       res: {}
-      opt: 1
       dev: 1
+      dep: 2
   mod-b:
     1.0.0:
-      dep: 2
+      dev: 1
       requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;^1.0.0
         - - dev
-          - dev;^1.0.0
         - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;^1.0.0
-      src: dep;dev
-      dsrc: dep;dev
+          - dep;^3.0.0;mod-d@3.0.1
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+      src: dev;dep
+      dsrc: dev;dep
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
@@ -151,14 +100,13 @@ pkgs:
           mod-e:
             semver: ^2.0.0
             resolved: 2.1.1
-      dev: 1
+      dep: 2
       promoted: true
   mod-c:
     1.2.0:
       dep: 1
       requests:
         - - dep
-          - dep;^1.0.0
       src: dep
       dsrc: dep
       dist:
@@ -178,14 +126,11 @@ pkgs:
       dep: 2
       requests:
         - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - dep;^3.0.0
-        - - dep
-          - dep;^3.0.0
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - dep;^3.0.0
+          - dev;^1.0.0;mod-b@1.0.0
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
       src: dep;dev
       dsrc: dep
       dist:
@@ -203,22 +148,18 @@ pkgs:
       promoted: true
   mod-e:
     2.1.1:
-      dep: 2
+      opt: 1
       requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;^2.0.0
         - - opt
-          - opt;^2.0.0
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - opt;^2.0.0
+          - dev;^1.0.0;mod-b@1.0.0
         - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;^2.0.0
-      src: dep;opt;dev
+          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-b@1.0.0
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+      src: opt;dev;dep
       dsrc: opt
       dist:
         shasum: 33333
@@ -232,92 +173,46 @@ pkgs:
           mod-a:
             semver: ^0.4.0
             resolved: 0.4.5
-      opt: 1
       dev: 1
+      dep: 2
       promoted: true
   mod-f:
     2.1.1:
-      dep: 2
+      opt: 1
       requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;^2.0.0
         - - opt
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;^2.0.0
+          - opt;^2.0.0;mod-e@2.1.1
         - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;^2.0.0
+          - dev;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;^2.0.0
-      src: dep;opt;dev
+          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+      src: opt;dev;dep
       dsrc: dep
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
-      res:
-        per:
-          mod-a:
-            semver: ^0.3.0
-            resolved: 0.3.2
-      opt: 1
-      dev: 1
-      promoted: true
-  mod-g:
-    3.0.11:
-      dep: 2
-      requests:
-        - - dep
-          - dep;mod-c;1.2.0;^1.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;mod-a;0.3.2;^0.3.0
-          - dep;^3.0.0
-        - - opt
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;mod-a;0.3.2;^0.3.0
-          - dep;^3.0.0
-        - - dev
-          - dev;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;mod-a;0.3.2;^0.3.0
-          - dep;^3.0.0
-        - - dep
-          - dep;mod-d;3.0.1;^3.0.0
-          - dep;mod-b;1.0.0;^1.0.0
-          - opt;mod-e;2.1.1;^2.0.0
-          - dep;mod-f;2.1.1;^2.0.0
-          - per;mod-a;0.3.2;^0.3.0
-          - dep;^3.0.0
-      src: dep;opt;dev
-      dsrc: dep
-      dist:
-        shasum: 33333
-        tarball: 'http://localhost:4873/mod-g/-/mod-g-3.0.11.tgz'
       res: {}
-      opt: 1
       dev: 1
+      dep: 2
       promoted: true
 res:
   dep:
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
     mod-c:
       semver: ^1.0.0
       resolved: 1.2.0
     mod-a:
       semver: ^1.1.0
       resolved: 1.1.2
-    mod-d:
-      semver: ^3.0.0
-      resolved: 3.0.1
   dev:
     mod-b:
       semver: ^1.0.0

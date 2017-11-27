@@ -54,7 +54,11 @@ class PkgOptResolver {
   //
   add(optDep) {
     this._optPkgCount++;
-    this._promiseQ.addItem(optDep);
+    this._promiseQ.addItem(optDep, true);
+  }
+
+  start() {
+    this._promiseQ._process();
   }
 
   //
@@ -125,12 +129,14 @@ class PkgOptResolver {
         // run npm script `preinstall`
         const x = _.get(res, "pkg.scripts.preinstall");
         if (x) {
+          logger.log("Running preinstall for optional dep", pkgId);
           return xsh
             .exec(x)
             .promise.thenReturn({ passed: true })
             .catch(err => ({ passed: false, err }));
         } else {
           // no preinstall script, always pass
+          logger.log("no preinstall pass for optional dep", pkgId);
           return { passed: true };
         }
       })
@@ -149,6 +155,7 @@ class PkgOptResolver {
   }
 
   resolve() {
+    this.start();
     return this._promiseQ.wait().then(() => {
       this._passedPkgs.forEach(x => {
         x.item.optChecked = true;

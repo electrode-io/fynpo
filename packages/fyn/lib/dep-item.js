@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, no-constant-condition */
 
 /*
  * Dependency Item
@@ -25,19 +25,21 @@ class DepItem {
     // The version that was resolved
     this.resolved = options.resolved;
     // parent dependency item that pulled this
-    if (parent) {
-      this.request = parent.request.concat(parent.makeRequestEntry());
-      this.parent = parent;
-    } else {
-      this.request = [`${this.src}`];
-      this.res = {};
-    }
+    this.parent = parent;
     // was this item promoted out of __fv_?
     this.promoted = undefined;
   }
 
-  makeRequestEntry() {
-    return `${this.dsrc};${this.name};${this.resolved};${this.semver}`;
+  unref() {
+    this.parent = undefined;
+  }
+
+  resolve(version) {
+    this.resolved = version;
+  }
+
+  get id() {
+    return `${this.name}@${this.resolved}`;
   }
 
   addResolutionToParent(data) {
@@ -56,13 +58,29 @@ class DepItem {
     depSection[this.name] = { semver: this.semver, resolved: this.resolved };
   }
 
+  get requestPath() {
+    let x = this; // eslint-disable-line
+    const request = [];
+
+    while (true) {
+      if (x.parent) {
+        x = x.parent;
+        request.push(`${x.dsrc};${x.semver};${x.id}`);
+      } else {
+        request.push(`${x.dsrc}`);
+        break;
+      }
+    }
+
+    return request.reverse();
+  }
+
   addRequestToPkg(pkgV) {
     if (pkgV[this.src] === undefined) {
       pkgV[this.src] = 0;
     }
     pkgV[this.src]++;
-    this.request.push(`${this.dsrc};${this.semver}`);
-    pkgV.requests.push(this.request);
+    pkgV.requests.push(this.requestPath);
     if (pkgV.dsrc.indexOf(this.dsrc) < 0) {
       pkgV.dsrc += `;${this.dsrc}`;
     }
@@ -72,13 +90,12 @@ class DepItem {
   }
 
   isCircular() {
-    if (this.parent) {
-      return Boolean(
-        this.request.find(x => {
-          const y = x.split(";");
-          return y[1] === this.name && y[2] === this.resolved;
-        })
-      );
+    let parent = this.parent;
+    const id = this.id;
+
+    while (parent) {
+      if (parent.id === id) return true;
+      parent = parent.parent;
     }
 
     return false;
