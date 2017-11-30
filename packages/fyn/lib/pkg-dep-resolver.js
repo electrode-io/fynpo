@@ -74,14 +74,17 @@ class PkgDepResolver {
   // - Promote the earliest version
   //
   promotePackages() {
+    let version;
+
     const names = Object.keys(this._data.pkgs);
+
     names.forEach(name => {
       const pkg = this._data.pkgs[name];
       // sort versions from newest to oldest
       const versions = Object.keys(pkg).sort(Semver.rcompare);
       // there's only one version, auto protomote
       if (versions.length === 1) {
-        pkg[versions[0]].promoted = true;
+        version = versions[0];
       } else {
         const src = versions.map(v => ({ v, s: pkg[v].src }));
         // find the first source that's not empty
@@ -91,16 +94,18 @@ class PkgDepResolver {
             .filter(x => x.length > 0)
         );
         // promote latest version
-        pkg[bySrc[0].v].promoted = true;
+        version = bySrc[0].v;
+      }
+      const pkgV = pkg[version];
+      pkgV.promoted = true;
+      const extracted = this._optResolver.isExtracted(name, version);
+      if (extracted) {
+        pkgV.extracted = extracted;
       }
     });
   }
 
   done(data) {
-    if (this._promiseQ.isPending()) {
-      return;
-    }
-
     if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
     } else {
