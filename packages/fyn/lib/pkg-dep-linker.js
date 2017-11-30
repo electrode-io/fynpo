@@ -29,9 +29,8 @@ class PkgDepLinker {
 
   // insert _depResolutions into package.json of package `name`@`version`
   linkResolution(name, version, pkg) {
-    logger.log("linking", name, version, pkg.promoted);
+    logger.log("linking", name, version, pkg.promoted ? "" : "__fv_");
     const pkgDir = this._fyn.getInstalledPkgDir(name, version, pkg);
-    logger.log("loading package.json from", pkgDir);
     const pkgJsonFile = Path.join(pkgDir, "package.json");
     this.linkPackageFile(pkgJsonFile);
   }
@@ -62,7 +61,6 @@ class PkgDepLinker {
   }
 
   linkPackage(pkgJson) {
-    logger.log("getting res data for", pkgJson.name, pkgJson.version);
     const pkg = this._data.pkgs[pkgJson.name][pkgJson.version];
     const resData = pkg.res;
     if (pkg.promoted) pkgJson._flatVersion = pkgJson.version;
@@ -75,7 +73,7 @@ class PkgDepLinker {
     _.each(dep, (resInfo, depName) => {
       depRes[depName] = { resolved: resInfo.resolved };
     });
-    logger.log("linking", pkgJson.name);
+
     return true;
   }
 

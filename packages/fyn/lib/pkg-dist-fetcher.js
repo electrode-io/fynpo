@@ -24,6 +24,7 @@ class PkgDistFetcher {
       byOptionalParent: []
     };
     this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
+    this._fyn = options.fyn;
     this._promiseQ = new PromiseQueue({
       processItem: x => this.fetchItem(x)
     });
@@ -68,7 +69,9 @@ class PkgDistFetcher {
 
   handleItemDone(data) {
     if (!data.error) {
-      this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
+      if (data.res.fullTgzFile) {
+        this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
+      }
     } else {
       logger.log("fetch item failed", data.error);
     }
@@ -78,11 +81,14 @@ class PkgDistFetcher {
     const pkg = this._packages[item];
     const pkgName = `${pkg.name}@${pkg.version}`;
 
-    const r = this._pkgSrcMgr.fetchTarball(pkg);
-    // const id = `${pkg.name}@${pkg.version}-${r.startTime}`;
-    return r.then(() => ({ fullTgzFile: r.fullTgzFile, pkg })).catch(err => {
-      logger.log(`fetch '${pkgName}' failed`, err);
-      throw err;
+    return this._fyn.readPkgJson(pkg).catch(() => {
+      return this._pkgSrcMgr
+        .fetchTarball(pkg)
+        .then(r => ({ fullTgzFile: r.fullTgzFile, pkg }))
+        .catch(err => {
+          logger.log(`fetch '${pkgName}' failed`, err);
+          throw err;
+        });
     });
   }
 }
