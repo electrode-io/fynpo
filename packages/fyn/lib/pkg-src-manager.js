@@ -22,6 +22,7 @@ const Url = require("url");
 const access = Promise.promisify(Fs.access);
 const readFile = Promise.promisify(Fs.readFile);
 const writeFile = Promise.promisify(Fs.writeFile);
+const rename = Promise.promisify(Fs.rename);
 
 class PkgSrcManager {
   constructor(options) {
@@ -144,7 +145,9 @@ class PkgSrcManager {
     const startTime = Date.now();
     const pkgName = item.name;
     const pkgCacheDir = this.makePkgCacheDir(pkgName);
+    const tmpFile = `tmp-${item.version}.tgz`;
     const tgzFile = `pkg-${item.version}.tgz`;
+    const fullTmpFile = Path.join(pkgCacheDir, tmpFile);
     const fullTgzFile = Path.join(pkgCacheDir, tgzFile);
 
     const pkgUrl = this.formatTarballUrl(item);
@@ -156,7 +159,7 @@ class PkgSrcManager {
         if (this._inflights.tarball[fullTgzFile]) {
           return this._inflights.tarball[fullTgzFile];
         }
-        const stream = Fs.createWriteStream(fullTgzFile);
+        const stream = Fs.createWriteStream(fullTmpFile);
         const fetchPromise = new Promise((resolve, reject) => {
           request(pkgUrl)
             .on("response", resolve)
@@ -177,12 +180,14 @@ class PkgSrcManager {
                   logger.log(
                     `fetch ${pkgName} result ${resp.statusCode} time: ${elapse / 1000}sec`
                   );
-                  resolve({ fullTgzFile });
+                  resolve();
                 };
                 stream.on("finish", () => (finish = setTimeout(close, 1000)));
                 stream.on("error", reject);
                 stream.on("close", close);
-              });
+              })
+                .then(() => rename(fullTmpFile, fullTgzFile))
+                .return({ fullTgzFile });
             }
             logger.log(`fetchTarball: ${pkgName} response error`, resp.statusCode);
             return false;
