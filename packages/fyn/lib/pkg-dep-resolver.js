@@ -117,10 +117,13 @@ class PkgDepResolver {
   }
 
   addDepOfDep(mPkg, parent) {
+    const bundled = mPkg.bundleDependencies;
     const add = (dep, src) => {
       for (const name in dep) {
-        const opt = { name, semver: dep[name], src: parent.src, dsrc: src };
-        this._promiseQ.addItem(new DepItem(opt, parent));
+        if (!bundled || bundled.indexOf(name) < 0) {
+          const opt = { name, semver: dep[name], src: parent.src, dsrc: src };
+          this._promiseQ.addItem(new DepItem(opt, parent));
+        }
       }
     };
 
