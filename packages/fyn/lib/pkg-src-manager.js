@@ -23,6 +23,7 @@ const access = Promise.promisify(Fs.access);
 const readFile = Promise.promisify(Fs.readFile);
 const writeFile = Promise.promisify(Fs.writeFile);
 const rename = Promise.promisify(Fs.rename);
+const Inflight = require("./util/inflight");
 
 class PkgSrcManager {
   constructor(options) {
@@ -34,8 +35,8 @@ class PkgSrcManager {
     this._cacheDir = this._options.fynCacheDir;
     mkdirp.sync(this._cacheDir);
     this._inflights = {
-      meta: {},
-      tarball: {}
+      meta: new Inflight(),
+      tarball: new Inflight()
     };
     this._fyn = options.fyn;
     this._registry =
@@ -65,8 +66,9 @@ class PkgSrcManager {
       return Promise.resolve(this._meta[pkgName]);
     }
 
-    if (this._inflights.meta[pkgName]) {
-      return this._inflights.meta[pkgName];
+    const inflight = this._inflights.meta.get(pkgName);
+    if (inflight) {
+      return inflight;
     }
 
     const metaUrl = this.formatMetaUrl(item);
@@ -110,7 +112,7 @@ class PkgSrcManager {
       return promise;
     };
 
-    const promise = (this._inflights.meta[pkgName] = access(cacheMetaFile)
+    const promise = access(cacheMetaFile)
       .then(() => {
         return readFile(cacheMetaFile).then(data => JSON.parse(data.toString()));
       })
@@ -122,10 +124,10 @@ class PkgSrcManager {
       })
       .then(meta => (this._meta[pkgName] = meta))
       .finally(() => {
-        delete this._inflights.meta[pkgName];
-      }));
+        this._inflights.meta.remove(pkgName);
+      });
 
-    return promise;
+    return this._inflights.meta.add(pkgName, promise);
   }
 
   formatTarballUrl(item) {
@@ -156,8 +158,9 @@ class PkgSrcManager {
       .then(() => ({ fullTgzFile }))
       .catch(err => {
         if (err.code !== "ENOENT") throw err;
-        if (this._inflights.tarball[fullTgzFile]) {
-          return this._inflights.tarball[fullTgzFile];
+        const inflight = this._inflights.tarball.get(fullTgzFile);
+        if (inflight) {
+          return inflight;
         }
         const stream = Fs.createWriteStream(fullTmpFile);
         const fetchPromise = new Promise((resolve, reject) => {
@@ -193,10 +196,10 @@ class PkgSrcManager {
             return false;
           })
           .finally(() => {
-            delete this._inflights.tarball[fullTgzFile];
+            this._inflights.tarball.remove(fullTgzFile);
           });
 
-        this._inflights.tarball[fullTgzFile] = fetchPromise;
+        this._inflights.tarball.add(fullTgzFile, fetchPromise);
 
         return fetchPromise;
       });
