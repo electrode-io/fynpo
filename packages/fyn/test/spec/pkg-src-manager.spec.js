@@ -46,10 +46,11 @@ describe("pkg-src-manager", function() {
       });
   });
 
-  it("should handle 304", () => {
+  it("should handle 304 when fetching meta that's already in local cache", () => {
     const options = {
       registry: `http://localhost:${server.info.port}`,
-      fynCacheDir
+      fynCacheDir,
+      fyn: {}
     };
     let etag;
     let mgr = new PkgSrcManager(options);

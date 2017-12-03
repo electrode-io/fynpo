@@ -81,12 +81,12 @@ class PkgDepResolver {
     names.forEach(name => {
       const pkg = this._data.pkgs[name];
       // sort versions from newest to oldest
-      const versions = Object.keys(pkg).sort(Semver.rcompare);
+      const versions = Object.keys(pkg);
       // there's only one version, auto protomote
       if (versions.length === 1) {
         version = versions[0];
       } else {
-        const src = versions.map(v => ({ v, s: pkg[v].src }));
+        const src = versions.sort(Semver.rcompare).map(v => ({ v, s: pkg[v].src }));
         // find the first source that's not empty
         const bySrc = _.first(
           ["dep", "dev", "opt"]

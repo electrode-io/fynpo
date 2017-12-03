@@ -41,6 +41,7 @@ describe("pkg-dep-resolver", function() {
         v.requests = v.requests.map(r => r.join("!")).sort();
         if (v.src) v.src = sortSrc(v.src);
         if (v.dsrc) v.dsrc = sortSrc(v.dsrc);
+        delete v.extracted;
       });
     });
     return data;
@@ -55,6 +56,7 @@ describe("pkg-dep-resolver", function() {
     const fyn = new Fyn({
       registry: `http://localhost:${server.info.port}`,
       pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
+      targetDir: "xout",
       cwd: fynDir,
       fynDir
     });
