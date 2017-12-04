@@ -54,7 +54,7 @@ class Fyn {
   }
 
   getInstalledPkgDir(name, version, pkg) {
-    return Path.join(this.getOutputDir(), name, pkg.promoted ? "" : `__fv_/${version}`);
+    return Path.join(this.getOutputDir(), name, pkg.promoted ? "" : `__fv_/${version}/${name}`);
   }
 
   getOutputDir() {
