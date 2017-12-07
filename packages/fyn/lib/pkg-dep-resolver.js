@@ -127,6 +127,13 @@ class PkgDepResolver {
       }
     };
 
+    //
+    // remove optional dependencies from dependencies
+    //
+    _.each(mPkg.optionalDependencies, (v, n) => {
+      delete mPkg.dependencies[n];
+    });
+
     add(mPkg.dependencies, "dep");
     add(mPkg.optionalDependencies, "opt");
     // add(mPkg.peerDependencies, "per");
@@ -180,8 +187,14 @@ class PkgDepResolver {
         src: item.src,
         dsrc: item.dsrc,
         dist: meta.versions[resolved].dist,
+        name: item.name,
+        version: resolved,
         res: {}
       };
+    }
+
+    if (item.dsrc === "opt") {
+      pkgV.preInstalled = true;
     }
 
     kpkg[RSEMVERS][item.semver] = resolved;
