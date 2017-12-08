@@ -2,6 +2,7 @@
 
 /* eslint-disable no-magic-numbers */
 
+const assert = require("assert");
 const _ = require("lodash");
 const Semver = require("semver");
 const logger = require("./logger");
@@ -12,6 +13,7 @@ const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 
 const RSEMVERS = Symbol("rsemvers");
+const RVERSIONS = Symbol("rversions");
 const SORTED_VERSIONS = Symbol("sorted versions");
 
 const mapTopDep = (dep, src) =>
@@ -72,6 +74,9 @@ class PkgDepResolver {
   // - Promote the latest version
   // - Promote the version with the most requests
   // - Promote the earliest version
+  // - Allow explicit config to specify what version/semver to promote
+  //
+  // TODO: always promote app's direct dep/devDep/optDep
   //
   promotePackages() {
     let version;
@@ -177,7 +182,8 @@ class PkgDepResolver {
     }
 
     if (!kpkg) {
-      kpkg = this._data.pkgs[item.name] = { [RSEMVERS]: {} };
+      kpkg = this._data.pkgs[item.name] = { [RSEMVERS]: {}, [RVERSIONS]: [] };
+      this.addKnownRSemver(kpkg, item, resolved);
     }
 
     if (!pkgV) {
@@ -197,8 +203,6 @@ class PkgDepResolver {
       pkgV.preInstalled = true;
     }
 
-    kpkg[RSEMVERS][item.semver] = resolved;
-
     //
     // Follow dependencies regardless if pkg has been resolved because
     // there may be a different request path that lead to this same
@@ -209,13 +213,59 @@ class PkgDepResolver {
     item.addResolutionToParent(this._data);
   }
 
+  addKnownRSemver(kpkg, item, resolved) {
+    if (kpkg[RSEMVERS][item.semver]) {
+      assert(
+        kpkg[RSEMVERS][item.semver] === resolved,
+        `already resolved version ${kpkg[RSEMVERS][item.semver]} for ${item.name}@${
+          item.semver
+        } doesn't match ${resolved}`
+      );
+    } else {
+      kpkg[RSEMVERS][item.semver] = resolved;
+    }
+
+    const rversions = kpkg[RVERSIONS];
+    if (rversions.indexOf(resolved) < 0) {
+      //
+      // Ordered insertion
+      //
+      let rvX = 0;
+      for (rvX; rvX < rversions.length; rvX++) {
+        if (Semver.gt(resolved, rversions[rvX])) break;
+      }
+      rversions.splice(rvX, 0, resolved);
+    }
+  }
+
   resolvePackage(item, meta) {
     const kpkg = this._data.pkgs[item.name]; // known package
 
-    let resolved =
-      (kpkg && kpkg[RSEMVERS][item.semver]) || this.findVersionFromDistTag(meta, item.semver);
+    const getKnownSemver = () => {
+      if (!kpkg) return false;
+      const resolved = kpkg[RSEMVERS][item.semver];
+      // if (resolved) {
+      //   logger.log("found", item.name, item.semver, "already resolved to", resolved);
+      // }
+      return resolved;
+    };
 
-    if (!resolved) {
+    const searchKnown = () => {
+      //
+      // Search already known versions
+      //
+      if (!kpkg) return false;
+      const rversions = kpkg[RVERSIONS];
+      const resolved = _.find(rversions, v => Semver.satisfies(v, item.semver));
+
+      if (resolved) {
+        logger.log("found known version", resolved, "that satisfied", item.name, item.semver);
+      }
+
+      return resolved;
+    };
+
+    const searchMeta = () => {
       //
       // This sorting and semver searching is the most expensive part of the
       // resolve process, so caching them is very important for performance.
@@ -224,16 +274,24 @@ class PkgDepResolver {
         meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(Semver.rcompare);
       }
 
-      resolved = _.find(meta[SORTED_VERSIONS], v => {
-        return Semver.satisfies(v, item.semver);
-      });
+      return _.find(meta[SORTED_VERSIONS], v => Semver.satisfies(v, item.semver));
+    };
 
-      if (!resolved) {
-        throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
-      }
+    const resolved =
+      getKnownSemver() ||
+      searchKnown() ||
+      this.findVersionFromDistTag(meta, item.semver) ||
+      searchMeta();
+
+    if (!resolved) {
+      throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
     }
 
-    this.addPackageResolution(item, meta, resolved);
+    if (kpkg) {
+      this.addKnownRSemver(kpkg, item, resolved);
+    }
+
+    return this.addPackageResolution(item, meta, resolved);
   }
 
   processItem(item) {
