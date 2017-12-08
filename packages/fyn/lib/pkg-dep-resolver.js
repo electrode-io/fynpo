@@ -119,6 +119,26 @@ class PkgDepResolver {
     }
   }
 
+  resolvePeerDep(depInfo) {
+    const json = depInfo.json;
+    if (!json) return;
+    _.each(json.peerDependencies || json.peerDepenencies, (semver, name) => {
+      const resolved = this.resolvePackage({ name, semver });
+      if (!resolved) {
+        logger.log(
+          "Warning: peer dependencies",
+          name,
+          semver,
+          "is missing for",
+          depInfo.name,
+          depInfo.version
+        );
+      } else {
+        _.set(depInfo, ["res", "dep", name], { resolved });
+      }
+    });
+  }
+
   addDepOfDep(mPkg, parent) {
     const bundled = mPkg.bundleDependencies;
     const add = (dep, src) => {
@@ -240,7 +260,7 @@ class PkgDepResolver {
     }
   }
 
-  resolvePackage(item, meta) {
+  resolvePackage(item, meta, topKnownOnly) {
     const kpkg = this._data.pkgs[item.name]; // known package
 
     const getKnownSemver = () => {
@@ -252,16 +272,16 @@ class PkgDepResolver {
       return resolved;
     };
 
-    const searchKnownTop = () => {
+    const searchKnown = () => {
       //
       // Search already known versions from top dep
       //
       if (!kpkg) return false;
       const rversions = kpkg[RVERSIONS];
-      const resolved = _.find(
-        rversions,
-        v => kpkg[v] && kpkg[v].top && Semver.satisfies(v, item.semver)
-      );
+      const resolved = _.find(rversions, v => {
+        if (topKnownOnly && !(kpkg[v] && kpkg[v].top)) return false;
+        return Semver.satisfies(v, item.semver);
+      });
 
       // if (resolved) {
       //   logger.log("found known version", resolved, "that satisfied", item.name, item.semver);
@@ -285,27 +305,32 @@ class PkgDepResolver {
       return resolved;
     };
 
-    const resolved =
+    return (
       getKnownSemver() ||
-      searchKnownTop() ||
+      searchKnown() ||
       this.findVersionFromDistTag(meta, item.semver) ||
-      searchMeta();
-
-    if (!resolved) {
-      throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
-    }
-
-    if (kpkg) {
-      this.addKnownRSemver(kpkg, item, resolved);
-    }
-
-    return this.addPackageResolution(item, meta, resolved);
+      (meta && searchMeta())
+    );
   }
 
   processItem(item) {
     // always fetch the item and let pkg src manager deal with caching
     if (!item) return Promise.resolve();
-    return this._pkgSrcMgr.fetchMeta(item).then(meta => this.resolvePackage(item, meta));
+    return this._pkgSrcMgr.fetchMeta(item).then(meta => {
+      const resolved = this.resolvePackage(item, meta, true);
+
+      if (!resolved) {
+        throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
+      }
+
+      const kpkg = this._data.pkgs[item.name]; // known package
+
+      if (kpkg) {
+        this.addKnownRSemver(kpkg, item, resolved);
+      }
+
+      return this.addPackageResolution(item, meta, resolved);
+    });
   }
 }
 
