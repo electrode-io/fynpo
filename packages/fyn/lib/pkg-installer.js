@@ -2,12 +2,17 @@
 
 const Path = require("path");
 const Fs = require("fs");
+const Crypto = require("crypto");
 const Promise = require("bluebird");
+const rimraf = require("rimraf");
 const _ = require("lodash");
+const mkdirp = require("mkdirp");
 const PkgDepLinker = require("./pkg-dep-linker");
 const PkgBinLinker = require("./pkg-bin-linker");
 const LifecycleScripts = require("./lifecycle-scripts");
 const logger = require("./logger");
+
+const FYN_LINK_JSON = "__fyn_link__.json";
 
 class PkgInstaller {
   constructor(options) {
@@ -37,8 +42,76 @@ class PkgInstaller {
     });
   }
 
+  _createLinkName(targetNmDir, name) {
+    const sha1 = Crypto.createHash("sha1")
+      .update(targetNmDir)
+      .update(name)
+      .digest("base64")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    return `${name.replace(/[@\/]/g, "_")}-${sha1}`;
+  }
+
+  _linkLocalPkg(depInfo) {
+    if (depInfo.linkLocal) return;
+    depInfo.linkLocal = true;
+    const now = Date.now();
+    const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+    logger.log("linking local pkg dir", dir, depInfo.dir);
+    this._fyn.createPkgOutDirSync(dir);
+    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
+    //
+    // create the directory one level up so the actual package name or the second part
+    // of it if it's scoped can be a symlink to the local package's directory.
+    //
+    this._fyn.createPkgOutDirSync(Path.join(vdir, ".."));
+    const vFynLinkData = {
+      name: depInfo.name,
+      version: depInfo.version,
+      timestamp: now,
+      targetPath: depInfo.dist.fullPath
+    };
+    //
+    // Remove name from the installed package path and save fyn link file there
+    //
+    const nameX = vdir.lastIndexOf(depInfo.name);
+    const vdirNoName = vdir.substring(0, nameX);
+    Fs.writeFileSync(Path.join(vdirNoName, FYN_LINK_JSON), JSON.stringify(vFynLinkData, null, 2));
+    //
+    // create symlink for for app's installed node_modules to the target
+    //
+    rimraf.sync(vdir);
+    Fs.symlinkSync(depInfo.dir, vdir);
+
+    //
+    // take depInfo.json._depResolutions and save it to fyn link file
+    //
+    const targetNmDir = Path.join(depInfo.dist.fullPath, "node_modules");
+    mkdirp.sync(targetNmDir);
+    const linkName = this._createLinkName(targetNmDir, depInfo.name);
+    const linkFile = Path.join(this._fyn.linkDir, `${linkName}.json`);
+    this._fyn.createDirSync(this._fyn.linkDir);
+    let linkData;
+    try {
+      linkData = JSON.parse(Fs.readFileSync(linkFile));
+    } catch (err) {
+      linkData = { timestamps: {} };
+    }
+    linkData.targetPath = depInfo.dist.fullPath;
+    linkData.timestamps[this._fyn.cwd] = now;
+    linkData[this._fyn.cwd] = depInfo.json._depResolutions;
+    Fs.writeFileSync(linkFile, JSON.stringify(linkData, null, 2));
+    //
+    // create symlink from the local package dir to the link file
+    //
+    const targetLinkFile = Path.join(targetNmDir, FYN_LINK_JSON);
+    rimraf.sync(targetLinkFile);
+    Fs.symlinkSync(linkFile, targetLinkFile);
+  }
+
   _savePkgJson(log) {
     _.each(this.toLink, depInfo => {
+      if (depInfo.local) return this._linkLocalPkg(depInfo);
       const outputStr = `${JSON.stringify(depInfo.json, null, 2)}\n`;
       if (depInfo.str !== outputStr) {
         if (log && depInfo.linkDep) {
@@ -60,6 +133,7 @@ class PkgInstaller {
 
     return Promise.resolve(this.preInstall)
       .each(depInfo => {
+        if (depInfo.local) return;
         const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
         return ls.execute(["preinstall"]).then(() => {
           depInfo.json._fyn.preinstall = true;

@@ -47,7 +47,8 @@
       "dist",
       "test",
       "xout",
-      "tmp"
+      "tmp",
+      "flat-module.js"
     ]
   }
 }

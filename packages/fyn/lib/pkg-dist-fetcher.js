@@ -56,9 +56,9 @@ class PkgDistFetcher {
         return this._grouping.need.push(id);
       });
     });
-    const itemQ = this._grouping.need
-      .concat(this._grouping.optional)
-      .concat(this._grouping.byOptionalParent);
+    const itemQ = this._grouping.need // first fetch all the needed deps (dep/dev)
+      .concat(this._grouping.optional) // then the optional deps
+      .concat(this._grouping.byOptionalParent); // then deps pulled by an opt dep
     this._promiseQ.setItemQ(itemQ);
   }
 
@@ -68,7 +68,7 @@ class PkgDistFetcher {
 
   handleItemDone(data) {
     if (!data.error) {
-      if (data.res.fullTgzFile) {
+      if (data.res && data.res.fullTgzFile) {
         this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
       }
     } else {
@@ -78,6 +78,10 @@ class PkgDistFetcher {
 
   fetchItem(item) {
     const pkg = this._packages[item];
+    if (pkg.local) {
+      return Promise.resolve();
+    }
+
     const pkgName = `${pkg.name}@${pkg.version}`;
 
     return this._fyn.readPkgJson(pkg).catch(() => {

@@ -42,12 +42,69 @@ class PkgSrcManager {
     this._registry =
       this._options.registry &&
       _.pick(Url.parse(this._options.registry), ["protocol", "auth", "host", "port", "hostname"]);
+    this._localMeta = {};
   }
 
   makePkgCacheDir(pkgName) {
     const pkgCacheDir = Path.join(this._cacheDir, pkgName);
     mkdirp.sync(pkgCacheDir);
     return pkgCacheDir;
+  }
+
+  fetchLocalItem(item) {
+    const semver = item.semver;
+    let localPath;
+
+    if (semver.startsWith("file:")) {
+      localPath = semver.substr(5);
+    } else if (semver.startsWith("/") || semver.startsWith("./") || semver.startsWith("../")) {
+      localPath = semver;
+    } else if (semver.startsWith("~/")) {
+      localPath = Path.join(process.env.HOME, semver.substr(1));
+    }
+
+    if (localPath) {
+      let fullPath;
+      if (!Path.isAbsolute(localPath)) {
+        if (item.parent && item.parent.local) {
+          fullPath = Path.join(item.parent.fullPath, localPath);
+        } else {
+          fullPath = Path.resolve(localPath);
+        }
+      }
+      item.local = true;
+      item.fullPath = fullPath;
+      const pkgJsonFile = Path.join(fullPath, "package.json");
+
+      if (this._localMeta[fullPath]) return Promise.resolve(this._localMeta[fullPath]);
+
+      return readFile(pkgJsonFile).then(raw => {
+        const str = raw.toString();
+        const json = JSON.parse(str);
+        json.dist = {
+          semver,
+          localPath,
+          fullPath,
+          str
+        };
+        this._localMeta[fullPath] = {
+          local: true,
+          json,
+          name: json.name,
+          versions: {
+            [json.version]: json
+          },
+          "dist-tags": {
+            latest: json.version
+          }
+        };
+        item.semver = json.version;
+
+        return this._localMeta[fullPath];
+      });
+    }
+
+    return false;
   }
 
   // TODO
@@ -60,6 +117,9 @@ class PkgSrcManager {
   }
 
   fetchMeta(item) {
+    const local = this.fetchLocalItem(item);
+    if (local) return local;
+
     const pkgName = item.name;
 
     if (this._meta[pkgName]) {

@@ -5,7 +5,8 @@ const Path = require("path");
 const assert = require("assert");
 const semver = require("semver");
 const Promise = require("bluebird");
-const readFile = Promise.promisify(Fs.readFile);
+const mkdirp = require("mkdirp");
+const rimraf = require("rimraf");
 const PkgDepResolver = require("./pkg-dep-resolver");
 const PkgDistFetcher = require("./pkg-dist-fetcher");
 const PkgSrcManager = require("./pkg-src-manager");
@@ -13,6 +14,10 @@ const DepData = require("./dep-data");
 const fynConfig = require("./fyn-config");
 const logger = require("./logger");
 const fixSemver = require("./util/fix-semver");
+const readFile = Promise.promisify(Fs.readFile);
+const readdir = Promise.promisify(Fs.readdir);
+const mkdirpAsync = Promise.promisify(mkdirp);
+const rimrafAsync = Promise.promisify(rimraf);
 
 class Fyn {
   constructor(options) {
@@ -65,6 +70,61 @@ class Fyn {
 
   getOutputDir() {
     return Path.join(this._cwd, this._options.targetDir);
+  }
+
+  clearPkgOutDir(dir) {
+    return readdir(dir)
+      .then(files => files.filter(x => x !== "__fv_"))
+      .each(f => rimrafAsync(Path.join(dir, f)));
+  }
+
+  createPkgOutDir(dir) {
+    return mkdirpAsync(dir)
+      .catch(err => {
+        // exist but is not a dir? delete it and mkdir.
+        return err.code === "EEXIST" && rimrafAsync(dir).then(() => mkdirpAsync(dir));
+      })
+      .then(r => {
+        // dir already exist? clear it.
+        return r === null && this.clearPkgOutDir(dir);
+      });
+  }
+
+  clearPkgOutDirSync(dir) {
+    Fs.readdirSync(dir)
+      .filter(x => x !== "__fv_")
+      .forEach(f => rimraf.sync(Path.join(dir, f)));
+  }
+
+  createPkgOutDirSync(dir) {
+    try {
+      const r = mkdirp.sync(dir);
+      if (r === null) this.clearPkgOutDirSync(dir);
+    } catch (err) {
+      if (err.code === "EEXIST") {
+        rimraf.sync(dir);
+        mkdirp.sync(dir);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  createDirSync(dir) {
+    try {
+      const r = mkdirp.sync(dir);
+    } catch (err) {
+      if (err.code === "EEXIST") {
+        rimraf.sync(dir);
+        mkdirp.sync(dir);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  get linkDir() {
+    return Path.join(this._options.fynDir, "links");
   }
 
   readPkgJson(pkg) {
