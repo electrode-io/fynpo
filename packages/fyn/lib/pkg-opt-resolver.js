@@ -124,6 +124,13 @@ class PkgOptResolver {
         return checkPkg(installedPath);
       })
       .catch(() => {
+        if (this._fyn.regenOnly) {
+          //
+          // regen only, don't bother fetching anything
+          //
+          return "regenOnlyFail";
+        }
+
         const dist = data.meta.versions[version].dist;
         // none found, fetch tarball
         return this._fyn.pkgSrcMgr
@@ -154,13 +161,16 @@ class PkgOptResolver {
           });
       })
       .then(res => {
+        if (res === "regenOnlyFail") {
+          logger.log(`optional check ${pkgId} regen only optional false - auto failed`);
+          return { passed: false };
+        }
         // run npm script `preinstall`
-        const x = _.get(res, "pkg.scripts.preinstall");
         const checked = _.get(res, "pkg._fyn.preinstall");
         if (checked) {
           logger.log(`optional check ${pkgId} preinstall script already passed`);
           return { passed: true };
-        } else if (x) {
+        } else if (_.get(res, "pkg.scripts.preinstall")) {
           logger.log("Running preinstall for optional dep", pkgId);
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
