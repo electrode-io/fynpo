@@ -71,6 +71,8 @@ class PkgSrcManager {
         } else {
           fullPath = Path.resolve(localPath);
         }
+      } else {
+        fullPath = localPath;
       }
       item.local = true;
       item.fullPath = fullPath;
