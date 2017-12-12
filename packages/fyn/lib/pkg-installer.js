@@ -147,6 +147,8 @@ class PkgInstaller {
         });
       })
       .then(() => this._savePkgJson())
+      .then(() => this._cleanUp())
+      .then(() => this._cleanBin())
       .return(this.postInstall)
       .each(depInfo => {
         const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
@@ -189,6 +191,81 @@ class PkgInstaller {
         }
       }
     });
+  }
+
+  _cleanBin() {
+    const outDir = this._fyn.getOutputDir();
+    const binDir = Path.join(outDir, ".bin");
+    const bins = Fs.readdirSync(binDir);
+    for (let bx in bins) {
+      const bin = bins[bx];
+      const binLink = Path.join(binDir, bin);
+      try {
+        Fs.statSync(binLink);
+      } catch (err) {
+        try {
+          Fs.unlinkSync(binLink);
+        } catch (err) {}
+      }
+    }
+  }
+
+  _cleanUp(scope) {
+    scope = scope || "";
+    const outDir = this._fyn.getOutputDir();
+    const installedPkgs = Fs.readdirSync(Path.join(outDir, scope));
+    for (let ix in installedPkgs) {
+      const dirName = installedPkgs[ix];
+      if (dirName.startsWith(".") || dirName.startsWith("_")) continue;
+      if (!scope && dirName.startsWith("@")) {
+        this._cleanUp(dirName);
+        continue;
+      }
+      const pkgName = Path.join(scope, dirName);
+      const iPkg = this._data.pkgs[pkgName];
+      if (!iPkg) {
+        logger.log("removing extraneous package", pkgName);
+        this._removeDir(Path.join(outDir, pkgName));
+        this._removedCount++;
+      } else {
+        this._cleanUpVersions(outDir, pkgName);
+      }
+    }
+    if (scope) {
+      try {
+        Fs.rmdirSync(Path.join(outDir, scope));
+      } catch (err) {}
+    }
+  }
+
+  _cleanUpVersions(outDir, pkgName) {
+    try {
+      const pkg = this._data.pkgs[pkgName];
+      const fvDir = Path.join(outDir, pkgName, "__fv_");
+      const versions = Fs.readdirSync(fvDir);
+      if (versions.length < 1) return;
+      for (let vx in versions) {
+        const ver = versions[vx];
+        if (!pkg[ver]) {
+          logger.log("removing extraneous version", ver, "of", pkgName);
+          this._removeDir(Path.join(fvDir, ver));
+        }
+      }
+      Fs.rmdirSync(fvDir);
+    } catch (err) {
+      if (err.code !== "ENOENT" && err.code !== "ENOTEMPTY") {
+        logger.log(err);
+      }
+    }
+  }
+
+  _removeDir(dir) {
+    try {
+      const stat = Fs.statSync(dir);
+      if (stat.isDirectory()) {
+        rimraf.sync(dir);
+      }
+    } catch (err) {}
   }
 }
 
