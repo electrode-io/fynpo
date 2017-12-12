@@ -12,13 +12,14 @@ class Inflight {
     assert(value, `Trying to set falsy value for inflight item ${key}`);
     assert(this.inflights[key] === undefined, `Already has inflight item ${key}`);
     this.count++;
-    this.inflights[key] = value;
+    this.inflights[key] = { start: Date.now(), value };
 
     return value;
   }
 
   get(key) {
-    return this.inflights[key];
+    const x = this.inflights[key];
+    return x && x.value;
   }
 
   remove(key) {
