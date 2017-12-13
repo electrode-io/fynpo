@@ -1,15 +1,15 @@
 "use strict";
 
-const DIST_TAGS = Symbol("dist-tags");
 const LOCK_RSEMVERS = Symbol("lock rsemvers");
 const RSEMVERS = Symbol("rsemvers");
 const RVERSIONS = Symbol("rversions");
+const LOCK_SORTED_VERSIONS = Symbol("lock sorted versions");
 const SORTED_VERSIONS = Symbol("sorted versions");
 
 module.exports = {
-  DIST_TAGS,
   RSEMVERS,
   LOCK_RSEMVERS,
   RVERSIONS,
-  SORTED_VERSIONS
+  SORTED_VERSIONS,
+  LOCK_SORTED_VERSIONS
 };

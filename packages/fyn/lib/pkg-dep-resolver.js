@@ -5,6 +5,7 @@
 const assert = require("assert");
 const _ = require("lodash");
 const Semver = require("semver");
+const Promise = require("bluebird");
 const logger = require("./logger");
 const DepItem = require("./dep-item");
 // const DepData = require("./dep-data");
@@ -12,7 +13,13 @@ const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 const simpleSemverCompare = require("./util/simple-semver-compare");
-const { DIST_TAGS, RSEMVERS, LOCK_RSEMVERS, RVERSIONS, SORTED_VERSIONS } = require("./symbols");
+const {
+  RSEMVERS,
+  LOCK_RSEMVERS,
+  RVERSIONS,
+  SORTED_VERSIONS,
+  LOCK_SORTED_VERSIONS
+} = require("./symbols");
 
 const mapTopDep = (dep, src) =>
   Object.keys(dep || {}).map(name => new DepItem({ name, semver: dep[name], src, dsrc: src }));
@@ -45,6 +52,7 @@ class PkgDepResolver {
       itemQ: mapTopDep(pkg.dependencies, "dep")
         .concat(mapTopDep(pkg.devDependencies, "dev"))
         .concat(mapTopDep(pkg.optionalDependencies, "opt"))
+        .concat(PromiseQueue.pauseItem)
       // .concat(mapTopDep(pkg.peerDependencies, "per"))
     });
     this._defer = defer();
@@ -108,7 +116,10 @@ class PkgDepResolver {
   }
 
   done(data) {
-    if (!this._optResolver.isEmpty()) {
+    if (this._promiseQ.isPause) {
+      this._promiseQ.unpause();
+      this._promiseQ._process();
+    } else if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
     } else {
       logger.log("dep resolver done", data.totalTime / 1000);
@@ -144,7 +155,7 @@ class PkgDepResolver {
       for (const name in dep) {
         if (!bundled || bundled.indexOf(name) < 0) {
           const opt = { name, semver: dep[name], src: parent.src, dsrc: src };
-          this._promiseQ.addItem(new DepItem(opt, parent));
+          this._promiseQ.addItem(new DepItem(opt, parent), true);
         }
       }
     };
@@ -160,14 +171,21 @@ class PkgDepResolver {
 
     add(mPkg.dependencies, "dep");
     add(mPkg.optionalDependencies, "opt");
+    this._promiseQ._process();
     // add(mPkg.peerDependencies, "per");
     // logger.log("addDepOfDep Q size", this._promiseQ._itemQ.length);
   }
 
   findVersionFromDistTag(meta, semver) {
     if (Semver.validRange(semver) === null) {
-      if (meta["dist-tags"].hasOwnProperty(semver)) {
-        return meta["dist-tags"][semver];
+      const lockRsv = meta[LOCK_RSEMVERS];
+      if (lockRsv && lockRsv[semver]) {
+        return lockRsv[semver];
+      }
+
+      const dtags = meta["dist-tags"];
+      if (dtags && dtags.hasOwnProperty(semver)) {
+        return dtags[semver];
       }
     }
     return undefined;
@@ -202,11 +220,12 @@ class PkgDepResolver {
 
     if (!kpkg) {
       kpkg = this._data.pkgs[item.name] = {
-        [DIST_TAGS]: meta["dist-tags"],
-        [LOCK_RSEMVERS]: meta[LOCK_RSEMVERS],
         [RSEMVERS]: {},
         [RVERSIONS]: []
       };
+
+      if (meta[LOCK_RSEMVERS]) kpkg[LOCK_RSEMVERS] = meta[LOCK_RSEMVERS];
+
       this.addKnownRSemver(kpkg, item, resolved);
     }
 
@@ -261,9 +280,18 @@ class PkgDepResolver {
 
     if (rsv[item.semver]) {
       check(rsv[item.semver], "already resolved");
-    } else if (lockRsv && lockRsv[item.semver]) {
-      check((rsv[item.semver] = lockRsv[item.semver]), "locked");
     } else {
+      if (lockRsv && lockRsv[item.semver]) {
+        const lockV = lockRsv[item.semver];
+        if (lockV !== resolved) {
+          logger.log(
+            `locked version ${lockV} for ${item.name}@${
+              item.semver
+            } doesn't match resolved version ${resolved} - updating.`
+          );
+        }
+      }
+
       rsv[item.semver] = resolved;
     }
 
@@ -285,7 +313,8 @@ class PkgDepResolver {
 
     const getKnownSemver = () => {
       if (!kpkg) return false;
-      const resolved = kpkg[RSEMVERS][item.semver];
+      const find = rsv => rsv && rsv[item.semver];
+      const resolved = find(kpkg[LOCK_RSEMVERS]) || find(kpkg[RSEMVERS]);
       // if (resolved) {
       //   logger.log("found", item.name, item.semver, "already resolved to", resolved);
       // }
@@ -298,16 +327,22 @@ class PkgDepResolver {
       //
       if (!kpkg) return false;
       const rversions = kpkg[RVERSIONS];
-      const resolved = _.find(rversions, v => {
-        if (topKnownOnly && !(kpkg[v] && kpkg[v].top)) return false;
-        return Semver.satisfies(v, item.semver);
-      });
+
+      if (rversions.length > 0) {
+        if (topKnownOnly) {
+          return _.find(rversions, v => {
+            if (kpkg[v] && kpkg[v].top) return Semver.satisfies(v, item.semver);
+          });
+        }
+
+        return _.find(rversions, v => Semver.satisfies(v, item.semver));
+      }
 
       // if (resolved) {
       //   logger.log("found known version", resolved, "that satisfied", item.name, item.semver);
       // }
 
-      return resolved;
+      return false;
     };
 
     const searchMeta = () => {
@@ -319,18 +354,23 @@ class PkgDepResolver {
         meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(simpleSemverCompare);
       }
 
-      const resolved = _.find(meta[SORTED_VERSIONS], v => Semver.satisfies(v, item.semver));
+      const find = versions => versions && _.find(versions, v => Semver.satisfies(v, item.semver));
+
+      const resolved = find(meta[LOCK_SORTED_VERSIONS]) || find(meta[SORTED_VERSIONS]);
       // logger.log("found meta version", resolved, "that satisfied", item.name, item.semver);
 
       return resolved;
     };
 
-    return (
+    const resolved =
       getKnownSemver() ||
       searchKnown() ||
       this.findVersionFromDistTag(meta, item.semver) ||
-      (meta && searchMeta())
-    );
+      (meta && searchMeta());
+
+    // logger.log("resolved to ", resolved, item.name, item.semver);
+
+    return resolved;
   }
 
   _resolveWithMeta(item, meta, force) {
@@ -353,34 +393,14 @@ class PkgDepResolver {
   }
 
   _resolveWithLockData(item) {
-    const data = this._fyn.depLocker.data;
-    let locked = data[item.name];
     //
     // Force resolve from lock data in regen mode if item was not a direct
     // optional dependency.
     //
     const force = this._regenOnly && item.dsrc !== "opt";
 
+    const locked = this._fyn.depLocker.convert(item);
     if (locked) {
-      if (!locked.hasOwnProperty(SORTED_VERSIONS)) {
-        const sorted = Object.keys(locked)
-          .filter(x => !x.startsWith("_"))
-          .sort(simpleSemverCompare);
-        const versions = {};
-        _.each(sorted, version => {
-          const vpkg = locked[version];
-          vpkg.name = item.name;
-          vpkg.version = version;
-          versions[version] = vpkg;
-        });
-        locked = data[item.name] = {
-          [LOCK_RSEMVERS]: locked._semvers,
-          [SORTED_VERSIONS]: sorted,
-          "dist-tags": locked._dtags,
-          versions
-        };
-      }
-
       return this._resolveWithMeta(item, locked, force);
     }
 
@@ -394,8 +414,15 @@ class PkgDepResolver {
 
   processItem(item) {
     // always fetch the item and let pkg src manager deal with caching
-    if (!item || this._resolveWithLockData(item) || this._regenOnly) return Promise.resolve();
-    return this._pkgSrcMgr.fetchMeta(item).then(meta => this._resolveWithMeta(item, meta, true));
+    if (!item) return;
+    return Promise.try(() => this._resolveWithLockData(item)).then(r => {
+      if (r || this._regenOnly) return;
+      return this._pkgSrcMgr.fetchMeta(item).then(meta => {
+        meta = this._fyn.depLocker.update(item, meta);
+        // logger.log("resolving for", item.name, item.semver, "with src mgr meta");
+        return this._resolveWithMeta(item, meta, true);
+      });
+    });
   }
 }
 
