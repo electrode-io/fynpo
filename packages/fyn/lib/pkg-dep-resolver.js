@@ -86,10 +86,11 @@ class PkgDepResolver {
   promotePackages() {
     let version;
 
-    const names = Object.keys(this._data.pkgs);
+    const pkgsData = this._data.getPkgsData();
+    const names = Object.keys(pkgsData);
 
     names.forEach(name => {
-      const pkg = this._data.pkgs[name];
+      const pkg = pkgsData[name];
       // sort versions from newest to oldest
       const versions = Object.keys(pkg);
       // there's only one version, auto protomote
@@ -191,12 +192,21 @@ class PkgDepResolver {
     return undefined;
   }
 
+  //
+  // Adding an optional package that failed:
+  //
+  // If a package from optional dependencies failed, then it won't be
+  // installed, but we should remember it in lock file so we won't try
+  // to download its tarball again to test.
+  //
+
   /* eslint-disable max-statements */
   addPackageResolution(item, meta, resolved) {
     item.resolve(resolved);
 
+    const pkgsData = this._data.getPkgsData(item.optFailed);
     let pkgV; // specific version of the known package
-    let kpkg = this._data.pkgs[item.name]; // known package
+    let kpkg = pkgsData[item.name]; // known package
 
     if (kpkg) {
       pkgV = kpkg[resolved];
@@ -219,7 +229,7 @@ class PkgDepResolver {
     }
 
     if (!kpkg) {
-      kpkg = this._data.pkgs[item.name] = {
+      kpkg = pkgsData[item.name] = {
         [RSEMVERS]: {},
         [RVERSIONS]: []
       };
@@ -255,6 +265,7 @@ class PkgDepResolver {
 
     if (item.dsrc === "opt") {
       pkgV.preInstalled = true;
+      if (item.optFailed) pkgV.optFailed = true;
     }
 
     //
@@ -262,9 +273,11 @@ class PkgDepResolver {
     // there may be a different request path that lead to this same
     // package version being resolved, so want to include all request paths.
     //
-    this.addDepOfDep(meta.versions[resolved], item);
-    item.addRequestToPkg(pkgV);
-    item.addResolutionToParent(this._data);
+    if (!item.optFailed) {
+      this.addDepOfDep(meta.versions[resolved], item);
+      item.addRequestToPkg(pkgV);
+      item.addResolutionToParent(this._data);
+    }
   }
 
   addKnownRSemver(kpkg, item, resolved) {
@@ -309,7 +322,7 @@ class PkgDepResolver {
   }
 
   resolvePackage(item, meta, topKnownOnly) {
-    const kpkg = this._data.pkgs[item.name]; // known package
+    const kpkg = this._data.getPkg(item); // known package
 
     const getKnownSemver = () => {
       if (!kpkg) return false;
@@ -381,7 +394,7 @@ class PkgDepResolver {
       throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
     }
 
-    const kpkg = this._data.pkgs[item.name]; // known package
+    const kpkg = this._data.getPkg(item); // known package
 
     if (kpkg) {
       this.addKnownRSemver(kpkg, item, resolved);

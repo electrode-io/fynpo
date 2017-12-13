@@ -46,7 +46,7 @@ class DepItem {
     let pkg;
     if (this.parent) {
       const x = this.parent;
-      const kpkg = data.pkgs[x.name];
+      const kpkg = data.getPkg(x);
       pkg = kpkg[x.resolved].res;
     } else {
       pkg = data.res;

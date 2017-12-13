@@ -17,6 +17,7 @@ class DepData {
   constructor(data) {
     data = data || {};
     this.pkgs = data.pkgs || {};
+    this.badPkgs = {};
     this.res = data.res || {};
   }
 
@@ -32,6 +33,14 @@ class DepData {
     this.eachVersion(pkg => {
       pkg.linked = 0;
     });
+  }
+
+  getPkgsData(bad) {
+    return bad ? this.badPkgs : this.pkgs;
+  }
+
+  getPkg(item) {
+    return this.getPkgsData(item.optFailed)[item.name];
   }
 
   eachVersion(cb) {
