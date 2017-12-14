@@ -1,5 +1,6 @@
 "use strict";
 
+const crypto = require("crypto");
 const assert = require("assert");
 const Fs = require("fs");
 const _ = require("lodash");
@@ -147,22 +148,36 @@ class PkgDepLocker {
     return valid && locked;
   }
 
+  shasum(data) {
+    return crypto
+      .createHash("sha1")
+      .update(data)
+      .digest("hex");
+  }
   //
   // save
   //
   save(filename) {
     if (!this._regenOnly) {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
-      logger.verbose("saving lock file", filename);
-      Fs.writeFileSync(filename, Yaml.dump(this._lockData));
+      const data = Yaml.dump(this._lockData);
+      const shaSum = this.shasum(data);
+      if (shaSum !== this._shaSum) {
+        logger.info("saving lock file", filename);
+        Fs.writeFileSync(filename, data);
+      } else {
+        logger.verbose("lock data didn't change");
+      }
     }
   }
 
   read(filename) {
     try {
       const data = Fs.readFileSync(filename).toString();
+      this._shaSum = this.shasum(data);
       this._lockData = Yaml.safeLoad(data);
     } catch (err) {
+      this._shaSum = Date.now();
       this._lockData = {};
     }
   }
