@@ -6,6 +6,7 @@ const EventEmitter = require("events");
 const assert = require("assert");
 const Promise = require("bluebird");
 const _ = require("lodash");
+const Inflight = require("./inflight");
 
 const PAUSE = Symbol("pause");
 
@@ -16,7 +17,7 @@ class PromiseQueue extends EventEmitter {
       "must provide options.processItem callback"
     );
     super();
-    this._pendingPromises = {};
+    this._pending = new Inflight();
     this._itemQ = options.itemQ || [];
     this._concurrency = options.concurrency || 15;
     this._processItem = options.processItem;
@@ -44,12 +45,12 @@ class PromiseQueue extends EventEmitter {
   addItem(data, defer) {
     this._empty = false;
     this._itemQ.push(data);
-    if (!defer) this._process();
+    if (!defer) process.nextTick(() => this._process());
   }
 
   handleQueueItemDone(data) {
     if (data.id > 0) {
-      delete this._pendingPromises[data.id];
+      this._pending.remove(data.id);
     }
     if (this._failed) {
       return;
@@ -69,7 +70,7 @@ class PromiseQueue extends EventEmitter {
 
     if (!this._pause && this._itemQ.length > 0) {
       this._process();
-    } else if (_.isEmpty(this._pendingPromises)) {
+    } else if (this._pending.isEmpty()) {
       const endTime = Date.now();
       const totalTime = endTime - this._startTime;
       const res = {
@@ -101,7 +102,7 @@ class PromiseQueue extends EventEmitter {
     }
 
     this._processing = true;
-    let i = Object.keys(this._pendingPromises).length;
+    let i = this._pending.getCount();
     for (; this._itemQ.length > 0 && i < this._concurrency; i++) {
       const item = this._itemQ.shift();
       if (item && item[PAUSE]) {
@@ -109,18 +110,21 @@ class PromiseQueue extends EventEmitter {
         break;
       }
       const id = this._id++;
-      let promise = this._processItem(item, id);
+      const promise = this._processItem(item, id);
       if (promise && promise.then) {
-        promise = promise.then(
-          res => this.handleQueueItemDone({ id, item, res }),
-          error => {
-            this.handleQueueItemDone({ error, id, item });
-          }
+        this._pending.add(
+          id,
+          promise.then(
+            res => this.handleQueueItemDone({ id, item, res }),
+            error => {
+              this.handleQueueItemDone({ error, id, item });
+            }
+          )
         );
-        this._pendingPromises[id] = promise;
       } else {
+        this._pending.add(id, promise);
         process.nextTick(() => {
-          this.handleQueueItemDone({ id: 0, item, res: promise });
+          this.handleQueueItemDone({ id, item, res: promise });
         });
       }
     }
@@ -141,7 +145,7 @@ class PromiseQueue extends EventEmitter {
   }
 
   isPending() {
-    return !_.isEmpty(this._pendingPromises) || this._itemQ.length !== 0;
+    return !this._pending.isEmpty() || this._itemQ.length !== 0;
   }
 }
 

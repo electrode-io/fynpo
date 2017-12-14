@@ -66,7 +66,7 @@ class PkgDepResolver {
   }
 
   start() {
-    setTimeout(() => this._promiseQ.addItem(null), 0);
+    this._promiseQ.addItem(null);
   }
 
   wait() {
@@ -122,8 +122,8 @@ class PkgDepResolver {
       this._promiseQ._process();
     } else if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
-    } else {
-      logger.log("dep resolver done", data.totalTime / 1000);
+    } else if (!this._optResolver.isPending()) {
+      logger.log("done dep resolving", data.totalTime / 1000, "secs");
       this._data.sortPackagesByKeys();
       this.promotePackages();
       this._defer.resolve();
