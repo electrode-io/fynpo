@@ -95,7 +95,7 @@ class PkgDistExtractor {
             } else {
               msg = chalk.blue(fullOutDir);
             }
-            logger.updateItem(LOAD_PACKAGE, `package extracted ${msg}`);
+            logger.updateItem(LOAD_PACKAGE, `extracted ${msg}`);
           })
           .then(() => this._fyn.readPkgJson(pkg))
       );

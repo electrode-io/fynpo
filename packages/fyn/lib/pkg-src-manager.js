@@ -25,7 +25,7 @@ const readFile = Promise.promisify(Fs.readFile);
 const writeFile = Promise.promisify(Fs.writeFile);
 const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
-const { FETCH_META, LOAD_PACKAGE } = require("./log-items");
+const { FETCH_META, FETCH_PACKAGE } = require("./log-items");
 
 class PkgSrcManager {
   constructor(options) {
@@ -247,7 +247,7 @@ class PkgSrcManager {
                   closed = true;
                   const time = chalk.magenta(`${(Date.now() - startTime) / 1000}`);
                   logger.updateItem(
-                    LOAD_PACKAGE,
+                    FETCH_PACKAGE,
                     `${chalk.red.bgGreen(pkgName)} result ${resp.statusCode} ${time}secs`
                   );
                   resolve();

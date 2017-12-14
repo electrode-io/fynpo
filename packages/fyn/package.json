@@ -15,6 +15,7 @@
     "electrode-keepalive": "^0.2.0",
     "js-yaml": "^3.9.0",
     "lodash": "^4.17.4",
+    "log-update": "^2.3.0",
     "mkdirp": "^0.5.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
@@ -22,7 +23,8 @@
     "semver": "^5.3.0",
     "tar": "^4.0.0",
     "xenv-config": "^1.1.2",
-    "xsh": "^0.4.0"
+    "xsh": "^0.4.0",
+    "yargs": "^10.0.3"
   },
   "devDependencies": {
     "electrode-archetype-njs-module-dev": "^2.2.0",
