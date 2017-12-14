@@ -14,6 +14,7 @@ const request = require("request-promise");
 const Promise = require("bluebird");
 const Fs = require("fs");
 const _ = require("lodash");
+const chalk = require("chalk");
 // const Semver = require("semver");
 const logger = require("./logger");
 const mkdirp = require("mkdirp");
@@ -24,6 +25,7 @@ const readFile = Promise.promisify(Fs.readFile);
 const writeFile = Promise.promisify(Fs.writeFile);
 const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
+const { FETCH_META, LOAD_PACKAGE } = require("./log-items");
 
 class PkgSrcManager {
   constructor(options) {
@@ -152,11 +154,13 @@ class PkgSrcManager {
           const body = response.body;
           const etag = response.headers.etag;
           const meta = JSON.parse(body);
+          const time = chalk.magenta(`${this._inflights.meta.time(pkgName) / 1000}`);
+          logger.updateItem(FETCH_META, `${chalk.red.bgGreen(pkgName)} ${time}secs`);
           meta.etag = etag;
           return writeFile(cacheMetaFile, JSON.stringify(meta, null, 2))
             .thenReturn(meta)
             .catch(err => {
-              logger.log("write meta cache fail", cacheMetaFile);
+              logger.error("write meta cache fail", cacheMetaFile);
               throw err;
             });
         })
@@ -165,7 +169,7 @@ class PkgSrcManager {
             if (err.statusCode === 304) {
               return cached;
             }
-            logger.log("meta fetch failed with status", err.statusCode);
+            logger.error("meta fetch failed with status", err.statusCode);
           }
 
           throw err;
@@ -232,7 +236,7 @@ class PkgSrcManager {
             .pipe(stream);
         })
           .then(resp => {
-            // logger.log("response code", resp.statusCode);
+            logger.debug("fetchTarball response code", resp.statusCode);
             if (resp.statusCode === 200) {
               return new Promise((resolve, reject) => {
                 let closed;
@@ -241,9 +245,10 @@ class PkgSrcManager {
                   clearTimeout(finish);
                   if (closed) return;
                   closed = true;
-                  const elapse = Date.now() - startTime;
-                  logger.log(
-                    `fetch ${pkgName} result ${resp.statusCode} time: ${elapse / 1000}sec`
+                  const time = chalk.magenta(`${(Date.now() - startTime) / 1000}`);
+                  logger.updateItem(
+                    LOAD_PACKAGE,
+                    `${chalk.red.bgGreen(pkgName)} result ${resp.statusCode} ${time}secs`
                   );
                   resolve();
                 };
@@ -254,7 +259,7 @@ class PkgSrcManager {
                 .then(() => rename(fullTmpFile, fullTgzFile))
                 .return({ fullTgzFile });
             }
-            logger.log(`fetchTarball: ${pkgUrl} response error`, resp.statusCode);
+            logger.error(`fetchTarball: ${pkgUrl} response error`, resp.statusCode);
             return false;
           })
           .finally(() => {

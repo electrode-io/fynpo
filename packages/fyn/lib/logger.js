@@ -1,3 +1,5 @@
 "use strict";
 
-module.exports = console;
+const CliLogger = require("./cli-logger");
+
+module.exports = new CliLogger();

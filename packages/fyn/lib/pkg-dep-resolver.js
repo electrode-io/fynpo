@@ -6,6 +6,7 @@ const assert = require("assert");
 const _ = require("lodash");
 const Semver = require("semver");
 const Promise = require("bluebird");
+const chalk = require("chalk");
 const logger = require("./logger");
 const DepItem = require("./dep-item");
 // const DepData = require("./dep-data");
@@ -123,7 +124,10 @@ class PkgDepResolver {
     } else if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
     } else if (!this._optResolver.isPending()) {
-      logger.log("done dep resolving", data.totalTime / 1000, "secs");
+      logger.info(
+        `${chalk.green("done resolving dependencies")}`,
+        chalk.magenta(`${data.totalTime / 1000}`) + "secs"
+      );
       this._data.sortPackagesByKeys();
       this.promotePackages();
       this._defer.resolve();
@@ -136,8 +140,9 @@ class PkgDepResolver {
     _.each(json.peerDependencies || json.peerDepenencies, (semver, name) => {
       const resolved = this.resolvePackage({ name, semver });
       if (!resolved) {
-        logger.log(
-          "Warning: peer dependencies",
+        logger.warn(
+          chalk.yellow("Warning:"),
+          "peer dependencies",
           name,
           semver,
           "is missing for",
@@ -297,8 +302,8 @@ class PkgDepResolver {
       if (lockRsv && lockRsv[item.semver]) {
         const lockV = lockRsv[item.semver];
         if (lockV !== resolved) {
-          logger.log(
-            `locked version ${lockV} for ${item.name}@${
+          logger.info(
+            `> locked version ${lockV} for ${item.name}@${
               item.semver
             } doesn't match resolved version ${resolved} - updating.`
           );

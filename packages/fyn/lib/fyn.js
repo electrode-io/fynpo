@@ -70,9 +70,7 @@ class Fyn {
       fyn: this
     });
     this._distFetcher.start();
-    return this._distFetcher.wait().then(() => {
-      logger.log("done fetchPackages");
-    });
+    return this._distFetcher.wait();
   }
 
   getInstalledPkgDir(name, version, pkg) {

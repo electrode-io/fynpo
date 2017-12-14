@@ -13,6 +13,7 @@ const PromiseQueue = require("./util/promise-queue");
 const logger = require("./logger");
 const Inflight = require("./util/inflight");
 const LifecycleScripts = require("./lifecycle-scripts");
+const chalk = require("chalk");
 
 xsh.Promise = Promise;
 
@@ -52,8 +53,8 @@ class PkgOptResolver {
       stopOnError: false,
       processItem: x => this.optCheck(x)
     });
-    this._promiseQ.on("fail", x => logger.log("opt-check fail", x));
-    this._promiseQ.on("failItem", x => logger.log("opt-check failItem", x.error));
+    this._promiseQ.on("fail", x => logger.error("opt-check fail", x));
+    this._promiseQ.on("failItem", x => logger.error("opt-check failItem", x.error));
   }
 
   //
@@ -117,7 +118,7 @@ class PkgOptResolver {
     }
 
     if (_.get(data, ["meta", "versions", version, "optFailed"])) {
-      logger.log(`optional check ${pkgId} - meta optFailed true - auto fail`);
+      logger.debug(`optional check ${pkgId} - meta optFailed true - auto fail`);
       const rx = { passed: false, err: new Error("meta optFailed true") };
       addChecked(rx);
       return processCheckResult(Promise.resolve(rx));
@@ -156,8 +157,8 @@ class PkgOptResolver {
             return Promise.try(() => Tar.x(tarXOpt))
               .then(() => checkPkg(installedPath))
               .catch(err => {
-                logger.log(
-                  "opt-resolver: reading package.json from package extracted from",
+                logger.error(
+                  "> opt-resolver: reading package.json from package extracted from",
                   res.fullTgzFile,
                   "failed."
                 );
@@ -176,34 +177,36 @@ class PkgOptResolver {
       })
       .then(res => {
         if (res === "regenOnlyFail") {
-          logger.log(`optional check ${pkgId} regen only optional false - auto failed`);
+          logger.debug(`optional check ${pkgId} regen only optional false - auto failed`);
           return { passed: false };
         }
         // run npm script `preinstall`
         const checked = _.get(res, "pkg._fyn.preinstall");
         if (checked) {
-          logger.log(`optional check ${pkgId} preinstall script already passed`);
+          logger.debug(`optional check ${pkgId} preinstall script already passed`);
           return { passed: true };
         } else if (_.get(res, "pkg.scripts.preinstall")) {
-          logger.log("Running preinstall for optional dep", pkgId);
+          logger.info("Running preinstall for optional dep", chalk.magenta(pkgId));
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
             dir: installedPath,
             json: res.pkg
           });
           return ls
-            .execute(["preinstall"])
-            .then(() => {
-              logger.log(`optional check ${pkgId} preinstall script passed with exit code 0`);
+            .execute(["preinstall"], true)
+            .then(output => {
+              logger.info(
+                chalk.green(`optional check ${pkgId} preinstall script passed with exit code 0`)
+              );
               return { passed: true };
             })
             .catch(err => {
-              logger.log(`optional check ${pkgId} preinstall script failed`, err.message);
+              logger.info(chalk.yellow(`optional check ${pkgId} preinstall script failed`));
               return { passed: false, err };
             });
         } else {
           // no preinstall script, always pass
-          logger.log(`optional check ${pkgId} no preinstall script - automatic pass`);
+          logger.debug(`optional check ${pkgId} no preinstall script - automatic pass`);
           return { passed: true };
         }
       })

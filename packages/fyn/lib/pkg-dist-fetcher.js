@@ -11,6 +11,7 @@ const logger = require("./logger");
 const assert = require("assert");
 const PkgDistExtractor = require("./pkg-dist-extractor");
 const PromiseQueue = require("./util/promise-queue");
+const chalk = require("chalk");
 
 class PkgDistFetcher {
   constructor(options) {
@@ -63,7 +64,10 @@ class PkgDistFetcher {
   }
 
   done(data) {
-    logger.log("done fetch dist", data.totalTime / 1000);
+    logger.info(
+      `${chalk.green("done loading package")}`,
+      chalk.magenta(`${data.totalTime / 1000}`) + "secs"
+    );
   }
 
   handleItemDone(data) {
@@ -72,7 +76,7 @@ class PkgDistFetcher {
         this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
       }
     } else {
-      logger.log("fetch item failed", data.error);
+      logger.error("fetch item failed", data.error);
     }
   }
 
@@ -89,7 +93,7 @@ class PkgDistFetcher {
         .fetchTarball(pkg)
         .then(r => ({ fullTgzFile: r.fullTgzFile, pkg }))
         .catch(err => {
-          logger.log(`fetch '${pkgName}' failed`, err);
+          logger.error(`fetch '${pkgName}' failed`, err);
           throw err;
         });
     });
