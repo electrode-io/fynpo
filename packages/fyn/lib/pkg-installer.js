@@ -152,6 +152,10 @@ class PkgInstaller {
         });
         logger.debug("linking non-top dep bin");
         _.each(this.toLink, depInfo => {
+          if (depInfo.deprecated && !depInfo.json._deprecated) {
+            depInfo.json._deprecated = depInfo.deprecated;
+            depInfo.deprecated = true;
+          }
           if (!depInfo.top) {
             this._binLinker.linkBin(depInfo);
           }
@@ -173,6 +177,21 @@ class PkgInstaller {
           });
       })
       .then(() => this._savePkgJson(true))
+      .then(() => {
+        _.each(this.toLink, depInfo => {
+          if (!depInfo.fromLock && depInfo.deprecated) {
+            const json = depInfo.json;
+            logger
+              .prefix("npm")
+              .warn(
+                chalk.black.bgYellow("WARN") +
+                  chalk.magenta(" deprecated ") +
+                  `${json.name}@${json.version}: ` +
+                  json._deprecated
+              );
+          }
+        });
+      })
       .then(() => this._saveLockData())
       .then(() => {
         logger.info(
