@@ -130,12 +130,14 @@ class LifecycleScripts {
       if (!output || (!output.stdout && !output.stderr)) {
         logger.verbose(`${chalk.blue("No output")} from ${dimPkgName} npm script ${scriptName}`);
       } else {
+        const colorize = t => t.replace(/ERR!/g, chalk.red("ERR!"));
+
         const logs = [chalk.blue(">>>")];
         logs.push(`Start of output from ${dimPkgName} npm script ${scriptName} ===`);
 
-        if (output.stdout) logs.push(`\n${output.stdout}`);
+        if (output.stdout) logs.push(`\n${colorize(output.stdout)}`);
         if (output.stderr) {
-          logs.push(chalk.red("\n=== stderr ===\n") + output.stderr);
+          logs.push(chalk.red("\n=== stderr ===\n") + colorize(output.stderr));
         }
         logs.push(
           chalk.blue.dim("\n<<<") + ` End of output from ${dimPkgName} npm script ${scriptName} ---`
