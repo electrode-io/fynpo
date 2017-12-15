@@ -57,24 +57,28 @@ class FynCli {
   }
 
   install() {
+    const spinner = "⠁⠁⠉⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄⠄⠤⠠⠠⠤⠦⠖⠒⠐⠐⠒⠓⠋⠉⠈⠈";
+    // const spinner = "⢹⢺⢼⣸⣇⡧⡗⡏";
+    // const spinner = "⣾⣽⣻⢿⡿⣟⣯⣷";
+    // const spinner = "|/-\\";
     checkFlatModule();
     const start = Date.now();
-    logger.addItem({ name: FETCH_META, color: "green" });
+    logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
     return this._fyn
       .resolveDependencies()
       .then(() => {
         logger.remove(FETCH_META);
-        logger.addItem({ name: FETCH_PACKAGE, color: "green" });
+        logger.addItem({ name: FETCH_PACKAGE, color: "green", spinner });
         logger.updateItem(FETCH_PACKAGE, "fetching packages...");
-        logger.addItem({ name: LOAD_PACKAGE, color: "green" });
+        logger.addItem({ name: LOAD_PACKAGE, color: "green", spinner });
         logger.updateItem(LOAD_PACKAGE, "loading packages...");
         return this._fyn.fetchPackages();
       })
       .then(() => {
         logger.remove(FETCH_PACKAGE);
         logger.remove(LOAD_PACKAGE);
-        logger.addItem({ name: INSTALL_PACKAGE, color: "green" });
+        logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
         logger.updateItem(INSTALL_PACKAGE, "installing packages...");
         const installer = new PkgInstaller({ fyn: this._fyn });
 
