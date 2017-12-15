@@ -164,7 +164,8 @@ class Fyn {
         );
         if (gypExist) {
           x.gypfile = true;
-          if (!_.get(x, "scripts.install") && !_.get(x, "scripts.postInstall")) {
+          const scr = x.scripts;
+          if (_.isEmpty(scr) || (!scr.install && !scr.postinstall && !scr.postInstall)) {
             _.set(x, "scripts.install", "node-gyp rebuild");
           }
         }
