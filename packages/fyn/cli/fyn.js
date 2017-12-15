@@ -11,7 +11,7 @@ const DepData = require("../lib/dep-data");
 const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
-const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE } = require("../lib/log-items");
+const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
   const symbols = Object.getOwnPropertySymbols(Module)
@@ -74,11 +74,14 @@ class FynCli {
       .then(() => {
         logger.remove(FETCH_PACKAGE);
         logger.remove(LOAD_PACKAGE);
+        logger.addItem({ name: INSTALL_PACKAGE, color: "green" });
+        logger.updateItem(INSTALL_PACKAGE, "installing packages...");
         const installer = new PkgInstaller({ fyn: this._fyn });
 
         return installer.install();
       })
       .then(() => {
+        logger.remove(INSTALL_PACKAGE);
         const end = Date.now();
         logger.info(
           chalk.green("complete in total"),
