@@ -308,7 +308,7 @@ class PkgDepResolver {
         const lockV = lockRsv[item.semver];
         if (lockV !== resolved) {
           logger.info(
-            `> locked version ${lockV} for ${item.name}@${
+            `locked version ${lockV} for ${item.name}@${
               item.semver
             } doesn't match resolved version ${resolved} - updating.`
           );
