@@ -73,13 +73,19 @@ class PkgDistExtractor {
         return this._fyn.clearPkgOutDir(fullOutDir).then(() => {
           return readdir(pkg.extracted)
             .each(f => rename(Path.join(pkg.extracted, f), Path.join(fullOutDir, f)))
-            .then(() =>
-              rmdir(pkg.extracted)
-                .then(() => rmdir(Path.join(pkg.extracted, "..")))
-                .catch(err => {
-                  logger.debug("rmdir", pkg.extracted, "failed", err.message);
+            .then(() => {
+              let toRm = pkg.extracted;
+              const rmDirs = [];
+              while (!toRm.endsWith("__fv_")) {
+                rmDirs.push(toRm);
+                toRm = Path.join(toRm, "..");
+              }
+              return Promise.resolve(rmDirs).each(x =>
+                rmdir(x).catch(err => {
+                  logger.debug("rmdir", x, "failed", err.message);
                 })
-            )
+              );
+            })
             .then(() => rmdir(Path.join(fullOutDir, "__fv_")).catch(_.noop))
             .then(() => this._fyn.readPkgJson(pkg));
         });
