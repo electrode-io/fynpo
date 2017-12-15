@@ -119,7 +119,7 @@ class PkgInstaller {
         if (log && depInfo.linkDep) {
           const pkgJson = depInfo.json;
           logger.debug(
-            "> linked dependencies for",
+            "linked dependencies for",
             pkgJson.name,
             pkgJson.version,
             depInfo.promoted ? "" : "__fv_"
@@ -163,9 +163,14 @@ class PkgInstaller {
       .return(this.postInstall)
       .each(depInfo => {
         const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
-        return ls.execute(depInfo.install, true).then(() => {
-          depInfo.json._fyn.install = true;
-        });
+        return ls
+          .execute(depInfo.install, true)
+          .then(() => {
+            depInfo.json._fyn.install = true;
+          })
+          .catch(err => {
+            logger.warn(chalk.yellow("ignoring npm script failure"));
+          });
       })
       .then(() => this._savePkgJson(true))
       .then(() => this._saveLockData())
@@ -265,7 +270,7 @@ class PkgInstaller {
       if (versions.length < 1) return;
       for (let vx in versions) {
         const ver = versions[vx];
-        if (!pkg[ver]) {
+        if (!pkg[ver] || pkg[ver].promoted) {
           logger.verbose("removing extraneous version", ver, "of", pkgName);
           this._removeDir(Path.join(fvDir, ver));
         }
