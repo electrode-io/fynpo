@@ -18,14 +18,21 @@ class CliLogger {
     this._items = [];
     this._itemOptions = {};
     this._lines = [];
-    this._logLevel = Levels.verbose;
+    this._logLevel = Levels.info;
     this._defaultPrefix = ">";
   }
 
   addItem(options) {
     const name = options.name;
     if (this._items.indexOf(name) >= 0) return;
+    options = Object.assign({ lineData: { msg: "" } }, options);
     this._itemOptions[name] = options;
+    if (options.spinner) {
+      options.spinIx = 0;
+      options.spinTimer = setInterval(() => {
+        this.updateItem(name);
+      }, options.spinInterval || 100).unref();
+    }
     this._items.push(name);
     this._lines.push(this.renderLine(name, { msg: "" }));
     return this;
@@ -37,7 +44,11 @@ class CliLogger {
     this.clear();
     this._items.splice(x, 1);
     this._lines.splice(x, 1);
+    const options = this._itemOptions[name];
     this._itemOptions[name] = undefined;
+    if (options.spinTimer) {
+      clearInterval(options.spinTimer);
+    }
     this.renderOutput();
     return this;
   }
@@ -106,13 +117,25 @@ class CliLogger {
 
   renderLine(name, data) {
     const options = this._itemOptions[name];
-    return `${chalk[options.color](options.display || name)}: ${data.msg}`;
+    const spin = options.spinner ? `${options.spinner[options.spinIx]} ` : "";
+    return `${spin}${chalk[options.color](options.display || name)}: ${data.msg}`;
   }
 
   updateItem(name, data) {
     if (this.shouldLogItem()) {
       const x = this._items.indexOf(name);
       if (x < 0) return;
+      const options = this._itemOptions[name];
+      if (data === undefined) {
+        if (!options.spinner) return;
+        options.spinIx++;
+        if (options.spinIx >= options.spinner.length) {
+          options.spinIx = 0;
+        }
+        data = options.data;
+      } else {
+        options.data = data;
+      }
       this._lines[x] = this.renderLine(name, typeof data === "string" ? { msg: data } : data);
       this.renderOutput();
     }
