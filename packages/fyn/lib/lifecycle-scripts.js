@@ -81,8 +81,8 @@ class LifecycleScripts {
       `No npm script ${name} found in package.json in ${this._pkgDir}.`
     );
 
-    const pkgName = chalk.magenta(this._pkg.name);
-    const dimPkgName = chalk.magenta.dim(this._pkg.name);
+    const pkgName = chalk.magenta(this._pkg.name + chalk.cyan("@") + this._pkg.version);
+    const dimPkgName = chalk.dim(pkgName);
     const scriptName = chalk.magenta(name);
     const script = `"${chalk.cyan(this._pkg.scripts[name])}"`;
     const pkgDir = chalk.blue(this._pkgDir);
@@ -124,11 +124,16 @@ class LifecycleScripts {
       child.stderr.removeListener("data", updateStderr);
 
       const result = err ? `failed ${chalk.red(err.message)}` : chalk.green("exit code 0");
-      logger.info(`executed ${pkgName} npm script ${scriptName} ${result}`);
 
-      if (err) output = err.output;
+      const info = () => (err ? "error" : "info");
+      const verbose = () => (err ? "error" : "verbose");
+
+      if (err) {
+        output = err.output;
+      }
+      logger[info()](`executed ${pkgName} npm script ${scriptName} ${result}`);
       if (!output || (!output.stdout && !output.stderr)) {
-        logger.verbose(`${chalk.blue("No output")} from ${dimPkgName} npm script ${scriptName}`);
+        logger[verbose()](`${chalk.blue("No output")} from ${dimPkgName} npm script ${scriptName}`);
       } else {
         const colorize = t => t.replace(/ERR!/g, chalk.red("ERR!"));
 
@@ -142,7 +147,7 @@ class LifecycleScripts {
         logs.push(
           chalk.blue.dim("\n<<<") + ` End of output from ${dimPkgName} npm script ${scriptName} ---`
         );
-        logger.prefix(false).verbose.apply(logger, logs);
+        logger.prefix(false)[verbose()].apply(logger, logs);
       }
     };
 
