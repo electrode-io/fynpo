@@ -61,18 +61,22 @@ class PromiseQueue extends EventEmitter {
     if (data.id > 0) {
       this._pending.remove(data.id);
     }
+
     if (this._failed) {
       return;
     }
-    if (data.error) {
-      this.emit("failItem", data);
-      if (this._stopOnError) {
-        this._failed = true;
-        this.emit("fail", data);
-        return;
+
+    if (data.id > 0) {
+      if (data.error) {
+        this.emit("failItem", data);
+        if (this._stopOnError) {
+          this._failed = true;
+          this.emit("fail", data);
+          return;
+        }
+      } else {
+        this.emit("doneItem", data);
       }
-    } else {
-      this.emit("doneItem", data);
     }
 
     this.emitEmpty();
@@ -101,33 +105,35 @@ class PromiseQueue extends EventEmitter {
 
   emitEmpty() {
     if (this._itemQ.length === 0 && !this._empty) {
+      this._empty = true; // make sure only emit empty event once
       this.emit("empty");
-      this._empty = true;
     }
   }
 
   _process(msg) {
-    if (this._processing || this._pause) return;
     if (this._startTime === undefined) {
       this._startTime = Date.now();
     }
 
-    if (this._itemQ.length === 0) {
-      this.emitEmpty();
-      return;
-    }
+    if (this._processing || this._pause || this._itemQ.length === 0) return 0;
 
     this._processing = true;
+    let count = 0;
     let i = this._pending.getCount();
     for (; this._itemQ.length > 0 && i < this._concurrency; i++) {
       const item = this._itemQ.shift();
       if (item === PAUSE_ITEM) {
         this._pause = true;
+        // since no more pending can be added at this point, if there're no
+        // existing pending, then setup to emit the pause event.
         if (this._pending.isEmpty()) {
-          process.nextTick(() => this.emit("pause"));
+          process.nextTick(() => {
+            this.handleQueueItemDone({ id: 0 });
+          });
         }
         break;
       }
+      count++;
       const id = this._id++;
       const promise = this._processItem(item, id);
       if (promise && promise.then) {
@@ -149,6 +155,8 @@ class PromiseQueue extends EventEmitter {
     }
 
     this._processing = false;
+
+    return count;
   }
 
   static get pauseItem() {
@@ -164,8 +172,10 @@ class PromiseQueue extends EventEmitter {
   }
 
   resume() {
-    this.unpause();
-    this._process();
+    process.nextTick(() => {
+      this.unpause();
+      this._process();
+    });
   }
 
   isPending() {
