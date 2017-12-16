@@ -183,13 +183,22 @@ class PkgInstaller {
       })
       .then(() => this._savePkgJson(true))
       .then(() => {
-        _.each(this.toLink, depInfo => {
-          if (depInfo.showDepr) {
+        _.each(this.toLink, di => {
+          if (di.showDepr) {
             logger.warn(
               chalk.black.bgYellow("WARN") +
                 chalk.magenta(" deprecated ") +
-                `${depInfo.name}@${depInfo.version}: ${depInfo.deprecated}`
+                `${di.name}@${di.version}:`,
+              chalk.yellow(di.deprecated)
             );
+            const req = di.requests[di.firstReqIdx];
+            logger.verbose(
+              chalk.blue("  First seen through:"),
+              chalk.cyan((req.length > 1 ? req.slice(1) : req).reverse().join(chalk.magenta(" < ")))
+            );
+            if (di.requests.length > 1) {
+              logger.verbose(chalk.blue(`  Number of other dep paths:`), di.requests.length - 1);
+            }
           }
         });
       })

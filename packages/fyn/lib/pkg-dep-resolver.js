@@ -262,7 +262,10 @@ class PkgDepResolver {
 
     const metaJson = meta.versions[resolved];
 
+    let firstSeen = false;
+
     if (!pkgV) {
+      firstSeen = true;
       pkgV = kpkg[resolved] = {
         [item.src]: 0,
         requests: [],
@@ -300,7 +303,7 @@ class PkgDepResolver {
     if (!item.optFailed) {
       if (metaJson.deprecated) pkgV.deprecated = metaJson.deprecated;
       this.addDepOfDep(meta.versions[resolved], item);
-      item.addRequestToPkg(pkgV);
+      item.addRequestToPkg(pkgV, firstSeen);
       item.addResolutionToParent(this._data);
     }
   }
