@@ -134,10 +134,8 @@ class PkgDepResolver {
     if (!this.checkOptResolver() && this._promiseQ.isPause) {
       this._promiseQ.resume();
     } else if (!this._optResolver.isPending()) {
-      logger.info(
-        `${chalk.green("done resolving dependencies")}`,
-        chalk.magenta(`${data.totalTime / 1000}`) + "secs"
-      );
+      const time = chalk.magenta(`${data.totalTime / 1000}`);
+      logger.info(`${chalk.green("done resolving dependencies")} ${time}secs`);
       this._data.sortPackagesByKeys();
       this.promotePackages();
       this._defer.resolve();
@@ -221,7 +219,7 @@ class PkgDepResolver {
   // to download its tarball again to test.
   //
 
-  /* eslint-disable max-statements */
+  /* eslint-disable max-statements, complexity */
   addPackageResolution(item, meta, resolved) {
     item.resolve(resolved);
 
@@ -372,7 +370,7 @@ class PkgDepResolver {
       if (rversions.length > 0) {
         if (topKnownOnly) {
           return _.find(rversions, v => {
-            if (kpkg[v] && kpkg[v].top) return Semver.satisfies(v, item.semver);
+            return kpkg[v] && kpkg[v].top ? Semver.satisfies(v, item.semver) : false;
           });
         }
 
@@ -456,7 +454,7 @@ class PkgDepResolver {
   processItem(item) {
     // always fetch the item and let pkg src manager deal with caching
     return Promise.try(() => this._resolveWithLockData(item)).then(r => {
-      if (r || this._regenOnly) return;
+      if (r || this._regenOnly) return undefined;
       return this._pkgSrcMgr.fetchMeta(item).then(meta => {
         meta = this._fyn.depLocker.update(item, meta);
         // logger.log("resolving for", item.name, item.semver, "with src mgr meta");
