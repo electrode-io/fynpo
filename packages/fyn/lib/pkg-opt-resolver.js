@@ -131,9 +131,19 @@ class PkgOptResolver {
         .then(pkg => pkg.version === version && { path, pkg });
     };
 
+    const pkgFromMeta = data.meta.versions[version];
     let installedPath = this._fyn.getInstalledPkgDir(name, version, { promoted: true });
     // is it under node_modules/<name> and has the right version?
-    const promise = checkPkg(installedPath)
+    const promise = Promise.try(() => {
+      const scripts = pkgFromMeta.scripts;
+      if (!scripts || !scripts.preinstall) {
+        // no preinstall script in meta, then no need to fetch package tarball
+        // to try to execute the preinstall script.
+        return pkgFromMeta;
+      } else {
+        return checkPkg(installedPath);
+      }
+    })
       .catch(() => {
         // is it under node_modules/<name>/__fv_/<version>?
         installedPath = this._fyn.getInstalledPkgDir(name, version, { promoted: false });
