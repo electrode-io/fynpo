@@ -58,6 +58,7 @@ class PkgDepResolver {
     });
     this._defer = defer();
     this._promiseQ.on("done", x => this.done(x));
+    this._promiseQ.on("pause", x => this.onPause(x));
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
     this._promiseQ.on("empty", () => {
@@ -118,12 +119,16 @@ class PkgDepResolver {
     });
   }
 
-  done(data) {
+  onPause() {
     if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
     } else if (this._promiseQ.isPause) {
       this._promiseQ.resume();
-    } else if (!this._optResolver.isPending()) {
+    }
+  }
+
+  done(data) {
+    if (!this._optResolver.isPending()) {
       logger.info(
         `${chalk.green("done resolving dependencies")}`,
         chalk.magenta(`${data.totalTime / 1000}`) + "secs"

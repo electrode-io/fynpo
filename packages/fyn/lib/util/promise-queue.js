@@ -80,7 +80,11 @@ class PromiseQueue extends EventEmitter {
     if (!this._pause && this._itemQ.length > 0) {
       this._process();
     } else if (this._pending.isEmpty()) {
-      this.emitDone();
+      if (this._pause) {
+        this.emit("pause");
+      } else {
+        this.emitDone();
+      }
     }
   }
 
@@ -119,6 +123,9 @@ class PromiseQueue extends EventEmitter {
       const item = this._itemQ.shift();
       if (item === PAUSE_ITEM) {
         this._pause = true;
+        if (this._pending.isEmpty()) {
+          process.nextTick(() => this.emit("pause"));
+        }
         break;
       }
       const id = this._id++;
