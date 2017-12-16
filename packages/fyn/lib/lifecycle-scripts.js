@@ -87,6 +87,7 @@ class LifecycleScripts {
     const scriptName = chalk.magenta(name);
     const script = `"${chalk.cyan(this._pkg.scripts[name])}"`;
     const pkgDir = chalk.blue(this._pkgDir);
+    const nlMark = chalk.blue("\\n");
 
     logger.verbose(`executing ${dimPkgName} npm script ${scriptName} ${script} ${pkgDir}`);
 
@@ -109,7 +110,15 @@ class LifecycleScripts {
     logger.addItem({ name: stderr, color: "red", display: "stderr" });
     const update = (item, buf) => {
       buf = buf && buf.trim();
-      if (buf) logger.updateItem(item, buf);
+      if (buf)
+        logger.updateItem(
+          item,
+          buf
+            .split("\n")
+            .map(x => x && x.trim())
+            .join(nlMark)
+            .substr(0, 100)
+        );
     };
 
     const updateStdout = buf => update(stdout, buf);
