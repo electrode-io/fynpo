@@ -84,6 +84,7 @@ class PkgOptResolver {
   // - 0: add item back to resolve
   // - not: add item to queue for logging at end
   //
+  /* eslint-disable max-statements */
   optCheck(data) {
     const name = data.item.name;
     const version = data.item.resolved;
@@ -196,7 +197,7 @@ class PkgOptResolver {
           });
           return ls
             .execute(["preinstall"], true)
-            .then(output => {
+            .then(() => {
               logger.info(
                 chalk.green(`optional check ${pkgId} preinstall script passed with exit code 0`)
               );

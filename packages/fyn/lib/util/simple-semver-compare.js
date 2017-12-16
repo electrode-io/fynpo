@@ -7,6 +7,9 @@
 // - Assume versions are not expressions that could match multiple versions
 // - Assume versions are properly formed
 //
+
+/* eslint-disable max-statements */
+
 module.exports = function simpleSemverCompare(a, b) {
   if (a === b) {
     return 0;
