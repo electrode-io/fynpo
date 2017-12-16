@@ -4,6 +4,7 @@ const FETCH_META = "fetch meta";
 const FETCH_PACKAGE = "fetch package";
 const LONG_WAIT_META = "meta still pending";
 const LOAD_PACKAGE = "load package";
+const LONG_WAIT_PACKAGE = "package pending fetch";
 const INSTALL_PACKAGE = "install package";
 
 module.exports = {
@@ -11,5 +12,6 @@ module.exports = {
   FETCH_PACKAGE,
   LONG_WAIT_META,
   LOAD_PACKAGE,
+  LONG_WAIT_PACKAGE,
   INSTALL_PACKAGE
 };

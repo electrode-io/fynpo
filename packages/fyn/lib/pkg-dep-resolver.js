@@ -23,6 +23,9 @@ const {
   LOCK_SORTED_VERSIONS
 } = require("./symbols");
 
+const WATCH_TIME = 5000;
+const MAX_PENDING_SHOW = 10;
+
 const mapTopDep = (dep, src) =>
   Object.keys(dep || {}).map(name => new DepItem({ name, semver: dep[name], src, dsrc: src }));
 
@@ -51,7 +54,7 @@ class PkgDepResolver {
       concurrency: 50,
       stopOnError: true,
       processItem: x => this.processItem(x),
-      watchTime: 5000,
+      watchTime: WATCH_TIME,
       itemQ: mapTopDep(pkg.dependencies, "dep")
         .concat(mapTopDep(pkg.devDependencies, "dev"))
         .concat(mapTopDep(pkg.optionalDependencies, "opt"))
@@ -96,15 +99,21 @@ class PkgDepResolver {
         color: "yellow"
       });
     }
+    let msg = "";
+    if (items.total > MAX_PENDING_SHOW) {
+      msg = chalk.cyan(`Total: ${items.total}, first ${MAX_PENDING_SHOW}: `);
+    }
     logger.updateItem(
       LONG_WAIT_META,
-      all
-        .map(x => {
-          const time = chalk.magenta(`${x.time / 1000}`);
-          const id = chalk.magenta(`${x.item.name}@${x.item.semver}`);
-          return `${id} (${time}secs)`;
-        })
-        .join(chalk.blue(", "))
+      msg +
+        all
+          .slice(0, MAX_PENDING_SHOW) // show max 10 pendings
+          .map(x => {
+            const time = chalk.yellow(`${x.time / 1000}`);
+            const id = chalk.magenta(`${x.item.name}@${x.item.semver}`);
+            return `${id} (${time}secs)`;
+          })
+          .join(chalk.blue(", "))
     );
   }
 

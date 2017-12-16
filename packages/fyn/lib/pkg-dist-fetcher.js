@@ -12,7 +12,10 @@ const assert = require("assert");
 const PkgDistExtractor = require("./pkg-dist-extractor");
 const PromiseQueue = require("./util/promise-queue");
 const chalk = require("chalk");
-const { FETCH_PACKAGE } = require("./log-items");
+const { FETCH_PACKAGE, LONG_WAIT_PACKAGE } = require("./log-items");
+
+const WATCH_TIME = 2000;
+const MAX_PENDING_SHOW = 10;
 
 class PkgDistFetcher {
   constructor(options) {
@@ -28,10 +31,42 @@ class PkgDistFetcher {
     this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
     this._fyn = options.fyn;
     this._promiseQ = new PromiseQueue({
+      watchTime: WATCH_TIME,
       processItem: x => this.fetchItem(x)
     });
+    this._promiseQ.on("watch", items => this.onWatch(items));
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("doneItem", x => this.handleItemDone(x));
+  }
+
+  onWatch(items) {
+    if (items.total === 0) {
+      logger.remove(LONG_WAIT_PACKAGE);
+      return;
+    }
+    const all = items.watched.concat(items.still);
+    if (!logger.hasItem(LONG_WAIT_PACKAGE)) {
+      logger.addItem({
+        name: LONG_WAIT_PACKAGE,
+        color: "yellow"
+      });
+    }
+    let msg = "";
+    if (items.total > MAX_PENDING_SHOW) {
+      msg = chalk.cyan(`Total: ${items.total}, first ${MAX_PENDING_SHOW}: `);
+    }
+    logger.updateItem(
+      LONG_WAIT_PACKAGE,
+      msg +
+        all
+          .slice(0, MAX_PENDING_SHOW) // show max 10 pendings
+          .map(x => {
+            const time = chalk.yellow(`${x.time / 1000}`);
+            const id = chalk.magenta(x.item);
+            return `${id} (${time}secs)`;
+          })
+          .join(chalk.blue(", "))
+    );
   }
 
   wait() {
