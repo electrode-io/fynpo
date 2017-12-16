@@ -51,8 +51,8 @@ class PkgDistExtractor {
       return readdir(pkg.extracted)
         .each(f => rename(Path.join(pkg.extracted, f), Path.join(fullOutDir, f)))
         .then(() => {
-          // Since it's been promoted, we know fullOutDir doesn't have __fv_
-          // so this will attempt to remove all other versions up to the __fv_ dir
+          // Since it's been promoted, we know fullOutDir doesn't have __fv_, this
+          // will attempt to remove empty dirs, including __fv_, up to the top out dir
           return Promise.resolve(pathUpEach(pkg.extracted, x => x === fullOutDir))
             .each(x => rmdir(x))
             .catch(err => {
@@ -61,6 +61,7 @@ class PkgDistExtractor {
         });
     };
 
+    // first make sure top dir is clear of any other files
     return this._fyn.clearPkgOutDir(fullOutDir).then(() => move());
   }
 
@@ -81,10 +82,6 @@ class PkgDistExtractor {
       if (!pkg.promoted) {
         return this._fyn.readPkgJson(pkg);
       } else {
-        // just move it to top dir
-        // first make sure top dir is clear of any other files
-        // then move it
-        // delete __fv_/<version> dir
         return this.movePromotedPkgFromFV(pkg, fullOutDir).then(() => this._fyn.readPkgJson(pkg));
       }
     } else {
