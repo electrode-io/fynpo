@@ -4,10 +4,12 @@
 
 const EventEmitter = require("events");
 const assert = require("assert");
+const _ = require("lodash");
 const Promise = require("bluebird");
 const Inflight = require("./inflight");
-
+// const logger = require("../logger");
 const PAUSE_ITEM = Symbol("pause");
+const WATCH_PERIOD = 500;
 
 class PromiseQueue extends EventEmitter {
   constructor(options) {
@@ -23,6 +25,7 @@ class PromiseQueue extends EventEmitter {
     this._stopOnError = options.stopOnError;
     this._failed = false;
     this._timeout = options.timeout; // TODO
+    this._watchTime = options.watchTime;
     this._id = 1;
   }
 
@@ -109,6 +112,41 @@ class PromiseQueue extends EventEmitter {
     }
   }
 
+  pendingWatcher() {
+    if (this._pending.isEmpty() && !this._watched) return;
+
+    const watched = [];
+    const still = [];
+    const now = Date.now();
+
+    _.each(this._pending.inflights, (v, id) => {
+      const lastXTime = this._pending.lastCheckTime(id, now);
+      const time = this._pending.time(id, now);
+      if (lastXTime >= this._watchTime) {
+        watched.push({ item: v.value.item, promise: v.value.promise, time });
+        this._pending.resetCheckTime(id, now);
+      } else if (time >= this._watchTime) {
+        still.push({ item: v.value.item, promise: v.value.promise, time });
+      }
+    });
+
+    if (still.length > 0 || watched.length > 0) {
+      this._watched = true;
+      this.emit("watch", { total: watched.length + still.length, watched, still });
+    } else if (this._watched) {
+      this._watched = false;
+      this.emit("watch", { total: 0, watched, still });
+    }
+
+    this._watchTimer = setTimeout(() => this.pendingWatcher(), WATCH_PERIOD).unref();
+  }
+
+  setupWatch() {
+    if (!this._watchTimer && this._watchTime) {
+      process.nextTick(() => this.pendingWatcher());
+    }
+  }
+
   _process() {
     if (this._startTime === undefined) {
       this._startTime = Date.now();
@@ -142,18 +180,20 @@ class PromiseQueue extends EventEmitter {
         promise = Promise.resolve(promise);
       }
 
-      this._pending.add(
-        id,
-        promise.then(
+      this._pending.add(id, {
+        item,
+        promise: promise.then(
           res => this.handleQueueItemDone({ id, item, res }),
           error => {
             this.handleQueueItemDone({ error, id, item });
           }
         )
-      );
+      });
     }
 
     this._processing = false;
+
+    this.setupWatch();
 
     return count;
   }

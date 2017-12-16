@@ -14,6 +14,7 @@ const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 const simpleSemverCompare = require("./util/simple-semver-compare");
+const { LONG_WAIT_META } = require("./log-items");
 const {
   RSEMVERS,
   LOCK_RSEMVERS,
@@ -50,6 +51,7 @@ class PkgDepResolver {
       concurrency: 50,
       stopOnError: true,
       processItem: x => this.processItem(x),
+      watchTime: 5000,
       itemQ: mapTopDep(pkg.dependencies, "dep")
         .concat(mapTopDep(pkg.devDependencies, "dev"))
         .concat(mapTopDep(pkg.optionalDependencies, "opt"))
@@ -59,6 +61,7 @@ class PkgDepResolver {
     this._defer = defer();
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("pause", x => this.onPause(x));
+    this._promiseQ.on("watch", items => this.onWatch(items));
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
     this._promiseQ.on("empty", () => this.checkOptResolver());
@@ -79,6 +82,30 @@ class PkgDepResolver {
       return true;
     }
     return false;
+  }
+
+  onWatch(items) {
+    if (items.total === 0) {
+      logger.remove(LONG_WAIT_META);
+      return;
+    }
+    const all = items.watched.concat(items.still);
+    if (!logger.hasItem(LONG_WAIT_META)) {
+      logger.addItem({
+        name: LONG_WAIT_META,
+        color: "yellow"
+      });
+    }
+    logger.updateItem(
+      LONG_WAIT_META,
+      all
+        .map(x => {
+          const time = chalk.magenta(`${x.time / 1000}`);
+          const id = chalk.magenta(`${x.item.name}@${x.item.semver}`);
+          return `${id} (${time}secs)`;
+        })
+        .join(chalk.blue(", "))
+    );
   }
 
   //
@@ -134,6 +161,7 @@ class PkgDepResolver {
     if (!this.checkOptResolver() && this._promiseQ.isPause) {
       this._promiseQ.resume();
     } else if (!this._optResolver.isPending()) {
+      logger.remove(LONG_WAIT_META);
       const time = chalk.magenta(`${data.totalTime / 1000}`);
       logger.info(`${chalk.green("done resolving dependencies")} ${time}secs`);
       this._data.sortPackagesByKeys();

@@ -11,7 +11,8 @@ class Inflight {
   add(key, value) {
     assert(this.inflights[key] === undefined, `Already has inflight item ${key}`);
     this.count++;
-    this.inflights[key] = { start: Date.now(), value };
+    const now = Date.now();
+    this.inflights[key] = { start: now, lastXTime: now, value };
 
     return value;
   }
@@ -21,10 +22,26 @@ class Inflight {
     return x && x.value;
   }
 
-  time(key) {
+  lastCheckTime(key, now) {
     const x = this.inflights[key];
     if (x) {
-      return Date.now() - x.start;
+      const t = (now || Date.now()) - x.lastXTime;
+      return t;
+    }
+    return -1;
+  }
+
+  resetCheckTime(key, now) {
+    const x = this.inflights[key];
+    if (x) {
+      x.lastXTime = now || Date.now();
+    }
+  }
+
+  time(key, now) {
+    const x = this.inflights[key];
+    if (x) {
+      return (now || Date.now()) - x.start;
     }
     return -1;
   }
