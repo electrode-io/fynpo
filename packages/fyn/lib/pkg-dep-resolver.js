@@ -67,6 +67,7 @@ class PkgDepResolver {
   }
 
   start() {
+    this._promiseQ.unpause();
     this._promiseQ.addItem(null);
   }
 
@@ -118,11 +119,10 @@ class PkgDepResolver {
   }
 
   done(data) {
-    if (this._promiseQ.isPause) {
-      this._promiseQ.unpause();
-      this._promiseQ._process();
-    } else if (!this._optResolver.isEmpty()) {
+    if (!this._optResolver.isEmpty()) {
       this._optResolver.resolve();
+    } else if (this._promiseQ.isPause) {
+      this._promiseQ.resume();
     } else if (!this._optResolver.isPending()) {
       logger.info(
         `${chalk.green("done resolving dependencies")}`,
@@ -159,12 +159,15 @@ class PkgDepResolver {
   addDepOfDep(mPkg, parent) {
     const bundled = mPkg.bundleDependencies;
     const add = (dep, src) => {
+      let count = 0;
       for (const name in dep) {
         if (!bundled || bundled.indexOf(name) < 0) {
           const opt = { name, semver: dep[name], src: parent.src, dsrc: src };
           this._promiseQ.addItem(new DepItem(opt, parent), true);
+          count++;
         }
       }
+      return count;
     };
 
     //
@@ -177,7 +180,9 @@ class PkgDepResolver {
     }
 
     add(mPkg.dependencies, "dep");
-    add(mPkg.optionalDependencies, "opt");
+    if (add(mPkg.optionalDependencies, "opt") > 0) {
+      this._promiseQ.addItem(PromiseQueue.pauseItem);
+    }
     this._promiseQ._process();
     // add(mPkg.peerDependencies, "per");
     // logger.log("addDepOfDep Q size", this._promiseQ._itemQ.length);
