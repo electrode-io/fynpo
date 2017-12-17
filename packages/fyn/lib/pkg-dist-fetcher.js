@@ -132,7 +132,9 @@ class PkgDistFetcher {
     return this._fyn.readPkgJson(pkg).catch(() => {
       return this._pkgSrcMgr
         .fetchTarball(pkg)
-        .then(r => ({ fullTgzFile: r.fullTgzFile, pkg }))
+        .then(r => {
+          return r ? { fullTgzFile: r.fullTgzFile, pkg } : {};
+        })
         .catch(err => {
           logger.error(`fetch '${pkgName}' failed`, err);
           throw err;
