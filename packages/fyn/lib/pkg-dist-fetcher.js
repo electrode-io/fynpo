@@ -13,6 +13,7 @@ const PkgDistExtractor = require("./pkg-dist-extractor");
 const PromiseQueue = require("./util/promise-queue");
 const chalk = require("chalk");
 const longPending = require("./long-pending");
+const logFormat = require("./util/log-format");
 const { FETCH_PACKAGE } = require("./log-items");
 
 const WATCH_TIME = 2000;
@@ -42,8 +43,8 @@ class PkgDistFetcher {
   wait() {
     return this._promiseQ.wait().then(() =>
       this._distExtractor.wait().then(() => {
-        const time = chalk.magenta(`${(Date.now() - this._startTime) / 1000}`);
-        logger.info(`${chalk.green("done loading packages")} ${time}secs`);
+        const time = logFormat.time(Date.now() - this._startTime);
+        logger.info(`${chalk.green("done loading packages")} ${time}`);
       })
     );
   }
@@ -52,7 +53,7 @@ class PkgDistFetcher {
     this._startTime = Date.now();
     _.each(this._data.getPkgsData(), (pkg, name) => {
       _.each(pkg, (vpkg, version) => {
-        const id = `${name}@${version}`;
+        const id = logFormat.pkgId(name, version);
         this._packages[id] = vpkg;
         if (vpkg.dsrc === "opt") {
           // only needed optionally
@@ -77,8 +78,8 @@ class PkgDistFetcher {
 
   done(data) {
     logger.remove(FETCH_PACKAGE);
-    const time = chalk.magenta(`${data.totalTime / 1000}`);
-    logger.info(`${chalk.green("packages fetched")} (part of loading) ${time}secs`);
+    const time = logFormat.time(data.totalTime);
+    logger.info(`${chalk.green("packages fetched")} (part of loading) ${time}`);
   }
 
   handleItemDone(data) {
@@ -97,8 +98,6 @@ class PkgDistFetcher {
       return Promise.resolve();
     }
 
-    const pkgName = `${pkg.name}@${pkg.version}`;
-
     return this._fyn.readPkgJson(pkg).catch(() => {
       return this._pkgSrcMgr
         .fetchTarball(pkg)
@@ -106,7 +105,8 @@ class PkgDistFetcher {
           return r ? { fullTgzFile: r.fullTgzFile, pkg } : {};
         })
         .catch(err => {
-          logger.error(`fetch '${pkgName}' failed`, err);
+          const pkgName = logFormat.pkgId(pkg);
+          logger.error(`fetch ${pkgName} failed`, err);
           throw err;
         });
     });

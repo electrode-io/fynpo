@@ -13,6 +13,7 @@ const pathUpEach = require("./util/path-up-each");
 const readdir = Promise.promisify(Fs.readdir);
 const rename = Promise.promisify(Fs.rename);
 const rmdir = Promise.promisify(Fs.rmdir);
+const logFormat = require("./util/log-format");
 const { LOAD_PACKAGE } = require("./log-items");
 
 class PkgDistExtractor {
@@ -98,16 +99,7 @@ class PkgDistExtractor {
             });
           })
           .then(() => {
-            let msg;
-            const x = fullOutDir.indexOf(pkg.name);
-            if (x > 0) {
-              msg =
-                chalk.blue("node_modules/") +
-                chalk.magenta(pkg.name) +
-                fullOutDir.substr(x + pkg.name.length);
-            } else {
-              msg = chalk.blue(fullOutDir);
-            }
+            const msg = logFormat.pkgPath(pkg.name, fullOutDir);
             logger.updateItem(LOAD_PACKAGE, `extracted ${msg}`);
           })
           .then(() => this._fyn.readPkgJson(pkg))

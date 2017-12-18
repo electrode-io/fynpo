@@ -26,6 +26,7 @@ const readFile = Promise.promisify(Fs.readFile);
 const writeFile = Promise.promisify(Fs.writeFile);
 const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
+const logFormat = require("./util/log-format");
 const { FETCH_META, FETCH_PACKAGE, NETWORK_ERROR } = require("./log-items");
 
 class PkgSrcManager {
@@ -144,8 +145,8 @@ class PkgSrcManager {
 
     const updateItem = status => {
       status = chalk.cyan(`${status}`);
-      const time = chalk.magenta(`${this._inflights.meta.time(pkgName) / 1000}`);
-      logger.updateItem(FETCH_META, `${status} ${time}secs ${chalk.red.bgGreen(pkgName)}`);
+      const time = logFormat.time(this._inflights.meta.time(pkgName));
+      logger.updateItem(FETCH_META, `${status} ${time} ${chalk.red.bgGreen(pkgName)}`);
     };
 
     const doRequest = cached => {
@@ -270,10 +271,10 @@ class PkgSrcManager {
                   if (closed) return;
                   closed = true;
                   const status = chalk.cyan(`${resp.statusCode}`);
-                  const time = chalk.magenta(`${(Date.now() - startTime) / 1000}`);
+                  const time = logFormat.time(Date.now() - startTime);
                   logger.updateItem(
                     FETCH_PACKAGE,
-                    `${status} ${time}secs ${chalk.red.bgGreen(pkgName)}`
+                    `${status} ${time} ${chalk.red.bgGreen(pkgName)}`
                   );
                   resolve();
                 };

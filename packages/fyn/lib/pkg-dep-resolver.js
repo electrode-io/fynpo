@@ -15,6 +15,7 @@ const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 const simpleSemverCompare = require("./util/simple-semver-compare");
 const longPending = require("./long-pending");
+const logFormat = require("./util/log-format");
 const { LONG_WAIT_META } = require("./log-items");
 const {
   RSEMVERS,
@@ -67,7 +68,7 @@ class PkgDepResolver {
     this._promiseQ.on("watch", items => {
       longPending.onWatch(items, {
         name: LONG_WAIT_META,
-        makeId: item => chalk.magenta(`${item.name}@${item.semver}`)
+        makeId: item => logFormat.pkgId(item)
       });
     });
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
@@ -146,8 +147,8 @@ class PkgDepResolver {
       this._promiseQ.resume();
     } else if (!this._optResolver.isPending()) {
       logger.remove(LONG_WAIT_META);
-      const time = chalk.magenta(`${data.totalTime / 1000}`);
-      logger.info(`${chalk.green("done resolving dependencies")} ${time}secs`);
+      const time = logFormat.time(data.totalTime);
+      logger.info(`${chalk.green("done resolving dependencies")} ${time}`);
       this._data.sortPackagesByKeys();
       this.promotePackages();
       this._defer.resolve();
@@ -157,7 +158,7 @@ class PkgDepResolver {
   resolvePeerDep(depInfo) {
     const json = depInfo.json;
     if (!json) return;
-    const pkgId = chalk.magenta(`${depInfo.name}@${depInfo.version}`);
+    const pkgId = logFormat.pkgId(depInfo);
     _.each(json.peerDependencies || json.peerDepenencies, (semver, name) => {
       const peerId = chalk.cyan(`${name}@${semver}`);
       const resolved = this.resolvePackage({ name, semver });
