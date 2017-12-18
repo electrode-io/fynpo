@@ -67,11 +67,11 @@ class PkgDepLocker {
           const meta = {};
           const dist = vpkg.dist || {};
           if (dist.tarball && dist.shasum) {
-            meta.$ = dist.shasum;
+            meta.$ = dist.shasum || 0;
             meta._ = dist.tarball;
           }
-          if (vpkg.top) meta.top = true;
-          if (vpkg.optFailed) meta.optFailed = true;
+          if (vpkg.top) meta.top = 1;
+          if (vpkg.optFailed) meta.optFailed = 1;
           if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
           if (!_.isEmpty(json.optionalDependencies)) {
             meta.optionalDependencies = json.optionalDependencies;
@@ -80,6 +80,8 @@ class PkgDepLocker {
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
           const bd = json.bundleDependencies || json.bundledDependencies;
           if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
+          if (_.get(json, "scripts.preinstall")) meta.hasPI = 1;
+
           pkgLock[version] = meta;
         });
       });
@@ -135,7 +137,7 @@ class PkgDepLocker {
             shasum: vpkg.$,
             tarball: vpkg._
           };
-          vpkg.$ = vpkg._ = undefined;
+          vpkg.$ = vpkg._ = null;
           vpkg.name = item.name;
           vpkg.version = version;
           versions[version] = vpkg;

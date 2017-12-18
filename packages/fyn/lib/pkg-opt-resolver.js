@@ -172,13 +172,18 @@ class PkgOptResolver {
     // is it under node_modules/<name> and has the right version?
     const promise = Promise.try(() => {
       const scripts = pkgFromMeta.scripts;
-      if (!pkgFromMeta.hasOwnProperty("$") && (!scripts || !scripts.preinstall)) {
-        // no preinstall script in meta, then no need to fetch package tarball
-        // to try to execute the preinstall script.
+      if (pkgFromMeta.hasOwnProperty("$")) {
+        // it's locked meta and hasPI is not 1
+        if (pkgFromMeta.hasPI !== 1) {
+          return pkgFromMeta;
+        }
+      } else if (!scripts || !scripts.preinstall) {
+        // full meta and doesn't have scripts or preinstall in scripts
         return pkgFromMeta;
-      } else {
-        return checkPkg(installedPath);
       }
+      // package actuall has preinstall script, then need to fetch package tarball
+      // to try to execute the preinstall script
+      return checkPkg(installedPath);
     })
       .catch(() => {
         // is it under node_modules/<name>/__fv_/<version>?
@@ -222,6 +227,7 @@ class PkgOptResolver {
                     res.fullTgzFile
                   } didn't match ${version}!`
                 );
+                logger.updateItem(OPTIONAL_RESOLVER, `extracted package ${chalk.magenta(pkgId)}`);
                 this._extractedPkgs[pkgId] = installedPath;
               });
           });
