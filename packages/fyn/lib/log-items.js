@@ -7,6 +7,7 @@ const LOAD_PACKAGE = "load package";
 const LONG_WAIT_PACKAGE = "package pending fetch";
 const INSTALL_PACKAGE = "install package";
 const NETWORK_ERROR = "network error";
+const OPTIONAL_RESOLVER = "optional resolver";
 
 module.exports = {
   FETCH_META,
@@ -15,5 +16,6 @@ module.exports = {
   LOAD_PACKAGE,
   LONG_WAIT_PACKAGE,
   INSTALL_PACKAGE,
-  NETWORK_ERROR
+  NETWORK_ERROR,
+  OPTIONAL_RESOLVER
 };

@@ -14,6 +14,9 @@ const logger = require("./logger");
 const Inflight = require("./util/inflight");
 const LifecycleScripts = require("./lifecycle-scripts");
 const chalk = require("chalk");
+const longPending = require("./long-pending");
+const logSpinners = require("./log-spinners");
+const { OPTIONAL_RESOLVER } = require("./log-items");
 
 xsh.Promise = Promise;
 
@@ -51,8 +54,18 @@ class PkgOptResolver {
     this._promiseQ = new PromiseQueue({
       concurrency: 2,
       stopOnError: false,
+      watchTime: 2000,
       processItem: x => this.optCheck(x)
     });
+    this._promiseQ.on("watch", items => {
+      longPending.onWatch(items, {
+        makeId: item => {
+          item = item.item;
+          return chalk.magenta(`${item.name}@${item.resolved}`);
+        }
+      });
+    });
+    this._promiseQ.on("done", () => logger.remove(OPTIONAL_RESOLVER));
     this._promiseQ.on("fail", x => logger.error("opt-check fail", x));
     this._promiseQ.on("failItem", x => logger.error("opt-check failItem", x.error));
   }
@@ -157,12 +170,16 @@ class PkgOptResolver {
           return "regenOnlyFail";
         }
 
+        const spinner = logSpinners[1];
+        logger.addItem({ name: OPTIONAL_RESOLVER, color: "green", watchTime: 3000, spinner });
+        logger.updateItem(OPTIONAL_RESOLVER, `loading package ${chalk.magenta(pkgId)}`);
         const dist = data.meta.versions[version].dist;
         // none found, fetch tarball
         return this._fyn.pkgSrcMgr
           .fetchTarball({ name, version, dist })
           .tap(() => mkdirp(installedPath))
           .then(res => {
+            logger.updateItem(OPTIONAL_RESOLVER, `extracting package ${chalk.magenta(pkgId)}`);
             // extract tarball to node_modules/<name>/__fv_/<version>
             const tarXOpt = { file: res.fullTgzFile, strip: 1, strict: true, C: installedPath };
             return Promise.try(() => Tar.x(tarXOpt))
@@ -199,14 +216,14 @@ class PkgOptResolver {
           logger.verbose(chalk.green(`optional check ${pkgId} preinstall script already passed`));
           return { passed: true };
         } else if (_.get(res, "pkg.scripts.preinstall")) {
-          logger.info("Running preinstall for optional dep", chalk.magenta(pkgId));
+          logger.updateItem(OPTIONAL_RESOLVER, `running preinstall for ${chalk.magenta(pkgId)}`);
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
             dir: installedPath,
             json: res.pkg
           });
-          return ls
-            .execute(["preinstall"], true)
+          return Promise.delay(1500)
+            .then(() => ls.execute(["preinstall"], true))
             .then(() => {
               logger.info(
                 chalk.green(`optional check ${pkgId} preinstall script passed with exit code 0`)

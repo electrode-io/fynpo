@@ -14,6 +14,7 @@ const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
 const simpleSemverCompare = require("./util/simple-semver-compare");
+const longPending = require("./long-pending");
 const { LONG_WAIT_META } = require("./log-items");
 const {
   RSEMVERS,
@@ -24,7 +25,6 @@ const {
 } = require("./symbols");
 
 const WATCH_TIME = 5000;
-const MAX_PENDING_SHOW = 10;
 
 const mapTopDep = (dep, src) =>
   Object.keys(dep || {}).map(name => new DepItem({ name, semver: dep[name], src, dsrc: src }));
@@ -64,7 +64,12 @@ class PkgDepResolver {
     this._defer = defer();
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("pause", x => this.onPause(x));
-    this._promiseQ.on("watch", items => this.onWatch(items));
+    this._promiseQ.on("watch", items => {
+      longPending.onWatch(items, {
+        name: LONG_WAIT_META,
+        makeId: item => chalk.magenta(`${item.name}@${item.semver}`)
+      });
+    });
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
     this._promiseQ.on("empty", () => this.checkOptResolver());
@@ -85,36 +90,6 @@ class PkgDepResolver {
       return true;
     }
     return false;
-  }
-
-  onWatch(items) {
-    if (items.total === 0) {
-      logger.remove(LONG_WAIT_META);
-      return;
-    }
-    const all = items.watched.concat(items.still);
-    if (!logger.hasItem(LONG_WAIT_META)) {
-      logger.addItem({
-        name: LONG_WAIT_META,
-        color: "yellow"
-      });
-    }
-    let msg = "";
-    if (items.total > MAX_PENDING_SHOW) {
-      msg = chalk.cyan(`Total: ${items.total}, first ${MAX_PENDING_SHOW}: `);
-    }
-    logger.updateItem(
-      LONG_WAIT_META,
-      msg +
-        all
-          .slice(0, MAX_PENDING_SHOW) // show max 10 pendings
-          .map(x => {
-            const time = chalk.yellow(`${x.time / 1000}`);
-            const id = chalk.magenta(`${x.item.name}@${x.item.semver}`);
-            return `${id} (${time}secs)`;
-          })
-          .join(chalk.blue(", "))
-    );
   }
 
   //
