@@ -35,7 +35,7 @@ function mockNpm(port) {
             .code(304)
             .header("ETag", etag);
         }
-        return reply(pkgMeta).header("ETag", `${meta.etag}_${Date.now()}`);
+        return reply(pkgMeta).header("ETag", `"${meta.etag}_${Date.now()}"`);
       }
     });
 

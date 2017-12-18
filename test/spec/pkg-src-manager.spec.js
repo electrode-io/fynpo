@@ -33,22 +33,25 @@ describe("pkg-src-manager", function() {
   });
 
   it("should save meta cache with etag", () => {
+    const host = `localhost:${server.info.port}`;
     const mgr = new PkgSrcManager({
-      registry: `http://localhost:${server.info.port}`,
+      registry: `http://${host}`,
       fynCacheDir
     });
     return mgr
       .fetchMeta({
-        name: "mod-a"
+        name: "mod-a",
+        semver: ""
       })
       .then(meta => {
-        expect(meta.etag).to.exist;
+        expect(meta.fynFo[host].etag).to.exist;
       });
   });
 
   it("should handle 304 when fetching meta that's already in local cache", () => {
+    const host = `localhost:${server.info.port}`;
     const options = {
-      registry: `http://localhost:${server.info.port}`,
+      registry: `http://${host}`,
       fynCacheDir,
       fyn: {}
     };
@@ -56,18 +59,20 @@ describe("pkg-src-manager", function() {
     let mgr = new PkgSrcManager(options);
     return mgr
       .fetchMeta({
-        name: "mod-a"
+        name: "mod-a",
+        semver: ""
       })
       .then(meta => {
-        expect(meta.etag).to.exist;
-        etag = meta.etag;
+        expect(meta.fynFo[host].etag).to.exist;
+        etag = meta.fynFo[host].etag;
         return new PkgSrcManager(options).fetchMeta({
-          name: "mod-a"
+          name: "mod-a",
+          semver: ""
         });
       })
       .then(meta => {
-        expect(meta.etag).to.exist;
-        expect(meta.etag).to.equal(etag);
+        expect(meta.fynFo[host].etag).to.exist;
+        expect(meta.fynFo[host].etag).to.equal(etag);
       });
   });
 });

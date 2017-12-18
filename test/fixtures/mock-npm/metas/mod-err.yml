@@ -5,6 +5,8 @@ versions:
     name: mod-err
     description: test fixture mod-err
     version: 4.5.1
+    scripts:
+      preinstall: echo failing preinstall for mod-err && exit 1
     dependencies:
       mod-a: ^3.0.0
     dist:

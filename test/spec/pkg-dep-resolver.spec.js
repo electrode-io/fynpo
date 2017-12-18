@@ -8,8 +8,13 @@ const mockNpm = require("../fixtures/mock-npm");
 const expect = require("chai").expect;
 const _ = require("lodash");
 const rimraf = require("rimraf");
+const logger = require("../../lib/logger");
+const chalk = require("chalk");
 
 describe("pkg-dep-resolver", function() {
+  logger._logLevel = 0;
+  logger.logItem(false);
+  chalk.enabled = false;
   let server;
   let fynDir;
   before(() => {

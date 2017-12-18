@@ -5,6 +5,8 @@ versions:
     name: mod-e
     description: test fixture mod-e
     version: 2.1.1
+    scripts:
+      preinstall: echo hello there from mod-e
     dependencies:
       mod-f: ^2.0.0
     optionalDependencies:

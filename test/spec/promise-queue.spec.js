@@ -17,9 +17,10 @@ describe("promise-queue", function() {
     });
     pq.on("done", () => done());
     for (let x = 0; x <= expected; x++) {
-      pq.addItem(x);
+      pq.addItem(x, true);
     }
-    expect(save.length).to.equal(expected);
+    pq._process();
+    expect(save.length, "should queue up expected number of concurrent items").to.equal(expected);
     const tmpSave = save;
     save = [];
     for (let x = 0; x < expected; x++) {

@@ -18,8 +18,34 @@ pkgs:
       dist:
         shasum: 88888
         tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
+      name: mod-a
+      version: 1.1.2
       res: {}
+      top: true
+      firstReqIdx: 0
       dev: 1
+      promoted: true
+    0.2.0:
+      dev: 1
+      requests:
+        - - dev
+          - dev;^1.0.0;mod-b@1.0.0
+        - - dep
+          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0;mod-b@1.0.0
+        - - dep
+          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-b@1.0.0
+      src: dev;dep
+      dsrc: dep
+      dist:
+        shasum: 22222
+        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
+      name: mod-a
+      version: 0.2.0
+      res: {}
+      firstReqIdx: 0
+      dep: 2
     2.0.0:
       dep: 1
       requests:
@@ -30,26 +56,10 @@ pkgs:
       dist:
         shasum: 88888
         tarball: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
+      name: mod-a
+      version: 2.0.0
       res: {}
-      promoted: true
-    0.2.0:
-      dev: 1
-      requests:
-        - - dev
-          - dev;^1.0.0;mod-b@1.0.0
-        - - dep
-          - dep;^3.0.0;mod-d@3.0.1
-          - dep;^1.0.0;mod-b@1.0.0
-        - - dep
-          - dep;^1.0.0;mod-c@1.2.0
-          - dep;^1.0.0;mod-b@1.0.0
-      src: dev;dep
-      dsrc: dep
-      dist:
-        shasum: 22222
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
-      res: {}
-      dep: 2
+      firstReqIdx: 0
     0.4.5:
       opt: 1
       requests:
@@ -59,11 +69,11 @@ pkgs:
           - dev;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-c@1.2.0
           - dep;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^3.0.0;mod-d@3.0.1
           - dep;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
       src: opt;dev;dep
@@ -71,7 +81,11 @@ pkgs:
       dist:
         shasum: 88888
         tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
+      name: mod-a
+      version: 0.4.5
       res: {}
+      preInstalled: true
+      firstReqIdx: 0
       dev: 1
       dep: 2
   mod-b:
@@ -80,14 +94,16 @@ pkgs:
       requests:
         - - dev
         - - dep
-          - dep;^3.0.0;mod-d@3.0.1
-        - - dep
           - dep;^1.0.0;mod-c@1.2.0
+        - - dep
+          - dep;^3.0.0;mod-d@3.0.1
       src: dev;dep
       dsrc: dev;dep
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
+      name: mod-b
+      version: 1.0.0
       res:
         dep:
           mod-a:
@@ -100,6 +116,8 @@ pkgs:
           mod-e:
             semver: ^2.0.0
             resolved: 2.1.1
+      top: true
+      firstReqIdx: 0
       dep: 2
       promoted: true
   mod-c:
@@ -112,6 +130,8 @@ pkgs:
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-c/-/mod-c-1.2.0.tgz'
+      name: mod-c
+      version: 1.2.0
       res:
         dep:
           mod-a:
@@ -120,6 +140,8 @@ pkgs:
           mod-b:
             semver: ^1.0.0
             resolved: 1.0.0
+      top: true
+      firstReqIdx: 0
       promoted: true
   mod-d:
     3.0.1:
@@ -136,6 +158,8 @@ pkgs:
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz'
+      name: mod-d
+      version: 3.0.1
       res:
         dep:
           mod-a:
@@ -144,6 +168,8 @@ pkgs:
           mod-b:
             semver: ^1.0.0
             resolved: 1.0.0
+      top: true
+      firstReqIdx: 0
       dev: 1
       promoted: true
   mod-e:
@@ -154,16 +180,18 @@ pkgs:
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
         - - dep
-          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-c@1.2.0
           - dep;^1.0.0;mod-b@1.0.0
         - - dep
-          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^3.0.0;mod-d@3.0.1
           - dep;^1.0.0;mod-b@1.0.0
       src: opt;dev;dep
       dsrc: opt
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+      name: mod-e
+      version: 2.1.1
       res:
         dep:
           mod-f:
@@ -173,9 +201,14 @@ pkgs:
           mod-a:
             semver: ^0.4.0
             resolved: 0.4.5
+      top: true
+      preInstalled: true
+      firstReqIdx: 0
       dev: 1
       dep: 2
       promoted: true
+      extracted: >-
+        /Users/xchen11/dev/pub/fyn/test/.tmp_1513586047129/xout/mod-e/__fv_/2.1.1/mod-e
   mod-f:
     2.1.1:
       opt: 1
@@ -186,11 +219,11 @@ pkgs:
           - dev;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0;mod-c@1.2.0
           - dep;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
         - - dep
-          - dep;^1.0.0;mod-c@1.2.0
+          - dep;^3.0.0;mod-d@3.0.1
           - dep;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
       src: opt;dev;dep
@@ -198,25 +231,44 @@ pkgs:
       dist:
         shasum: 33333
         tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
+      name: mod-f
+      version: 2.1.1
       res: {}
+      firstReqIdx: 0
       dev: 1
       dep: 2
       promoted: true
+badPkgs:
+  mod-err:
+    4.5.1:
+      opt: 0
+      requests: []
+      src: opt
+      dsrc: opt
+      dist:
+        shasum: 33333
+        tarball: 'http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz'
+      name: mod-err
+      version: 4.5.1
+      res: {}
+      top: true
+      preInstalled: true
+      optFailed: true
 res:
-  dep:
-    mod-d:
-      semver: ^3.0.0
-      resolved: 3.0.1
-    mod-c:
-      semver: ^1.0.0
-      resolved: 1.2.0
-    mod-a:
-      semver: ^1.1.0
-      resolved: 1.1.2
   dev:
     mod-b:
       semver: ^1.0.0
       resolved: 1.0.0
+  dep:
+    mod-c:
+      semver: ^1.0.0
+      resolved: 1.2.0
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
+    mod-a:
+      semver: ^1.1.0
+      resolved: 1.1.2
   opt:
     mod-e:
       semver: ^2.0.0
