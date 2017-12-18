@@ -22,6 +22,7 @@ class CliLogger {
     this._lines = [];
     this._logLevel = Levels.info;
     this._defaultPrefix = ">";
+    this._logItem = true;
   }
 
   addItem(options) {
@@ -38,6 +39,10 @@ class CliLogger {
     this._items.push(name);
     this._lines.push(this.renderLine(name, { msg: "" }));
     return this;
+  }
+
+  logItem(flag) {
+    this._logItem = flag;
   }
 
   hasItem(name) {
@@ -90,7 +95,7 @@ class CliLogger {
   }
 
   shouldLogItem() {
-    return this._logLevel <= Levels.info;
+    return this._logItem && this._logLevel <= Levels.info;
   }
 
   debug() {
