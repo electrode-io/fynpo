@@ -11,6 +11,7 @@ const DepData = require("../lib/dep-data");
 const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
+const logSpinners = require("../lib/log-spinners");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -19,17 +20,15 @@ const checkFlatModule = () => {
     .filter(x => x.indexOf("node-flat-module") >= 0);
 
   if (symbols.length === 0) {
-    console.log("fyn requires", chalk.green("node-flat-module"), "loaded before startup");
+    logger.fyi("fyn requires", chalk.green("node-flat-module"), "loaded before startup");
     if (!semver.gte(process.versions.node, "8.0.0")) {
-      console.log(
+      logger.fyi(
         "Your node version",
         chalk.magenta(process.versions.node),
         "doesn't support",
-        chalk.green("NODE_OPTIONS"),
-        "\nYou have to use the",
-        chalk.magenta("-r"),
-        "option explicitly"
+        chalk.green("NODE_OPTIONS")
       );
+      logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
     }
 
     process.exit(1);
@@ -57,10 +56,7 @@ class FynCli {
   }
 
   install() {
-    const spinner = "⠁⠁⠉⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄⠄⠤⠠⠠⠤⠦⠖⠒⠐⠐⠒⠓⠋⠉⠈⠈";
-    // const spinner = "⢹⢺⢼⣸⣇⡧⡗⡏";
-    // const spinner = "⣾⣽⣻⢿⡿⣟⣯⣷";
-    // const spinner = "|/-\\";
+    const spinner = logSpinners[1];
     checkFlatModule();
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
