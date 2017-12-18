@@ -36,7 +36,8 @@ describe("pkg-src-manager", function() {
     const host = `localhost:${server.info.port}`;
     const mgr = new PkgSrcManager({
       registry: `http://${host}`,
-      fynCacheDir
+      fynCacheDir,
+      fyn: {}
     });
     return mgr
       .fetchMeta({

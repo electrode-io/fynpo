@@ -1,0 +1,14 @@
+/node_modules
+/.vscode
+/coverage
+/.nyc*
+/*.swp
+/*.log*
+/tmp
+/tgz
+/*.yaml
+/.cache
+/xout
+.tmp*
+/test
+/xclap.js

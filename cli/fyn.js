@@ -1,104 +1,111 @@
+#!/usr/bin/env node
+
 "use strict";
 
-const Module = require("module");
-const Fs = require("fs");
-const Yaml = require("js-yaml");
-const Path = require("path");
-const Fyn = require("../lib/fyn");
-const _ = require("lodash");
-const PkgInstaller = require("../lib/pkg-installer");
-const DepData = require("../lib/dep-data");
-const semver = require("semver");
 const chalk = require("chalk");
-const logger = require("../lib/logger");
-const CliLogger = require("../lib/cli-logger");
-const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
+const yargs = require("yargs");
+const FynCli = require("./fyn-cli");
+const Path = require("path");
+const _ = require("lodash");
 
-const checkFlatModule = () => {
-  const symbols = Object.getOwnPropertySymbols(Module)
-    .map(x => x.toString())
-    .filter(x => x.indexOf("node-flat-module") >= 0);
+const argv = yargs
+  .strict(true)
 
-  if (symbols.length === 0) {
-    logger.fyi("fyn requires", chalk.green("node-flat-module"), "loaded before startup");
-    if (!semver.gte(process.versions.node, "8.0.0")) {
-      logger.fyi(
-        "Your node version",
-        chalk.magenta(process.versions.node),
-        "doesn't support",
-        chalk.green("NODE_OPTIONS")
-      );
-      logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
+  .command(
+    ["install", "i"],
+    "install modules",
+    () => {},
+    // yargs => {
+    //   yargs.option("save", {
+    //     type: "boolean",
+    //     describe: "Save dependencies"
+    //   });
+    // },
+    argv => {
+      const options = _.pick(argv, [
+        "logLevel",
+        "forceCache",
+        "localOnly",
+        "lockOnly",
+        "ignoreDist",
+        "showDeprecated"
+      ]);
+      const cli = new FynCli(options);
+      cli.install();
     }
-
-    process.exit(1);
-  }
-};
-
-class FynCli {
-  constructor() {
-    this.loadRc();
-    this._fyn = new Fyn(this._rc);
-  }
-
-  loadRc() {
-    try {
-      const rcName = Path.join(process.env.HOME, ".fynrc");
-      const rcData = Fs.readFileSync(rcName).toString();
-      this._rc = Yaml.safeLoad(rcData);
-    } catch (err) {
-      this._rc = {};
+  )
+  .command(
+    "fm",
+    "Show the full path to flat-module",
+    () => {},
+    argv => {
+      const file = require.resolve("flat-module/flat-module.js");
+      console.log(file);
     }
-    this._rc = _.defaults(this._rc, {
-      registry: "https://registry.npmjs.org",
-      targetDir: "node_modules"
-    });
-  }
+  )
+  .command(
+    "bash",
+    "setup flat-module env for bash",
+    () => {},
+    argv => {
+      const file = require.resolve("flat-module/flat-module.js");
+      let splits = [];
 
-  install() {
-    const spinner = CliLogger.spinners[1];
-    checkFlatModule();
-    const start = Date.now();
-    logger.addItem({ name: FETCH_META, color: "green", spinner });
-    logger.updateItem(FETCH_META, "resolving dependencies...");
-    return this._fyn
-      .resolveDependencies()
-      .then(() => {
-        logger.remove(FETCH_META);
-        logger.addItem({ name: FETCH_PACKAGE, color: "green", spinner });
-        logger.updateItem(FETCH_PACKAGE, "fetching packages...");
-        logger.addItem({ name: LOAD_PACKAGE, color: "green", spinner });
-        logger.updateItem(LOAD_PACKAGE, "loading packages...");
-        return this._fyn.fetchPackages();
-      })
-      .then(() => {
-        logger.remove(FETCH_PACKAGE);
-        logger.remove(LOAD_PACKAGE);
-        logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
-        logger.updateItem(INSTALL_PACKAGE, "installing packages...");
-        const installer = new PkgInstaller({ fyn: this._fyn });
+      if (process.env.NODE_OPTIONS) {
+        splits = process.env.NODE_OPTIONS.split(" ").filter(x => x);
+      }
 
-        return installer.install();
-      })
-      .then(() => {
-        logger.remove(INSTALL_PACKAGE);
-        const end = Date.now();
-        logger.info(
-          chalk.green("complete in total"),
-          chalk.magenta(`${(end - start) / 1000}`) + "secs"
-        );
-      })
-      .catch(err => {
-        logger.error("install failed", err);
-      });
-  }
+      for (let i = 0; i < splits.length; i++) {
+        if (splits[i] === "-r" || splits[i] === "--require") {
+          const ex = splits[i + 1] || "";
+          if (ex.indexOf("flat-module") >= 0) {
+            if (ex === file) {
+              console.log(`echo "Your NODE_OPTIONS is already setup for fyn's flat-module."`);
+              return;
+            }
+            console.log(`echo "Your NODE_OPTIONS already has require for flat module at ${ex}"`);
+            return;
+          }
+        }
+      }
 
-  bash() {
-    const file = Path.join(__dirname, "..", "flat-module.js");
-    console.log(`export NODE_OPTIONS="-r ${file}"`);
-  }
-}
+      splits.push(`-r ${file}`);
 
-const cli = new FynCli();
-cli.install();
-// cli.bash();
+      console.log(`export NODE_OPTIONS="${splits.join(" ")}"`);
+    }
+  )
+  .option("log-level", {
+    alias: "q",
+    type: "string",
+    describe: "One of: debug,verbose,info,warn,error,fyi,none",
+    default: "info"
+  })
+  .option("force-cache", {
+    alias: "f",
+    type: "boolean",
+    describe: "Don't check registry if cache exists."
+  })
+  .option("local-only", {
+    alias: "l",
+    type: "boolean",
+    describe: "Use only lockfile or local cache.  Fail if miss."
+  })
+  .option("lock-only", {
+    alias: "k",
+    type: "boolean",
+    describe: "Only resolve with lockfile. Fail if needs changes."
+  })
+  .option("ignore-dist", {
+    alias: "i",
+    type: "boolean",
+    describe: "Ignore tarball URL in dist from meta."
+  })
+  .option("show-deprecated", {
+    alias: "s",
+    type: "boolean",
+    describe: "Force show deprecated messages"
+  })
+  // .option("cwd", { type: "string", describe: "Change fyn's working directory" })
+  .demandCommand()
+  .usage("fyn [options] <command> [options]")
+  .help().argv;
