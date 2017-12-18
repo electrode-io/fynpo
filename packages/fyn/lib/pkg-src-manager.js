@@ -268,10 +268,11 @@ class PkgSrcManager {
                   clearTimeout(finish);
                   if (closed) return;
                   closed = true;
+                  const status = chalk.cyan(`${resp.statusCode}`);
                   const time = chalk.magenta(`${(Date.now() - startTime) / 1000}`);
                   logger.updateItem(
                     FETCH_PACKAGE,
-                    `${chalk.red.bgGreen(pkgName)} result ${resp.statusCode} ${time}secs`
+                    `${status} ${time}secs ${chalk.red.bgGreen(pkgName)}`
                   );
                   resolve();
                 };
