@@ -15,7 +15,7 @@ const Inflight = require("./util/inflight");
 const LifecycleScripts = require("./lifecycle-scripts");
 const chalk = require("chalk");
 const longPending = require("./long-pending");
-const logSpinners = require("./log-spinners");
+const CliLogger = require("./cli-logger");
 const { OPTIONAL_RESOLVER } = require("./log-items");
 
 xsh.Promise = Promise;
@@ -173,7 +173,7 @@ class PkgOptResolver {
           return "regenOnlyFail";
         }
 
-        const spinner = logSpinners[1];
+        const spinner = CliLogger.spinners[1];
         logger.addItem({ name: OPTIONAL_RESOLVER, color: "green", watchTime: 3000, spinner });
         logger.updateItem(OPTIONAL_RESOLVER, `loading package ${chalk.magenta(pkgId)}`);
         const dist = data.meta.versions[version].dist;

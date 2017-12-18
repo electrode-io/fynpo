@@ -11,7 +11,7 @@ const DepData = require("../lib/dep-data");
 const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
-const logSpinners = require("../lib/log-spinners");
+const CliLogger = require("../lib/cli-logger");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -56,7 +56,7 @@ class FynCli {
   }
 
   install() {
-    const spinner = logSpinners[1];
+    const spinner = CliLogger.spinners[1];
     checkFlatModule();
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
