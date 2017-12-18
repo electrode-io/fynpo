@@ -142,6 +142,12 @@ class PkgSrcManager {
     const pkgCacheDir = this.makePkgCacheDir(pkgName);
     const cacheMetaFile = `${pkgCacheDir}/meta.json`;
 
+    const updateItem = status => {
+      status = chalk.cyan(`${status}`);
+      const time = chalk.magenta(`${this._inflights.meta.time(pkgName) / 1000}`);
+      logger.updateItem(FETCH_META, `${chalk.red.bgGreen(pkgName)} ${status} ${time}secs`);
+    };
+
     const doRequest = cached => {
       const headers = {};
       if (cached.etag) {
@@ -156,9 +162,8 @@ class PkgSrcManager {
           const body = response.body;
           const etag = response.headers.etag;
           const meta = JSON.parse(body);
-          const time = chalk.magenta(`${this._inflights.meta.time(pkgName) / 1000}`);
-          logger.updateItem(FETCH_META, `${chalk.red.bgGreen(pkgName)} ${time}secs`);
           meta.etag = etag;
+          updateItem(response.statusCode);
           return writeFile(cacheMetaFile, JSON.stringify(meta, null, 2))
             .thenReturn(meta)
             .catch(err => {
@@ -169,16 +174,18 @@ class PkgSrcManager {
         .catch(err => {
           if (err.statusCode !== undefined) {
             if (err.statusCode === 304) {
+              updateItem(err.statusCode);
               return cached;
             }
-            logger.error("meta fetch failed with status", err.statusCode);
+            logger.error(chalk.red(`meta fetch ${pkgName} failed with status ${err.statusCode}`));
+          } else {
+            logger.addItem({
+              name: NETWORK_ERROR,
+              display: "network error fetching meta",
+              color: "red"
+            });
+            logger.updateItem(NETWORK_ERROR, err.message);
           }
-          logger.addItem({
-            name: NETWORK_ERROR,
-            display: "network error fetching meta",
-            color: "red"
-          });
-          logger.updateItem(NETWORK_ERROR, err.message);
         });
 
       return promise;
