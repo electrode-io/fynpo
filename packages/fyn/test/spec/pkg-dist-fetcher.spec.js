@@ -34,12 +34,6 @@ describe("pkg-dist-fetcher", function() {
       targetDir,
       fynDir
     });
-    return fyn
-      .resolveDependencies()
-      .then(() => fyn.fetchPackages())
-      .then(() => {
-        const linker = new PkgDepLinker({ fyn });
-        return linker.link();
-      });
+    return fyn.resolveDependencies().then(() => fyn.fetchPackages());
   }).timeout(10000);
 });
