@@ -135,8 +135,11 @@ class PkgOptResolver {
     }
 
     if (_.get(data, ["meta", "versions", version, "optFailed"])) {
-      logger.warn(chalk.yellow(`optional check ${pkgId} - meta optFailed true - auto fail`));
-      const rx = { passed: false, err: new Error("meta optFailed true") };
+      logger.warn(chalk.yellow(`optional check ${pkgId} - fail by flag optFailed in lockfile`));
+      const rx = {
+        passed: false,
+        err: new Error("optional dep fail by flag optFailed in lockfile")
+      };
       addChecked(rx);
       return processCheckResult(Promise.resolve(rx));
     }
