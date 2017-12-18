@@ -150,6 +150,13 @@ class PkgSrcManager {
     };
 
     const doRequest = cached => {
+      const rd = this._fyn.remoteMetaDisabled;
+      if (rd) {
+        const msg = `option ${rd} has disabled retrieving meta from remote`;
+        logger.error(`fetch meta for ${chalk.magenta(pkgName)} error:`, chalk.red(msg));
+        throw new Error(msg);
+      }
+
       const fynFo = cached.fynFo || {};
       const regInfo = fynFo[this._registryHost] || {};
       fynFo[this._registryHost] = regInfo;
@@ -189,6 +196,7 @@ class PkgSrcManager {
               return cached;
             }
             logger.error(chalk.red(`meta fetch ${pkgName} failed with status ${err.statusCode}`));
+            logger.debug(`meta URL: ${metaUrl}`);
           } else {
             logger.addItem({
               name: NETWORK_ERROR,
@@ -203,14 +211,18 @@ class PkgSrcManager {
       return promise;
     };
 
+    let foundCache;
+
     const promise = access(cacheMetaFile)
       .then(() => {
         return readFile(cacheMetaFile).then(data => JSON.parse(data.toString()));
       })
       .then(cached => {
-        return this._fyn.localOnly ? cached : doRequest(cached);
+        foundCache = true;
+        return this._fyn.forceCache ? cached : doRequest(cached);
       })
-      .catch(() => {
+      .catch(err => {
+        if (foundCache) throw err;
         return doRequest({});
       })
       .then(meta => (this._meta[pkgName] = meta))
@@ -249,6 +261,10 @@ class PkgSrcManager {
       .then(() => ({ fullTgzFile }))
       .catch(err => {
         if (err.code !== "ENOENT") throw err;
+        const rd = this._fyn.remoteTgzDisabled;
+        if (rd) {
+          throw new Error(`option ${rd} has disabled retrieving tarball from remote`);
+        }
         const inflight = this._inflights.tarball.get(fullTgzFile);
         if (inflight) {
           return inflight;

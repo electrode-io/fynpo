@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "description": "Node Module Package Manager for the flat node_modules design",
   "main": "index.js",
   "scripts": {
@@ -9,23 +9,17 @@
   "bin": {
     "fyn": "cli/fyn.js"
   },
-  "keywords": [
-    "node",
-    "flat",
-    "node_modules",
-    "module",
-    "package",
-    "manager"
-  ],
+  "keywords": ["node", "flat", "node_modules", "module", "package", "manager"],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/jchip/fyn.git"
+    "url": "https://github.com/jchip/fyn.git"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
     "chalk": "^2.3.0",
+    "flat-module": "^1.0.0",
     "js-yaml": "^3.9.0",
     "lodash": "^4.17.4",
     "log-update": "^2.3.0",
@@ -48,11 +42,7 @@
   },
   "nyc": {
     "all": true,
-    "reporter": [
-      "lcov",
-      "text",
-      "text-summary"
-    ],
+    "reporter": ["lcov", "text", "text-summary"],
     "exclude": [
       "coverage",
       "*clap.js",
@@ -63,5 +53,8 @@
       "tmp",
       "flat-module.js"
     ]
+  },
+  "engines": {
+    "node": ">=8"
   }
 }

@@ -187,8 +187,9 @@ class PkgInstaller {
       })
       .then(() => this._savePkgJson(true))
       .then(() => {
+        const forceShow = this._fyn.showDeprecated;
         _.each(this.toLink, di => {
-          if (di.showDepr) {
+          if (di.deprecated && (di.showDepr || forceShow)) {
             const id = logFormat.pkgId(di);
             logger.warn(
               `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
