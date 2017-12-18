@@ -58,6 +58,9 @@ class PkgOptResolver {
       processItem: x => this.optCheck(x)
     });
     this._promiseQ.on("watch", items => {
+      items.watched = items.watched.filter(x => !x.item.runningScript);
+      items.still = items.still.filter(x => !x.item.runningScript);
+      items.total = items.watched.length + items.still.length;
       longPending.onWatch(items, {
         makeId: item => {
           item = item.item;
@@ -216,14 +219,15 @@ class PkgOptResolver {
           logger.verbose(chalk.green(`optional check ${pkgId} preinstall script already passed`));
           return { passed: true };
         } else if (_.get(res, "pkg.scripts.preinstall")) {
+          data.runningScript = true;
           logger.updateItem(OPTIONAL_RESOLVER, `running preinstall for ${chalk.magenta(pkgId)}`);
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
             dir: installedPath,
             json: res.pkg
           });
-          return Promise.delay(1500)
-            .then(() => ls.execute(["preinstall"], true))
+          return ls
+            .execute(["preinstall"], true)
             .then(() => {
               logger.info(
                 chalk.green(`optional check ${pkgId} preinstall script passed with exit code 0`)
