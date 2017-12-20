@@ -268,8 +268,8 @@ class PkgInstaller {
   }
 
   _cleanUp(scope) {
-    logger.updateItem(INSTALL_PACKAGE, "cleaning extraneous packages...");
     scope = scope || "";
+    logger.updateItem(INSTALL_PACKAGE, `cleaning extraneous packages... ${scope}`);
     const outDir = this._fyn.getOutputDir();
     const installedPkgs = Fs.readdirSync(Path.join(outDir, scope));
     const pkgsData = this._data.getPkgsData();

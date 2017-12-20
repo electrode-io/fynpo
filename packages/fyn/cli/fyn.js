@@ -22,7 +22,8 @@ const pickOptions = argv => {
     "lockfile",
     "saveLogs",
     "colors",
-    "production"
+    "production",
+    "progress"
   ];
   return _.pickBy(argv, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
 };
@@ -46,6 +47,7 @@ const argv = yargs
       yargs
         .option("in", {
           type: "string",
+          nargs: 1,
           default: "dependencies",
           describe: "add in section: dependencies,dev,optional,peer"
         })
@@ -111,6 +113,7 @@ const argv = yargs
   .option("log-level", {
     alias: "q",
     type: "string",
+    nargs: 1,
     describe: "One of: debug,verbose,info,warn,error,fyi,none",
     default: "info"
   })
@@ -146,21 +149,31 @@ const argv = yargs
   })
   .option("registry", {
     type: "string",
+    nargs: 1,
     describe: "override registry url"
   })
-  .options("colors", {
+  .option("colors", {
     type: "boolean",
     default: true,
     describe: "log with colors (--no-colors turn off)"
   })
-  .options("production", {
+  .option("production", {
     type: "boolean",
     alias: "prod",
     default: false,
     describe: "do not install devDependencies"
   })
+  .option("progress", {
+    type: "string",
+    nargs: 1,
+    default: "normal",
+    describe: "log progress type: normal,simple,none"
+  })
   .option("cwd", { type: "string", describe: "Set fyn's working directory" })
-  .option("save-logs", { type: "boolean", describe: "save all logs to fyn-debug.log" })
+  .option("save-logs", {
+    type: "string",
+    describe: "save all logs to fyn-debug.log or the specified file"
+  })
   .demandCommand()
   .usage("fyn [options] <command> [options]")
   .help().argv;

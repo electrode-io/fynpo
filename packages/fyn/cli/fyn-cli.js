@@ -42,6 +42,7 @@ const myDir = Path.join(__dirname, "..");
 class FynCli {
   constructor(options) {
     chalk.enabled = options.colors;
+    logger.logItem(options.progress);
     this.setLogLevel(options.logLevel);
     this.loadRc(Object.assign({}, options));
     this.setLogLevel(this._rc.logLevel);
@@ -262,8 +263,8 @@ class FynCli {
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
         );
-        if (this._rc.saveLogs) {
-          this.saveLogs("fyn-debug.log");
+        if (typeof this._rc.saveLogs === "string") {
+          this.saveLogs(this._rc.saveLogs || "fyn-debug.log");
         }
       })
       .catch(err => {
