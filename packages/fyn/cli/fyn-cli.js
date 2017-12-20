@@ -41,6 +41,7 @@ const myDir = Path.join(__dirname, "..");
 
 class FynCli {
   constructor(options) {
+    chalk.enabled = options.colors;
     this.setLogLevel(options.logLevel);
     this.loadRc(Object.assign({}, options));
     this.setLogLevel(this._rc.logLevel);

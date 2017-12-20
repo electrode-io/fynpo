@@ -20,7 +20,8 @@ const pickOptions = argv => {
     "registry",
     "cwd",
     "lockfile",
-    "saveLogs"
+    "saveLogs",
+    "colors"
   ];
   return _.pickBy(argv, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
 };
@@ -145,6 +146,11 @@ const argv = yargs
   .option("registry", {
     type: "string",
     describe: "override registry url"
+  })
+  .options("colors", {
+    type: "boolean",
+    default: true,
+    describe: "log with colors (--no-colors turn off)"
   })
   .option("cwd", { type: "string", describe: "Set fyn's working directory" })
   .option("save-logs", { type: "boolean", describe: "save all logs to fyn-debug.log" })
