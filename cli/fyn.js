@@ -28,7 +28,9 @@ const argv = yargs
         "localOnly",
         "lockOnly",
         "ignoreDist",
-        "showDeprecated"
+        "showDeprecated",
+        "registry",
+        "cwd"
       ]);
       const cli = new FynCli(options);
       cli.install();
@@ -105,7 +107,11 @@ const argv = yargs
     type: "boolean",
     describe: "Force show deprecated messages"
   })
-  // .option("cwd", { type: "string", describe: "Change fyn's working directory" })
+  .option("registry", {
+    type: "string",
+    describe: "override registry url"
+  })
+  .option("cwd", { type: "string", describe: "Set fyn's working directory" })
   .demandCommand()
   .usage("fyn [options] <command> [options]")
   .help().argv;
