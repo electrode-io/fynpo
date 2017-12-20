@@ -76,6 +76,10 @@ class Fyn {
     return this._options.showDeprecated && "show-deprecated";
   }
 
+  get ignoreDist() {
+    return this._options.ignoreDist;
+  }
+
   get remoteMetaDisabled() {
     // force-cache only force use cache when it exists but if it's
     // cache miss then we should retrieve from remote

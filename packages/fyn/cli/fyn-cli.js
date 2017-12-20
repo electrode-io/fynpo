@@ -41,8 +41,16 @@ const myDir = Path.join(__dirname, "..");
 
 class FynCli {
   constructor(options) {
+    this.setLogLevel(options.logLevel);
     this.loadRc(Object.assign({}, options));
-    const ll = this._rc.logLevel;
+    this.setLogLevel(this._rc.logLevel);
+
+    if (options.noStartupInfo !== true) this.showStartupInfo();
+
+    this._fyn = new Fyn(this._rc);
+  }
+
+  setLogLevel(ll) {
     if (ll) {
       const levels = Object.keys(CliLogger.Levels);
       const real = _.find(levels, l => l.startsWith(ll));
@@ -54,10 +62,6 @@ class FynCli {
         process.exit(1);
       }
     }
-
-    if (options.noStartupInfo !== true) this.showStartupInfo();
-
-    this._fyn = new Fyn(this._rc);
   }
 
   showStartupInfo() {
@@ -79,7 +83,9 @@ class FynCli {
     try {
       rcName = Path.join(process.env.HOME, ".fynrc");
       rcData = Fs.readFileSync(rcName).toString();
-    } catch (err) {}
+    } catch (err) {
+      this._rc = {};
+    }
 
     if (rcData) {
       try {
@@ -90,7 +96,10 @@ class FynCli {
         process.exit(1);
       }
     }
+
     logger.debug("loaded RC", JSON.stringify(this._rc));
+
+    if (!this._rc) this._rc = {};
 
     Object.assign(this._rc, options);
 
