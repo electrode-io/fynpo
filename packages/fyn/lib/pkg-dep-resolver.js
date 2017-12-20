@@ -74,7 +74,7 @@ class PkgDepResolver {
     this._promiseQ.on("fail", data => this._defer.reject(data.error));
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
     this._promiseQ.on("empty", () => this.checkOptResolver());
-    this._regenOnly = this._fyn.regenOnly;
+    this._lockOnly = this._fyn.lockOnly;
   }
 
   start() {
@@ -449,7 +449,7 @@ class PkgDepResolver {
     // Force resolve from lock data in regen mode if item was not a direct
     // optional dependency.
     //
-    const force = this._regenOnly && item.dsrc !== "opt";
+    const force = this._lockOnly && item.dsrc !== "opt";
 
     const locked = this._fyn.depLocker.convert(item);
     if (locked) {
@@ -467,7 +467,7 @@ class PkgDepResolver {
   processItem(item) {
     // always fetch the item and let pkg src manager deal with caching
     return Promise.try(() => this._resolveWithLockData(item)).then(r => {
-      if (r || this._regenOnly) return undefined;
+      if (r || this._lockOnly) return undefined;
       return this._pkgSrcMgr.fetchMeta(item).then(meta => {
         meta = this._fyn.depLocker.update(item, meta);
         // logger.log("resolving for", item.name, item.semver, "with src mgr meta");

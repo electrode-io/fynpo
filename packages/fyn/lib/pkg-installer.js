@@ -328,7 +328,7 @@ class PkgInstaller {
   }
 
   _saveLockData() {
-    if (!this._fyn.regenOnly) {
+    if (!this._fyn.lockOnly) {
       const locker = this._fyn._depLocker || new PkgDepLocker();
       locker.generate(this._fyn._data);
       locker.save(Path.join(this._fyn.cwd, "fyn-lock.yaml"));

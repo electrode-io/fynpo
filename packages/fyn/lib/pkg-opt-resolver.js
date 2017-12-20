@@ -185,11 +185,11 @@ class PkgOptResolver {
         return checkPkg(installedPath);
       })
       .catch(() => {
-        if (this._fyn.regenOnly) {
+        if (this._fyn.lockOnly) {
           //
           // regen only, don't bother fetching anything
           //
-          return "regenOnlyFail";
+          return "lockOnlyFail";
         }
 
         const spinner = CliLogger.spinners[1];
@@ -227,8 +227,8 @@ class PkgOptResolver {
           });
       })
       .then(res => {
-        if (res === "regenOnlyFail") {
-          logFail("regen only but no package data");
+        if (res === "lockOnlyFail") {
+          logFail("lock only but no package tarball");
           return { passed: false };
         }
         // run npm script `preinstall`

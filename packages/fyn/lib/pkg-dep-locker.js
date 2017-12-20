@@ -12,8 +12,8 @@ const { LOCK_RSEMVERS, RSEMVERS, SORTED_VERSIONS, LOCK_SORTED_VERSIONS } = requi
 const logger = require("./logger");
 
 class PkgDepLocker {
-  constructor(regenOnly) {
-    this._regenOnly = regenOnly;
+  constructor(lockOnly) {
+    this._lockOnly = lockOnly;
     this._lockData = {};
     this._isFynFormat = true;
   }
@@ -174,7 +174,7 @@ class PkgDepLocker {
   // save
   //
   save(filename) {
-    if (!this._regenOnly) {
+    if (!this._lockOnly) {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
       const data = Yaml.dump(this._lockData, {
         indent: 1,
@@ -199,6 +199,13 @@ class PkgDepLocker {
       this._lockData = Yaml.safeLoad(data);
       logger.info(chalk.green(`loaded lockfile ${Path.basename(filename)}`));
     } catch (err) {
+      if (this._lockOnly) {
+        logger.error(`failed to load lockfile ${filename} -`, err.message);
+        logger.error("Can't proceed without lockfile in lock-only mode");
+        process.exit(1);
+      } else {
+        logger.debug(`failed to load lockfile ${filename} -`, err.message);
+      }
       this._shaSum = Date.now();
       this._lockData = {};
     }
