@@ -231,6 +231,51 @@ class FynCli {
       });
   }
 
+  remove(argv) {
+    if (_.isEmpty(argv.packages)) {
+      logger.error("No packages to remove");
+      process.exit(1);
+    }
+
+    const sections = [
+      "dependencies",
+      "devDependencies",
+      "optionalDependencies",
+      "peerDependencies"
+    ];
+
+    const packages = argv.packages.slice();
+
+    const removed = [];
+    sections.forEach(sec => {
+      const section = this._fyn._pkg[sec];
+      if (_.isEmpty(section)) return;
+      for (let i = 0; i < packages.length; i++) {
+        const pkg = packages[i];
+        if (section.hasOwnProperty(pkg)) {
+          delete section[pkg];
+          removed.push(pkg);
+          packages[i] = undefined;
+        }
+      }
+    });
+
+    const remaining = packages.filter(x => x);
+    if (!_.isEmpty(remaining)) {
+      logger.error("These packages don't exist in your package.json:", remaining.join(", "));
+    }
+
+    if (removed.length > 0) {
+      logger.info("removed packages from package.json:", removed.join(", "));
+      this._fyn.savePkg();
+      return true;
+    }
+
+    logger.error("No package was removed");
+
+    return false;
+  }
+
   install() {
     const spinner = CliLogger.spinners[1];
     checkFlatModule();

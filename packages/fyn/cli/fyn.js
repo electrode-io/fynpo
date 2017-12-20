@@ -42,7 +42,7 @@ const argv = yargs
   )
   .command(
     ["add [packages..]", "a"],
-    "Add packages to dependencies",
+    "Add packages to package.json and install",
     yargs => {
       yargs
         .option("in", {
@@ -68,6 +68,29 @@ const argv = yargs
         logger.info("installing...");
         return new FynCli(options).install();
       });
+    }
+  )
+  .command(
+    ["remove [packages..]", "rm"],
+    "Remove packages from package.json and install",
+    yargs => {
+      yargs.option("install", {
+        type: "boolean",
+        default: true,
+        describe: "run install after removed"
+      });
+    },
+    argv => {
+      const options = pickOptions(argv);
+      options.lockfile = false;
+      const cli = new FynCli(options);
+      if (cli.remove(argv)) {
+        if (!argv.install) return;
+        options.lockfile = argv.lockfile;
+        options.noStartupInfo = true;
+        logger.info("installing...");
+        return new FynCli(options).install();
+      }
     }
   )
   .command(
