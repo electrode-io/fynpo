@@ -105,6 +105,10 @@ class FynCli {
     logger.debug("final RC", JSON.stringify(this._rc));
   }
 
+  saveLogs(dbgLog) {
+    Fs.writeFileSync(dbgLog, logger._saveLogs.join("\n") + "\n");
+  }
+
   fail(err, msg) {
     const dbgLog = "fyn-debug.log";
     logger.freezeItems(true);
@@ -112,7 +116,7 @@ class FynCli {
     logger.error(msg, `Also check ${chalk.magenta(dbgLog)} for more details.`);
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
-    Fs.writeFileSync(dbgLog, logger._saveLogs.join("\n") + "\n");
+    this.saveLogs(dbgLog);
   }
 
   add(argv) {
@@ -248,6 +252,9 @@ class FynCli {
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
         );
+        if (this._rc.saveLogs) {
+          this.saveLogs("fyn-debug.log");
+        }
       })
       .catch(err => {
         this.fail(err, chalk.red("install failed:"));

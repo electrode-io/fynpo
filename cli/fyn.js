@@ -19,7 +19,8 @@ const pickOptions = argv => {
     "showDeprecated",
     "registry",
     "cwd",
-    "lockfile"
+    "lockfile",
+    "saveLogs"
   ];
   return _.pickBy(argv, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
 };
@@ -146,6 +147,7 @@ const argv = yargs
     describe: "override registry url"
   })
   .option("cwd", { type: "string", describe: "Set fyn's working directory" })
+  .option("save-logs", { type: "boolean", describe: "save all logs to fyn-debug.log" })
   .demandCommand()
   .usage("fyn [options] <command> [options]")
   .help().argv;
