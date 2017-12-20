@@ -168,6 +168,7 @@ const argv = yargs
   })
   .options("lockfile", {
     type: "boolean",
+    alias: "lf",
     default: true,
     describe: "enable or disable lockfile"
   })
@@ -183,6 +184,7 @@ const argv = yargs
   })
   .option("registry", {
     type: "string",
+    alias: "reg",
     requiresArg: true,
     describe: "override registry url"
   })
@@ -210,6 +212,7 @@ const argv = yargs
     alias: "sl",
     describe: "save all logs to fyn-debug.log or the specified file"
   })
+  .alias("h", "help")
   .demandCommand()
   .usage("fyn [options] <command> [options]")
   .help().argv;
