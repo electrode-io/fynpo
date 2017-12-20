@@ -62,7 +62,7 @@ class PkgInstaller {
     if (depInfo.linkLocal) return;
     depInfo.linkLocal = true;
     const now = Date.now();
-    const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+    const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: true });
     logger.info("linking local pkg dir", dir, depInfo.dir);
     this._fyn.createPkgOutDirSync(dir);
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
@@ -306,8 +306,13 @@ class PkgInstaller {
       for (const vx in versions) {
         const ver = versions[vx];
         if (!pkg[ver] || pkg[ver].promoted) {
-          logger.verbose("removing extraneous version", ver, "of", pkgName);
-          this._removeDir(Path.join(fvDir, ver));
+          const stat = Fs.statSync(Path.join(fvDir, ver, pkgName));
+          if (!stat.isSymbolicLink()) {
+            logger.verbose("removing extraneous version", ver, "of", pkgName);
+            this._removeDir(Path.join(fvDir, ver));
+          } else {
+            logger.info("Not removing symlink extraneous version", ver, "of", pkgName);
+          }
         }
       }
       Fs.rmdirSync(fvDir);

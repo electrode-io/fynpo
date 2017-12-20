@@ -128,7 +128,9 @@ class PkgDepResolver {
         version = bySrc[0].v;
       }
       const pkgV = pkg[version];
-      pkgV.promoted = true;
+      if (!pkgV.local) {
+        pkgV.promoted = true;
+      }
       const extracted = this._optResolver.isExtracted(name, version);
       if (extracted) {
         pkgV.extracted = extracted;
@@ -290,7 +292,7 @@ class PkgDepResolver {
       if (meta[LOCK_RSEMVERS]) pkgV.fromLock = true;
     }
 
-    if (meta.local) {
+    if (meta.local || metaJson.local) {
       pkgV.local = true;
       pkgV.dir = pkgV.dist.fullPath;
       pkgV.str = pkgV.dist.str;

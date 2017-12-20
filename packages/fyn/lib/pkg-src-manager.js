@@ -157,10 +157,13 @@ class PkgSrcManager {
     const doRequest = cached => {
       const rd = this._fyn.remoteMetaDisabled;
       if (rd) {
+        if (cached) return cached;
         const msg = `option ${rd} has disabled retrieving meta from remote`;
         logger.error(`fetch meta for ${chalk.magenta(pkgName)} error:`, chalk.red(msg));
         throw new Error(msg);
       }
+
+      if (!cached) cached = {};
 
       const fynFo = cached.fynFo || {};
       const regInfo = fynFo[this._registryHost] || {};
@@ -224,11 +227,12 @@ class PkgSrcManager {
       })
       .then(cached => {
         foundCache = true;
+        logger.debug("found", pkgName, "cache for meta", cacheMetaFile);
         return this._fyn.forceCache ? cached : doRequest(cached);
       })
       .catch(err => {
         if (foundCache) throw err;
-        return doRequest({});
+        return doRequest();
       })
       .then(meta => (this._meta[pkgName] = meta))
       .finally(() => {

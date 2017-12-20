@@ -68,12 +68,15 @@ class PkgDepLocker {
           const json = vpkg.json || {};
           const meta = {};
           const dist = vpkg.dist || {};
-          if (dist.tarball && dist.shasum) {
+          if (vpkg.top) meta.top = 1;
+          if (vpkg.optFailed) meta.optFailed = 1;
+          if (vpkg.local) {
+            meta.$ = "local";
+            meta._ = dist.fullPath;
+          } else {
             meta.$ = dist.shasum || 0;
             meta._ = dist.tarball;
           }
-          if (vpkg.top) meta.top = 1;
-          if (vpkg.optFailed) meta.optFailed = 1;
           if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
           if (!_.isEmpty(json.optionalDependencies)) {
             meta.optionalDependencies = json.optionalDependencies;
@@ -137,10 +140,18 @@ class PkgDepLocker {
       _.each(sorted, version => {
         const vpkg = locked[version];
         if (!_.isEmpty(vpkg) && vpkg._valid !== false) {
-          vpkg.dist = {
-            shasum: vpkg.$,
-            tarball: vpkg._
-          };
+          if (vpkg.$ === "local") {
+            vpkg.local = true;
+            vpkg.dist = {
+              shasum: "local",
+              fullPath: vpkg._
+            };
+          } else {
+            vpkg.dist = {
+              shasum: vpkg.$,
+              tarball: vpkg._
+            };
+          }
           vpkg.$ = vpkg._ = null;
           vpkg.name = item.name;
           vpkg.version = version;
