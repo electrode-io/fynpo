@@ -45,11 +45,22 @@ const argv = yargs
     "Add packages to package.json and install",
     yargs => {
       yargs
-        .option("in", {
+        .option("dev", {
           type: "string",
-          nargs: 1,
-          default: "dependencies",
-          describe: "add in section: dependencies,dev,optional,peer"
+          array: true,
+          describe: "add packages to devDependencies"
+        })
+        .option("optional", {
+          type: "string",
+          alias: "opt",
+          array: true,
+          describe: "add packages to optionalDependencies"
+        })
+        .option("peer", {
+          type: "string",
+          alias: "per",
+          array: true,
+          describe: "add packages to peerDependencies"
         })
         .option("install", {
           type: "boolean",
@@ -136,7 +147,7 @@ const argv = yargs
   .option("log-level", {
     alias: "q",
     type: "string",
-    nargs: 1,
+    requiresArg: true,
     describe: "One of: debug,verbose,info,warn,error,fyi,none",
     default: "info"
   })
@@ -172,7 +183,7 @@ const argv = yargs
   })
   .option("registry", {
     type: "string",
-    nargs: 1,
+    requiresArg: true,
     describe: "override registry url"
   })
   .option("colors", {
@@ -189,7 +200,7 @@ const argv = yargs
   .option("progress", {
     type: "string",
     alias: "pg",
-    nargs: 1,
+    requiresArg: true,
     default: "normal",
     describe: "log progress type: normal,simple,none"
   })

@@ -13,6 +13,7 @@ const chalk = require("chalk");
 const logger = require("../lib/logger");
 const CliLogger = require("../lib/cli-logger");
 const PromiseQueue = require("../lib/util/promise-queue");
+const sortObjKeys = require("../lib/util/sort-obj-keys");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -131,44 +132,57 @@ class FynCli {
   }
 
   add(argv) {
-    const spinner = CliLogger.spinners[1];
-    if (!argv.packages || argv.packages.length < 1) {
+    checkFlatModule();
+
+    const addSec = (section, packages) => {
+      if (_.isEmpty(packages)) return [];
+
+      const items = packages.map(x => {
+        const fpath = this._fyn.pkgSrcMgr.getSemverAsFilepath(x);
+        if (fpath) {
+          return {
+            $: x,
+            name: "",
+            semver: x,
+            section
+          };
+        }
+        const atX = x.lastIndexOf("@");
+        return {
+          $: x,
+          name: atX > 0 ? x.substr(0, atX) : x,
+          semver: atX > 0 ? x.substr(atX + 1) : "latest",
+          section
+        };
+      });
+
+      if (!_.isEmpty(items)) {
+        logger.info(`Adding packages to ${section}:`, packages.join(", "));
+      }
+
+      return items;
+    };
+
+    const sections = {
+      dependencies: "packages",
+      devDependencies: "dev",
+      optionalDependencies: "optional",
+      peerDependencies: "peer"
+    };
+
+    let items = [];
+    _.each(sections, (argKey, section) => {
+      items = items.concat(addSec(section, argv[argKey]));
+    });
+
+    if (_.isEmpty(items)) {
       logger.error("No packages to add");
       process.exit(1);
     }
-    const sections = [
-      "dependencies",
-      "devDependencies",
-      "optionalDependencies",
-      "peerDependencies"
-    ];
-    const inSec = sections.find(x => x.startsWith(argv.in));
 
-    if (!inSec) {
-      logger.error("Invalid section to add, should be one of:", sections.join(", "));
-      process.exit(1);
-    }
-
-    logger.info("adding packages", argv.packages, "to", inSec);
-    checkFlatModule();
+    const spinner = CliLogger.spinners[1];
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "loading meta...");
-    const items = argv.packages.map(x => {
-      const fpath = this._fyn.pkgSrcMgr.getSemverAsFilepath(x);
-      if (fpath) {
-        return {
-          $: x,
-          name: "",
-          semver: x
-        };
-      }
-      const atX = x.lastIndexOf("@");
-      return {
-        $: x,
-        name: atX > 0 ? x.substr(0, atX) : x,
-        semver: atX > 0 ? x.substr(atX + 1) : "latest"
-      };
-    });
 
     const results = [];
 
@@ -186,7 +200,7 @@ class FynCli {
             item.name = meta.name;
             found = Path.relative(this._fyn.cwd, item.fullPath);
           } else if (tags && tags[item.semver]) {
-            logger.info("adding with dist tag", item.semver, tags[item.semver]);
+            logger.debug("adding with dist tag for", item.name, item.semver, tags[item.semver]);
             found = `^${tags[item.semver]}`;
             if (!semver.validRange(found)) found = tags[item.semver];
           } else {
@@ -214,20 +228,27 @@ class FynCli {
       .wait()
       .then(() => {
         logger.remove(FETCH_META);
-        const pkg = this._fyn._pkg;
-        if (!pkg[inSec]) pkg[inSec] = {};
-        const sec = pkg[inSec];
-        if (results.length > 0) {
-          results.forEach(item => {
-            sec[item.name] = item.found;
-          });
-          this._fyn.savePkg();
-          logger.info("packages added to", inSec);
-          return true;
-        } else {
-          logger.info("No packages found for add to", inSec);
+
+        if (results.length === 0) {
+          logger.info("No packages found for add");
           return false;
         }
+
+        const added = _.mapValues(sections, () => []);
+
+        const pkg = this._fyn._pkg;
+        results.forEach(item => {
+          _.set(pkg, [item.section, item.name], item.found);
+          added[item.section].push(item.name);
+        });
+
+        Object.keys(sections).forEach(sec => {
+          if (added[sec].length > 0 && pkg[sec]) pkg[sec] = sortObjKeys(pkg[sec]);
+          logger.info(`Packages added to ${sec}:`, added[sec].join(", "));
+        });
+
+        this._fyn.savePkg();
+        return true;
       });
   }
 

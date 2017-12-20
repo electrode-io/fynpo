@@ -8,6 +8,7 @@ const _ = require("lodash");
 const chalk = require("chalk");
 const simpleSemverCompare = require("./util/simple-semver-compare");
 const Yaml = require("js-yaml");
+const sortObjKeys = require("./util/sort-obj-keys");
 const { LOCK_RSEMVERS, RSEMVERS, SORTED_VERSIONS, LOCK_SORTED_VERSIONS } = require("./symbols");
 const logger = require("./logger");
 
@@ -21,14 +22,6 @@ class PkgDepLocker {
 
   get data() {
     return this._lockData;
-  }
-
-  _sortObjKeys(obj) {
-    const sorted = {};
-    Object.keys(obj)
-      .sort()
-      .forEach(k => (sorted[k] = obj[k]));
-    return sorted;
   }
 
   //
@@ -61,7 +54,7 @@ class PkgDepLocker {
           },
           {}
         );
-        const pkgLock = (lockData[name] = { _: this._sortObjKeys(_semvers) });
+        const pkgLock = (lockData[name] = { _: sortObjKeys(_semvers) });
         /* eslint-disable complexity, max-statements */
         _.each(versions, version => {
           const vpkg = pkg[version];
