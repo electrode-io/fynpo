@@ -27,6 +27,7 @@ const writeFile = Promise.promisify(Fs.writeFile);
 const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
+const { SORTED_VERSIONS } = require("./symbols");
 const { FETCH_META, FETCH_PACKAGE, NETWORK_ERROR } = require("./log-items");
 
 class PkgSrcManager {
@@ -110,9 +111,11 @@ class PkgSrcManager {
         },
         "dist-tags": {
           latest: json.version
+        },
+        [SORTED_VERSIONS]: {
+          [item.semver]: json.version
         }
       };
-      item.semver = json.version;
 
       return this._localMeta[fullPath];
     });
