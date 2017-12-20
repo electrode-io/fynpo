@@ -7,6 +7,22 @@ const yargs = require("yargs");
 const FynCli = require("./fyn-cli");
 const Path = require("path");
 const _ = require("lodash");
+const logger = require("../lib/logger");
+
+const pickOptions = argv => {
+  const keys = [
+    "logLevel",
+    "forceCache",
+    "localOnly",
+    "lockOnly",
+    "ignoreDist",
+    "showDeprecated",
+    "registry",
+    "cwd",
+    "lockfile"
+  ];
+  return _.pickBy(argv, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
+};
 
 const argv = yargs
   .strict(true)
@@ -15,25 +31,38 @@ const argv = yargs
     ["install", "i"],
     "install modules",
     () => {},
-    // yargs => {
-    //   yargs.option("save", {
-    //     type: "boolean",
-    //     describe: "Save dependencies"
-    //   });
-    // },
     argv => {
-      const options = _.pick(argv, [
-        "logLevel",
-        "forceCache",
-        "localOnly",
-        "lockOnly",
-        "ignoreDist",
-        "showDeprecated",
-        "registry",
-        "cwd"
-      ]);
-      const cli = new FynCli(options);
+      const cli = new FynCli(pickOptions(argv));
       cli.install();
+    }
+  )
+  .command(
+    ["add [packages..]", "a"],
+    "Add packages to dependencies",
+    yargs => {
+      yargs
+        .option("in", {
+          type: "string",
+          default: "dependencies",
+          describe: "add in section: dependencies,dev,optional,peer"
+        })
+        .option("install", {
+          type: "boolean",
+          default: true,
+          describe: "run install after added"
+        });
+    },
+    argv => {
+      const options = pickOptions(argv);
+      options.lockfile = false;
+      const cli = new FynCli(options);
+      cli.add(argv).then(added => {
+        if (!added || !argv.install) return;
+        options.lockfile = argv.lockfile;
+        options.noStartupInfo = true;
+        logger.info("installing...");
+        return new FynCli(options).install();
+      });
     }
   )
   .command(
@@ -96,6 +125,11 @@ const argv = yargs
     alias: "k",
     type: "boolean",
     describe: "Only resolve with lockfile. Fail if needs changes."
+  })
+  .options("lockfile", {
+    type: "boolean",
+    default: true,
+    describe: "enable or disable lockfile"
   })
   .option("ignore-dist", {
     alias: "i",
