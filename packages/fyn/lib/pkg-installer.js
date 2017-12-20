@@ -187,9 +187,11 @@ class PkgInstaller {
       })
       .then(() => this._savePkgJson(true))
       .then(() => {
+        let count = 0;
         const forceShow = this._fyn.showDeprecated;
         _.each(this.toLink, di => {
           if (di.deprecated && (di.showDepr || forceShow)) {
+            count++;
             const id = logFormat.pkgId(di);
             logger.warn(
               `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
@@ -205,6 +207,9 @@ class PkgInstaller {
             }
           }
         });
+        if (forceShow && !count) {
+          logger.info(chalk.green("None of your dependencies are marked deprecated."));
+        }
       })
       .then(() => this._saveLockData())
       .then(() => {
