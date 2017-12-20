@@ -69,14 +69,25 @@ class FynCli {
   }
 
   loadRc(options) {
+    let rcName, rcData;
+
     try {
-      const rcName = Path.join(process.env.HOME, ".fynrc");
-      const rcData = Fs.readFileSync(rcName).toString();
-      this._rc = Yaml.safeLoad(rcData);
-      Object.assign(this._rc, options);
-    } catch (err) {
-      this._rc = Object.assign({}, options);
+      rcName = Path.join(process.env.HOME, ".fynrc");
+      rcData = Fs.readFileSync(rcName).toString();
+    } catch (err) {}
+
+    if (rcData) {
+      try {
+        this._rc = Yaml.safeLoad(rcData);
+      } catch (err) {
+        logger.error("failed to parse RC file", rcName);
+        logger.error(err.message);
+        process.exit(1);
+      }
     }
+
+    Object.assign(this._rc, options);
+
     this._rc = _.defaults(this._rc, {
       registry: "https://registry.npmjs.org",
       targetDir: "node_modules"
