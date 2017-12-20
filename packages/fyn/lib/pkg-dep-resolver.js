@@ -57,7 +57,7 @@ class PkgDepResolver {
       processItem: x => this.processItem(x),
       watchTime: WATCH_TIME,
       itemQ: mapTopDep(pkg.dependencies, "dep")
-        .concat(mapTopDep(pkg.devDependencies, "dev"))
+        .concat(this._fyn.production ? [] : mapTopDep(pkg.devDependencies, "dev"))
         .concat(mapTopDep(pkg.optionalDependencies, "opt"))
         .concat(PromiseQueue.pauseItem)
       // .concat(mapTopDep(pkg.peerDependencies, "per"))
