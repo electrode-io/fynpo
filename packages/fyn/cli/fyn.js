@@ -165,6 +165,7 @@ const argv = yargs
   })
   .option("progress", {
     type: "string",
+    alias: "pg",
     nargs: 1,
     default: "normal",
     describe: "log progress type: normal,simple,none"
@@ -172,6 +173,7 @@ const argv = yargs
   .option("cwd", { type: "string", describe: "Set fyn's working directory" })
   .option("save-logs", {
     type: "string",
+    alias: "sl",
     describe: "save all logs to fyn-debug.log or the specified file"
   })
   .demandCommand()
