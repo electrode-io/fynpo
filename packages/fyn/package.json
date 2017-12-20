@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Node Module Package Manager for the flat node_modules design",
   "main": "index.js",
   "scripts": {
