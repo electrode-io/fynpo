@@ -243,8 +243,10 @@ class FynCli {
         });
 
         Object.keys(sections).forEach(sec => {
-          if (added[sec].length > 0 && pkg[sec]) pkg[sec] = sortObjKeys(pkg[sec]);
-          logger.info(`Packages added to ${sec}:`, added[sec].join(", "));
+          if (added[sec].length > 0 && pkg[sec]) {
+            pkg[sec] = sortObjKeys(pkg[sec]);
+            logger.info(`Packages added to ${sec}:`, added[sec].join(", "));
+          }
         });
 
         this._fyn.savePkg();
