@@ -9,19 +9,12 @@
   "bin": {
     "fyn": "cli/fyn.js"
   },
-  "keywords": [
-    "node",
-    "flat",
-    "node_modules",
-    "module",
-    "package",
-    "manager"
-  ],
+  "keywords": ["node", "flat", "node_modules", "module", "package", "manager"],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jchip/fyn.git"
+    "url": "https://github.com/electrode-io/fyn.git"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
@@ -49,11 +42,7 @@
   },
   "nyc": {
     "all": true,
-    "reporter": [
-      "lcov",
-      "text",
-      "text-summary"
-    ],
+    "reporter": ["lcov", "text", "text-summary"],
     "exclude": [
       "coverage",
       "*clap.js",
@@ -62,7 +51,8 @@
       "test",
       "xout",
       "tmp",
-      "flat-module.js"
+      "flat-module.js",
+      "cli"
     ]
   },
   "engines": {

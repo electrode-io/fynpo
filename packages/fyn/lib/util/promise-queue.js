@@ -215,6 +215,7 @@ class PromiseQueue extends EventEmitter {
 
   unpause() {
     this._pause = false;
+    return this;
   }
 
   resume() {
@@ -225,6 +226,7 @@ class PromiseQueue extends EventEmitter {
       }
       this._process();
     });
+    return this;
   }
 
   isPending() {

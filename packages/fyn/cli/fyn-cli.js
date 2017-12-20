@@ -12,6 +12,7 @@ const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
 const CliLogger = require("../lib/cli-logger");
+const PromiseQueue = require("../lib/util/promise-queue");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -40,7 +41,7 @@ const myDir = Path.join(__dirname, "..");
 
 class FynCli {
   constructor(options) {
-    this.loadRc(options);
+    this.loadRc(Object.assign({}, options));
     const ll = this._rc.logLevel;
     if (ll) {
       const levels = Object.keys(CliLogger.Levels);
@@ -54,6 +55,12 @@ class FynCli {
       }
     }
 
+    if (options.noStartupInfo !== true) this.showStartupInfo();
+
+    this._fyn = new Fyn(this._rc);
+  }
+
+  showStartupInfo() {
     logger.verbose(chalk.green("fyn"), "version", myPkg.version, "at", chalk.magenta(myDir));
     logger.verbose(
       chalk.green("NodeJS"),
@@ -63,9 +70,7 @@ class FynCli {
       chalk.magenta(process.execPath)
     );
     logger.verbose("env NODE_OPTIONS is", chalk.magenta(process.env.NODE_OPTIONS));
-    const cwd = options.cwd || process.cwd();
-    logger.verbose("working dir is", chalk.magenta(cwd));
-    this._fyn = new Fyn(this._rc);
+    logger.verbose("working dir is", chalk.magenta(this._rc.cwd));
   }
 
   loadRc(options) {
@@ -85,13 +90,19 @@ class FynCli {
         process.exit(1);
       }
     }
+    logger.debug("loaded RC", JSON.stringify(this._rc));
 
     Object.assign(this._rc, options);
+
+    logger.debug("options", JSON.stringify(options));
+
+    if (!this._rc.cwd) this._rc.cwd = process.cwd();
 
     this._rc = _.defaults(this._rc, {
       registry: "https://registry.npmjs.org",
       targetDir: "node_modules"
     });
+    logger.debug("final RC", JSON.stringify(this._rc));
   }
 
   fail(err, msg) {
@@ -102,6 +113,107 @@ class FynCli {
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
     Fs.writeFileSync(dbgLog, logger._saveLogs.join("\n") + "\n");
+  }
+
+  add(argv) {
+    const spinner = CliLogger.spinners[1];
+    if (!argv.packages || argv.packages.length < 1) {
+      logger.error("No packages to add");
+      process.exit(1);
+    }
+    const sections = [
+      "dependencies",
+      "devDependencies",
+      "optionalDependencies",
+      "peerDependencies"
+    ];
+    const inSec = sections.find(x => x.startsWith(argv.in));
+
+    if (!inSec) {
+      logger.error("Invalid section to add, should be one of:", sections.join(", "));
+      process.exit(1);
+    }
+
+    logger.info("adding packages", argv.packages, "to", inSec);
+    checkFlatModule();
+    logger.addItem({ name: FETCH_META, color: "green", spinner });
+    logger.updateItem(FETCH_META, "loading meta...");
+    const items = argv.packages.map(x => {
+      const fpath = this._fyn.pkgSrcMgr.getSemverAsFilepath(x);
+      if (fpath) {
+        return {
+          $: x,
+          name: "",
+          semver: x
+        };
+      }
+      const atX = x.lastIndexOf("@");
+      return {
+        $: x,
+        name: atX > 0 ? x.substr(0, atX) : x,
+        semver: atX > 0 ? x.substr(atX + 1) : "latest"
+      };
+    });
+
+    const results = [];
+
+    return new PromiseQueue({
+      concurrency: 10,
+      stopOnError: true,
+      processItem: item => {
+        let found;
+        return this._fyn.pkgSrcMgr.fetchMeta(item).then(meta => {
+          // logger.info("adding", x.name, x.semver, meta);
+          // look at dist tags
+          const tags = meta["dist-tags"];
+          if (meta.local) {
+            logger.info("adding local package at", item.fullPath);
+            item.name = meta.name;
+            found = Path.relative(this._fyn.cwd, item.fullPath);
+          } else if (tags && tags[item.semver]) {
+            logger.info("adding with dist tag", item.semver, tags[item.semver]);
+            found = `^${tags[item.semver]}`;
+            if (!semver.validRange(found)) found = tags[item.semver];
+          } else {
+            // search
+            const versions = Object.keys(meta.versions).filter(v =>
+              semver.satisfies(v, item.semver)
+            );
+            if (versions.length > 0) {
+              found = item.semver;
+            } else {
+              logger.error(chalk.red(`no matching version found for ${item.$}`));
+            }
+          }
+          if (found) {
+            logger.info(`found ${found} for ${item.$}`);
+            item.found = found;
+            results.push(item);
+          }
+        });
+      },
+      watchTime: 5000,
+      itemQ: items
+    })
+      .resume()
+      .wait()
+      .then(() => {
+        logger.remove(FETCH_META);
+        const pkg = this._fyn._pkg;
+        if (!pkg[inSec]) pkg[inSec] = {};
+        const sec = pkg[inSec];
+        if (results.length > 0) {
+          results.forEach(item => {
+            sec[item.name] = item.found;
+          });
+          this._fyn.savePkg();
+          logger.info("packages added to", inSec);
+          return true;
+        } else {
+          logger.info("No packages found for add to", inSec);
+          return false;
+        }
+      });
   }
 
   install() {
