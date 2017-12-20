@@ -43,6 +43,7 @@ class PkgSrcManager {
       tarball: new Inflight()
     };
     this._fyn = options.fyn;
+    logger.debug("pkg src manager registry", this._options.registry);
     this._registry = this._options.registry && Url.parse(this._options.registry);
     this._tgzRegistry = _.pick(this._registry, ["protocol", "auth", "host", "port", "hostname"]);
     this._registryHost = this._registry.host;

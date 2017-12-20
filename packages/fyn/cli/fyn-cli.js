@@ -63,7 +63,8 @@ class FynCli {
       chalk.magenta(process.execPath)
     );
     logger.verbose("env NODE_OPTIONS is", chalk.magenta(process.env.NODE_OPTIONS));
-    logger.verbose("CWD is", chalk.magenta(process.cwd()));
+    const cwd = options.cwd || process.cwd();
+    logger.verbose("working dir is", chalk.magenta(cwd));
     this._fyn = new Fyn(this._rc);
   }
 
