@@ -24,6 +24,14 @@ This also works for NodeJS 6 but you have to explicitly specify the `--require` 
 
 > Not working for Windows yet. Un\*x only.
 
+# Compatibility
+
+The `flat-module` extension is 100% compatible and co-exist with node's nesting module system.
+
+The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs and is fully compatible with node's module system. It just means that without the `flat-module` extenstion, for any module with multiple versions, you will only get the top level version, so something breaking is very likely.
+
+`fyn` has a fully asynchrounous and concurrent dependencies resolving engine that works 100% according to node's nesting design, and is the only one that can properly handle `optionalDependencies`.
+
 # Install
 
 Please install `fyn` to your NodeJS setup globally.
