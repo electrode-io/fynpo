@@ -115,7 +115,7 @@ const argv = yargs
   )
   .command(
     "bash",
-    "setup flat-module env for bash",
+    "Setup flat-module env for bash",
     () => {},
     argv => {
       const file = require.resolve("flat-module/flat-module.js");
@@ -170,12 +170,12 @@ const argv = yargs
     type: "boolean",
     alias: "lf",
     default: true,
-    describe: "enable or disable lockfile"
+    describe: "Enable or disable lockfile"
   })
   .option("ignore-dist", {
     alias: "i",
     type: "boolean",
-    describe: "Ignore tarball URL in dist from meta."
+    describe: "Ignore host in tarball URL from meta dist."
   })
   .option("show-deprecated", {
     alias: "s",
@@ -186,31 +186,31 @@ const argv = yargs
     type: "string",
     alias: "reg",
     requiresArg: true,
-    describe: "override registry url"
+    describe: "Override registry url"
   })
   .option("colors", {
     type: "boolean",
     default: true,
-    describe: "log with colors (--no-colors turn off)"
+    describe: "Log with colors (--no-colors turn off)"
   })
   .option("production", {
     type: "boolean",
     alias: "prod",
     default: false,
-    describe: "do not install devDependencies"
+    describe: "Do not install devDependencies"
   })
   .option("progress", {
     type: "string",
     alias: "pg",
     requiresArg: true,
     default: "normal",
-    describe: "log progress type: normal,simple,none"
+    describe: "Log progress type: normal,simple,none"
   })
   .option("cwd", { type: "string", describe: "Set fyn's working directory" })
   .option("save-logs", {
     type: "string",
     alias: "sl",
-    describe: "save all logs to fyn-debug.log or the specified file"
+    describe: "Save all logs to fyn-debug.log or the specified file"
   })
   .alias("h", "help")
   .demandCommand()

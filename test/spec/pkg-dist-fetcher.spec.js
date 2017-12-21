@@ -25,15 +25,18 @@ describe("pkg-dist-fetcher", function() {
     server.stop(done);
   });
 
-  it("should fetch packages for pkg-a fixture", () => {
+  it("should fetch package tarballs for pkg-a fixture", () => {
+    const registry = `http://localhost:${server.info.port}`;
     const targetDir = `xout_${Date.now()}`;
     const fyn = new Fyn({
-      registry: `http://localhost:${server.info.port}`,
+      registry,
       pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
       cwd: fynDir,
       targetDir,
-      fynDir
+      fynDir,
+      ignoreDist: true
     });
+    // TODO: verify tarballs actually fetched
     return fyn.resolveDependencies().then(() => fyn.fetchPackages());
   }).timeout(10000);
 });

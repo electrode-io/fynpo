@@ -122,7 +122,7 @@ class FynCli {
     Fs.writeFileSync(dbgLog, logger._saveLogs.join("\n") + "\n");
   }
 
-  fail(err, msg) {
+  fail(msg, err) {
     const dbgLog = "fyn-debug.log";
     logger.freezeItems(true);
     logger.error(msg, "Please check for any errors that occur above.");
@@ -338,7 +338,7 @@ class FynCli {
         }
       })
       .catch(err => {
-        this.fail(err, chalk.red("install failed:"));
+        this.fail(chalk.red("install failed:"), err);
       });
   }
 }
