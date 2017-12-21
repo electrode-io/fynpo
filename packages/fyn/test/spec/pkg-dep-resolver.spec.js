@@ -63,7 +63,8 @@ describe("pkg-dep-resolver", function() {
       pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
       targetDir: "xout",
       cwd: fynDir,
-      fynDir
+      fynDir,
+      ignoreDist: true
     });
     return fyn.resolveDependencies().then(() => {
       // Fs.writeFileSync(Path.resolve("fyn-data.yaml"), Yaml.safeDump(fyn._data));

@@ -251,8 +251,14 @@ class PkgSrcManager {
     let tarball = _.get(item, "dist.tarball", "");
 
     if (this._fyn.ignoreDist || !tarball) {
+      // we should still use dist tarball's pathname if it exist because
+      // the tarball URL doesn't always match the version in the package.json
+      tarball = Url.parse(tarball);
       tarball = Url.format(
-        Object.assign({ pathname: `${item.name}/-/${tgzFile}` }, this._tgzRegistry)
+        Object.assign(
+          _.defaults(tarball, { pathname: `${item.name}/-/${tgzFile}` }),
+          this._tgzRegistry
+        )
       );
       logger.debug("package tarball url generated", tarball);
     } else {
@@ -326,6 +332,8 @@ class PkgSrcManager {
               display: "network error fetching package",
               color: "red"
             });
+            logger.error(`fetchTarball: ${pkgUrl} failed:`, netErr.message);
+            logger.debug("STACK:", netErr.stack);
             logger.updateItem(NETWORK_ERROR, netErr.message);
 
             return false;
