@@ -14,6 +14,7 @@ const logger = require("../lib/logger");
 const CliLogger = require("../lib/cli-logger");
 const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
+const exit = require("../lib/util/exit");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -33,7 +34,7 @@ const checkFlatModule = () => {
       logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
     }
 
-    process.exit(1);
+    exit(1);
   }
 };
 
@@ -62,7 +63,7 @@ class FynCli {
         logger._logLevel = x;
       } else {
         logger.error(`Invalid log level "${ll}".  Supported levels are: ${levels.join(", ")}`);
-        process.exit(1);
+        exit(1);
       }
     }
   }
@@ -96,7 +97,7 @@ class FynCli {
       } catch (err) {
         logger.error("failed to parse RC file", rcName);
         logger.error(err.message);
-        process.exit(1);
+        exit(err);
       }
     }
 
@@ -129,6 +130,7 @@ class FynCli {
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
     this.saveLogs(dbgLog);
+    exit(err);
   }
 
   add(argv) {
@@ -177,7 +179,7 @@ class FynCli {
 
     if (_.isEmpty(items)) {
       logger.error("No packages to add");
-      process.exit(1);
+      exit(1);
     }
 
     const spinner = CliLogger.spinners[1];
@@ -257,7 +259,7 @@ class FynCli {
   remove(argv) {
     if (_.isEmpty(argv.packages)) {
       logger.error("No packages to remove");
-      process.exit(1);
+      exit(1);
     }
 
     const sections = [
