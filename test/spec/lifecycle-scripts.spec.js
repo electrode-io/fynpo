@@ -7,9 +7,12 @@ const logger = require("../../lib/logger");
 const chalk = require("chalk");
 
 describe("lifecycle-scripts", function() {
-  logger._logLevel = 0;
   logger.logItem(false);
   chalk.enabled = false;
+
+  beforeEach(() => {
+    logger._logLevel = 0;
+  });
 
   const failRestore = (err, intercept) => {
     intercept.restore();

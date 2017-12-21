@@ -1,13 +1,18 @@
 "use strict";
 
+/* eslint-disable prefer-template */
+
 const electrodeServer = require("electrode-server");
 const Fs = require("fs");
 const Yaml = require("js-yaml");
 const Path = require("path");
 const chalk = require("chalk");
+const CliLogger = require("../../../lib/cli-logger");
 const _ = require("lodash");
 
 function mockNpm(port) {
+  const logger = new CliLogger();
+  logger._logLevel = CliLogger.Levels.info;
   return electrodeServer({
     connections: {
       default: {
@@ -21,7 +26,7 @@ function mockNpm(port) {
       handler: (request, reply) => {
         const pkgName = request.params.pkgName;
         const metaData = Fs.readFileSync(Path.join(__dirname, "metas", `${pkgName}.yml`));
-        console.log(
+        logger.debug(
           chalk.blue("mock npm: ") + new Date().toLocaleString() + ":",
           "retrieving meta",
           pkgName
@@ -46,7 +51,7 @@ function mockNpm(port) {
       handler: (request, reply) => {
         const pkgName = request.params.pkgName;
         const tgzFile = request.params.tgzFile;
-        console.log(new Date().toLocaleString() + ":", "fetching", pkgName, tgzFile);
+        logger.debug(new Date().toLocaleString() + ":", "fetching", pkgName, tgzFile);
         const pkg = Fs.readFileSync(Path.join(packagesDir, tgzFile));
         reply(pkg)
           .header("Content-Disposition", "inline")

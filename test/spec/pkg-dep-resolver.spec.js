@@ -12,7 +12,6 @@ const logger = require("../../lib/logger");
 const chalk = require("chalk");
 
 describe("pkg-dep-resolver", function() {
-  logger._logLevel = 0;
   logger.logItem(false);
   chalk.enabled = false;
   let server;
@@ -26,6 +25,7 @@ describe("pkg-dep-resolver", function() {
   });
 
   beforeEach(() => {
+    logger._logLevel = 999;
     fynDir = Path.join(__dirname, "..", `.tmp_${Date.now()}`);
   });
 

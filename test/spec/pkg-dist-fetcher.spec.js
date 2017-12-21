@@ -11,8 +11,10 @@ const expect = require("chai").expect;
 const _ = require("lodash");
 const PkgDepLinker = require("../../lib/pkg-dep-linker");
 const xsh = require("xsh");
+const logger = require("../../lib/logger");
 
 describe("pkg-dist-fetcher", function() {
+  logger._logLevel = 999;
   const fynDir = Path.join(__dirname, `../.tmp_${Date.now()}`);
 
   let server;
