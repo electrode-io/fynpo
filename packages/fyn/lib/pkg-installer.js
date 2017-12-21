@@ -140,14 +140,33 @@ class PkgInstaller {
     const start = Date.now();
     const appDir = this._fyn.cwd;
 
+    const running = [];
+    const updateRunning = s => {
+      logger.updateItem(INSTALL_PACKAGE, `running ${s}: ${running.join(", ")}`);
+    };
+    const removeRunning = pkgId => {
+      const x = running.indexOf(pkgId);
+      running.splice(x, 1);
+      updateRunning("preinstall");
+    };
     return Promise.resolve(this.preInstall)
-      .each(depInfo => {
-        if (depInfo.local) return undefined;
-        const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
-        return ls.execute(["preinstall"], true).then(() => {
-          depInfo.json._fyn.preinstall = true;
-        });
-      })
+      .map(
+        depInfo => {
+          if (depInfo.local) return undefined;
+          running.push(pkgId);
+          updateRunning("preinstall");
+          const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
+          return ls
+            .execute(["preinstall"], true)
+            .then(() => {
+              depInfo.json._fyn.preinstall = true;
+            })
+            .finally(() => {
+              removeRunning(pkgId);
+            });
+        },
+        { concurrency: 3 }
+      )
       .then(() => {
         _.each(this.toLink, depInfo => {
           const pkgId = logFormat.pkgId(depInfo);
@@ -173,19 +192,26 @@ class PkgInstaller {
       .then(() => this._cleanUp())
       .then(() => this._cleanBin())
       .return(this.postInstall)
-      .each(depInfo => {
-        const pkgId = logFormat.pkgId(depInfo);
-        logger.updateItem(INSTALL_PACKAGE, `running ${pkgId} npm install script`);
-        const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
-        return ls
-          .execute(depInfo.install, true)
-          .then(() => {
-            depInfo.json._fyn.install = true;
-          })
-          .catch(() => {
-            logger.warn(chalk.yellow(`ignoring ${pkgId} npm script install failure`));
-          });
-      })
+      .map(
+        depInfo => {
+          const pkgId = logFormat.pkgId(depInfo);
+          running.push(pkgId);
+          updateRunning("install");
+          const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
+          return ls
+            .execute(depInfo.install, true)
+            .then(() => {
+              depInfo.json._fyn.install = true;
+            })
+            .catch(() => {
+              logger.warn(chalk.yellow(`ignoring ${pkgId} npm script install failure`));
+            })
+            .finally(() => {
+              removeRunning(pkgId);
+            });
+        },
+        { concurrency: 3 }
+      )
       .then(() => this._savePkgJson(true))
       .then(() => {
         let count = 0;

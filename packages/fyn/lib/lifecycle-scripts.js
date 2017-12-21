@@ -97,8 +97,8 @@ class LifecycleScripts {
     const stdout = `stdout_${Date.now()}`;
     const stderr = `stderr_${Date.now()}`;
 
-    logger.addItem({ name: stdout, color: "green", display: "stdout" });
-    logger.addItem({ name: stderr, color: "red", display: "stderr" });
+    logger.addItem({ name: stdout, color: "green", display: `${pkgName} stdout` });
+    logger.addItem({ name: stderr, color: "red", display: `${pkgName} stderr` });
 
     const updateStdout = buf => this._updateDigest(stdout, buf);
     const updateStderr = buf => this._updateDigest(stderr, buf);
