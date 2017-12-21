@@ -1,6 +1,6 @@
-# fyn: Flatten Your NodeModules
+# fyn: Flatten Your Node_modules
 
-fyn is a node package manager for the [flat node_modules design here].
+`fyn` is a node package manager for the [flat node_modules design here].
 
 # Features
 
@@ -16,7 +16,11 @@ fyn is a node package manager for the [flat node_modules design here].
 
 # Requirements
 
-`fyn` is a package manager that only installs a `node_modules` structured to work with the [flat node_modules design here]. It requires the `flat-module` support loaded when node starts up. To achieve that, it depends on setting the `--require` option in [NODE_OPTIONS] env NodeJS 8 supports.
+`fyn` is a package manager that only installs a `node_modules` structured to work with the [flat node_modules design here].
+
+It requires the `flat-module` support loaded when node starts up. To achieve that, it depends on setting the `--require` option in [NODE_OPTIONS] env NodeJS 8 supports.
+
+This also works for NodeJS 6 but you have to explicitly specify the `--require` option when invoking node and child process wouldn't inherit that.
 
 > Not working for Windows yet. Un\*x only.
 
@@ -33,7 +37,7 @@ npm install -g fyn
 Setup the [NODE_OPTIONS] env for bash:
 
 ```bash
-eval $(fyn bash)
+eval `fyn bash`
 ```
 
 * Or you can set it up manually:
@@ -70,42 +74,25 @@ You can see the options fyn supports with:
 fyn --help
 ```
 
-fyn also loads config from `~/.fynrc`, which is just a `YAML` file with the following supported fields:
+fyn also loads config from `~/.fynrc`, which is just a `YAML` file, below is an example:
 
 ```yaml
 registry: https://registry.npmjs.org
-localOnly: true
-forceCache: true
-lockOnly: true
+localOnly: false
+forceCache: false
+lockOnly: false
+progress: none
+logLevel: verbose
+production: false
 ```
 
-# TODOs
+> Any command line option can be converted to an option in the RC file by changing the name to camelCase form.
 
-## Cache
+If there's no RC file and command line override, then these default are used:
 
-* Automatic set refresh time for meta and reuse local copy for a while
-* Self integrity check and healing cache
-* Allow manually update meta cache
-
-## git URL semver
-
-* <https://docs.npmjs.com/files/package.json#git-urls-as-dependencies>
-* <https://docs.npmjs.com/files/package.json#github-urls>
-
-If a dep specifies semver as a git URL, then need to retrieve it locally and load its `package.json` into meta and resolve with FS ops.
-
-## tarball URL semver
-
-* <https://docs.npmjs.com/files/package.json#urls-as-dependencies>
-
-If a dep specifies a semver as a URL to a tarball, then need to retrieve it locally and load its `package.json` into meta and resolve with FS ops.
-
-## Lock Dependencies
-
-* Lock failed optional dependencies
-* Local lock dependencies of a package.
-* All non-locked dep resolving is subjected to change.
-* Interactively select package and its version to lock.
+* `registry` - `https://registry.npmjs.org`
+* `progress` - `normal`
+* `logLevel` - `info`
 
 [flat node_modules design here]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options

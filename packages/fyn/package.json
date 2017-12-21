@@ -1,7 +1,7 @@
 {
   "name": "fyn",
   "version": "0.1.8",
-  "description": "Node Module Package Manager for the flat node_modules design",
+  "description": "Flatten Your Node_modules: NodeJS Package Manager for flat modules system",
   "main": "index.js",
   "scripts": {
     "test": "clap check"
@@ -9,14 +9,7 @@
   "bin": {
     "fyn": "cli/fyn.js"
   },
-  "keywords": [
-    "node",
-    "flat",
-    "node_modules",
-    "module",
-    "package",
-    "manager"
-  ],
+  "keywords": ["node", "flat", "node_modules", "module", "package", "manager"],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
@@ -49,11 +42,7 @@
   },
   "nyc": {
     "all": true,
-    "reporter": [
-      "lcov",
-      "text",
-      "text-summary"
-    ],
+    "reporter": ["lcov", "text", "text-summary"],
     "exclude": [
       "coverage",
       "*clap.js",
