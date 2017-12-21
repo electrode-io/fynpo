@@ -20,13 +20,23 @@ const readFile = Promise.promisify(Fs.readFile);
 const readdir = Promise.promisify(Fs.readdir);
 const mkdirpAsync = Promise.promisify(mkdirp);
 const rimrafAsync = Promise.promisify(rimraf);
+const exit = require("./util/exit");
+
+/* eslint-disable no-magic-numbers */
 
 class Fyn {
   constructor(options) {
     options = this._options = fynConfig(options);
     this._cwd = options.cwd || process.cwd();
 
+    this.loadPkg(options);
     this._pkgSrcMgr = options.pkgSrcMgr || new PkgSrcManager(Object.assign({ fyn: this }, options));
+    this._data = options.data || new DepData();
+    this._depLocker = new PkgDepLocker(this.lockOnly, options.lockfile);
+    this._depLocker.read(Path.join(this._cwd, "fyn-lock.yaml"));
+  }
+
+  loadPkg(options) {
     if (options.pkgFile) {
       const pkgFile = Path.resolve(this._cwd, options.pkgFile);
       logger.debug("package JSON file", pkgFile);
@@ -36,14 +46,11 @@ class Fyn {
       } catch (err) {
         logger.error("failed to read package.json file", pkgFile);
         logger.error(err.message);
-        process.exit(1);
+        exit(err);
       }
     } else {
       this._pkg = options.pkgData;
     }
-    this._data = options.data || new DepData();
-    this._depLocker = new PkgDepLocker(this.lockOnly, options.lockfile);
-    this._depLocker.read(Path.join(this._cwd, "fyn-lock.yaml"));
   }
 
   savePkg() {

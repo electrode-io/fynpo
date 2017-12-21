@@ -179,7 +179,7 @@ class PkgDepResolver {
 
   resolvePeerDep(depInfo) {
     const json = depInfo.json;
-    if (!json) return;
+    if (!json) return undefined;
     const pkgId = logFormat.pkgId(depInfo);
     return this.resolvePkgPeerDep(json, pkgId, depInfo);
   }
@@ -425,6 +425,7 @@ class PkgDepResolver {
       if (meta && meta.hasOwnProperty(LOCAL_VERSION_MAPS)) {
         return meta[LOCAL_VERSION_MAPS][item.semver];
       }
+      return false;
     };
 
     const resolved =

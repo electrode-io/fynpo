@@ -108,6 +108,7 @@ class CliLogger {
   setPrefix(x) {
     this._colorPrefix = {};
     const prefix = (this._defaultPrefix = x === undefined ? "> " : x);
+    this._chalkEnabled = chalk.enabled;
     Object.keys(LevelColors).forEach(l => {
       const color = LevelColors[l];
       if (color) {
@@ -125,14 +126,17 @@ class CliLogger {
   }
 
   _genLog(l, args) {
-    let prefix = this._defaultPrefix;
+    let prefix;
 
     if (this._prefix !== undefined) {
       prefix = this._prefix || "";
       this.prefix();
+    } else {
+      if (this._chalkEnabled !== chalk.enabed) {
+        this.setPrefix(this._defaultPrefix);
+      }
+      prefix = this._colorPrefix[l];
     }
-
-    prefix = this._colorPrefix[l];
 
     const str = `${prefix}${util.format.apply(util, args)}`;
     this._saveLogs.push(str);
