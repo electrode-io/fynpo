@@ -32,21 +32,29 @@ class PkgDistFetcher {
     this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
     this._fyn = options.fyn;
     this._promiseQ = new PromiseQueue({
+      stopOnError: true,
       watchTime: WATCH_TIME,
       processItem: x => this.fetchItem(x)
     });
     this._promiseQ.on("watch", items => longPending.onWatch(items));
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("doneItem", x => this.handleItemDone(x));
+    this._promiseQ.on("failItem", _.noop);
   }
 
   wait() {
-    return this._promiseQ.wait().then(() =>
-      this._distExtractor.wait().then(() => {
-        const time = logFormat.time(Date.now() - this._startTime);
-        logger.info(`${chalk.green("done loading packages")} ${time}`);
+    return this._promiseQ
+      .wait()
+      .then(() => {
+        return this._distExtractor.wait().then(() => {
+          const time = logFormat.time(Date.now() - this._startTime);
+          logger.info(`${chalk.green("done loading packages")} ${time}`);
+        });
       })
-    );
+      .catch(err => {
+        // TODO: should interrupt and stop dist exractor
+        throw err;
+      });
   }
 
   start() {
@@ -83,13 +91,8 @@ class PkgDistFetcher {
   }
 
   handleItemDone(data) {
-    if (!data.error) {
-      if (data.res && data.res.fullTgzFile) {
-        this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
-      }
-    } else {
-      logger.error("fetch item failed", chalk.red(data.error.message));
-      logger.debug("STACK:", data.error.stack);
+    if (data.res && data.res.fullTgzFile) {
+      this._distExtractor.addPkgDist({ pkg: data.res.pkg, fullTgzFile: data.res.fullTgzFile });
     }
   }
 
@@ -107,8 +110,8 @@ class PkgDistFetcher {
         })
         .catch(err => {
           const pkgName = logFormat.pkgId(pkg);
-          logger.error(`fetch ${pkgName} tarball failed`, chalk.red(err.message));
-          logger.debug("STACK:", err.stack);
+          logger.debug(`dist-fetcher fetch ${pkgName} tarball failed`, chalk.red(err.message));
+          logger.debug("STACK", err.stack);
           throw err;
         });
     });
