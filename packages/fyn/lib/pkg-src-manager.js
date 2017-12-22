@@ -10,6 +10,8 @@
 
 /* eslint-disable no-magic-numbers */
 
+const crypto = require("crypto");
+const { PassThrough } = require("stream");
 const request = require("request");
 const requestP = require("request-promise");
 const Promise = require("bluebird");
@@ -284,8 +286,8 @@ class PkgSrcManager {
     const startTime = Date.now();
     const pkgName = item.name;
     const pkgCacheDir = this.makePkgCacheDir(pkgName);
-    const tmpFile = `tmp-${item.version}.tgz`;
-    const tgzFile = `pkg-${item.version}.tgz`;
+    const tmpFile = `tmp-${item.dist.shasum}-${item.version}.tgz`;
+    const tgzFile = `pkg-${item.dist.shasum}-${item.version}.tgz`;
     const fullTmpFile = Path.join(pkgCacheDir, tmpFile);
     const fullTgzFile = Path.join(pkgCacheDir, tgzFile);
 
@@ -303,11 +305,15 @@ class PkgSrcManager {
         if (inflight) {
           return inflight;
         }
+        const shaHash = crypto.createHash("sha1");
         const stream = Fs.createWriteStream(fullTmpFile);
+        const pass = new PassThrough();
+        pass.on("data", chunk => shaHash.update(chunk));
         const fetchPromise = new Promise((resolve, reject) => {
           request(pkgUrl)
             .on("response", resolve)
             .on("error", reject)
+            .pipe(pass)
             .pipe(stream);
         })
           .then(resp => {
@@ -318,15 +324,22 @@ class PkgSrcManager {
                 let finish;
                 const close = () => {
                   clearTimeout(finish);
-                  if (closed) return;
+                  if (closed) return undefined;
                   closed = true;
+                  const shaSum = shaHash.digest("hex");
+                  logger.debug(`${fullTgzFile} shasum`, shaSum);
+                  if (shaSum !== item.dist.shasum) {
+                    const msg = `${fullTgzFile} shasum mismatched`;
+                    logger.error(msg);
+                    return reject(new Error(msg));
+                  }
                   const status = chalk.cyan(`${resp.statusCode}`);
                   const time = logFormat.time(Date.now() - startTime);
                   logger.updateItem(
                     FETCH_PACKAGE,
                     `${status} ${time} ${chalk.red.bgGreen(pkgName)}`
                   );
-                  resolve();
+                  return resolve();
                 };
                 stream.on("finish", () => (finish = setTimeout(close, 1000)));
                 stream.on("error", reject);
