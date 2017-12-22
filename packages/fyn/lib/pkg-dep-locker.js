@@ -9,7 +9,13 @@ const chalk = require("chalk");
 const simpleSemverCompare = require("./util/simple-semver-compare");
 const Yaml = require("js-yaml");
 const sortObjKeys = require("./util/sort-obj-keys");
-const { LOCK_RSEMVERS, RSEMVERS, SORTED_VERSIONS, LOCK_SORTED_VERSIONS } = require("./symbols");
+const {
+  LOCK_RSEMVERS,
+  RSEMVERS,
+  SORTED_VERSIONS,
+  LOCK_SORTED_VERSIONS,
+  LOCAL_MAP_VERSIONS
+} = require("./symbols");
 const logger = require("./logger");
 const exit = require("./util/exit");
 
@@ -63,7 +69,13 @@ class PkgDepLocker {
           const meta = {};
           const dist = vpkg.dist || {};
           if (vpkg.top) meta.top = 1;
-          if (vpkg.optFailed) meta.optFailed = 1;
+          if (vpkg.optFailed) {
+            meta.optFailed = 1;
+            // no need to remember whether there's preinstall or not if
+            // it's already marked as failed.
+          } else if (_.get(json, "scripts.preinstall") || vpkg.hasPI) {
+            meta.hasPI = 1;
+          }
           if (vpkg.local) {
             meta.$ = "local";
             meta._ = dist.fullPath;
@@ -79,7 +91,6 @@ class PkgDepLocker {
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
           const bd = json.bundleDependencies || json.bundledDependencies;
           if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
-          if (_.get(json, "scripts.preinstall")) meta.hasPI = 1;
 
           pkgLock[version] = meta;
         });
@@ -94,7 +105,7 @@ class PkgDepLocker {
   // Take dep-item <item> with its real <meta> and update lock data
   //
   update(item, meta) {
-    if (!this._lockfile) return undefined;
+    if (!this._lockfile) return meta;
     let locked = this._lockData[item.name];
     if (!locked) return meta;
 
@@ -111,6 +122,9 @@ class PkgDepLocker {
     _.defaults(locked.versions, meta.versions);
     const versions = Object.keys(locked.versions);
     locked[SORTED_VERSIONS] = versions.sort(simpleSemverCompare);
+    if (meta.hasOwnProperty(LOCAL_MAP_VERSIONS)) {
+      locked[LOCAL_MAP_VERSIONS] = meta[LOCAL_MAP_VERSIONS];
+    }
     locked["dist-tags"] = meta["dist-tags"];
 
     return locked;

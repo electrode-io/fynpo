@@ -64,7 +64,7 @@ class PkgInstaller {
     depInfo.linkLocal = true;
     const now = Date.now();
     const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: true });
-    logger.info("linking local pkg dir", dir, depInfo.dir);
+    logger.verbose("linking local pkg dir", dir, "=>", depInfo.dir);
     this._fyn.createPkgOutDirSync(dir);
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
     //
@@ -236,7 +236,7 @@ class PkgInstaller {
           }
         });
         if (forceShow && !count) {
-          logger.info(chalk.green("None of your dependencies are marked deprecated."));
+          logger.info(chalk.green("HOORAY!!! None of your dependencies are marked deprecated."));
         }
       })
       .then(() => this._saveLockData())

@@ -91,6 +91,8 @@ class PkgSrcManager {
     item.fullPath = fullPath;
     const pkgJsonFile = Path.join(fullPath, "package.json");
 
+    logger.debug("fetchLocalItem localPath", localPath, "fullPath", fullPath);
+
     if (this._localMeta[fullPath]) return Promise.resolve(this._localMeta[fullPath]);
 
     return readFile(pkgJsonFile).then(raw => {
@@ -116,6 +118,16 @@ class PkgSrcManager {
           [item.semver]: json.version
         }
       };
+
+      logger.debug(
+        "return local meta for",
+        item.name,
+        item.semver,
+        "at",
+        fullPath,
+        "local version",
+        json.version
+      );
 
       return this._localMeta[fullPath];
     });
