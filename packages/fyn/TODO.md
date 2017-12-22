@@ -4,6 +4,8 @@
 
 * Automatic set refresh time for meta and reuse local copy for a while
 * Self integrity check and healing cache
+  * [x] check shasum as tarball is retrieved
+  * [x] save tarball with shasum
 * Allow manually update meta cache
 
 ## Support URL semver
@@ -50,3 +52,9 @@
 
 * Support linking `.bin`
 * Support checking for semver that is a filepath
+* Handle looking up user's home dir for .fynrc and .fyn dir.
+
+## Core
+
+* Promise Q support stages so fetch/extract can be handled by the same Q
+* Promise Q support retrying
