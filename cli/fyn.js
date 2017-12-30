@@ -2,12 +2,13 @@
 
 "use strict";
 
-const chalk = require("chalk");
-const yargs = require("yargs");
-const FynCli = require("./fyn-cli");
+const Fs = require("fs");
 const Path = require("path");
+const chalk = require("chalk");
+const FynCli = require("./fyn-cli");
 const _ = require("lodash");
 const logger = require("../lib/logger");
+const NixClap = require("nix-clap");
 
 const pickOptions = argv => {
   const keys = [
@@ -25,99 +26,169 @@ const pickOptions = argv => {
     "production",
     "progress"
   ];
-  return _.pickBy(argv, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
+  return _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
 };
 
-const argv = yargs
-  .strict(true)
+const options = {
+  "log-level": {
+    alias: "q",
+    type: "string",
+    desc: "One of: debug,verbose,info,warn,error,fyi,none",
+    default: "info"
+  },
+  "save-logs": {
+    type: "string",
+    alias: "sl",
+    default: "fyn-debug.log",
+    desc: "Save all logs to the specified file"
+  },
+  colors: {
+    type: "boolean",
+    default: true,
+    desc: "Log with colors (--no-colors turn off)"
+  },
+  progress: {
+    type: "string",
+    alias: "pg",
+    requiresArg: true,
+    default: "normal",
+    desc: "Log progress type: normal,simple,none"
+  },
+  cwd: {
+    type: "string",
+    requireArg: true,
+    desc: "Set fyn's working directory"
+  },
+  "force-cache": {
+    alias: "f",
+    type: "boolean",
+    desc: "Don't check registry if cache exists."
+  },
+  "local-only": {
+    alias: "l",
+    type: "boolean",
+    desc: "Use only lockfile or local cache.  Fail if miss."
+  },
+  "lock-only": {
+    alias: "k",
+    type: "boolean",
+    desc: "Only resolve with lockfile. Fail if needs changes."
+  },
+  lockfile: {
+    type: "boolean",
+    alias: "lf",
+    default: true,
+    desc: "Enable or disable (--no-lockfile) lockfile"
+  },
+  "ignore-dist": {
+    alias: "i",
+    type: "boolean",
+    desc: "Ignore host in tarball URL from meta dist."
+  },
+  "show-deprecated": {
+    alias: "s",
+    type: "boolean",
+    desc: "Force show deprecated messages"
+  },
+  production: {
+    type: "boolean",
+    alias: "prod",
+    default: false,
+    desc: "Do not install devDependencies",
+    allowCmd: ["add", "remove", "install"]
+  },
+  registry: {
+    type: "string",
+    alias: "reg",
+    requiresArg: true,
+    desc: "Override registry url"
+  }
+};
 
-  .command(
-    ["install", "i"],
-    "install modules",
-    () => {},
-    argv => {
+const commands = {
+  install: {
+    alias: "i",
+    desc: "Install modules",
+    exec: argv => {
       const cli = new FynCli(pickOptions(argv));
       cli.install();
-    }
-  )
-  .command(
-    ["add [packages..]", "a"],
-    "Add packages to package.json and install",
-    yargs => {
-      yargs
-        .option("dev", {
-          type: "string",
-          array: true,
-          describe: "add packages to devDependencies"
-        })
-        .option("optional", {
-          type: "string",
-          alias: "opt",
-          array: true,
-          describe: "add packages to optionalDependencies"
-        })
-        .option("peer", {
-          type: "string",
-          alias: "per",
-          array: true,
-          describe: "add packages to peerDependencies"
-        })
-        .option("install", {
-          type: "boolean",
-          default: true,
-          describe: "run install after added"
-        });
     },
-    argv => {
+    default: true
+  },
+  add: {
+    alias: "a",
+    args: "[packages..]",
+    usage: "$0 $1 [packages..]",
+    desc: "add packages to package.json",
+    exec: argv => {
       const options = pickOptions(argv);
       options.lockfile = false;
       const cli = new FynCli(options);
-      cli.add(argv).then(added => {
-        if (!added || !argv.install) return;
+      cli.add(argv.opts).then(added => {
+        if (!added || !argv.opts.install) return;
         options.lockfile = argv.lockfile;
         options.noStartupInfo = true;
         logger.info("installing...");
         return new FynCli(options).install();
       });
-    }
-  )
-  .command(
-    ["remove [packages..]", "rm"],
-    "Remove packages from package.json and install",
-    yargs => {
-      yargs.option("install", {
+    },
+    options: {
+      dev: {
+        alias: ["d"],
+        type: "array",
+        desc: "List of packages to add to devDependencies"
+      },
+      opt: {
+        alias: ["o"],
+        type: "array",
+        desc: "List of packages to add to optionalDependencies"
+      },
+      peer: {
+        alias: ["p"],
+        type: "array",
+        desc: "List of packages to add to peerDependencies"
+      },
+      install: {
         type: "boolean",
         default: true,
-        describe: "run install after removed"
-      });
-    },
-    argv => {
+        desc: "Run install after added"
+      }
+    }
+  },
+  remove: {
+    alias: "rm",
+    args: "<packages..>",
+    desc: "Remove packages from package.json and install",
+    exec: argv => {
       const options = pickOptions(argv);
       options.lockfile = false;
       const cli = new FynCli(options);
-      if (cli.remove(argv)) {
-        if (!argv.install) return;
+      if (cli.remove(argv.opts)) {
+        if (!argv.opts.install) return;
         options.lockfile = argv.lockfile;
         options.noStartupInfo = true;
         logger.info("installing...");
         return new FynCli(options).install();
       }
+    },
+    options: {
+      install: {
+        type: "boolean",
+        default: true,
+        desc: "Run install after removed"
+      }
     }
-  )
-  .command(
-    "fm",
-    "Show the full path to flat-module",
-    () => {},
-    argv => {
+  },
+  fm: {
+    desc: "Show the full path to flat-module",
+    exec: () => {
       const file = require.resolve("flat-module/flat-module.js");
       console.log(file);
     }
-  )
-  .command(
-    "bash",
-    "Setup flat-module env for bash",
-    () => {},
-    argv => {
+  },
+  bash: {
+    desc: "Setup flat-module env for bash",
+    exec: () => {
       const file = require.resolve("flat-module/flat-module.js");
       let splits = [];
 
@@ -143,76 +214,15 @@ const argv = yargs
 
       console.log(`export NODE_OPTIONS="${splits.join(" ")}"`);
     }
-  )
-  .option("log-level", {
-    alias: "q",
-    type: "string",
-    requiresArg: true,
-    describe: "One of: debug,verbose,info,warn,error,fyi,none",
-    default: "info"
-  })
-  .option("force-cache", {
-    alias: "f",
-    type: "boolean",
-    describe: "Don't check registry if cache exists."
-  })
-  .option("local-only", {
-    alias: "l",
-    type: "boolean",
-    describe: "Use only lockfile or local cache.  Fail if miss."
-  })
-  .option("lock-only", {
-    alias: "k",
-    type: "boolean",
-    describe: "Only resolve with lockfile. Fail if needs changes."
-  })
-  .options("lockfile", {
-    type: "boolean",
-    alias: "lf",
-    default: true,
-    describe: "Enable or disable lockfile"
-  })
-  .option("ignore-dist", {
-    alias: "i",
-    type: "boolean",
-    describe: "Ignore host in tarball URL from meta dist."
-  })
-  .option("show-deprecated", {
-    alias: "s",
-    type: "boolean",
-    describe: "Force show deprecated messages"
-  })
-  .option("registry", {
-    type: "string",
-    alias: "reg",
-    requiresArg: true,
-    describe: "Override registry url"
-  })
-  .option("colors", {
-    type: "boolean",
-    default: true,
-    describe: "Log with colors (--no-colors turn off)"
-  })
-  .option("production", {
-    type: "boolean",
-    alias: "prod",
-    default: false,
-    describe: "Do not install devDependencies"
-  })
-  .option("progress", {
-    type: "string",
-    alias: "pg",
-    requiresArg: true,
-    default: "normal",
-    describe: "Log progress type: normal,simple,none"
-  })
-  .option("cwd", { type: "string", describe: "Set fyn's working directory" })
-  .option("save-logs", {
-    type: "string",
-    alias: "sl",
-    describe: "Save all logs to fyn-debug.log or the specified file"
-  })
-  .alias("h", "help")
-  .demandCommand()
-  .usage("fyn [options] <command> [options]")
-  .help().argv;
+  }
+};
+
+const run = () => {
+  const myPkg = JSON.parse(Fs.readFileSync(Path.join(__dirname, "../package.json")));
+
+  return new NixClap({ name: myPkg.name, version: myPkg.version, usage: "$0 [options] <command>" })
+    .init(options, commands)
+    .parse();
+};
+
+run();
