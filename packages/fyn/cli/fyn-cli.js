@@ -2,7 +2,7 @@
 
 const Module = require("module");
 const Fs = require("fs");
-const Yaml = require("js-yaml");
+const Yaml = require("yamljs");
 const Path = require("path");
 const Fyn = require("../lib/fyn");
 const _ = require("lodash");
@@ -93,7 +93,7 @@ class FynCli {
 
     if (rcData) {
       try {
-        this._rc = Yaml.safeLoad(rcData);
+        this._rc = Yaml.parse(rcData);
       } catch (err) {
         logger.error("failed to parse RC file", rcName);
         logger.error(err.message);

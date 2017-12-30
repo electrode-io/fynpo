@@ -7,7 +7,7 @@ const Fs = require("fs");
 const _ = require("lodash");
 const chalk = require("chalk");
 const simpleSemverCompare = require("./util/simple-semver-compare");
-const Yaml = require("js-yaml");
+const Yaml = require("yamljs");
 const sortObjKeys = require("./util/sort-obj-keys");
 const {
   LOCK_RSEMVERS,
@@ -200,12 +200,7 @@ class PkgDepLocker {
     if (!this._lockfile) return;
     if (!this._lockOnly) {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
-      const data = Yaml.dump(this._lockData, {
-        indent: 1,
-        lineWidth: 250,
-        noCompatMode: true,
-        condenseFlow: true
-      });
+      const data = Yaml.stringify(this._lockData, 4, 1);
       const shaSum = this.shasum(data);
       if (shaSum !== this._shaSum) {
         logger.info("saving lock file", filename);
@@ -221,7 +216,7 @@ class PkgDepLocker {
     try {
       const data = Fs.readFileSync(filename).toString();
       this._shaSum = this.shasum(data);
-      this._lockData = Yaml.safeLoad(data);
+      this._lockData = Yaml.parse(data);
       logger.info(chalk.green(`loaded lockfile ${Path.basename(filename)}`));
     } catch (err) {
       if (this._lockOnly) {
