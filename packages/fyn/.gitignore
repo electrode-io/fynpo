@@ -10,3 +10,6 @@
 /.cache
 /xout
 .tmp*
+/bin
+/*.tgz
+/dist
