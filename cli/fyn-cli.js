@@ -38,7 +38,7 @@ const checkFlatModule = () => {
   }
 };
 
-const myPkg = require("../package.json");
+const myPkg = require("./mypkg");
 const myDir = Path.join(__dirname, "..");
 
 class FynCli {

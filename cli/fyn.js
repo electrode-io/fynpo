@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 "use strict";
 
 const Fs = require("fs");
@@ -9,6 +7,7 @@ const FynCli = require("./fyn-cli");
 const _ = require("lodash");
 const logger = require("../lib/logger");
 const NixClap = require("nix-clap");
+const myPkg = require("./mypkg");
 
 const pickOptions = argv => {
   const keys = [
@@ -27,6 +26,14 @@ const pickOptions = argv => {
     "progress"
   ];
   return _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
+};
+
+const findFlatModule = () => {
+  try {
+    return eval("require").resolve("flat-module/flat-module.js");
+  } catch (e) {
+    return Path.join(__dirname, "../dist/flat-module.js");
+  }
 };
 
 const options = {
@@ -182,14 +189,13 @@ const commands = {
   fm: {
     desc: "Show the full path to flat-module",
     exec: () => {
-      const file = require.resolve("flat-module/flat-module.js");
-      console.log(file);
+      console.log(findFlatModule());
     }
   },
   bash: {
     desc: "Setup flat-module env for bash",
     exec: () => {
-      const file = require.resolve("flat-module/flat-module.js");
+      const file = findFlatModule();
       let splits = [];
 
       if (process.env.NODE_OPTIONS) {
@@ -218,8 +224,6 @@ const commands = {
 };
 
 const run = () => {
-  const myPkg = JSON.parse(Fs.readFileSync(Path.join(__dirname, "../package.json")));
-
   return new NixClap({ name: myPkg.name, version: myPkg.version, usage: "$0 [options] <command>" })
     .init(options, commands)
     .parse();

@@ -2,12 +2,12 @@
   "name": "fyn",
   "version": "0.1.11",
   "description": "Flatten Your Node_modules: NodeJS Package Manager for flat modules system",
-  "main": "index.js",
+  "main": "bin/fyn.js",
   "scripts": {
     "test": "clap check"
   },
   "bin": {
-    "fyn": "cli/fyn.js"
+    "fyn": "bin/fyn.js"
   },
   "keywords": [
     "node",
@@ -45,6 +45,7 @@
     "electrode-archetype-njs-module-dev": "^2.2.0",
     "electrode-server": "^1.2.2",
     "mock-require": "^2.0.2",
+    "webpack": "^3.10.0",
     "xstdout": "^0.1.1"
   },
   "nyc": {

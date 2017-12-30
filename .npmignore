@@ -13,3 +13,7 @@
 /test
 /xclap.js
 /TODO.md
+/lib
+/cli
+/webpack.config.js
+*.tgz
