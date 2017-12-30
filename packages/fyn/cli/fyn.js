@@ -131,9 +131,10 @@ const commands = {
       const options = pickOptions(argv);
       options.lockfile = false;
       const cli = new FynCli(options);
-      cli.add(argv.opts).then(added => {
+      const opts = Object.assign({}, argv.opts, argv.args);
+      cli.add(opts).then(added => {
         if (!added || !argv.opts.install) return;
-        options.lockfile = argv.lockfile;
+        options.lockfile = argv.opts.lockfile;
         options.noStartupInfo = true;
         logger.info("installing...");
         return new FynCli(options).install();
@@ -170,9 +171,10 @@ const commands = {
       const options = pickOptions(argv);
       options.lockfile = false;
       const cli = new FynCli(options);
-      if (cli.remove(argv.opts)) {
+      const opts = Object.assign({}, argv.opts, argv.args);
+      if (cli.remove(opts)) {
         if (!argv.opts.install) return;
-        options.lockfile = argv.lockfile;
+        options.lockfile = argv.opts.lockfile;
         options.noStartupInfo = true;
         logger.info("installing...");
         return new FynCli(options).install();
