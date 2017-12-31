@@ -2,6 +2,7 @@
 
 const Path = require("path");
 const webpack = require("webpack");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   //devtool: "source-map",
@@ -12,8 +13,9 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: "#!/usr/bin/env node",
       raw: true
-    })
-  ],
+    }),
+    process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin()
+  ].filter(x => x),
   resolve: {
     alias: {
       xml2js: Path.resolve("stubs/xml2js.js"),
