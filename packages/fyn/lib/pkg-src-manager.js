@@ -12,13 +12,11 @@
 
 const crypto = require("crypto");
 const { PassThrough } = require("stream");
-const request = require("request");
-const requestP = require("request-promise");
+const needle = require("needle");
 const Promise = require("bluebird");
 const Fs = require("fs");
 const _ = require("lodash");
 const chalk = require("chalk");
-// const Semver = require("semver");
 const logger = require("./logger");
 const mkdirp = require("mkdirp");
 const Path = require("path");
@@ -191,14 +189,28 @@ class PkgSrcManager {
       } else if (regInfo.lastMod) {
         headers["if-modified-since"] = regInfo.lastMod;
       }
-      const promise = requestP({
-        uri: metaUrl,
-        headers,
-        resolveWithFullResponse: true
-      })
+      const promise = Promise.try(() =>
+        needle(
+          "get",
+          metaUrl,
+          {},
+          {
+            compressed: true,
+            headers
+          }
+        )
+      )
         .then(response => {
-          const body = response.body;
-          const meta = JSON.parse(body);
+          if (response.statusCode === 304) {
+            updateItem(response.statusCode);
+            return cached;
+          }
+          if (response.statusCode !== 200) {
+            logger.error(chalk.red(`meta fetch ${pkgName} failed with status ${err.statusCode}`));
+            logger.debug(`meta URL: ${metaUrl}`);
+            return undefined;
+          }
+          const meta = response.body;
           const rh = response.headers;
           if (rh.etag) {
             regInfo.etag = rh.etag;
@@ -215,21 +227,13 @@ class PkgSrcManager {
             });
         })
         .catch(err => {
-          if (err.statusCode !== undefined) {
-            if (err.statusCode === 304) {
-              updateItem(err.statusCode);
-              return cached;
-            }
-            logger.error(chalk.red(`meta fetch ${pkgName} failed with status ${err.statusCode}`));
-            logger.debug(`meta URL: ${metaUrl}`);
-          } else {
-            logger.addItem({
-              name: NETWORK_ERROR,
-              display: "network error fetching meta",
-              color: "red"
-            });
-            logger.updateItem(NETWORK_ERROR, err.message);
-          }
+          logger.addItem({
+            name: NETWORK_ERROR,
+            display: "network error fetching meta",
+            color: "red"
+          });
+          logger.updateItem(NETWORK_ERROR, err.message);
+
           return undefined;
         });
 
@@ -310,46 +314,48 @@ class PkgSrcManager {
         const pass = new PassThrough();
         pass.on("data", chunk => shaHash.update(chunk));
         const fetchPromise = new Promise((resolve, reject) => {
-          request(pkgUrl)
-            .on("response", resolve)
-            .on("error", reject)
+          needle
+            .get(pkgUrl)
+            .on("header", resolve)
+            .on("done", err => {
+              if (err) reject(err);
+            })
+            .once("err", reject)
+            // TODO: .on("timeout")
             .pipe(pass)
             .pipe(stream);
         })
-          .then(resp => {
-            if (resp.statusCode === 200) {
-              logger.debug(`fetchTarball: ${pkgUrl} response code`, resp.statusCode);
-              return new Promise((resolve, reject) => {
-                let closed;
-                let finish;
-                const close = () => {
-                  clearTimeout(finish);
-                  if (closed) return undefined;
-                  closed = true;
-                  const shaSum = shaHash.digest("hex");
-                  logger.debug(`${fullTgzFile} shasum`, shaSum);
-                  if (shaSum !== item.dist.shasum) {
-                    const msg = `${fullTgzFile} shasum mismatched`;
-                    logger.error(msg);
-                    return reject(new Error(msg));
-                  }
-                  const status = chalk.cyan(`${resp.statusCode}`);
-                  const time = logFormat.time(Date.now() - startTime);
-                  logger.updateItem(
-                    FETCH_PACKAGE,
-                    `${status} ${time} ${chalk.red.bgGreen(pkgName)}`
-                  );
-                  return resolve();
-                };
-                stream.on("finish", () => (finish = setTimeout(close, 1000)));
-                stream.on("error", reject);
-                stream.on("close", close);
-              })
-                .then(() => rename(fullTmpFile, fullTgzFile))
-                .return({ fullTgzFile });
+          .then(statusCode => {
+            if (statusCode !== 200) {
+              logger.error(`fetchTarball: ${pkgUrl} response error`, statusCode);
+              return false;
             }
-            logger.error(`fetchTarball: ${pkgUrl} response error`, resp.statusCode);
-            return false;
+            logger.debug(`fetchTarball: ${pkgUrl} response code`, statusCode);
+            return new Promise((resolve, reject) => {
+              let closed;
+              let finish;
+              const close = () => {
+                clearTimeout(finish);
+                if (closed) return undefined;
+                closed = true;
+                const shaSum = shaHash.digest("hex");
+                logger.debug(`${fullTgzFile} shasum`, shaSum);
+                if (shaSum !== item.dist.shasum) {
+                  const msg = `${fullTgzFile} shasum mismatched`;
+                  logger.error(msg);
+                  return reject(new Error(msg));
+                }
+                const status = chalk.cyan(`${statusCode}`);
+                const time = logFormat.time(Date.now() - startTime);
+                logger.updateItem(FETCH_PACKAGE, `${status} ${time} ${chalk.red.bgGreen(pkgName)}`);
+                return resolve();
+              };
+              stream.on("finish", () => (finish = setTimeout(close, 1000)));
+              stream.on("error", reject);
+              stream.on("close", close);
+            })
+              .then(() => rename(fullTmpFile, fullTgzFile))
+              .return({ fullTgzFile });
           })
           .catch(netErr => {
             logger.addItem({
