@@ -107,7 +107,7 @@ const options = {
   registry: {
     type: "string",
     alias: "reg",
-    requiresArg: true,
+    requireArg: true,
     desc: "Override registry url"
   }
 };
