@@ -45,6 +45,7 @@
     "electrode-server": "^1.2.2",
     "mock-require": "^2.0.2",
     "webpack": "^3.10.0",
+    "webpack-bundle-analyzer": "^2.9.1",
     "xstdout": "^0.1.1"
   },
   "nyc": {
