@@ -19,7 +19,7 @@ function readPkg() {
   return pkgData;
 }
 
-xclap.load({
+xclap.load("fyn", {
   prepack: {
     task: () => {
       const dist = Path.resolve("dist");
@@ -47,5 +47,10 @@ xclap.load({
     }
   },
 
-  release: ["~$webpack", "prepack", "~$npm publish", "postpack"]
+  release: ["fyn/bundle", "fyn/prepack", "fyn/publish", "fyn/postpack"],
+
+  bundle: "webpack",
+
+  publish: "npm publish"
 });
+

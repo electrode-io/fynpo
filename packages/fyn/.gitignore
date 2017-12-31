@@ -6,7 +6,6 @@
 /*.log*
 /tmp
 /tgz
-/*.yaml
 /.cache
 /xout
 .tmp*
