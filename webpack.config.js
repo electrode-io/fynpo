@@ -14,6 +14,14 @@ module.exports = {
       raw: true
     })
   ],
+  resolve: {
+    alias: {
+      xml2js: Path.resolve("stubs/xml2js.js"),
+      "iconv-lite": Path.resolve("stubs/iconv-lite.js"),
+      debug: Path.resolve("stubs/debug.js"),
+      lodash: require.resolve("lodash/lodash.min.js")
+    }
+  },
   output: {
     filename: `[name]`,
     path: Path.resolve("bin"),
