@@ -290,7 +290,7 @@ class PkgSrcManager {
     const startTime = Date.now();
     const pkgName = item.name;
     const pkgCacheDir = this.makePkgCacheDir(pkgName);
-    const tmpFile = `tmp-${item.dist.shasum}-${item.version}.tgz`;
+    const tmpFile = `tmp-${Date.now()}-${item.dist.shasum}-${item.version}.tgz`;
     const tgzFile = `pkg-${item.dist.shasum}-${item.version}.tgz`;
     const fullTmpFile = Path.join(pkgCacheDir, tmpFile);
     const fullTgzFile = Path.join(pkgCacheDir, tgzFile);

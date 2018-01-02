@@ -125,6 +125,7 @@ class FynCli {
   fail(msg, err) {
     const dbgLog = "fyn-debug.log";
     logger.freezeItems(true);
+    logger.error(msg, `CWD ${this._fyn.cwd}`);
     logger.error(msg, "Please check for any errors that occur above.");
     logger.error(msg, `Also check ${chalk.magenta(dbgLog)} for more details.`);
     logger.error(msg, err.message);
