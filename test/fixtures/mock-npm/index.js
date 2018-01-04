@@ -28,11 +28,15 @@ function calcShasum(meta) {
 }
 
 function readMeta(pkgName) {
-  if (metaCache[pkgName]) return metaCache[pkgName];
-  const metaData = Fs.readFileSync(Path.join(__dirname, "metas", `${pkgName}.yml`));
-  const meta = Yaml.safeLoad(metaData);
+  let meta = metaCache[pkgName];
+
+  if (!meta) {
+    const metaData = Fs.readFileSync(Path.join(__dirname, "metas", `${pkgName}.yml`));
+    meta = Yaml.safeLoad(metaData);
+    metaCache[pkgName] = meta;
+  }
   calcShasum(meta);
-  metaCache[pkgName] = meta;
+
   return meta;
 }
 
