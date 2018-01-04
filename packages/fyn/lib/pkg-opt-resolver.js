@@ -7,6 +7,7 @@ const Tar = require("tar");
 const xsh = require("xsh");
 const _ = require("lodash");
 const Promise = require("bluebird");
+const rimraf = require("rimraf");
 const readFile = Promise.promisify(Fs.readFile);
 const mkdirp = Promise.promisify(require("mkdirp"));
 const PromiseQueue = require("./util/promise-queue");
@@ -161,8 +162,78 @@ class PkgOptResolver {
         .then(pkg => pkg.version === version && { path, pkg });
     };
 
+    const fetchPkgTarball = installedPath => {
+      const spinner = CliLogger.spinners[1];
+      logger.addItem({ name: OPTIONAL_RESOLVER, color: "green", watchTime: 3000, spinner });
+      logger.updateItem(OPTIONAL_RESOLVER, `loading package ${displayId}`);
+      const dist = data.meta.versions[version].dist;
+      // none found, fetch tarball
+      return this._fyn.pkgSrcMgr
+        .fetchTarball({ name, version, dist })
+        .tap(() => mkdirp(installedPath))
+        .then(res => {
+          logger.updateItem(OPTIONAL_RESOLVER, `extracting package ${displayId}`);
+          // extract tarball to node_modules/<name>/__fv_/<version>
+          const tarXOpt = { file: res.fullTgzFile, strip: 1, strict: true, C: installedPath };
+          return Promise.try(() => Tar.x(tarXOpt))
+            .then(() => checkPkg(installedPath))
+            .catch(err => {
+              logger.error(
+                "opt-resolver: reading package.json from package extracted from",
+                res.fullTgzFile,
+                "failed."
+              );
+              throw err;
+            })
+            .tap(x => {
+              assert(
+                x,
+                `opt-resolver: version of package in ${installedPath} extracted from ${
+                  res.fullTgzFile
+                } didn't match ${version}!`
+              );
+              logger.updateItem(OPTIONAL_RESOLVER, `extracted package ${displayId}`);
+              this._extractedPkgs[pkgId] = installedPath;
+            });
+        })
+        .catch(err => {
+          logger.debug(`opt resolver fetch tarball ${pkgId} failed`, err.message);
+          return "fetchFail";
+        });
+    };
+
     const pkgFromMeta = data.meta.versions[version];
-    let installedPath = this._fyn.getInstalledPkgDir(name, version, { promoted: true });
+    const topInstalledPath = this._fyn.getInstalledPkgDir(name, version, { promoted: true });
+    const fvInstalledPath = this._fyn.getInstalledPkgDir(name, version, { promoted: false });
+
+    const linkLocalPackage = () => {
+      const meta = data.meta;
+      const local = meta.local || _.get(meta, ["versions", version, "local"]);
+      logger.debug("opt resolver", name, version, "local", local);
+      if (!local) return false;
+      const dist = meta.versions[version].dist;
+      logger.debug("opt resolver linking local package", name, version, dist);
+      this._fyn.createPkgOutDirSync(topInstalledPath);
+      const vdir = fvInstalledPath;
+      this._fyn.createPkgOutDirSync(Path.join(vdir, ".."));
+
+      // If the dir already exist, then:
+      // - If it's symlink then unlink it
+      // - Else remove the directory
+      try {
+        Fs.unlinkSync(vdir);
+      } catch (e) {
+        logger.debug("unlinkSync symlink to local package failed", e);
+        rimraf.sync(vdir);
+      }
+      //
+      // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
+      //
+      Fs.symlinkSync(dist.fullPath, vdir);
+
+      return checkPkg(vdir);
+    };
+
     // is it under node_modules/<name> and has the right version?
     const promise = Promise.try(() => {
       const scripts = pkgFromMeta.scripts;
@@ -175,14 +246,13 @@ class PkgOptResolver {
         // full meta and doesn't have scripts or preinstall in scripts
         return pkgFromMeta;
       }
-      // package actuall has preinstall script, then need to fetch package tarball
-      // to try to execute the preinstall script
-      return checkPkg(installedPath);
+      // package actually has preinstall script, first check if it's already
+      // installed at top level in node_modules
+      return checkPkg(topInstalledPath);
     })
       .catch(() => {
         // is it under node_modules/<name>/__fv_/<version>?
-        installedPath = this._fyn.getInstalledPkgDir(name, version, { promoted: false });
-        return checkPkg(installedPath);
+        return checkPkg(fvInstalledPath);
       })
       .catch(() => {
         if (this._fyn.lockOnly) {
@@ -192,43 +262,9 @@ class PkgOptResolver {
           return "lockOnlyFail";
         }
 
-        const spinner = CliLogger.spinners[1];
-        logger.addItem({ name: OPTIONAL_RESOLVER, color: "green", watchTime: 3000, spinner });
-        logger.updateItem(OPTIONAL_RESOLVER, `loading package ${displayId}`);
-        const dist = data.meta.versions[version].dist;
-        // none found, fetch tarball
-        return this._fyn.pkgSrcMgr
-          .fetchTarball({ name, version, dist })
-          .tap(() => mkdirp(installedPath))
-          .then(res => {
-            logger.updateItem(OPTIONAL_RESOLVER, `extracting package ${displayId}`);
-            // extract tarball to node_modules/<name>/__fv_/<version>
-            const tarXOpt = { file: res.fullTgzFile, strip: 1, strict: true, C: installedPath };
-            return Promise.try(() => Tar.x(tarXOpt))
-              .then(() => checkPkg(installedPath))
-              .catch(err => {
-                logger.error(
-                  "opt-resolver: reading package.json from package extracted from",
-                  res.fullTgzFile,
-                  "failed."
-                );
-                throw err;
-              })
-              .tap(x => {
-                assert(
-                  x,
-                  `opt-resolver: version of package in ${installedPath} extracted from ${
-                    res.fullTgzFile
-                  } didn't match ${version}!`
-                );
-                logger.updateItem(OPTIONAL_RESOLVER, `extracted package ${displayId}`);
-                this._extractedPkgs[pkgId] = installedPath;
-              });
-          })
-          .catch(err => {
-            logger.debug(`opt resolver fetch tarball ${pkgId} failed`, err.message);
-            return "fetchFail";
-          });
+        // no existing install found, try to link local or fetch tarball into
+        // __fv_/<version>.
+        return linkLocalPackage() || fetchPkgTarball(fvInstalledPath);
       })
       .then(res => {
         if (res === "lockOnlyFail") {
@@ -249,7 +285,7 @@ class PkgOptResolver {
           logger.updateItem(OPTIONAL_RESOLVER, `running preinstall for ${displayId}`);
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
-            dir: installedPath,
+            dir: res.path,
             json: res.pkg
           });
           return ls

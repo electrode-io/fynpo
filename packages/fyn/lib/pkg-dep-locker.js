@@ -80,7 +80,7 @@ class PkgDepLocker {
           }
           if (vpkg.local) {
             meta.$ = "local";
-            meta._ = dist.fullPath;
+            meta._ = Path.relative(process.cwd(), dist.fullPath);
           } else {
             meta.$ = dist.shasum || 0;
             meta._ = dist.tarball;
@@ -154,7 +154,7 @@ class PkgDepLocker {
             vpkg.local = true;
             vpkg.dist = {
               shasum: "local",
-              fullPath: vpkg._
+              fullPath: Path.resolve(vpkg._)
             };
           } else {
             vpkg.dist = {

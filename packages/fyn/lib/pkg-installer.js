@@ -84,10 +84,17 @@ class PkgInstaller {
     const nameX = vdir.lastIndexOf(depInfo.name);
     const vdirNoName = vdir.substring(0, nameX);
     Fs.writeFileSync(Path.join(vdirNoName, FYN_LINK_JSON), JSON.stringify(vFynLinkData, null, 2));
+    // If the dir already exist, then:
+    // - If it's symlink then unlink it
+    // - Else remove the directory
+    try {
+      Fs.unlinkSync(vdir);
+    } catch (e) {
+      rimraf.sync(vdir);
+    }
     //
-    // create symlink for for app's installed node_modules to the target
+    // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
     //
-    rimraf.sync(vdir);
     Fs.symlinkSync(depInfo.dir, vdir);
 
     //
