@@ -1493,11 +1493,11 @@ flat-cache:
    write: ^0.2.1
 flat-module:
  _:
-  ^1.0.0: 1.0.0
- 1.0.0:
+  ^1.0.0: 1.0.1
+ 1.0.1:
   top: 1
-  $: 8142cfb936fb5f8dd91a2afaacbae21658878887
-  _: 'https://registry.npmjs.org/flat-module/-/flat-module-1.0.0.tgz'
+  $: 63d5f8768196d763929cece7fdd26626bd44a16a
+  _: 'https://registry.npmjs.org/flat-module/-/flat-module-1.0.1.tgz'
 for-in:
  _:
   ^1.0.1: 1.0.2
