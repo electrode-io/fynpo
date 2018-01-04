@@ -15,6 +15,7 @@ const chalk = require("chalk");
 const _ = require("lodash");
 const logger = require("./logger");
 const logFormat = require("./util/log-format");
+const uniqId = require("./util/uniq-id");
 
 xsh.Promise = Promise;
 
@@ -94,8 +95,8 @@ class LifecycleScripts {
 
   _logResult(data) {
     const { child, pkgName, dimPkgName, scriptName } = data;
-    const stdout = `stdout_${Date.now()}`;
-    const stderr = `stderr_${Date.now()}`;
+    const stdout = `stdout_${uniqId()}`;
+    const stderr = `stderr_${uniqId()}`;
 
     logger.addItem({ name: stdout, color: "green", display: `${pkgName} stdout` });
     logger.addItem({ name: stderr, color: "red", display: `${pkgName} stderr` });
