@@ -229,7 +229,7 @@ class PkgOptResolver {
       //
       // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
       //
-      Fs.symlinkSync(dist.fullPath, vdir);
+      Fs.symlinkSync(dist.fullPath, vdir, "dir");
 
       return checkPkg(vdir);
     };

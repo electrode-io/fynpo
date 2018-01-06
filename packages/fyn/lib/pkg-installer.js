@@ -95,7 +95,7 @@ class PkgInstaller {
     //
     // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
     //
-    Fs.symlinkSync(depInfo.dir, vdir);
+    Fs.symlinkSync(depInfo.dir, vdir, "dir");
 
     //
     // take depInfo.json._depResolutions and save it to fyn link file
