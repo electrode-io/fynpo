@@ -65,7 +65,6 @@ class PkgInstaller {
     const now = Date.now();
     const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: true });
     logger.verbose("linking local pkg dir", dir, "=>", depInfo.dir);
-    this._fyn.createPkgOutDirSync(dir);
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
     //
     // create the directory one level up so the actual package name or the second part

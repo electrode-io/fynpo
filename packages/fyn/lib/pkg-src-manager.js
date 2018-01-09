@@ -69,6 +69,12 @@ class PkgSrcManager {
     return false;
   }
 
+  makeLocalId(fullPath) {
+    const md5 = crypto.createHash("md5");
+    md5.update(fullPath);
+    return `fynlocal${md5.digest("hex")}`;
+  }
+
   /* eslint-disable max-statements */
   fetchLocalItem(item) {
     const semver = item.semver;
@@ -99,6 +105,7 @@ class PkgSrcManager {
     return readFile(pkgJsonFile).then(raw => {
       const str = raw.toString();
       const json = JSON.parse(str);
+      const version = `${json.version}-${this.makeLocalId(fullPath)}`;
       json.dist = {
         semver,
         localPath,
@@ -110,13 +117,13 @@ class PkgSrcManager {
         json,
         name: json.name,
         versions: {
-          [json.version]: json
+          [version]: json
         },
         "dist-tags": {
-          latest: json.version
+          latest: version
         },
         [LOCAL_VERSION_MAPS]: {
-          [item.semver]: json.version
+          [item.semver]: version
         }
       };
 
@@ -127,7 +134,7 @@ class PkgSrcManager {
         "at",
         fullPath,
         "local version",
-        json.version
+        version
       );
 
       return this._localMeta[fullPath];

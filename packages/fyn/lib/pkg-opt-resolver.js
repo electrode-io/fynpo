@@ -123,7 +123,9 @@ class PkgOptResolver {
     };
 
     const addChecked = res => {
-      if (!this._checkedPkgs[pkgId]) this._checkedPkgs[pkgId] = res;
+      if (!this._checkedPkgs[pkgId]) {
+        this._checkedPkgs[pkgId] = res;
+      }
     };
 
     const logFail = msg => {
@@ -135,15 +137,16 @@ class PkgOptResolver {
       logger[level](chalk.green(`optional dep check passed`), displayId, chalk.green(`- ${msg}`));
     };
 
+    // already check completed, just use existing result
+    const checkedPkgRes = this._checkedPkgs[pkgId];
+    if (checkedPkgRes) {
+      return processCheckResult(Promise.resolve(checkedPkgRes));
+    }
+
     // already check in progress
     const inflight = this._inflights.get(pkgId);
     if (inflight) {
       return processCheckResult(inflight);
-    }
-
-    // already check completed, just use existing result
-    if (this._checkedPkgs[pkgId]) {
-      return processCheckResult(Promise.resolve(this._checkedPkgs[pkgId]));
     }
 
     if (_.get(data, ["meta", "versions", version, "optFailed"])) {
@@ -159,7 +162,11 @@ class PkgOptResolver {
     const checkPkg = path => {
       return readFile(Path.join(path, "package.json"))
         .then(JSON.parse)
-        .then(pkg => pkg.version === version && { path, pkg });
+        .then(pkg => {
+          const x = version.indexOf("-fynlocal");
+          const ver = x > 0 ? version.substr(0, x) : version;
+          return pkg.version === ver && { path, pkg };
+        });
     };
 
     const fetchPkgTarball = installedPath => {
@@ -213,7 +220,6 @@ class PkgOptResolver {
       if (!local) return false;
       const dist = meta.versions[version].dist;
       logger.debug("opt resolver linking local package", name, version, dist);
-      this._fyn.createPkgOutDirSync(topInstalledPath);
       const vdir = fvInstalledPath;
       this._fyn.createPkgOutDirSync(Path.join(vdir, ".."));
 
