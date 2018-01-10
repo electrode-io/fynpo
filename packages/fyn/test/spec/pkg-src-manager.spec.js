@@ -45,7 +45,7 @@ describe("pkg-src-manager", function() {
         semver: ""
       })
       .then(meta => {
-        expect(meta.fynFo[host].etag).to.exist;
+        expect(meta.fynFo.etag).to.exist;
       });
   });
 
@@ -64,16 +64,16 @@ describe("pkg-src-manager", function() {
         semver: ""
       })
       .then(meta => {
-        expect(meta.fynFo[host].etag).to.exist;
-        etag = meta.fynFo[host].etag;
+        expect(meta.fynFo.etag).to.exist;
+        etag = meta.fynFo.etag;
         return new PkgSrcManager(options).fetchMeta({
           name: "mod-a",
           semver: ""
         });
       })
       .then(meta => {
-        expect(meta.fynFo[host].etag).to.exist;
-        expect(meta.fynFo[host].etag).to.equal(etag);
+        expect(meta.fynFo.etag).to.exist;
+        expect(meta.fynFo.etag).to.equal(etag);
       });
   });
 });
