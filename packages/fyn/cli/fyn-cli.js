@@ -32,10 +32,11 @@ const checkFlatModule = () => {
         chalk.green("NODE_OPTIONS")
       );
       logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
+    } else {
+      const setupSh = "eval `fyn bash`";
+      logger.fyi(`To setup for bash, run the command "${chalk.cyan(setupSh)}"`);
     }
 
-    const setupSh = "eval `fyn bash`";
-    logger.fyi(`To setup for bash, run the command "${chalk.cyan(setupSh)}"`);
     logger.fyi(`See ${chalk.blue("https://github.com/electrode-io/fyn#usage")} for more details.`);
 
     exit(1);

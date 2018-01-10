@@ -64,6 +64,18 @@ And you are ready to use `fyn`.
 
 > If you use another shell other than bash, please check its docs for instructions on how to set environment variables.
 
+### Node 6 and lower
+
+Only Node 8 and up supports [NODE_OPTIONS].
+
+For Node 4 and 6, you have to specify the [`-r` option] when you invoke node, like this:
+
+```
+node -r <path-to-flat-module>
+```
+
+However, `fyn` doesn't really work well even with this, because child process spawn from Node will not inherit that option.
+
 # Installing with fyn
 
 Change into the directory for your project with the `package.json` file, and run:
@@ -104,3 +116,4 @@ If there's no RC file and command line override, then these default are used:
 
 [flat node_modules design here]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
+[`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
