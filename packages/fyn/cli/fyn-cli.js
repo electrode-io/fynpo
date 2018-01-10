@@ -53,7 +53,12 @@ class FynCli {
 
     if (options.noStartupInfo !== true) this.showStartupInfo();
 
-    this._fyn = new Fyn(this._rc);
+    this._fyn = undefined;
+  }
+
+  get fyn() {
+    if (!this._fyn) this._fyn = new Fyn(this._rc);
+    return this._fyn;
   }
 
   setLogLevel(ll) {
@@ -127,7 +132,7 @@ class FynCli {
   fail(msg, err) {
     const dbgLog = "fyn-debug.log";
     logger.freezeItems(true);
-    logger.error(msg, `CWD ${this._fyn.cwd}`);
+    logger.error(msg, `CWD ${this.fyn.cwd}`);
     logger.error(msg, "Please check for any errors that occur above.");
     logger.error(msg, `Also check ${chalk.magenta(dbgLog)} for more details.`);
     logger.error(msg, err.message);
@@ -143,7 +148,7 @@ class FynCli {
       if (_.isEmpty(packages)) return [];
 
       const items = packages.map(x => {
-        const fpath = this._fyn.pkgSrcMgr.getSemverAsFilepath(x);
+        const fpath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
         if (fpath) {
           return {
             $: x,
@@ -196,14 +201,14 @@ class FynCli {
       stopOnError: true,
       processItem: item => {
         let found;
-        return this._fyn.pkgSrcMgr.fetchMeta(item).then(meta => {
+        return this.fyn.pkgSrcMgr.fetchMeta(item).then(meta => {
           // logger.info("adding", x.name, x.semver, meta);
           // look at dist tags
           const tags = meta["dist-tags"];
           if (meta.local) {
             logger.info("adding local package at", item.fullPath);
             item.name = meta.name;
-            found = Path.relative(this._fyn.cwd, item.fullPath);
+            found = Path.relative(this.fyn.cwd, item.fullPath);
           } else if (tags && tags[item.semver]) {
             logger.debug("adding with dist tag for", item.name, item.semver, tags[item.semver]);
             found = `^${tags[item.semver]}`;
@@ -241,7 +246,7 @@ class FynCli {
 
         const added = _.mapValues(sections, () => []);
 
-        const pkg = this._fyn._pkg;
+        const pkg = this.fyn._pkg;
         results.forEach(item => {
           _.set(pkg, [item.section, item.name], item.found);
           added[item.section].push(item.name);
@@ -254,7 +259,7 @@ class FynCli {
           }
         });
 
-        this._fyn.savePkg();
+        this.fyn.savePkg();
         return true;
       });
   }
@@ -276,7 +281,7 @@ class FynCli {
 
     const removed = [];
     sections.forEach(sec => {
-      const section = this._fyn._pkg[sec];
+      const section = this.fyn._pkg[sec];
       if (_.isEmpty(section)) return;
       for (let i = 0; i < packages.length; i++) {
         const pkg = packages[i];
@@ -295,7 +300,7 @@ class FynCli {
 
     if (removed.length > 0) {
       logger.info("removed packages from package.json:", removed.join(", "));
-      this._fyn.savePkg();
+      this.fyn.savePkg();
       return true;
     }
 
@@ -310,7 +315,7 @@ class FynCli {
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
-    return this._fyn
+    return this.fyn
       .resolveDependencies()
       .then(() => {
         logger.remove(FETCH_META);
@@ -318,14 +323,14 @@ class FynCli {
         logger.updateItem(FETCH_PACKAGE, "fetching packages...");
         logger.addItem({ name: LOAD_PACKAGE, color: "green", spinner });
         logger.updateItem(LOAD_PACKAGE, "loading packages...");
-        return this._fyn.fetchPackages();
+        return this.fyn.fetchPackages();
       })
       .then(() => {
         logger.remove(FETCH_PACKAGE);
         logger.remove(LOAD_PACKAGE);
         logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
         logger.updateItem(INSTALL_PACKAGE, "installing packages...");
-        const installer = new PkgInstaller({ fyn: this._fyn });
+        const installer = new PkgInstaller({ fyn: this.fyn });
 
         return installer.install();
       })
