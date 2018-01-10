@@ -2,12 +2,10 @@
 
 const Path = require("path");
 const Fs = require("fs");
-const Crypto = require("crypto");
 const Promise = require("bluebird");
 const rimraf = require("rimraf");
 const _ = require("lodash");
 const chalk = require("chalk");
-const mkdirp = require("mkdirp");
 const PkgDepLinker = require("./pkg-dep-linker");
 const PkgBinLinker = require("./pkg-bin-linker");
 const PkgDepLocker = require("./pkg-dep-locker");
@@ -16,16 +14,17 @@ const logger = require("./logger");
 const logFormat = require("./util/log-format");
 const { INSTALL_PACKAGE } = require("./log-items");
 
-const FYN_LINK_JSON = "__fyn_link__.json";
-
-/* eslint-disable max-statements,no-magic-numbers,no-empty */
+/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity */
 
 class PkgInstaller {
   constructor(options) {
     this._fyn = options.fyn;
     this._data = this._fyn._data;
-    this._depLinker = new PkgDepLinker();
-    this._binLinker = new PkgBinLinker({ outputDir: this._fyn.getOutputDir() });
+    this._depLinker = new PkgDepLinker({ fyn: this._fyn });
+    const outputDir = this._fyn.getOutputDir();
+    this._binLinker = new PkgBinLinker({ outputDir });
+    this._fynRes = this._depLinker.readAppRes(outputDir);
+    this._fynFo = this._fynRes._fynFo;
   }
 
   install() {
@@ -34,14 +33,14 @@ class PkgInstaller {
     this.toLink = [];
     this._data.cleanLinked();
     this._fyn._depResolver.resolvePkgPeerDep(this._fyn._pkg, "your app", this._data);
-    this._depLinker.linkApp(this._data.res, this._fyn.getOutputDir());
     // go through each package and insert
     // _depResolutions into its package.json
     _.each(this._data.getPkgsData(), (pkg, name) => {
       this._gatherPkg(pkg, name);
     });
 
-    logger.debug("doing install");
+    this._depLinker.linkApp(this._data.res, this._fynFo, this._fyn.getOutputDir());
+
     return this._doInstall().finally(() => {
       this.preInstall = undefined;
       this.postInstall = undefined;
@@ -49,82 +48,22 @@ class PkgInstaller {
     });
   }
 
-  _createLinkName(targetNmDir, name) {
-    const sha1 = Crypto.createHash("sha1")
-      .update(targetNmDir)
-      .update(name)
-      .digest("base64")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-    return `${name.replace(/[@\/]/g, "_")}-${sha1}`;
-  }
-
   _linkLocalPkg(depInfo) {
+    // avoid linking multiple times
     if (depInfo.linkLocal) return;
     depInfo.linkLocal = true;
-    const now = Date.now();
-    const dir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: true });
-    logger.verbose("linking local pkg dir", dir, "=>", depInfo.dir);
-    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
-    //
-    // create the directory one level up so the actual package name or the second part
-    // of it if it's scoped can be a symlink to the local package's directory.
-    //
-    this._fyn.createPkgOutDirSync(Path.join(vdir, ".."));
-    const vFynLinkData = {
-      name: depInfo.name,
-      version: depInfo.version,
-      timestamp: now,
-      targetPath: depInfo.dist.fullPath
-    };
-    //
-    // Remove name from the installed package path and save fyn link file there
-    //
-    const nameX = vdir.lastIndexOf(depInfo.name);
-    const vdirNoName = vdir.substring(0, nameX);
-    Fs.writeFileSync(Path.join(vdirNoName, FYN_LINK_JSON), JSON.stringify(vFynLinkData, null, 2));
-    // If the dir already exist, then:
-    // - If it's symlink then unlink it
-    // - Else remove the directory
-    try {
-      Fs.unlinkSync(vdir);
-    } catch (e) {
-      rimraf.sync(vdir);
-    }
-    //
-    // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
-    //
-    Fs.symlinkSync(depInfo.dir, vdir, "dir");
 
-    //
-    // take depInfo.json._depResolutions and save it to fyn link file
-    //
-    const targetNmDir = Path.join(depInfo.dist.fullPath, "node_modules");
-    mkdirp.sync(targetNmDir);
-    const linkName = this._createLinkName(targetNmDir, depInfo.name);
-    const linkFile = Path.join(this._fyn.linkDir, `${linkName}.json`);
-    this._fyn.createDirSync(this._fyn.linkDir);
-    let linkData;
-    try {
-      linkData = JSON.parse(Fs.readFileSync(linkFile));
-    } catch (err) {
-      linkData = { timestamps: {} };
-    }
-    linkData.targetPath = depInfo.dist.fullPath;
-    linkData.timestamps[this._fyn.cwd] = now;
-    linkData[this._fyn.cwd] = depInfo.json._depResolutions;
-    Fs.writeFileSync(linkFile, JSON.stringify(linkData, null, 2));
-    //
-    // create symlink from the local package dir to the link file
-    //
-    const targetLinkFile = Path.join(targetNmDir, FYN_LINK_JSON);
-    rimraf.sync(targetLinkFile);
-    Fs.symlinkSync(linkFile, targetLinkFile);
+    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, { promoted: false });
+    this._depLinker.linkLocalPackage(vdir, depInfo.dir);
+    this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
   }
 
   _savePkgJson(log) {
     _.each(this.toLink, depInfo => {
-      if (depInfo.local) return this._linkLocalPkg(depInfo);
+      if (depInfo.local) {
+        this._depLinker.saveLocalPackageFynLink(depInfo);
+        return; // don't override locally linked module's package.json
+      }
       const outputStr = `${JSON.stringify(depInfo.json, null, 2)}\n`;
       if (depInfo.str !== outputStr) {
         if (log && depInfo.linkDep) {
@@ -138,7 +77,6 @@ class PkgInstaller {
         }
         Fs.writeFileSync(Path.join(depInfo.dir, "package.json"), outputStr);
       }
-      return undefined;
     });
   }
 
@@ -158,7 +96,6 @@ class PkgInstaller {
     return Promise.resolve(this.preInstall)
       .map(
         depInfo => {
-          if (depInfo.local) return undefined;
           const pkgId = logFormat.pkgId(depInfo);
           running.push(pkgId);
           updateRunning("preinstall");
@@ -167,6 +104,9 @@ class PkgInstaller {
             .execute(["preinstall"], true)
             .then(() => {
               depInfo.json._fyn.preinstall = true;
+              if (depInfo.fynLinkData) {
+                depInfo.fynLinkData.preinstall = true;
+              }
             })
             .finally(() => {
               removeRunning(pkgId);
@@ -209,6 +149,9 @@ class PkgInstaller {
             .execute(depInfo.install, true)
             .then(() => {
               depInfo.json._fyn.install = true;
+              if (depInfo.fynLinkData) {
+                depInfo.fynLinkData.install = true;
+              }
             })
             .catch(() => {
               logger.warn(chalk.yellow(`ignoring ${pkgId} npm script install failure`));
@@ -256,19 +199,27 @@ class PkgInstaller {
 
   _gatherPkg(pkg, name) {
     _.each(pkg, (depInfo, version) => {
-      if (!depInfo.json) {
+      if (depInfo.local) this._linkLocalPkg(depInfo);
+
+      const json = depInfo.json || {};
+
+      if (_.isEmpty(json) || json.fromLocked) {
         const dir = this._fyn.getInstalledPkgDir(name, version, depInfo);
         const file = Path.join(dir, "package.json");
         const str = Fs.readFileSync(file).toString();
-        Object.assign(depInfo, { dir, str, json: JSON.parse(str) });
+        Object.assign(json, JSON.parse(str));
+        Object.assign(depInfo, { str, json });
+        if (!depInfo.dir) depInfo.dir = dir;
       }
-      const json = depInfo.json;
 
       if (!json._fyn) json._fyn = {};
       const scripts = json.scripts || {};
-      if (!json._fyn.preinstall && scripts.preinstall) {
+      const hasPI = json.hasPI || Boolean(scripts.preinstall);
+      const piExed = json._fyn.preinstall || Boolean(depInfo.preinstall);
+
+      if (!piExed && hasPI) {
         if (depInfo.preInstalled) {
-          depInfo.json._fyn.preinstall = true;
+          json._fyn.preinstall = true;
         } else {
           logger.debug("adding preinstall step for", depInfo.dir);
           this.preInstall.push(depInfo);

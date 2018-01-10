@@ -7,7 +7,6 @@ const Tar = require("tar");
 const xsh = require("xsh");
 const _ = require("lodash");
 const Promise = require("bluebird");
-const rimraf = require("rimraf");
 const readFile = Promise.promisify(Fs.readFile);
 const mkdirp = Promise.promisify(require("mkdirp"));
 const PromiseQueue = require("./util/promise-queue");
@@ -18,6 +17,7 @@ const chalk = require("chalk");
 const longPending = require("./long-pending");
 const CliLogger = require("./cli-logger");
 const logFormat = require("./util/log-format");
+const PkgDepLinker = require("./pkg-dep-linker");
 const { OPTIONAL_RESOLVER } = require("./log-items");
 
 xsh.Promise = Promise;
@@ -53,6 +53,11 @@ class PkgOptResolver {
     this._depResolver = options.depResolver;
     this._inflights = new Inflight();
     this._fyn = options.fyn;
+    this._depLinker = new PkgDepLinker({ fyn: this._fyn });
+    this.setupQ();
+  }
+
+  setupQ() {
     this._promiseQ = new PromiseQueue({
       concurrency: 2,
       stopOnError: false,
@@ -218,26 +223,12 @@ class PkgOptResolver {
       const local = meta.local || _.get(meta, ["versions", version, "local"]);
       logger.debug("opt resolver", name, version, "local", local);
       if (!local) return false;
+
       const dist = meta.versions[version].dist;
       logger.debug("opt resolver linking local package", name, version, dist);
-      const vdir = fvInstalledPath;
-      this._fyn.createPkgOutDirSync(Path.join(vdir, ".."));
 
-      // If the dir already exist, then:
-      // - If it's symlink then unlink it
-      // - Else remove the directory
-      try {
-        Fs.unlinkSync(vdir);
-      } catch (e) {
-        logger.debug("unlinkSync symlink to local package failed", e);
-        rimraf.sync(vdir);
-      }
-      //
-      // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
-      //
-      Fs.symlinkSync(dist.fullPath, vdir, "dir");
-
-      return checkPkg(vdir);
+      this._depLinker.linkLocalPackage(fvInstalledPath, dist.fullPath);
+      return checkPkg(fvInstalledPath);
     };
 
     // is it under node_modules/<name> and has the right version?

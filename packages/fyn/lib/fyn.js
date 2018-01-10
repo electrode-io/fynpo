@@ -155,12 +155,16 @@ class Fyn {
       .forEach(f => rimraf.sync(Path.join(dir, f)));
   }
 
-  createPkgOutDirSync(dir) {
+  createPkgOutDirSync(dir, keep) {
     try {
       const r = mkdirp.sync(dir);
-      if (r === null) this.clearPkgOutDirSync(dir);
+      // mkdirp returns null if directory already exist
+      // clear directory to prepare it for installing package
+      if (r === null && !keep) this.clearPkgOutDirSync(dir);
     } catch (err) {
+      // mkdirp fails with EEXIST if file exist and is not a directory
       if (err.code === "EEXIST") {
+        // remove it and create as a directory
         rimraf.sync(dir);
         mkdirp.sync(dir);
       } else {
@@ -173,7 +177,9 @@ class Fyn {
     try {
       mkdirp.sync(dir);
     } catch (err) {
+      // mkdirp fails with EEXIST if file exist and is not a directory
       if (err.code === "EEXIST") {
+        // remove it and create as a directory
         rimraf.sync(dir);
         mkdirp.sync(dir);
       } else {
@@ -185,6 +191,14 @@ class Fyn {
   // fyn's directory to store all local package linking file
   get linkDir() {
     return Path.join(this._options.fynDir, "links");
+  }
+
+  readJson(file, fallback) {
+    try {
+      return JSON.parse(Fs.readFileSync(file));
+    } catch (e) {
+      return fallback !== undefined ? fallback : {};
+    }
   }
 
   readPkgJson(pkg) {
