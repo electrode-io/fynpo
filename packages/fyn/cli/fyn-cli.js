@@ -34,6 +34,8 @@ const checkFlatModule = () => {
       logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
     }
 
+    logger.fyi(`See ${chalk.blue("https://github.com/electrode-io/fyn#usage")} for more details.`);
+
     exit(1);
   }
 };
