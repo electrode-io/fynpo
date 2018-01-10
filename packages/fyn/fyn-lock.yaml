@@ -2091,6 +2091,13 @@ isobject:
   _: 'https://registry.npmjs.org/isobject/-/isobject-2.1.0.tgz'
   dependencies:
    isarray: 1.0.0
+item-queue:
+ _:
+  ^0.1.0: 0.1.0
+ 0.1.0:
+  top: 1
+  $: a1c33a2e692ea41109ce5fb5e3316378b5080c9c
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-0.1.0.tgz'
 items:
  _:
   '2.x.x,^2.1.1': 2.1.1
