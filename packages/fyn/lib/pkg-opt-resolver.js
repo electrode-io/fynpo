@@ -75,7 +75,7 @@ class PkgOptResolver {
         }
       });
     });
-    this._promiseQ.on("done", () => logger.remove(OPTIONAL_RESOLVER));
+    this._promiseQ.on("done", () => logger.removeItem(OPTIONAL_RESOLVER));
     this._promiseQ.on("fail", x => logger.error("opt-check fail", x));
     this._promiseQ.on("failItem", x => logger.error("opt-check failItem", x.error));
   }

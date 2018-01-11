@@ -13,7 +13,7 @@ module.exports = {
     options = options || {};
     const logItemName = options.name || LONG_WAIT_PACKAGE;
     if (items.total === 0) {
-      logger.remove(logItemName);
+      logger.removeItem(logItemName);
       return;
     }
     const all = items.watched.concat(items.still);

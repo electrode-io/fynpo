@@ -193,7 +193,7 @@ class PkgInstaller {
         logger.info(`${chalk.green("done install")} ${logFormat.time(Date.now() - start)}`);
       })
       .finally(() => {
-        logger.remove(INSTALL_PACKAGE);
+        logger.removeItem(INSTALL_PACKAGE);
       });
   }
 

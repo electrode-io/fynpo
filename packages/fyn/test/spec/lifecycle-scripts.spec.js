@@ -7,7 +7,7 @@ const logger = require("../../lib/logger");
 const chalk = require("chalk");
 
 describe("lifecycle-scripts", function() {
-  logger.logItem(false);
+  logger.setItemType(false);
   chalk.enabled = false;
 
   beforeEach(() => {

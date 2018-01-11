@@ -112,8 +112,8 @@ class LifecycleScripts {
     child.stderr.on("data", updateStderr);
 
     const logResult = (err, output) => {
-      logger.remove(stdout);
-      logger.remove(stderr);
+      logger.removeItem(stdout);
+      logger.removeItem(stderr);
       child.stdout.removeListener("data", updateStdout);
       child.stderr.removeListener("data", updateStderr);
 

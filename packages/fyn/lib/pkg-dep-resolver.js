@@ -149,7 +149,7 @@ class PkgDepResolver {
     if (!this.checkOptResolver() && this._promiseQ.isPause) {
       this._promiseQ.resume();
     } else if (!this._optResolver.isPending()) {
-      logger.remove(LONG_WAIT_META);
+      logger.removeItem(LONG_WAIT_META);
       const time = logFormat.time(data.totalTime);
       logger.info(`${chalk.green("done resolving dependencies")} ${time}`);
       this._data.sortPackagesByKeys();

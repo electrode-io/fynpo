@@ -2639,11 +2639,11 @@ nigel:
    vise: 2.x.x
 nix-clap:
  _:
-  ^1.0.8: 1.0.8
- 1.0.8:
+  ^1.0.8: 1.1.0
+ 1.1.0:
   top: 1
-  $: 2a43137221e0ebd6c5166b493e6ce8bfb308c547
-  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.0.8.tgz'
+  $: 2e6550d205def36a350d5791d3ae0bb099c2cf5b
+  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.1.0.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-libs-browser:
@@ -3914,6 +3914,16 @@ vise:
   _: 'https://registry.npmjs.org/vise/-/vise-2.0.2.tgz'
   dependencies:
    hoek: 4.x.x
+visual-logger:
+ _:
+  ^0.1.0: 0.1.0
+ 0.1.0:
+  top: 1
+  $: 17a41e6f2af6fd4b080a9e0d5531853a53255dc2
+  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.0.tgz'
+  dependencies:
+   chalk: ^2.3.0
+   log-update: ^2.3.0
 vm-browserify:
  _:
   0.0.4: 0.0.4
