@@ -49,7 +49,7 @@ const myDir = Path.join(__dirname, "..");
 class FynCli {
   constructor(options) {
     chalk.enabled = options.colors;
-    logger.logItem(options.progress);
+    if (options.progress) logger.setItemType(options.progress);
     this.setLogLevel(options.logLevel);
     this.loadRc(Object.assign({}, options));
     this.setLogLevel(this._rc.logLevel);
@@ -129,7 +129,7 @@ class FynCli {
   }
 
   saveLogs(dbgLog) {
-    Fs.writeFileSync(dbgLog, logger._saveLogs.join("\n") + "\n");
+    Fs.writeFileSync(dbgLog, logger.logData.join("\n") + "\n");
   }
 
   fail(msg, err) {
@@ -240,7 +240,7 @@ class FynCli {
       .resume()
       .wait()
       .then(() => {
-        logger.remove(FETCH_META);
+        logger.removeItem(FETCH_META);
 
         if (results.length === 0) {
           logger.info("No packages found for add");
@@ -321,7 +321,7 @@ class FynCli {
     return this.fyn
       .resolveDependencies()
       .then(() => {
-        logger.remove(FETCH_META);
+        logger.removeItem(FETCH_META);
         logger.addItem({ name: FETCH_PACKAGE, color: "green", spinner });
         logger.updateItem(FETCH_PACKAGE, "fetching packages...");
         logger.addItem({ name: LOAD_PACKAGE, color: "green", spinner });
@@ -329,8 +329,8 @@ class FynCli {
         return this.fyn.fetchPackages();
       })
       .then(() => {
-        logger.remove(FETCH_PACKAGE);
-        logger.remove(LOAD_PACKAGE);
+        logger.removeItem(FETCH_PACKAGE);
+        logger.removeItem(LOAD_PACKAGE);
         logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
         logger.updateItem(INSTALL_PACKAGE, "installing packages...");
         const installer = new PkgInstaller({ fyn: this.fyn });
@@ -338,7 +338,7 @@ class FynCli {
         return installer.install();
       })
       .then(() => {
-        logger.remove(INSTALL_PACKAGE);
+        logger.removeItem(INSTALL_PACKAGE);
         const end = Date.now();
         logger.info(
           chalk.green("complete in total"),

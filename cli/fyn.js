@@ -55,10 +55,11 @@ const options = {
     desc: "Log with colors (--no-colors turn off)"
   },
   progress: {
-    type: "string",
+    type: "enum",
     alias: "pg",
     requiresArg: true,
     default: "normal",
+    enum: /^(normal|simple|none)$/,
     desc: "Log progress type: normal,simple,none"
   },
   cwd: {

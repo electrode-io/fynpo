@@ -12,7 +12,7 @@ const logger = require("../../lib/logger");
 const chalk = require("chalk");
 
 describe("pkg-dep-resolver", function() {
-  logger.logItem(false);
+  logger.setItemType(false);
   chalk.enabled = false;
   let server;
   let fynDir;
