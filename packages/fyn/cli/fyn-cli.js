@@ -98,6 +98,7 @@ class FynCli {
       rcName = Path.join(process.env.HOME, ".fynrc");
       rcData = Fs.readFileSync(rcName).toString();
     } catch (err) {
+      logger.debug(`Reading RC file ${rcName} failed.`, err.message);
       this._rc = {};
     }
 
