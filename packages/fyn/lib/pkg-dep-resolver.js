@@ -235,7 +235,6 @@ class PkgDepResolver {
   addPackageResolution(item, meta, resolved) {
     item.resolve(resolved);
 
-    const metaJson = meta.versions[resolved];
     const pkgsData = this._data.getPkgsData(item.optFailed);
     let pkgV; // specific version of the known package
     let kpkg = pkgsData[item.name]; // known package
@@ -282,6 +281,8 @@ class PkgDepResolver {
     }
 
     let firstSeen = false;
+
+    const metaJson = meta.versions[resolved];
 
     if (!pkgV) {
       firstSeen = true;
@@ -456,6 +457,16 @@ class PkgDepResolver {
     if (!resolved) {
       if (!force) return false;
       throw new Error(`No version of ${item.name} satisfied semver ${item.semver}`);
+    }
+
+    //
+    // The item was ealier resolved to a local package, which also satifies
+    // the semver currently being searched, so switch to use meta generated
+    // for the local package
+    //
+    if (resolved.indexOf("-fynlocal") > 0 && !meta.local) {
+      const x = this._pkgSrcMgr.getLocalPackageMeta(item, resolved);
+      if (x) meta = x;
     }
 
     this.addPackageResolution(item, meta, resolved);

@@ -75,6 +75,10 @@ class PkgSrcManager {
     return `fynlocal${md5.digest("hex")}`;
   }
 
+  getLocalPackageMeta(item, resolved) {
+    return _.get(this._localMeta, [item.name, resolved]);
+  }
+
   /* eslint-disable max-statements */
   fetchLocalItem(item) {
     const semver = item.semver;
@@ -100,22 +104,25 @@ class PkgSrcManager {
 
     logger.debug("fetchLocalItem localPath", localPath, "fullPath", fullPath);
 
-    if (this._localMeta[fullPath]) return Promise.resolve(this._localMeta[fullPath]);
+    const existLocalMeta = _.get(this._localMeta, [item.name, fullPath]);
+
+    if (existLocalMeta) return Promise.resolve(existLocalMeta);
 
     return readFile(pkgJsonFile).then(raw => {
       const str = raw.toString();
       const json = JSON.parse(str);
       const version = `${json.version}-${this.makeLocalId(fullPath)}`;
+      const name = item.name;
       json.dist = {
         semver,
         localPath,
         fullPath,
         str
       };
-      this._localMeta[fullPath] = {
+      const localMeta = {
         local: true,
+        name,
         json,
-        name: json.name,
         versions: {
           [version]: json
         },
@@ -137,12 +144,12 @@ class PkgSrcManager {
         version
       );
 
-      return this._localMeta[fullPath];
+      _.set(this._localMeta, [name, fullPath], localMeta);
+      _.set(this._localMeta, [name, version], localMeta);
+
+      return localMeta;
     });
   }
-
-  // TODO
-  // _checkCacheMeta(pkgName) {}
 
   formatMetaUrl(item) {
     const reg = Object.assign({}, this._registry);
