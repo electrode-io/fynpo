@@ -3916,11 +3916,11 @@ vise:
    hoek: 4.x.x
 visual-logger:
  _:
-  ^0.1.0: 0.1.0
- 0.1.0:
+  ^0.1.0: 0.1.1
+ 0.1.1:
   top: 1
-  $: 17a41e6f2af6fd4b080a9e0d5531853a53255dc2
-  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.0.tgz'
+  $: b149645a552b15578be7caf9499a564ad33e9183
+  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.1.tgz'
   dependencies:
    chalk: ^2.3.0
    log-update: ^2.3.0
@@ -4081,18 +4081,18 @@ ws:
    ultron: ~1.1.0
 xclap:
  _:
-  ^0.2.0: 0.2.17
- 0.2.17:
-  $: 6de781d5f849160a8f7c41f55ac8f9ed6160013b
-  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.17.tgz'
+  ^0.2.0: 0.2.19
+ 0.2.19:
+  $: 6dc34ca50a0f2335728d2e673177313aad3a7b34
+  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.19.tgz'
   dependencies:
    chalk: ^2.0.1
    insync: ^2.1.1
    lodash.foreach: ^4.5.0
+   nix-clap: ^1.0.8
    optional-require: ^1.0.0
    path-is-inside: ^1.0.2
    xsh: ^0.4.0
-   yargs: ^8.0.1
 xenv-config:
  _:
   ^1.1.2: 1.2.1
@@ -4156,7 +4156,7 @@ yamljs:
    glob: ^7.0.5
 yargs:
  _:
-  '^8.0.1,^8.0.2': 8.0.2
+  ^8.0.2: 8.0.2
   ~3.10.0: 3.10.0
  8.0.2:
   $: 6299a9055b1cefc969ff7e79c1d918dceb22c360
