@@ -94,15 +94,15 @@ You can see the options fyn supports with:
 fyn --help
 ```
 
-fyn also loads config from `~/.fynrc`, which is just a `YAML` file, below is an example:
+fyn also loads config from `~/.fynrc`, which is just a `YAML` file, below is an example, with all the options set to their default values:
 
 ```yaml
 registry: https://registry.npmjs.org
 localOnly: false
 forceCache: false
 lockOnly: false
-progress: none
-logLevel: verbose
+progress: normal
+logLevel: info
 production: false
 ```
 
