@@ -3916,11 +3916,11 @@ vise:
    hoek: 4.x.x
 visual-logger:
  _:
-  ^0.1.0: 0.1.1
- 0.1.1:
+  ^0.1.0: 0.1.2
+ 0.1.2:
   top: 1
-  $: b149645a552b15578be7caf9499a564ad33e9183
-  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.1.tgz'
+  $: a8bedf85293fc8a005a19021d74bb73306aad803
+  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.2.tgz'
   dependencies:
    chalk: ^2.3.0
    log-update: ^2.3.0
