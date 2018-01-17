@@ -18,3 +18,4 @@
 /webpack.config.js
 *.tgz
 /stubs
+.npmignore
