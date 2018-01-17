@@ -2093,11 +2093,11 @@ isobject:
    isarray: 1.0.0
 item-queue:
  _:
-  ^0.1.0: 0.1.0
- 0.1.0:
+  ^1.0.0: 1.0.0
+ 1.0.0:
   top: 1
-  $: a1c33a2e692ea41109ce5fb5e3316378b5080c9c
-  _: 'https://registry.npmjs.org/item-queue/-/item-queue-0.1.0.tgz'
+  $: 32f15d9537fcfc0ad6f24ac12e11e1c556b4ae04
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.0.tgz'
 items:
  _:
   '2.x.x,^2.1.1': 2.1.1
@@ -2639,7 +2639,7 @@ nigel:
    vise: 2.x.x
 nix-clap:
  _:
-  ^1.0.8: 1.1.0
+  '^1.0.8,^1.1.0': 1.1.0
  1.1.0:
   top: 1
   $: 2e6550d205def36a350d5791d3ae0bb099c2cf5b
