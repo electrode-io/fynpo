@@ -146,20 +146,20 @@ class PkgDepLinker {
     const targetNmDir = Path.join(targetPath, "node_modules");
     mkdirp.sync(targetNmDir);
     // save link file for target module to FYN_DIR/links
-    const linkName = this._createLinkName(targetNmDir, depInfo.name);
-    const linkFile = Path.join(this._fyn.linkDir, `${linkName}.json`);
+    const fynLinkName = this._createLinkName(targetNmDir, depInfo.name);
+    const fynLinkFile = Path.join(this._fyn.linkDir, `${fynLinkName}.json`);
     this._fyn.createDirSync(this._fyn.linkDir);
-    const linkData = this._fyn.readJson(linkFile, { timestamps: {} });
-    linkData.targetPath = targetPath;
-    linkData.timestamps[this._fyn.cwd] = Date.now();
-    linkData[this._fyn.cwd] = depInfo.json._depResolutions;
-    Fs.writeFileSync(linkFile, JSON.stringify(linkData, null, 2));
+    const fynLinkData = this._fyn.readJson(fynLinkFile, { timestamps: {} });
+    fynLinkData.targetPath = targetPath;
+    fynLinkData.timestamps[this._fyn.cwd] = Date.now();
+    fynLinkData[this._fyn.cwd] = _.pick(depInfo.json, "_depResolutions");
+    Fs.writeFileSync(fynLinkFile, `${JSON.stringify(fynLinkData, null, 2)}\n`);
     //
     // create symlink from the local package dir to the link file
     //
-    const targetLinkFile = Path.join(targetNmDir, FYN_LINK_JSON);
-    rimraf.sync(targetLinkFile);
-    Fs.symlinkSync(linkFile, targetLinkFile);
+    const symlinkFile = Path.join(targetNmDir, FYN_LINK_JSON);
+    rimraf.sync(symlinkFile);
+    Fs.symlinkSync(fynLinkFile, symlinkFile);
 
     //
     // Save fynlink data for the app
