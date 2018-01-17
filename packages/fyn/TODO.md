@@ -47,6 +47,7 @@
 * Verify version in package.json match expected version
 * Multi process pool to extract tarballs
 * Save options in lockfile: `--production` and `--no-optional` `[easy]`
+* `.bin` linking should look at app's resolutions first before linking all top level modules
 
 ## Windows Support
 
