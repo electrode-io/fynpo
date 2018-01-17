@@ -37,7 +37,7 @@
     "rimraf": "^2.6.2",
     "semver": "^5.3.0",
     "tar": "^4.0.0",
-    "visual-logger": "^0.1.0",
+    "visual-logger": "^0.1.5",
     "xenv-config": "^1.1.2",
     "xsh": "^0.4.0",
     "yamljs": "^0.3.0"

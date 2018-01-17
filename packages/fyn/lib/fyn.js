@@ -91,6 +91,10 @@ class Fyn {
     return this._options.production;
   }
 
+  get concurrency() {
+    return this._options.concurrency;
+  }
+
   get remoteMetaDisabled() {
     // force-cache only force use cache when it exists but if it's
     // cache miss then we should retrieve from remote

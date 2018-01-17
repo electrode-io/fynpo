@@ -59,3 +59,7 @@
 
 * Promise Q support stages so fetch/extract can be handled by the same Q
 * Promise Q support retrying
+
+## Other
+
+* Save errors (especially network errors) and log them in failure output, instead of some random "Cannot read property xyz of undefined", which was caused by the earlier errors.
