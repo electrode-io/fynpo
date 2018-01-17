@@ -23,7 +23,8 @@ const pickOptions = argv => {
     "saveLogs",
     "colors",
     "production",
-    "progress"
+    "progress",
+    "concurrency"
   ];
   return _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
 };
@@ -110,6 +111,12 @@ const options = {
     alias: "reg",
     requireArg: true,
     desc: "Override registry url"
+  },
+  concurrency: {
+    type: "number",
+    alias: "cc",
+    desc: "Max network concurrency",
+    default: 15
   }
 };
 

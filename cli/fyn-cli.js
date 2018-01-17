@@ -89,6 +89,7 @@ class FynCli {
     );
     logger.verbose("env NODE_OPTIONS is", chalk.magenta(process.env.NODE_OPTIONS));
     logger.verbose("working dir is", chalk.magenta(this._rc.cwd));
+    logger.verbose("Max network concurrency is", this._rc.concurrency);
   }
 
   loadRc(options) {
