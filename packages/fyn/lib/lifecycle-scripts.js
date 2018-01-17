@@ -13,6 +13,7 @@ const xsh = require("xsh");
 const Promise = require("bluebird");
 const chalk = require("chalk");
 const _ = require("lodash");
+const VisualLogger = require("visual-logger");
 const logger = require("./logger");
 const logFormat = require("./util/log-format");
 const uniqId = require("./util/uniq-id");
@@ -101,7 +102,8 @@ class LifecycleScripts {
     logger.addItem({
       name: stdout,
       color: "green",
-      display: `=== Running ${scriptName} of ${pkgName}\nstdout`
+      display: `=== Running ${scriptName} of ${pkgName}\nstdout`,
+      spinner: VisualLogger.spinners[1]
     });
     logger.addItem({ name: stderr, color: "red", display: `stderr` });
 
