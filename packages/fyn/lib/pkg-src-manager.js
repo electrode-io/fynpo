@@ -8,7 +8,7 @@
 // - npm registry
 //
 
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, prefer-template */
 
 const crypto = require("crypto");
 const { PassThrough } = require("stream");
@@ -322,6 +322,79 @@ class PkgSrcManager {
 
     const pkgUrl = this.formatTarballUrl(item);
 
+    let retries = 0;
+    const networkRequestId = uniqId();
+    const doFetch = () => {
+      const shaHash = crypto.createHash("sha1");
+      const stream = Fs.createWriteStream(fullTmpFile);
+      const pass = new PassThrough();
+      pass.on("data", chunk => shaHash.update(chunk));
+      return new Promise((resolve, reject) => {
+        needle
+          .get(pkgUrl)
+          .on("header", resolve)
+          .on("done", doneErr => {
+            if (doneErr) reject(doneErr);
+          })
+          .once("err", reject)
+          // TODO: .on("timeout")
+          .pipe(pass)
+          .pipe(stream);
+      })
+        .then(statusCode => {
+          if (statusCode !== 200) {
+            logger.error(`fetchTarball: ${pkgUrl} response error`, statusCode);
+            return false;
+          }
+          logger.debug(`fetchTarball: ${pkgUrl} response code`, statusCode);
+          return new Promise((resolve, reject) => {
+            let closed;
+            let finish;
+            const close = () => {
+              clearTimeout(finish);
+              if (closed) return undefined;
+              closed = true;
+              const shaSum = shaHash.digest("hex");
+              logger.debug(`${fullTgzFile} shasum`, shaSum);
+              if (shaSum !== item.dist.shasum) {
+                const msg = `${fullTgzFile} shasum mismatched`;
+                logger.error(msg);
+                return reject(new Error(msg));
+              }
+              const status = chalk.cyan(`${statusCode}`);
+              const time = logFormat.time(Date.now() - startTime);
+              logger.updateItem(FETCH_PACKAGE, `${status} ${time} ${chalk.red.bgGreen(pkgName)}`);
+              return resolve();
+            };
+            stream.on("finish", () => (finish = setTimeout(close, 1000)));
+            stream.on("error", reject);
+            stream.on("close", close);
+          })
+            .then(() => rename(fullTmpFile, fullTgzFile))
+            .return({ fullTgzFile });
+        })
+        .catch(netErr => {
+          retries++;
+          logger.addItem({
+            name: networkRequestId,
+            display: `Network error fetching package ${pkgUrl}`,
+            color: "red"
+          });
+          logger.updateItem(NETWORK_ERROR, netErr.message + `; Retrying ${retries}`);
+
+          if (retries < 5) {
+            return doFetch().tap(() => {
+              logger.removeItem(networkRequestId);
+            });
+          }
+
+          logger.error(`fetchTarball: ${pkgUrl} failed:`, netErr.message);
+          logger.debug("STACK:", netErr.stack);
+
+          throw netErr;
+        });
+    };
+
     const promise = access(fullTgzFile)
       .then(() => ({ fullTgzFile }))
       .catch(err => {
@@ -334,69 +407,9 @@ class PkgSrcManager {
         if (inflight) {
           return inflight;
         }
-        const shaHash = crypto.createHash("sha1");
-        const stream = Fs.createWriteStream(fullTmpFile);
-        const pass = new PassThrough();
-        pass.on("data", chunk => shaHash.update(chunk));
-        const fetchPromise = new Promise((resolve, reject) => {
-          needle
-            .get(pkgUrl)
-            .on("header", resolve)
-            .on("done", doneErr => {
-              if (doneErr) reject(doneErr);
-            })
-            .once("err", reject)
-            // TODO: .on("timeout")
-            .pipe(pass)
-            .pipe(stream);
-        })
-          .then(statusCode => {
-            if (statusCode !== 200) {
-              logger.error(`fetchTarball: ${pkgUrl} response error`, statusCode);
-              return false;
-            }
-            logger.debug(`fetchTarball: ${pkgUrl} response code`, statusCode);
-            return new Promise((resolve, reject) => {
-              let closed;
-              let finish;
-              const close = () => {
-                clearTimeout(finish);
-                if (closed) return undefined;
-                closed = true;
-                const shaSum = shaHash.digest("hex");
-                logger.debug(`${fullTgzFile} shasum`, shaSum);
-                if (shaSum !== item.dist.shasum) {
-                  const msg = `${fullTgzFile} shasum mismatched`;
-                  logger.error(msg);
-                  return reject(new Error(msg));
-                }
-                const status = chalk.cyan(`${statusCode}`);
-                const time = logFormat.time(Date.now() - startTime);
-                logger.updateItem(FETCH_PACKAGE, `${status} ${time} ${chalk.red.bgGreen(pkgName)}`);
-                return resolve();
-              };
-              stream.on("finish", () => (finish = setTimeout(close, 1000)));
-              stream.on("error", reject);
-              stream.on("close", close);
-            })
-              .then(() => rename(fullTmpFile, fullTgzFile))
-              .return({ fullTgzFile });
-          })
-          .catch(netErr => {
-            logger.addItem({
-              name: NETWORK_ERROR,
-              display: "network error fetching package",
-              color: "red"
-            });
-            logger.error(`fetchTarball: ${pkgUrl} failed:`, netErr.message);
-            logger.debug("STACK:", netErr.stack);
-            logger.updateItem(NETWORK_ERROR, netErr.message);
-
-            throw netErr;
-          })
-          .finally(() => {
-            this._inflights.tarball.remove(fullTgzFile);
-          });
+        const fetchPromise = doFetch().finally(() => {
+          this._inflights.tarball.remove(fullTgzFile);
+        });
 
         this._inflights.tarball.add(fullTgzFile, fetchPromise);
 
