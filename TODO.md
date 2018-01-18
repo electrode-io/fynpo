@@ -63,3 +63,8 @@
 ## Other
 
 * Save errors (especially network errors) and log them in failure output, instead of some random "Cannot read property xyz of undefined", which was caused by the earlier errors.
+* Warn missing fields from package.json
+  * `description`
+  * `repository`
+  * `license`
+  * also validate `license`
