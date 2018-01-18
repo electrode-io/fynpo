@@ -17,6 +17,10 @@
   ],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jchip/fynpo.git"
+  },
   "bin": {
     "fynpo": "cli/fynpo.js"
   },
