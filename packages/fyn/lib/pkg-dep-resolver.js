@@ -499,6 +499,9 @@ class PkgDepResolver {
     return Promise.try(() => this._resolveWithLockData(item)).then(r => {
       if (r || this._lockOnly) return undefined;
       return this._pkgSrcMgr.fetchMeta(item).then(meta => {
+        if (!meta) {
+          throw new Error(`Unable to retrieve meta for package ${item.name}`);
+        }
         const updated = this._fyn.depLocker.update(item, meta);
         return this._resolveWithMeta(item, updated, true);
       });
