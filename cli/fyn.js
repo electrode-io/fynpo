@@ -20,13 +20,16 @@ const pickOptions = argv => {
     "registry",
     "cwd",
     "lockfile",
-    "saveLogs",
     "colors",
     "production",
     "progress",
     "concurrency"
   ];
-  return _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
+  const opts = _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
+  if (argv.source.saveLogs.startsWith("cli")) {
+    opts.saveLogs = argv.opts.saveLogs;
+  }
+  return opts;
 };
 
 const findFlatModule = () => {
