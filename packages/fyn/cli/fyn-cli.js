@@ -350,8 +350,8 @@ class FynCli {
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
         );
-        if (typeof this._rc.saveLogs === "string") {
-          this.saveLogs(this._rc.saveLogs || "fyn-debug.log");
+        if (this._rc.saveLogs) {
+          this.saveLogs(this._rc.saveLogs);
         }
       })
       .catch(err => {
