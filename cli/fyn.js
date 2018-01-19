@@ -239,7 +239,7 @@ const commands = {
 const run = () => {
   return new NixClap({ name: myPkg.name, version: myPkg.version, usage: "$0 [options] <command>" })
     .init(options, commands)
-    .parse();
+    .parseAsync();
 };
 
 run();

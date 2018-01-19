@@ -2639,11 +2639,11 @@ nigel:
    vise: 2.x.x
 nix-clap:
  _:
-  '^1.0.8,^1.1.0': 1.1.0
- 1.1.0:
+  '^1.0.8,^1.1.0': 1.3.0
+ 1.3.0:
   top: 1
-  $: 2e6550d205def36a350d5791d3ae0bb099c2cf5b
-  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.1.0.tgz'
+  $: 3078346892c9254168727b9e0a26cd9542b2fcb5
+  _: 'http://npme.walmart.com/nix-clap/-/nix-clap-1.3.0.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-libs-browser:
