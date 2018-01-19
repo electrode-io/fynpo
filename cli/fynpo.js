@@ -19,6 +19,7 @@ const execBootstrap = parsed => {
   return bootstrap
     .exec()
     .then(() => {
+      bootstrap.logErrors();
       process.exit(bootstrap.failed);
     })
     .catch(err => {
