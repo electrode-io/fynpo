@@ -22,7 +22,7 @@ class PkgInstaller {
     this._data = this._fyn._data;
     this._depLinker = new PkgDepLinker({ fyn: this._fyn });
     const outputDir = this._fyn.getOutputDir();
-    this._binLinker = new PkgBinLinker({ outputDir });
+    this._binLinker = new PkgBinLinker({ outputDir, fyn: options.fyn });
     this._fynRes = this._depLinker.readAppRes(outputDir);
     this._fynFo = this._fynRes._fynFo;
   }
@@ -134,6 +134,8 @@ class PkgInstaller {
             this._binLinker.linkBin(depInfo);
           }
         });
+
+        this._binLinker.clearExtras();
       })
       .then(() => this._savePkgJson())
       .then(() => this._cleanUp())
