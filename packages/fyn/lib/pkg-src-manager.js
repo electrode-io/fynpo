@@ -377,10 +377,10 @@ class PkgSrcManager {
           retries++;
           logger.addItem({
             name: networkRequestId,
-            display: `Network error fetching package ${pkgUrl}`,
+            display: `Network error fetching package ${pkgUrl}\n  Error`,
             color: "red"
           });
-          logger.updateItem(NETWORK_ERROR, netErr.message + `; Retrying ${retries}`);
+          logger.updateItem(networkRequestId, netErr.message + `; Retrying ${retries}`);
 
           if (retries < 5) {
             return doFetch().tap(() => {
