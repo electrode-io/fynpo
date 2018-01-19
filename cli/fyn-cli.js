@@ -139,7 +139,11 @@ class FynCli {
     logger.freezeItems(true);
     logger.error(msg, `CWD ${this.fyn.cwd}`);
     logger.error(msg, "Please check for any errors that occur above.");
-    logger.error(msg, `Also check ${chalk.magenta(dbgLog)} for more details.`);
+    const lessCmd = chalk.magenta(`less -R ${dbgLog}`);
+    logger.error(
+      msg,
+      `Also check ${chalk.magenta(dbgLog)} for more details. ${lessCmd} if you are on Un*x.`
+    );
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
     this.saveLogs(dbgLog);
