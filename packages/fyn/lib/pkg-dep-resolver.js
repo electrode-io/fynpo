@@ -301,8 +301,8 @@ class PkgDepResolver {
     }
 
     if (meta.local || metaJson.local) {
-      pkgV.local = true;
-      pkgV.dir = pkgV.dist.fullPath;
+      item.local = pkgV.local = true;
+      item.fullPath = pkgV.dir = pkgV.dist.fullPath;
       pkgV.str = pkgV.dist.str;
       pkgV.json = metaJson;
     }
