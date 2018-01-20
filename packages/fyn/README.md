@@ -2,6 +2,8 @@
 
 `fyn` is a node package manager for the [flat node_modules design here].
 
+![fyn demo][fyn-image]
+
 # Features
 
 * Dependencies information retained and checked at runtime.
@@ -117,3 +119,4 @@ If there's no RC file and command line override, then these default are used:
 [flat node_modules design here]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
+[fyn-image]: ./images/fyn-demo.gif
