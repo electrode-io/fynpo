@@ -267,9 +267,14 @@ class PkgInstaller {
       }
       const pkgName = Path.join(scope, dirName);
       const iPkg = pkgsData[pkgName];
-      if (!iPkg) {
-        logger.verbose("removing extraneous package", pkgName);
-        this._removeDir(Path.join(outDir, pkgName));
+      const vpkg = _.find(iPkg, x => x.promoted);
+      if (!vpkg) {
+        logger.verbose("removing extraneous top level package", pkgName);
+        if (_.isEmpty(iPkg)) {
+          this._removeDir(Path.join(outDir, pkgName));
+        } else {
+          this._fyn.clearPkgOutDirSync(Path.join(outDir, pkgName));
+        }
         this._removedCount++;
       } else {
         this._cleanUpVersions(outDir, pkgName);
