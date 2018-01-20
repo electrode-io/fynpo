@@ -1,5 +1,9 @@
 "use strict";
 
+/*
+ * Avoid webpack bundling the whole package.json if doing require("../package.json")
+ */
+
 const Fs = require("fs");
 const Path = require("path");
 
