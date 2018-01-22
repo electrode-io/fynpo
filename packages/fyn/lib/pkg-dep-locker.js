@@ -8,7 +8,7 @@ const assert = require("assert");
 const Fs = require("fs");
 const _ = require("lodash");
 const chalk = require("chalk");
-const simpleSemverCompare = require("./util/simple-semver-compare");
+const simpleSemverCompare = require("./util/semver").simpleCompare;
 const Yaml = require("yamljs");
 const sortObjKeys = require("./util/sort-obj-keys");
 const {

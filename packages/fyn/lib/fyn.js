@@ -15,7 +15,7 @@ const PkgSrcManager = require("./pkg-src-manager");
 const PkgDepLocker = require("./pkg-dep-locker");
 const DepData = require("./dep-data");
 const fynConfig = require("./fyn-config");
-const fixSemver = require("./util/fix-semver");
+const semverUtil = require("./util/semver");
 const readFile = Promise.promisify(Fs.readFile);
 const readdir = Promise.promisify(Fs.readdir);
 const mkdirpAsync = Promise.promisify(mkdirp);
@@ -219,7 +219,7 @@ class Fyn {
       .tap(x => {
         const id = `${x.name}@${x.version}`;
         if (x.version !== pkg.version) {
-          x.version = semver.valid(x.version) || fixSemver(x.version);
+          x.version = semver.valid(x.version) || semverUtil.clean(x.version);
           assert(
             semver.valid(x.version),
             `Pkg ${id} version is not valid semver and fyn was unable to fix it.`
@@ -227,9 +227,10 @@ class Fyn {
         }
 
         assert(
-          x && x.name === pkg.name && x.version === pkg.version,
+          x && x.name === pkg.name && semverUtil.equal(x.version, pkg.version),
           `Pkg in ${fullOutDir} ${id} doesn't match ${pkg.name}@${pkg.version}`
         );
+
         if (gypExist) {
           x.gypfile = true;
           const scr = x.scripts;
@@ -237,6 +238,7 @@ class Fyn {
             _.set(x, "scripts.install", "node-gyp rebuild");
           }
         }
+
         pkg.json = x;
       });
   }

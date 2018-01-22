@@ -192,6 +192,33 @@ class PkgDepLinker {
     depInfo.fynLinkData = fynLinkData;
     depInfo.nmFynLinkName = nmFynLinkName;
   }
+
+  //
+  // take a pkg dep info and load previously saved dep data into it
+  //
+  loadPkgDepData(depInfo) {
+    // a normal installed package's dep data are saved to its package.json
+    // so loading that is usually enough
+    const installedDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+
+    if (!depInfo.json) {
+      const fname = Path.join(installedDir, "package.json");
+      depInfo.json = JSON.parse(Fs.readFileSync(fname));
+    }
+
+    // for a locally linked package, the dep data is in the __fyn_link__ JSON file
+    if (depInfo.local) {
+      this.loadLocalPackageAppFynLink(depInfo, installedDir);
+      const targetFynlinkFile = Path.join(
+        depInfo.fynLinkData.targetPath,
+        "node_modules",
+        FYN_LINK_JSON
+      );
+
+      const depRes = JSON.parse(Fs.readFileSync(targetFynlinkFile));
+      depInfo.json._depResolutions = depRes[this._fyn.cwd]._depResolutions;
+    }
+  }
 }
 
 module.exports = PkgDepLinker;

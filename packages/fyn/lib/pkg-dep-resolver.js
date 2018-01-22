@@ -4,6 +4,7 @@
 
 const assert = require("assert");
 const _ = require("lodash");
+const semverUtil = require("./util/semver");
 const Semver = require("semver");
 const Promise = require("bluebird");
 const chalk = require("chalk");
@@ -13,7 +14,7 @@ const DepItem = require("./dep-item");
 const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const defer = require("./util/defer");
-const simpleSemverCompare = require("./util/simple-semver-compare");
+const simpleSemverCompare = semverUtil.simpleCompare;
 const longPending = require("./long-pending");
 const logFormat = require("./util/log-format");
 const { LONG_WAIT_META } = require("./log-items");
