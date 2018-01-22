@@ -233,6 +233,14 @@ const commands = {
 
       console.log(`export NODE_OPTIONS="${splits.join(" ")}"`);
     }
+  },
+  stat: {
+    desc: "Show stats of installed packages",
+    usage: "$0 $1 <package-name>[@semver] [...]",
+    args: "<string packages..>",
+    exec: argv => {
+      return new FynCli(pickOptions(argv)).stat(argv);
+    }
   }
 };
 

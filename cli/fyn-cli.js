@@ -15,6 +15,7 @@ const CliLogger = require("../lib/cli-logger");
 const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
 const exit = require("../lib/util/exit");
+const showStat = require("./show-stat");
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -357,6 +358,10 @@ class FynCli {
       .catch(err => {
         this.fail(chalk.red("install failed:"), err);
       });
+  }
+
+  stat(argv) {
+    return showStat(this.fyn, argv.args.packages);
   }
 }
 
