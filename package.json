@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "description": "Flatten Your Node_modules: NodeJS Package Manager for flat modules system",
   "main": "bin/fyn.js",
   "scripts": {
