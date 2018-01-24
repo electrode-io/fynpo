@@ -12,7 +12,12 @@ const { FETCH_META } = require("../lib/log-items");
 
 // returns array of packages match id
 function findPkgsById(pkgs, id) {
-  const [name, semver = "*"] = id.split("@");
+  const ix = id.indexOf("@", 1);
+  const sx = ix > 0 ? ix : id.length;
+  const name = id.substr(0, sx);
+  const semver = id.substr(sx + 1) || "*";
+
+  logger.info("id", id, "name", name, "semver", semver);
 
   return _(pkgs[name])
     .map((vpkg, version) => {
