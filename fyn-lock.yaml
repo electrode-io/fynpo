@@ -2093,11 +2093,11 @@ isobject:
    isarray: 1.0.0
 item-queue:
  _:
-  ^1.0.0: 1.0.0
- 1.0.0:
+  ^1.0.0: 1.0.2
+ 1.0.2:
   top: 1
-  $: 32f15d9537fcfc0ad6f24ac12e11e1c556b4ae04
-  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.0.tgz'
+  $: 70cf51006333e3eb2669f066b810b2a2aeb88697
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.2.tgz'
 items:
  _:
   '2.x.x,^2.1.1': 2.1.1
