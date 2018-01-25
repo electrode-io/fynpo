@@ -361,7 +361,7 @@ class FynCli {
   }
 
   stat(argv) {
-    return showStat(this.fyn, argv.args.packages);
+    return showStat(this.fyn, argv.args.packages, argv.opts.follow);
   }
 }
 
