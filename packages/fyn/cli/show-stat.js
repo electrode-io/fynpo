@@ -15,13 +15,11 @@ function findPkgsById(pkgs, id) {
   const ix = id.indexOf("@", 1);
   const sx = ix > 0 ? ix : id.length;
   const name = id.substr(0, sx);
-  const semver = id.substr(sx + 1) || "*";
-
-  logger.info("id", id, "name", name, "semver", semver);
+  const semver = id.substr(sx + 1);
 
   return _(pkgs[name])
     .map((vpkg, version) => {
-      if (semverUtil.satisfies(version, semver)) {
+      if (!semver || semverUtil.satisfies(version, semver)) {
         return vpkg;
       }
     })
@@ -60,9 +58,37 @@ function showPkgStat(fyn, pkgs, ask) {
   });
 
   logger.info(logFormat.pkgId(ask), "has these dependents", dependents.map(formatPkgId).join(", "));
+  return dependents;
 }
 
-function showStat(fyn, pkgIds) {
+function _show(fyn, pkgIds, follow) {
+  const data = fyn._data;
+  return Promise.each(pkgIds, pkgId => {
+    const askPkgs = findPkgsById(data.pkgs, pkgId).sort((a, b) =>
+      semverUtil.simpleCompare(a.version, b.version)
+    );
+    if (askPkgs.length === 0) {
+      logger.info(chalk.yellow(pkgId), "is not installed");
+    } else {
+      logger.info(
+        chalk.green.bgRed(pkgId),
+        "matched these installed versions",
+        askPkgs.map(formatPkgId).join(", ")
+      );
+
+      return Promise.map(askPkgs, id => showPkgStat(fyn, data.pkgs, id)).then(askDeps => {
+        if (follow > 0) {
+          return Promise.each(askDeps, deps => {
+            const followIds = deps.slice(0, follow).map(x => x.name);
+            return _show(fyn, followIds, follow);
+          });
+        }
+      });
+    }
+  });
+}
+
+function showStat(fyn, pkgIds, follow) {
   const spinner = CliLogger.spinners[1];
   logger.addItem({ name: FETCH_META, color: "green", spinner });
   logger.updateItem(FETCH_META, "resolving dependencies...");
@@ -70,22 +96,7 @@ function showStat(fyn, pkgIds) {
     .resolveDependencies()
     .then(() => {
       logger.removeItem(FETCH_META);
-      const data = fyn._data;
-      return Promise.each(pkgIds, pkgId => {
-        const askPkgs = findPkgsById(data.pkgs, pkgId).sort((a, b) =>
-          semverUtil.simpleCompare(a.version, b.version)
-        );
-        if (askPkgs.length === 0) {
-          logger.info(chalk.yellow(pkgId), "is not installed");
-        } else {
-          logger.info(
-            chalk.green.bgRed(pkgId),
-            "matched these installed versions",
-            askPkgs.map(formatPkgId).join(", ")
-          );
-          return Promise.each(askPkgs, id => showPkgStat(fyn, data.pkgs, id));
-        }
-      });
+      return _show(fyn, pkgIds, follow);
     })
     .catch(err => {
       logger.error(err);
