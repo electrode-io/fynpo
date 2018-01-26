@@ -16,6 +16,8 @@ const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
 const exit = require("../lib/util/exit");
 const showStat = require("./show-stat");
+const showSetupInfo = require("./show-setup-info");
+
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
 const checkFlatModule = () => {
@@ -34,8 +36,7 @@ const checkFlatModule = () => {
       );
       logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
     } else {
-      const setupSh = "eval `fyn bash`";
-      logger.fyi(`To setup for bash, run the command "${chalk.cyan(setupSh)}"`);
+      showSetupInfo();
     }
 
     logger.fyi(`See ${chalk.blue("https://github.com/electrode-io/fyn#usage")} for more details.`);
