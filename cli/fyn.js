@@ -57,7 +57,7 @@ const pickOptions = argv => {
   logger.debug("Final RC", JSON.stringify(argv.opts));
 
   setLogLevel(argv.opts.logLevel);
-  if (argv.opts.progress) logger.setItemType(options.progress);
+  if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
   return argv.opts;
 };
