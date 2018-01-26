@@ -279,7 +279,9 @@ if (process.platform === "win32") {
     desc: `Generate setup file "fynwin.cmd" at your CWD.`,
     exec: () => {
       Fs.writeFileSync(Path.resolve("fynwin.cmd"), `set NODE_OPTIONS=-r ${findFlatModule()}\n`);
-      logger.fyi(`"fynwin.cmd" generated at ${process.cwd()} for you.`);
+      logger.fyi(
+        `${chalk.green("fynwin.cmd")} generated at ${chalk.magenta(process.cwd())} for you.`
+      );
       logger.fyi(`You can run it by typing fynwin`);
     }
   };
