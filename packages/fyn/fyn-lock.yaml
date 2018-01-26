@@ -4122,11 +4122,11 @@ xenv-config:
 xsh:
  _:
   ^0.3.2: 0.3.7
-  ^0.4.0: 0.4.2
- 0.4.2:
+  ^0.4.0: 0.4.3
+ 0.4.3:
   top: 1
-  $: db21db8da1e133cf31e93718c35d680741da80ad
-  _: 'https://registry.npmjs.org/xsh/-/xsh-0.4.2.tgz'
+  $: 0f51b164553021c6bbc670a4c77bbc21960cac3a
+  _: 'https://registry.npmjs.org/xsh/-/xsh-0.4.3.tgz'
   dependencies:
    shcmd: ^0.7.9
  0.3.7:
