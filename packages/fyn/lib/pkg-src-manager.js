@@ -28,6 +28,7 @@ const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
 const uniqId = require("./util/uniq-id");
+const os = require("os");
 const { LOCAL_VERSION_MAPS } = require("./symbols");
 const { FETCH_META, FETCH_PACKAGE } = require("./log-items");
 
@@ -64,7 +65,7 @@ class PkgSrcManager {
     } else if (semver.startsWith("/") || semver.startsWith("./") || semver.startsWith("../")) {
       return semver;
     } else if (semver.startsWith("~/")) {
-      return Path.join(process.env.HOME, semver.substr(1));
+      return Path.join(os.homedir(), semver.substr(1));
     }
     return false;
   }

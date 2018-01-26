@@ -1,5 +1,6 @@
 "use strict";
 
+const os = require("os");
 const Fs = require("fs");
 const Path = require("path");
 const Yaml = require("yamljs");
@@ -38,9 +39,11 @@ function loadRc(cwd) {
     targetDir: "node_modules"
   };
 
+  const homeDir = os.homedir();
+
   const rc = [
-    Path.join(process.env.HOME, ".npmrc"),
-    Path.join(process.env.HOME, ".fynrc"),
+    Path.join(homeDir, ".npmrc"),
+    Path.join(homeDir, ".fynrc"),
     Path.join(cwd, ".npmrc"),
     Path.join(cwd, ".fynrc")
   ].map(readRc);
