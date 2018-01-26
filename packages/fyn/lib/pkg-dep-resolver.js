@@ -405,7 +405,7 @@ class PkgDepResolver {
       }
 
       if (resolved) {
-        logger.log("found known version", resolved, "that satisfied", item.name, item.semver);
+        logger.debug("found known version", resolved, "that satisfied", item.name, item.semver);
       }
 
       return resolved;
