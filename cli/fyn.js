@@ -54,7 +54,7 @@ const pickOptions = argv => {
     argv.opts.saveLogs = undefined;
   }
 
-  logger.info("Final RC", JSON.stringify(argv.opts));
+  logger.debug("Final RC", JSON.stringify(argv.opts));
 
   setLogLevel(argv.opts.logLevel);
   if (argv.opts.progress) logger.setItemType(options.progress);
