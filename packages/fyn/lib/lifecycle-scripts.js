@@ -28,6 +28,19 @@ xsh.Promise = Promise;
 
 const ONE_MB = 1024 * 1024;
 
+const getGlobalNodeModules = () => {
+  const nodeDir = Path.dirname(process.execPath);
+  if (process.platform === "win32") {
+    // windows put node binary under <installed_dir>/node.exe
+    // and node_modules under <installed_dir>/node_modules
+    return Path.join(nodeDir, "node_modules");
+  } else {
+    // node install on unix put node binary under <installed_dir>/bin/node
+    // and node_modules under <installed_dir>/lib/node_modules
+    return Path.join(Path.dirname(nodeDir), "lib/node_modules");
+  }
+};
+
 class LifecycleScripts {
   constructor(options) {
     if (typeof options === "string") {
@@ -58,12 +71,15 @@ class LifecycleScripts {
 
   makeEnv(override) {
     const env = Object.assign({}, process.env, override);
-    const nodeDir = Path.dirname(Path.dirname(process.execPath));
-    xsh.envPath.addToFront(Path.join(nodeDir, "lib/node_modules/npm/bin/node-gyp-bin"), env);
+
+    xsh.envPath.addToFront(Path.join(getGlobalNodeModules(), "npm/bin/node-gyp-bin"), env);
+
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);
     }
+
     xsh.envPath.addToFront(Path.join(this._pkgDir, "node_modules/.bin"), env);
+
     this._addNpmConfig(this._appPkg.config, env);
     this._addNpmConfig(this._pkg.config, env);
 
