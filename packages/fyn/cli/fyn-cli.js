@@ -49,34 +49,14 @@ const myDir = Path.join(__dirname, "..");
 
 class FynCli {
   constructor(options) {
-    chalk.enabled = options.colors;
-    if (options.progress) logger.setItemType(options.progress);
-    this.setLogLevel(options.logLevel);
-    this.loadRc(Object.assign({}, options));
-    this.setLogLevel(this._rc.logLevel);
-
+    this._rc = options;
     if (options.noStartupInfo !== true) this.showStartupInfo();
-
     this._fyn = undefined;
   }
 
   get fyn() {
     if (!this._fyn) this._fyn = new Fyn(this._rc);
     return this._fyn;
-  }
-
-  setLogLevel(ll) {
-    if (ll) {
-      const levels = Object.keys(CliLogger.Levels);
-      const real = _.find(levels, l => l.startsWith(ll));
-      const x = CliLogger.Levels[real];
-      if (x !== undefined) {
-        logger._logLevel = x;
-      } else {
-        logger.error(`Invalid log level "${ll}".  Supported levels are: ${levels.join(", ")}`);
-        exit(1);
-      }
-    }
   }
 
   showStartupInfo() {
@@ -91,44 +71,6 @@ class FynCli {
     logger.verbose("env NODE_OPTIONS is", chalk.magenta(process.env.NODE_OPTIONS));
     logger.verbose("working dir is", chalk.magenta(this._rc.cwd));
     logger.verbose("Max network concurrency is", this._rc.concurrency);
-  }
-
-  loadRc(options) {
-    let rcName, rcData;
-
-    try {
-      rcName = Path.join(process.env.HOME, ".fynrc");
-      rcData = Fs.readFileSync(rcName).toString();
-    } catch (err) {
-      logger.debug(`Reading RC file ${rcName} failed.`, err.message);
-      this._rc = {};
-    }
-
-    if (rcData) {
-      try {
-        this._rc = Yaml.parse(rcData);
-      } catch (err) {
-        logger.error("failed to parse RC file", rcName);
-        logger.error(err.message);
-        exit(err);
-      }
-    }
-
-    logger.debug("loaded RC", JSON.stringify(this._rc));
-
-    if (!this._rc) this._rc = {};
-
-    Object.assign(this._rc, options);
-
-    logger.debug("options", JSON.stringify(options));
-
-    if (!this._rc.cwd) this._rc.cwd = process.cwd();
-
-    this._rc = _.defaults(this._rc, {
-      registry: "https://registry.npmjs.org",
-      targetDir: "node_modules"
-    });
-    logger.debug("final RC", JSON.stringify(this._rc));
   }
 
   saveLogs(dbgLog) {
