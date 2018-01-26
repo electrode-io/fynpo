@@ -5,31 +5,61 @@ const Path = require("path");
 const chalk = require("chalk");
 const FynCli = require("./fyn-cli");
 const _ = require("lodash");
+const CliLogger = require("../lib/cli-logger");
 const logger = require("../lib/logger");
 const NixClap = require("nix-clap");
 const myPkg = require("./mypkg");
+const loadRc = require("./load-rc");
+
+const nixClap = new NixClap({
+  name: myPkg.name,
+  version: myPkg.version,
+  usage: "$0 [options] <command>"
+});
+
+function setLogLevel(ll) {
+  if (ll) {
+    const levels = Object.keys(CliLogger.Levels);
+    const real = _.find(levels, l => l.startsWith(ll));
+    const x = CliLogger.Levels[real];
+    if (x !== undefined) {
+      logger._logLevel = x;
+    } else {
+      logger.error(`Invalid log level "${ll}".  Supported levels are: ${levels.join(", ")}`);
+      exit(1);
+    }
+  }
+}
 
 const pickOptions = argv => {
-  const keys = [
-    "logLevel",
-    "forceCache",
-    "localOnly",
-    "lockOnly",
-    "ignoreDist",
-    "showDeprecated",
-    "registry",
-    "cwd",
-    "lockfile",
-    "colors",
-    "production",
-    "progress",
-    "concurrency"
-  ];
-  const opts = _.pickBy(argv.opts, (v, k) => v !== undefined && keys.indexOf(k) >= 0);
-  if (argv.source.saveLogs.startsWith("cli")) {
-    opts.saveLogs = argv.opts.saveLogs;
+  setLogLevel(argv.opts.logLevel);
+
+  chalk.enabled = argv.opts.colors;
+
+  let cwd = argv.opts.cwd || process.cwd();
+
+  if (!Path.isAbsolute(cwd)) {
+    cwd = Path.join(process.cwd(), cwd);
   }
-  return opts;
+
+  const rc = loadRc(cwd);
+
+  nixClap.applyConfig(rc, argv);
+
+  argv.opts.cwd = cwd;
+
+  chalk.enabled = argv.opts.colors;
+
+  if (!argv.source.saveLogs.startsWith("cli")) {
+    argv.opts.saveLogs = undefined;
+  }
+
+  logger.info("Final RC", JSON.stringify(argv.opts));
+
+  setLogLevel(argv.opts.logLevel);
+  if (argv.opts.progress) logger.setItemType(options.progress);
+
+  return argv.opts;
 };
 
 const findFlatModule = () => {
@@ -252,9 +282,7 @@ const commands = {
 };
 
 const run = () => {
-  return new NixClap({ name: myPkg.name, version: myPkg.version, usage: "$0 [options] <command>" })
-    .init(options, commands)
-    .parseAsync();
+  return nixClap.init(options, commands).parseAsync();
 };
 
 run();
