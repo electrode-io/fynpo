@@ -24,8 +24,6 @@ It requires the `flat-module` support loaded when node starts up. To achieve tha
 
 This also works for NodeJS 6 but you have to explicitly specify the `--require` option when invoking node and child process wouldn't inherit that.
 
-> Not working for Windows yet. Un\*x only.
-
 # Compatibility
 
 The `flat-module` extension is 100% compatible and co-exist with node's nesting module system.
@@ -43,6 +41,8 @@ npm install -g fyn
 ```
 
 # Usage
+
+## Unix with `bash`
 
 Setup the [NODE_OPTIONS] env for bash:
 
@@ -65,6 +65,18 @@ fyn fm
 And you are ready to use `fyn`.
 
 > If you use another shell other than bash, please check its docs for instructions on how to set environment variables.
+
+## Windows
+
+On Windows, you have to run the following command yourself:
+
+```batch
+set NODE_OPTIONS=-r <path-to-flat-module>
+```
+
+Or you can run `fyn win` to generate a batch file `fynwin.cmd` at your current directory, which you can invoke with `fynwin` to setup [NODE_OPTIONS].
+
+> Any suggestions for doing this better on Windows welcomed.
 
 ### Node 6 and lower
 

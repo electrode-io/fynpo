@@ -10,6 +10,7 @@ const logger = require("../lib/logger");
 const NixClap = require("nix-clap");
 const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
+const findFlatModule = require("./find-flat-module");
 
 const nixClap = new NixClap({
   name: myPkg.name,
@@ -60,14 +61,6 @@ const pickOptions = argv => {
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
   return argv.opts;
-};
-
-const findFlatModule = () => {
-  try {
-    return eval("require").resolve("flat-module/flat-module.js");
-  } catch (e) {
-    return Path.join(__dirname, "../dist/flat-module.js");
-  }
 };
 
 const options = {
@@ -280,6 +273,17 @@ const commands = {
     }
   }
 };
+
+if (process.platform === "win32") {
+  commands.win = {
+    desc: `Generate setup file "fynwin.cmd" at your CWD.`,
+    exec: () => {
+      Fs.writeFileSync(Path.resolve("fynwin.cmd"), `set NODE_OPTIONS=-r ${findFlatModule()}\n`);
+      logger.fyi(`"fynwin.cmd" generated at ${process.cwd()} for you.`);
+      logger.fyi(`You can run it by typing fynwin`);
+    }
+  };
+}
 
 const run = () => {
   return nixClap.init(options, commands).parseAsync();
