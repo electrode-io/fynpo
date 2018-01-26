@@ -212,10 +212,10 @@ assert:
    util: 0.10.3
 assertion-error:
  _:
-  ^1.0.1: 1.0.2
- 1.0.2:
-  $: 13ca515d86206da0bac66e834dd397d87581094c
-  _: 'https://registry.npmjs.org/assertion-error/-/assertion-error-1.0.2.tgz'
+  ^1.0.1: 1.1.0
+ 1.1.0:
+  $: e60b6b0e8f301bd97e5375215bda406c85118c0b
+  _: 'https://registry.npmjs.org/assertion-error/-/assertion-error-1.1.0.tgz'
 async:
  _:
   '^2.1.2,^2.4.0': 2.6.0
@@ -716,10 +716,10 @@ color-name:
 commander:
  _:
   2.9.0: 2.9.0
-  ^2.9.0: 2.12.2
- 2.12.2:
-  $: 0f5946c427ed9ec0d91a46bb9def53e54650e555
-  _: 'https://registry.npmjs.org/commander/-/commander-2.12.2.tgz'
+  ^2.9.0: 2.13.0
+ 2.13.0:
+  $: 6964bca67685df7c1f1430c584f07d7597885b9c
+  _: 'https://registry.npmjs.org/commander/-/commander-2.13.0.tgz'
  2.9.0:
   $: 9c99094176e12240cb22d6c5146098400fe0f7d4
   _: 'https://registry.npmjs.org/commander/-/commander-2.9.0.tgz'
@@ -932,7 +932,11 @@ del:
    rimraf: ^2.2.8
 depd:
  _:
-  '1.1.1,~1.1.1': 1.1.1
+  1.1.1: 1.1.1
+  ~1.1.1: 1.1.2
+ 1.1.2:
+  $: 9bcd52e14c097763e749b274c4346ed2e560b5a9
+  _: 'https://registry.npmjs.org/depd/-/depd-1.1.2.tgz'
  1.1.1:
   $: 5783b4e1c459f06fa5ca27f991f3d06e7a310359
   _: 'https://registry.npmjs.org/depd/-/depd-1.1.1.tgz'
@@ -969,18 +973,18 @@ diffie-hellman:
    randombytes: ^2.0.0
 doctrine:
  _:
-  ^2.0.0: 2.0.2
- 2.0.2:
-  $: 68f96ce8efc56cc42651f1faadb4f175273b0075
-  _: 'https://registry.npmjs.org/doctrine/-/doctrine-2.0.2.tgz'
+  ^2.0.0: 2.1.0
+ 2.1.0:
+  $: 5cd01fc101621b42c4cd7f5d1a66243716d3f39d
+  _: 'https://registry.npmjs.org/doctrine/-/doctrine-2.1.0.tgz'
   dependencies:
    esutils: ^2.0.2
 domain-browser:
  _:
-  ^1.1.1: 1.1.7
- 1.1.7:
-  $: 867aa4b093faa05f1de08c06f4d7b21fdf8698bc
-  _: 'https://registry.npmjs.org/domain-browser/-/domain-browser-1.1.7.tgz'
+  ^1.1.1: 1.2.0
+ 1.2.0:
+  $: 3d31f50191a6749dd1375a7f522e823d42e54eda
+  _: 'https://registry.npmjs.org/domain-browser/-/domain-browser-1.2.0.tgz'
 duplexer:
  _:
   ^0.1.1: 0.1.1
@@ -1064,10 +1068,10 @@ emojis-list:
   _: 'https://registry.npmjs.org/emojis-list/-/emojis-list-2.1.0.tgz'
 encodeurl:
  _:
-  ~1.0.1: 1.0.1
- 1.0.1:
-  $: 79e3d58655346909fe6f0f45a5de68103b294d20
-  _: 'https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.1.tgz'
+  ~1.0.1: 1.0.2
+ 1.0.2:
+  $: ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59
+  _: 'https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz'
 enhanced-resolve:
  _:
   ^3.4.0: 3.4.1
@@ -1097,16 +1101,16 @@ error-ex:
    is-arrayish: ^0.2.1
 es5-ext:
  _:
-  '^0.10.14,^0.10.35,^0.10.9,~0.10.14': 0.10.37
- 0.10.37:
-  $: 0ee741d148b80069ba27d020393756af257defc3
-  _: 'https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.37.tgz'
+  '^0.10.14,^0.10.35,^0.10.9,~0.10.14': 0.10.38
+ 0.10.38:
+  $: fa7d40d65bbc9bb8a67e1d3f9cc656a00530eed3
+  _: 'https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.38.tgz'
   dependencies:
-   es6-iterator: ~2.0.1
+   es6-iterator: ~2.0.3
    es6-symbol: ~3.1.1
 es6-iterator:
  _:
-  '^2.0.1,~2.0.1': 2.0.3
+  '^2.0.1,~2.0.1,~2.0.3': 2.0.3
  2.0.3:
   $: a7de889141a05a94b0854403b2d0a0fbfa98f3b7
   _: 'https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.3.tgz'
@@ -1534,10 +1538,10 @@ fresh:
   _: 'https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz'
 fs-minipass:
  _:
-  ^1.2.3: 1.2.3
- 1.2.3:
-  $: 633ee214389dede91c4ec446a34891f964805973
-  _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-1.2.3.tgz'
+  ^1.2.3: 1.2.5
+ 1.2.5:
+  $: 06c277218454ec288df77ada54a03b8702aacb9d
+  _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-1.2.5.tgz'
   dependencies:
    minipass: ^2.2.1
 fs.realpath:
@@ -2056,10 +2060,10 @@ is-property:
   _: 'https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz'
 is-resolvable:
  _:
-  ^1.0.0: 1.0.1
- 1.0.1:
-  $: acca1cd36dbe44b974b924321555a70ba03b1cf4
-  _: 'https://registry.npmjs.org/is-resolvable/-/is-resolvable-1.0.1.tgz'
+  ^1.0.0: 1.1.0
+ 1.1.0:
+  $: fb18f87ce1feb925169c9a407c19318a3206ed88
+  _: 'https://registry.npmjs.org/is-resolvable/-/is-resolvable-1.1.0.tgz'
 is-stream:
  _:
   ^1.1.0: 1.1.0
@@ -2075,10 +2079,10 @@ isarray:
 isemail:
  _:
   2.x.x: 2.2.1
-  3.x.x: 3.0.0
- 3.0.0:
-  $: c89a46bb7a3361e1759f8028f9082488ecce3dff
-  _: 'https://registry.npmjs.org/isemail/-/isemail-3.0.0.tgz'
+  3.x.x: 3.1.0
+ 3.1.0:
+  $: d15156d67529d48241bc0e644df28281e21dd458
+  _: 'https://registry.npmjs.org/isemail/-/isemail-3.1.0.tgz'
   dependencies:
    punycode: 2.x.x
  2.2.1:
@@ -2621,11 +2625,11 @@ natural-compare:
   _: 'https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz'
 needle:
  _:
-  ^2.1.0: 2.1.0
- 2.1.0:
+  ^2.1.0: 2.1.1
+ 2.1.1:
   top: 1
-  $: 54acebad9cc1a11822cd9ca522fb7c131c583fa4
-  _: 'https://registry.npmjs.org/needle/-/needle-2.1.0.tgz'
+  $: f3d501d633e661d34cd9648ca6c42f782a44d071
+  _: 'https://registry.npmjs.org/needle/-/needle-2.1.1.tgz'
   dependencies:
    debug: ^2.1.2
    iconv-lite: ^0.4.4
@@ -2650,7 +2654,7 @@ nix-clap:
  1.3.0:
   top: 1
   $: 3078346892c9254168727b9e0a26cd9542b2fcb5
-  _: 'http://npme.walmart.com/nix-clap/-/nix-clap-1.3.0.tgz'
+  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.0.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-libs-browser:
@@ -2877,10 +2881,12 @@ p-finally:
   _: 'https://registry.npmjs.org/p-finally/-/p-finally-1.0.0.tgz'
 p-limit:
  _:
-  ^1.1.0: 1.1.0
- 1.1.0:
-  $: b07ff2d9a5d88bec806035895a2bab66a27988bc
-  _: 'https://registry.npmjs.org/p-limit/-/p-limit-1.1.0.tgz'
+  ^1.1.0: 1.2.0
+ 1.2.0:
+  $: 0e92b6bedcb59f022c13d0f1949dc82d15909f1c
+  _: 'https://registry.npmjs.org/p-limit/-/p-limit-1.2.0.tgz'
+  dependencies:
+   p-try: ^1.0.0
 p-locate:
  _:
   ^2.0.0: 2.0.0
@@ -2889,6 +2895,12 @@ p-locate:
   _: 'https://registry.npmjs.org/p-locate/-/p-locate-2.0.0.tgz'
   dependencies:
    p-limit: ^1.1.0
+p-try:
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  $: cbc79cdbaf8fd4228e13f621f2b1a237c1b207b3
+  _: 'https://registry.npmjs.org/p-try/-/p-try-1.0.0.tgz'
 pako:
  _:
   ~1.0.5: 1.0.6
@@ -3148,10 +3160,10 @@ randomatic:
    kind-of: ^4.0.0
 randombytes:
  _:
-  '^2.0.0,^2.0.1,^2.0.5': 2.0.5
- 2.0.5:
-  $: dc009a246b8d09a177b4b7a0ae77bc570f4b1b79
-  _: 'https://registry.npmjs.org/randombytes/-/randombytes-2.0.5.tgz'
+  '^2.0.0,^2.0.1,^2.0.5': 2.0.6
+ 2.0.6:
+  $: d302c522948588848a8d300c932b44c24231da80
+  _: 'https://registry.npmjs.org/randombytes/-/randombytes-2.0.6.tgz'
   dependencies:
    safe-buffer: ^5.1.0
 randomfill:
@@ -3201,7 +3213,7 @@ read-pkg-up:
    read-pkg: ^2.0.0
 readable-stream:
  _:
-  '^2.0.1,^2.0.2,^2.2.2,^2.2.6,^2.3.3': 2.3.3
+  '^2.0.1,^2.0.2,^2.2.2,^2.3.3': 2.3.3
  2.3.3:
   $: 368f2512d79f9d46fdfc71349ae7878bbc1eb95c
   _: 'https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.3.tgz'
@@ -3383,11 +3395,11 @@ samsam:
   _: 'https://registry.npmjs.org/samsam/-/samsam-1.1.2.tgz'
 semver:
  _:
-  '2 || 3 || 4 || 5,^5.3.0': 5.4.1
- 5.4.1:
+  '2 || 3 || 4 || 5,^5.3.0': 5.5.0
+ 5.5.0:
   top: 1
-  $: e059c09d8571f0540823733433505d3a2f00b18e
-  _: 'https://registry.npmjs.org/semver/-/semver-5.4.1.tgz'
+  $: dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab
+  _: 'https://registry.npmjs.org/semver/-/semver-5.5.0.tgz'
 send:
  _:
   0.16.1: 0.16.1
@@ -3449,10 +3461,10 @@ setprototypeof:
   _: 'https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.0.3.tgz'
 sha.js:
  _:
-  '^2.4.0,^2.4.8': 2.4.9
- 2.4.9:
-  $: 98f64880474b74f4a38b8da9d3c0f2d104633e7d
-  _: 'https://registry.npmjs.org/sha.js/-/sha.js-2.4.9.tgz'
+  '^2.4.0,^2.4.8': 2.4.10
+ 2.4.10:
+  $: b1fde5cd7d11a5626638a07c604ab909cfa31f9b
+  _: 'https://registry.npmjs.org/sha.js/-/sha.js-2.4.10.tgz'
   dependencies:
    inherits: ^2.0.1
    safe-buffer: ^5.0.1
@@ -3611,14 +3623,14 @@ stream-browserify:
    readable-stream: ^2.0.2
 stream-http:
  _:
-  ^2.7.2: 2.7.2
- 2.7.2:
-  $: 40a050ec8dc3b53b33d9909415c02c0bf1abfbad
-  _: 'https://registry.npmjs.org/stream-http/-/stream-http-2.7.2.tgz'
+  ^2.7.2: 2.8.0
+ 2.8.0:
+  $: fd86546dac9b1c91aff8fc5d287b98fafb41bc10
+  _: 'https://registry.npmjs.org/stream-http/-/stream-http-2.8.0.tgz'
   dependencies:
    builtin-status-codes: ^3.0.0
    inherits: ^2.0.1
-   readable-stream: ^2.2.6
+   readable-stream: ^2.3.3
    to-arraybuffer: ^1.0.0
    xtend: ^4.0.0
 string-width:
@@ -3729,11 +3741,11 @@ tapable:
   _: 'https://registry.npmjs.org/tapable/-/tapable-0.2.8.tgz'
 tar:
  _:
-  ^4.0.0: 4.2.0
- 4.2.0:
+  ^4.0.0: 4.3.0
+ 4.3.0:
   top: 1
-  $: 7e2bdadf55a4a04bf64a9d2680b4455e7c61d45e
-  _: 'https://registry.npmjs.org/tar/-/tar-4.2.0.tgz'
+  $: 11351be1c7944c59dd197850119c2081d8bc7fe5
+  _: 'https://registry.npmjs.org/tar/-/tar-4.3.0.tgz'
   dependencies:
    chownr: ^1.0.1
    fs-minipass: ^1.2.3
@@ -3755,10 +3767,10 @@ through:
   _: 'https://registry.npmjs.org/through/-/through-2.3.8.tgz'
 timers-browserify:
  _:
-  ^2.0.4: 2.0.4
- 2.0.4:
-  $: 96ca53f4b794a5e7c0e1bd7cc88a372298fa01e6
-  _: 'https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.4.tgz'
+  ^2.0.4: 2.0.6
+ 2.0.6:
+  $: 241e76927d9ca05f4d959819022f5b3664b64bae
+  _: 'https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.6.tgz'
   dependencies:
    setimmediate: ^1.0.4
 to-arraybuffer:
@@ -3923,11 +3935,11 @@ vise:
    hoek: 4.x.x
 visual-logger:
  _:
-  ^0.1.5: 0.1.6
- 0.1.6:
+  ^0.1.5: 0.1.7
+ 0.1.7:
   top: 1
-  $: 5f5e90973355a71dde94e1f0fad10994d7123220
-  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.6.tgz'
+  $: d4848d13c2ef8cc6152c89c9c06cfc67add98fe3
+  _: 'https://registry.npmjs.org/visual-logger/-/visual-logger-0.1.7.tgz'
   dependencies:
    chalk: ^2.3.0
    log-update: ^2.3.0
@@ -3981,11 +3993,11 @@ webpack:
    yargs: ^8.0.2
 webpack-bundle-analyzer:
  _:
-  ^2.9.1: 2.9.1
- 2.9.1:
+  ^2.9.1: 2.9.2
+ 2.9.2:
   top: 1
-  $: c2c8e03e8e5768ed288b39ae9e27a8b8d7b9d476
-  _: 'https://registry.npmjs.org/webpack-bundle-analyzer/-/webpack-bundle-analyzer-2.9.1.tgz'
+  $: 63ed86eb71cc4cda86f68e685a84530ba0126449
+  _: 'https://registry.npmjs.org/webpack-bundle-analyzer/-/webpack-bundle-analyzer-2.9.2.tgz'
   dependencies:
    acorn: ^5.1.1
    chalk: ^1.1.3
@@ -3997,7 +4009,7 @@ webpack-bundle-analyzer:
    lodash: ^4.17.4
    mkdirp: ^0.5.1
    opener: ^1.4.3
-   ws: ^3.3.1
+   ws: ^4.0.0
 webpack-sources:
  _:
   ^1.0.1: 1.1.0
@@ -4078,10 +4090,10 @@ write:
    mkdirp: ^0.5.1
 ws:
  _:
-  ^3.3.1: 3.3.3
- 3.3.3:
-  $: f1cf84fe2d5e901ebce94efaece785f187a228f2
-  _: 'https://registry.npmjs.org/ws/-/ws-3.3.3.tgz'
+  ^4.0.0: 4.0.0
+ 4.0.0:
+  $: bfe1da4c08eeb9780b986e0e4d10eccd7345999f
+  _: 'https://registry.npmjs.org/ws/-/ws-4.0.0.tgz'
   dependencies:
    async-limiter: ~1.0.0
    safe-buffer: ~5.1.0
