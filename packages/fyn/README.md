@@ -96,16 +96,33 @@ You can see the options fyn supports with:
 fyn --help
 ```
 
-fyn also loads config from `~/.fynrc`, which is just a `YAML` file, below is an example, with all the options set to their default values:
+fyn also loads config from `CWD/.fynrc`, `CWD/.npmrc`, `~/.fynrc`, and `~/.npmrc`, in that order, where first ones has higher priority. It only takes these fields from `.npmrc`: `registry`, `email`, and `_auth`.
+
+fyn's RC file can be an [ini] or `YAML` file. To be a `YAML` file, it must starts with a line `---`.
+
+Below is an `YAML` example, with all the options set to their default values:
 
 ```yaml
-registry: https://registry.npmjs.org
+---
+registry: https://npm.private.com
 localOnly: false
 forceCache: false
 lockOnly: false
 progress: normal
 logLevel: info
 production: false
+```
+
+Or as an ini:
+
+```ini
+registry=https://npm.private.com
+localOnly=false
+forceCache=false
+lockOnly=false
+progress=normal
+logLevel=info
+production=false
 ```
 
 > Any command line option can be converted to an option in the RC file by changing the name to camelCase form.
@@ -120,3 +137,4 @@ If there's no RC file and command line override, then these default are used:
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
 [fyn-image]: ./images/fyn-demo.gif
+[ini]: https://www.npmjs.com/package/ini

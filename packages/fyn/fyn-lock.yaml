@@ -1846,6 +1846,13 @@ inherits:
  2.0.1:
   $: b17d08d326b4423e568eff719f91b0b1cbdf69f1
   _: 'https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz'
+ini:
+ _:
+  ^1.3.5: 1.3.5
+ 1.3.5:
+  top: 1
+  $: eee25f56db1c9ec6085e0c22778083f596abf927
+  _: 'https://registry.npmjs.org/ini/-/ini-1.3.5.tgz'
 inquirer:
  _:
   ^0.12.0: 0.12.0
