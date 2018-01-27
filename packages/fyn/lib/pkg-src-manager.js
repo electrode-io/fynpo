@@ -28,6 +28,7 @@ const rename = Promise.promisify(Fs.rename);
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
 const uniqId = require("./util/uniq-id");
+const semverUtil = require("./util/semver");
 const os = require("os");
 const { LOCAL_VERSION_MAPS } = require("./symbols");
 const { FETCH_META, FETCH_PACKAGE } = require("./log-items");
@@ -70,10 +71,10 @@ class PkgSrcManager {
     return false;
   }
 
-  makeLocalId(fullPath) {
+  makeLocalId(v, fullPath) {
     const md5 = crypto.createHash("md5");
     md5.update(fullPath);
-    return `fynlocal${md5.digest("hex")}`;
+    return semverUtil.localify(v, md5.digest("hex"));
   }
 
   getLocalPackageMeta(item, resolved) {
@@ -113,7 +114,7 @@ class PkgSrcManager {
     return readFile(pkgJsonFile).then(raw => {
       const str = raw.toString();
       const json = JSON.parse(str);
-      const version = `${json.version}-${this.makeLocalId(fullPath)}`;
+      const version = this.makeLocalId(json.version, fullPath);
       const name = item.name || json.name;
       json.dist = {
         semver,
