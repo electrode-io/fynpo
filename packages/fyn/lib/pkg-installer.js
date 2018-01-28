@@ -298,13 +298,14 @@ class PkgInstaller {
       for (const vx in versions) {
         const ver = versions[vx];
         if (!pkg[ver] || pkg[ver].promoted) {
-          const stat = Fs.statSync(Path.join(fvDir, ver, pkgName));
-          if (!stat.isSymbolicLink()) {
-            logger.verbose("removing extraneous version", ver, "of", pkgName);
-            this._removeDir(Path.join(fvDir, ver));
-          } else {
-            logger.info("Not removing symlink extraneous version", ver, "of", pkgName);
+          const pkgInstalledPath = Path.join(fvDir, ver, pkgName);
+          const stat = Fs.lstatSync(pkgInstalledPath);
+          if (stat.isSymbolicLink()) {
+            logger.debug("removing symlink extraneous version", ver, "of", pkgName);
+            Fs.unlinkSync(pkgInstalledPath);
           }
+          logger.verbose("removing extraneous version", ver, "of", pkgName);
+          this._removeDir(Path.join(fvDir, ver));
         }
       }
       Fs.rmdirSync(fvDir);
