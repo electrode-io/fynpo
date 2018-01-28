@@ -63,6 +63,29 @@ const pickOptions = argv => {
   return argv.opts;
 };
 
+const makeNodeOptions = () => {
+  const file = findFlatModule();
+  let splits = [];
+
+  if (process.env.NODE_OPTIONS) {
+    splits = process.env.NODE_OPTIONS.split(" ").filter(x => x);
+  }
+
+  for (let i = 0; i < splits.length; i++) {
+    if (splits[i] === "-r" || splits[i] === "--require") {
+      const ex = splits[i + 1] || "";
+      if (ex.indexOf("flat-module") >= 0) {
+        if (ex === file) {
+          throw new Error(`Your NODE_OPTIONS is already setup for fyn's flat-module.`);
+        }
+        throw new Error(`Your NODE_OPTIONS already has require for flat module at ${ex}`);
+      }
+    }
+  }
+
+  return splits.concat(`-r ${file}`).join(" ");
+};
+
 const options = {
   "log-level": {
     alias: "q",
@@ -231,30 +254,11 @@ const commands = {
   bash: {
     desc: "Setup flat-module env for bash",
     exec: () => {
-      const file = findFlatModule();
-      let splits = [];
-
-      if (process.env.NODE_OPTIONS) {
-        splits = process.env.NODE_OPTIONS.split(" ").filter(x => x);
+      try {
+        console.log(`export NODE_OPTIONS="${makeNodeOptions()}"`);
+      } catch (e) {
+        console.log(`echo "${e.message}"`);
       }
-
-      for (let i = 0; i < splits.length; i++) {
-        if (splits[i] === "-r" || splits[i] === "--require") {
-          const ex = splits[i + 1] || "";
-          if (ex.indexOf("flat-module") >= 0) {
-            if (ex === file) {
-              console.log(`echo "Your NODE_OPTIONS is already setup for fyn's flat-module."`);
-              return;
-            }
-            console.log(`echo "Your NODE_OPTIONS already has require for flat module at ${ex}"`);
-            return;
-          }
-        }
-      }
-
-      splits.push(`-r ${file}`);
-
-      console.log(`export NODE_OPTIONS="${splits.join(" ")}"`);
     }
   },
   stat: {
@@ -277,15 +281,31 @@ const commands = {
 if (process.platform === "win32") {
   commands.win = {
     desc: `Generate setup file "fynwin.cmd" at your CWD.`,
-    exec: () => {
-      Fs.writeFileSync(
-        Path.resolve("fynwin.cmd"),
-        `set NODE_OPTIONS=-r ${findFlatModule()}\r\n@(goto) 2>nul & del "%~f0"\r\n`
-      );
+    exec: argv => {
+      let cmd;
+      try {
+        cmd = `set NODE_OPTIONS=${makeNodeOptions()}`;
+      } catch (e) {
+        cmd = `@echo ${e.message}`;
+      }
+
+      const keep = argv.opts.keep;
+      const del = keep ? "" : `@(goto) 2>nul & del "%~f0"\r\n`;
+      Fs.writeFileSync(Path.resolve("fynwin.cmd"), `${cmd}\r\n${del}`);
       logger.fyi(
         `${chalk.green("fynwin.cmd")} generated at ${chalk.magenta(process.cwd())} for you.`
       );
-      logger.fyi(`You can run it by typing ${chalk.magenta("fynwin")}. It will delete itself.`);
+      logger.fyi(
+        `You can run it by typing ${chalk.magenta("fynwin")}.`,
+        keep ? "" : `It will delete itself.`
+      );
+    },
+    options: {
+      keep: {
+        desc: "fynwin.cmd does not delete itself",
+        type: "boolean",
+        default: false
+      }
     }
   };
 }
