@@ -19,3 +19,4 @@
 *.tgz
 /stubs
 .npmignore
+/images
