@@ -47,10 +47,12 @@ xclap.load("fyn", {
     }
   },
 
-  release: ["fyn/bundle", "fyn/prepack", "fyn/publish", "fyn/postpack"],
+  release: {
+    task: ["fyn/bundle", "fyn/prepack", "fyn/publish"],
+    finally: ["fyn/postpack"]
+  },
 
   bundle: "webpack",
 
   publish: "npm publish"
 });
-
