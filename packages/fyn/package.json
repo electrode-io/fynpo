@@ -1,7 +1,7 @@
 {
   "name": "fyn",
   "version": "0.1.43",
-  "description": "Flatten Your Node_modules: NodeJS Package Manager for flat modules system",
+  "description": "Fast Node Package Manager with focus on easy local development.",
   "main": "bin/fyn.js",
   "scripts": {
     "test": "clap check"
@@ -14,6 +14,7 @@
     "flat",
     "node_modules",
     "module",
+    "fast",
     "package",
     "manager"
   ],
