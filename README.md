@@ -4,36 +4,36 @@
 
 It installs only one copy of every package and uses symlink/junction to setup the modules dependencies.
 
-It installs packages from local file system as if they came from the registry.
+With [flat-module], it offers enhanced support for a much better local module development workflow than `npm link`.
 
-![fyn demo][fyn-image]
+![fyn demo][fyn-demo-gif]
 
 # Features
 
-* Only a single copy of every packages installed.
+* Only a single copy of every package installed.
 * Dependencies information retained and checked at runtime. (with [flat-module])
 * Your application will not silently load bad dependencies. (with [flat-module])
+* Better local development workflow than `npm link`. (with [flat-module])
 * Always deterministic node_modules installation.
-* Super fast performance. (faster than npm@5 and yarn)
+* Super fast performance. (faster than npm@5 and yarn, and even pnpm in some cases)
 * Clean and flexible depencies locking.
 * Generate super detailed stats of your dependencies.
 * Incremental install - add and remove any dep and get a deterministic install.
 * Proper handling of `optionalDependencies`.
-* Better local development workflow than `npm link`. (with [flat-module])
 
 # Overview
 
 ## Packages Resolution and Layout
 
-The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Those with multiple versions will have the extras installed under a directory `__fv_` and setup through symlinks or [flat-module].
+The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Those with multiple versions will have the extra versions installed under a directory `__fv_` and setup through symlinks or [flat-module].
 
-`fyn` has a fully asynchrounous and concurrent dependencies resolving engine that works 100% according to node's nesting design, and is the only one that can properly handle `optionalDependencies`.
+`fyn` installs a `node_modules` that's much easier to view and smaller in size. You can easily see the extra versions all packages have with the Unix bash command `ls node_modules/*/__fv_`.
+
+`fyn` has an asynchrounous and concurrent dependencies resolving engine that works 100% according to node's nesting design, and is the only one that can properly handle `optionalDependencies`.
 
 ## Better `npm link` workflow
 
-`fyn` has enhanced support for installing packages from local file system that requires the [flat-module] support.
-
-The [flat-module] support unlocks more features that enables a much better workflow than `npm link`. Packages from local file system are subjected to the same dependencies resolution logic as if they came from the npm registry, and symlinked into your `node_modules` that can be used with [flat-module].
+With [flat-module], `fyn` unlocks more features that enable a much better workflow than `npm link`. Packages from local file system are subjected to the same dependencies resolution logic as if they came from the npm registry, and symlinked into your `node_modules` that can be used with [flat-module].
 
 See [using flat-module](#using-flat-module) if you are interested in trying it out.
 
@@ -130,13 +130,15 @@ If you want all paths to appear within your application's directory, then you ca
 
 ### Unix with `bash`
 
-Setup the [NODE_OPTIONS] env for bash:
+If you are using bash, to setup the [NODE_OPTIONS] env for [flat-module], you have two options:
+
+1. Use `eval` for bash:
 
 ```bash
 eval `fyn bash`
 ```
 
-* Or you can set it up manually:
+2. Set it up manually:
 
 ```bash
 export NODE_OPTIONS="-r <path-to-flat-module>"
@@ -148,19 +150,24 @@ You can find `<path-to-flat-module>` with this command:
 fyn fm
 ```
 
-And you are ready to use `fyn` with [flat-module].
-
 > If you use another shell other than bash, please check its docs for instructions on how to set environment variables.
 
 ### Windows
 
-On Windows, you have to run the following command yourself:
+On Windows, you have two options:
+
+1. Run `fyn win` to generate a batch file `fynwin.cmd` at your current directory, which you can invoke with `fynwin` to setup [NODE_OPTIONS]. The file will delete itself.
+
+```batch
+fyn win
+fynwin
+```
+
+2. Run the following command yourself:
 
 ```batch
 set NODE_OPTIONS=-r <path-to-flat-module>
 ```
-
-Or you can run `fyn win` to generate a batch file `fynwin.cmd` at your current directory, which you can invoke with `fynwin` to setup [NODE_OPTIONS]. The file will delete itself.
 
 > Any suggestions for doing this better on Windows welcomed.
 
@@ -180,7 +187,7 @@ However, [flat-module] doesn't really work well even with this, because child pr
 [flat node_modules design here]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
-[fyn-image]: ./images/fyn-demo.gif
+[fyn-demo-gif]: ./images/fyn-demo.gif
 [ini]: https://www.npmjs.com/package/ini
 [node_preserve_symlinks]: https://nodejs.org/docs/latest-v8.x/api/cli.html#cli_node_preserve_symlinks_1
 [require-at]: https://www.npmjs.com/package/require-at
