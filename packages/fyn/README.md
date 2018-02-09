@@ -4,17 +4,17 @@
 
 It installs only one copy of every package and uses symlink/junction to setup the module dependencies.
 
-[Flat-module] offers a better local module development workflow than `npm link`.
+With [flat-module] `fyn` offers a better local module development workflow than `npm link`.
 
 ![fyn demo][fyn-demo-gif]
 
 # Features
 
-* A single copy of installed packages.
+* A single copy of each installed packages.
 * Dependencies retained and checked at runtime. (with [flat-module])
-* Will not silently load bad dependencies. (with [flat-module])
+* Your application will not silently load bad dependencies. (with [flat-module])
 * Better local development workflow than `npm link`. (with [flat-module])
-* Always deterministic node_modules installation, irrelevant of order.
+* Always deterministic node_modules installation.
 * Super fast performance. (faster than npm@5 and yarn, and even pnpm in some cases)
 * Clean and flexible dependency locking.
 * Detailed stats of your dependencies.
@@ -25,7 +25,7 @@ It installs only one copy of every package and uses symlink/junction to setup th
 
 ## Package Resolution and Layout
 
-The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Modules with multiple versions will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
+The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
 
 `fyn`'s `node_modules` layout is much easier to view and smaller in size. You can easily see all versions of a packages with the Unix bash command `ls node_modules/*/__fv_`.
 
@@ -33,7 +33,7 @@ The top level `node_modules` installed by `fyn` is a flat list of all the module
 
 ## Better `npm link` workflow
 
-With [flat-module], `fyn` offers a better workflow than `npm link`.  Local packages are subjected to the same dependency resolution logic as those from the npm registry.
+With [flat-module], `fyn` offers a better workflow than `npm link`. Local packages are subjected to the same dependency resolution logic as those from the npm registry.
 
 See [using flat-module](#using-flat-module) if you are interested in trying it out.
 
@@ -44,14 +44,6 @@ Please install `fyn` to your NodeJS setup globally.
 ```bash
 npm install -g fyn
 ```
-
-# Node Compatibility
-
-[flat-module] not withstanding, `fyn` top level `node_modules` are 100% compatible with NodeJS, and all tools, including `npm` or `yarn`.
-
-The way `fyn` uses symlinks to link a certain version of a package for another package is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path.  If you want to keep the symlink path, set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`.
-
-`fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
 
 # Using fyn
 
@@ -65,13 +57,15 @@ Depending on the size of your dependencies and your network speed, this could ta
 
 # Configuring fyn
 
-fyn options can are listed in help:
+fyn options can be listed in help:
 
 ```bash
 fyn --help
 ```
 
-fyn loads config from `CWD/.fynrc`, `CWD/.npmrc`, `~/.fynrc`, and `~/.npmrc` in this specified order, from highest to lowest priority. From `.npmrc`, only fields `registry`, `email`, and `_auth` are read.
+fyn loads config from `CWD/.fynrc`, `CWD/.npmrc`, `~/.fynrc`, and `~/.npmrc` in this specified order, from highest to lowest priority.
+
+From `.npmrc`, only fields `registry`, `email`, and `_auth` are read.
 
 `.fynrc` file can be an [ini] or `YAML` format. For the `YAML` format, the first line must be `---`.
 
@@ -108,6 +102,14 @@ If there's no RC file or command line override, then these defaults are used:
 * `progress` - `normal`
 * `logLevel` - `info`
 
+# node_modules Compatibility
+
+[flat-module] not withstanding, `fyn`'s top level `node_modules` are 100% compatible with NodeJS and all 3rd party tools and modules.
+
+The way `fyn` uses symlinks to link a certain version of a package for another package is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path. If you want to keep the symlink path, set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`.
+
+`fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
+
 # Using flat-module
 
 `fyn` is designed to work with [flat-module] to unlock some enhanced features that improve the NodeJS module development workflow.
@@ -120,7 +122,7 @@ The original intent of [flat-module] was to improve the workflow of `npm link` w
 
 For NodeJS 8, set the `--require` option in [NODE_OPTIONS] env.
 
-For NodeJS 6, you have to explicitly specify the `--require` option when invoking node.  Note that child processes wouldn't inherit this value.
+For NodeJS 6, you have to explicitly specify the `--require` option when invoking node. Note that child processes wouldn't inherit this value.
 
 ## `flat-module` Compatibility
 
@@ -164,7 +166,7 @@ fyn fm
 
 On Windows, you have two options:
 
-1. Run `fyn win` to generate a batch file `fynwin.cmd` in your current directory.  Invoke `fynwin.cmd` to setup [NODE_OPTIONS]. The file will delete itself.
+1. Run `fyn win` to generate a batch file `fynwin.cmd` in your current directory. Invoke `fynwin.cmd` to setup [NODE_OPTIONS]. The file will delete itself.
 
 ```batch
 fyn win
@@ -177,7 +179,7 @@ fynwin
 set NODE_OPTIONS=-r <path-to-flat-module>
 ```
 
-> Suggestions for a better method to setup Windows are welcomed.
+> Suggestions for a better method to setup on Windows are welcomed.
 
 ### Node 6 and lower
 
@@ -192,7 +194,7 @@ node -r <path-to-flat-module>
 However, [flat-module] doesn't really work well even with this, because child process spawn from Node will not inherit that option.
 
 [flat-module]: https://github.com/jchip/node-flat-module
-[flat node_modules design here]: https://github.com/jchip/node-flat-module
+[flat node_modules design]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
 [fyn-demo-gif]: ./images/fyn-demo.gif
