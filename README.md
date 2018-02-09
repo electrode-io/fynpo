@@ -1,36 +1,41 @@
 # fyn: Flatten Your Node_modules
 
-`fyn` is a node package manager for the [flat node_modules design here].
+`fyn` is a fast node package manager for the [flat node_modules design here].
+
+It installs only one copy of every package and uses symlink/junction to setup the modules dependencies.
+
+It installs packages from local file system as if they came from the registry.
 
 ![fyn demo][fyn-image]
 
 # Features
 
-* Dependencies information retained and checked at runtime.
-* Your application will not silently load bad dependencies.
+* Only a single copy of every packages installed.
+* Dependencies information retained and checked at runtime. (with [flat-module])
+* Your application will not silently load bad dependencies. (with [flat-module])
 * Always deterministic node_modules installation.
-* Super fast performance.
+* Super fast performance. (faster than npm@5 and yarn)
 * Clean and flexible depencies locking.
 * Generate super detailed stats of your dependencies.
 * Incremental install - add and remove any dep and get a deterministic install.
 * Proper handling of `optionalDependencies`.
-* Local package linking for development that works seamlessly.
+* Better local development workflow than `npm link`. (with [flat-module])
 
-# Requirements
+# Overview
 
-`fyn` is a package manager that only installs a `node_modules` structured to work with the [flat node_modules design here].
+## Packages Resolution and Layout
 
-It requires the `flat-module` support loaded when node starts up. To achieve that, it depends on setting the `--require` option in [NODE_OPTIONS] env NodeJS 8 supports.
-
-This also works for NodeJS 6 but you have to explicitly specify the `--require` option when invoking node and child process wouldn't inherit that.
-
-# Compatibility
-
-The `flat-module` extension is 100% compatible and co-exist with node's nesting module system.
-
-The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs and is fully compatible with node's module system. It just means that without the `flat-module` extenstion, for any module with multiple versions, you will only get the top level version, so something breaking is very likely.
+The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Those with multiple versions will have the extras installed under a directory `__fv_` and setup through symlinks or [flat-module].
 
 `fyn` has a fully asynchrounous and concurrent dependencies resolving engine that works 100% according to node's nesting design, and is the only one that can properly handle `optionalDependencies`.
+
+## Better `npm link` workflow
+
+`fyn` has enhanced support for installing packages from local file system that requires the [flat-module] support.
+
+The [flat-module] support unlocks more features that enables a much better workflow than `npm link`. Packages from local file system are subjected to the same dependencies resolution logic as if they came from the npm registry, and symlinked into your `node_modules` that can be used with [flat-module].
+
+See [using flat-module](#using-flat-module) if you are interested in trying it out.
 
 # Install
 
@@ -40,57 +45,7 @@ Please install `fyn` to your NodeJS setup globally.
 npm install -g fyn
 ```
 
-# Usage
-
-## Unix with `bash`
-
-Setup the [NODE_OPTIONS] env for bash:
-
-```bash
-eval `fyn bash`
-```
-
-* Or you can set it up manually:
-
-```bash
-export NODE_OPTIONS="-r <path-to-flat-module>"
-```
-
-You can find `<path-to-flat-module>` with this command:
-
-```bash
-fyn fm
-```
-
-And you are ready to use `fyn`.
-
-> If you use another shell other than bash, please check its docs for instructions on how to set environment variables.
-
-## Windows
-
-On Windows, you have to run the following command yourself:
-
-```batch
-set NODE_OPTIONS=-r <path-to-flat-module>
-```
-
-Or you can run `fyn win` to generate a batch file `fynwin.cmd` at your current directory, which you can invoke with `fynwin` to setup [NODE_OPTIONS].
-
-> Any suggestions for doing this better on Windows welcomed.
-
-### Node 6 and lower
-
-Only Node 8 and up supports [NODE_OPTIONS].
-
-For Node 4 and 6, you have to specify the [`-r` option] when you invoke node, like this:
-
-```
-node -r <path-to-flat-module>
-```
-
-However, `fyn` doesn't really work well even with this, because child process spawn from Node will not inherit that option.
-
-# Installing with fyn
+# Using fyn
 
 Change into the directory for your project with the `package.json` file, and run:
 
@@ -116,7 +71,7 @@ Below is an `YAML` example, with all the options set to their default values:
 
 ```yaml
 ---
-registry: https://npm.private.com
+registry: https://registry.npmjs.org
 localOnly: false
 forceCache: false
 lockOnly: false
@@ -128,7 +83,7 @@ production: false
 Or as an ini:
 
 ```ini
-registry=https://npm.private.com
+registry=https://registry.npmjs.org
 localOnly=false
 forceCache=false
 lockOnly=false
@@ -145,8 +100,87 @@ If there's no RC file and command line override, then these default are used:
 * `progress` - `normal`
 * `logLevel` - `info`
 
+# Using flat-module
+
+`fyn` is designed to work with [flat-module] in order to unlock some enhanced features that improve your NodeJS module development workflow.
+
+The original intend of [flat-module] was from a desire for a better workflow than `npm link` when doing local module development. `fyn` installs modules from your local file system like it's a real dependency from the npm registry and requires the [flat-module] support to work properly.
+
+## Requirements
+
+To use, the [flat-module] support has to be loaded when node starts up.
+
+To achieve that, it depends on setting the `--require` option in [NODE_OPTIONS] env that NodeJS 8 supports.
+
+This also works for NodeJS 6 but you have to explicitly specify the `--require` option when invoking node and child process wouldn't inherit that.
+
+## Compatibility
+
+The `flat-module` extension is 100% compatible and co-exist with node's nesting module system.
+
+If you need to resolve the location of a package, the recommended approach is to use `require.resolve`. If you need to do that for a package within the context of a specific directory, then the recommended way is to use [require-at].
+
+## Preserving Symlinks
+
+Due to NodeJS resolving module paths to their real paths, a symlinked package's path ends up not being part of your `node_modules`.
+
+If you want all paths to appear within your application's directory, then you can set [NODE_PRESERVE_SYMLINKS] to `1`, which [flat-module] is designed to work well with.
+
+## Setup flat-module
+
+### Unix with `bash`
+
+Setup the [NODE_OPTIONS] env for bash:
+
+```bash
+eval `fyn bash`
+```
+
+* Or you can set it up manually:
+
+```bash
+export NODE_OPTIONS="-r <path-to-flat-module>"
+```
+
+You can find `<path-to-flat-module>` with this command:
+
+```bash
+fyn fm
+```
+
+And you are ready to use `fyn` with [flat-module].
+
+> If you use another shell other than bash, please check its docs for instructions on how to set environment variables.
+
+### Windows
+
+On Windows, you have to run the following command yourself:
+
+```batch
+set NODE_OPTIONS=-r <path-to-flat-module>
+```
+
+Or you can run `fyn win` to generate a batch file `fynwin.cmd` at your current directory, which you can invoke with `fynwin` to setup [NODE_OPTIONS]. The file will delete itself.
+
+> Any suggestions for doing this better on Windows welcomed.
+
+### Node 6 and lower
+
+Only Node 8 and up supports [NODE_OPTIONS].
+
+For Node 4 and 6, you have to specify the [`-r` option] when you invoke node, like this:
+
+```
+node -r <path-to-flat-module>
+```
+
+However, [flat-module] doesn't really work well even with this, because child process spawn from Node will not inherit that option.
+
+[flat-module]: https://github.com/jchip/node-flat-module
 [flat node_modules design here]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
 [fyn-image]: ./images/fyn-demo.gif
 [ini]: https://www.npmjs.com/package/ini
+[node_preserve_symlinks]: https://nodejs.org/docs/latest-v8.x/api/cli.html#cli_node_preserve_symlinks_1
+[require-at]: https://www.npmjs.com/package/require-at
