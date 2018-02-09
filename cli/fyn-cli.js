@@ -26,7 +26,11 @@ const checkFlatModule = () => {
     .filter(x => x.indexOf("node-flat-module") >= 0);
 
   if (symbols.length === 0) {
-    logger.fyi("fyn requires", chalk.green("node-flat-module"), "loaded before startup");
+    logger.fyi(
+      "local package linking requires",
+      chalk.green("node-flat-module"),
+      "loaded before startup"
+    );
     if (!semver.gte(process.versions.node, "8.0.0")) {
       logger.fyi(
         "Your node version",
@@ -39,9 +43,9 @@ const checkFlatModule = () => {
       showSetupInfo();
     }
 
-    logger.fyi(`See ${chalk.blue("https://github.com/electrode-io/fyn#usage")} for more details.`);
-
-    exit(1);
+    logger.fyi(
+      `See ${chalk.blue("https://github.com/electrode-io/fyn#setup-flat-module")} for more details.`
+    );
   }
 };
 
@@ -95,7 +99,7 @@ class FynCli {
   }
 
   add(argv) {
-    // checkFlatModule();
+    checkFlatModule();
 
     const addSec = (section, packages) => {
       if (_.isEmpty(packages)) return [];
@@ -264,7 +268,7 @@ class FynCli {
 
   install() {
     const spinner = CliLogger.spinners[1];
-    // checkFlatModule();
+    checkFlatModule();
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");

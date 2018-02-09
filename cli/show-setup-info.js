@@ -7,9 +7,11 @@ const findFlatModule = require("./find-flat-module");
 module.exports = function() {
   if (process.platform === "win32") {
     const fmModule = findFlatModule();
-    logger.fyi("To setup for Windows, run the command below:");
+    logger.fyi("To setup flat-module for Windows, run the command below:");
     logger.prefix(false).fyi(chalk.magenta(`set NODE_OPTIONS=-r ${fmModule}`));
-    logger.fyi(`You can use the command "fyn win" to generate a file "fynwin.cmd" at your CWD.`);
+    logger.fyi(
+      `You can also use the command "fyn win" to generate a file "fynwin.cmd" at your CWD.`
+    );
   } else {
     const setupSh = "eval `fyn bash`";
     logger.fyi(`To setup for bash, run the command "${chalk.cyan(setupSh)}"`);
