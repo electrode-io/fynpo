@@ -95,7 +95,7 @@ class FynCli {
   }
 
   add(argv) {
-    checkFlatModule();
+    // checkFlatModule();
 
     const addSec = (section, packages) => {
       if (_.isEmpty(packages)) return [];
@@ -264,7 +264,7 @@ class FynCli {
 
   install() {
     const spinner = CliLogger.spinners[1];
-    checkFlatModule();
+    // checkFlatModule();
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
