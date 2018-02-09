@@ -76,9 +76,18 @@ class PkgDepLinker {
       Fs.writeFileSync(fynIgnoreFile, "");
     }
 
+    const getDirForScope = name => {
+      if (name.startsWith("@") && name.indexOf("/") > 0) {
+        const splits = name.split("/");
+        return { dir: Path.join(subjectNmDir, splits[0]), name: splits[1] };
+      }
+      return { dir: subjectNmDir, name };
+    };
+
     fvDeps.forEach(di => {
       const diDir = this._fyn.getInstalledPkgDir(di.name, di.version, di);
-      const relLinkPath = Path.relative(subjectNmDir, diDir);
+      const scope = getDirForScope(di.name);
+      const relLinkPath = Path.relative(scope.dir, diDir);
       logger.debug(
         "pkg",
         logFormat.pkgId(depInfo),
@@ -88,10 +97,13 @@ class PkgDepLinker {
         relLinkPath
       );
       try {
-        const symlinkDir = Path.join(subjectNmDir, di.name);
-        const existTarget = this.validateExistSymlink(symlinkDir, relLinkPath);
+        const symlinkName = Path.join(scope.dir, scope.name);
+        if (!Fs.existsSync(scope.dir)) {
+          Fs.mkdirSync(scope.dir);
+        }
+        const existTarget = this.validateExistSymlink(symlinkName, relLinkPath);
         if (!existTarget) {
-          Fs.symlinkSync(relLinkPath, symlinkDir, DIR_SYMLINK_TYPE);
+          Fs.symlinkSync(relLinkPath, symlinkName, DIR_SYMLINK_TYPE);
         }
       } catch (e) {
         logger.warn("symlink sub node_modules failed", e.message);
