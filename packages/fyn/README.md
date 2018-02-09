@@ -2,7 +2,7 @@
 
 `fyn` is a fast node package manager for the [flat node_modules design].
 
-It installs only one copy of every package and uses symlink/junction to setup the module dependencies.
+It installs only one copy of every package and uses symlink/junction to setup the nested dependencies.
 
 With [flat-module] `fyn` offers a better local module development workflow than `npm link`.
 
@@ -21,19 +21,47 @@ With [flat-module] `fyn` offers a better local module development workflow than 
 * Incremental install - add and remove dependencies in a deterministic fashion.
 * Proper handling of `optionalDependencies`.
 
+# Table Of Contents
+
+* [Overview](#overview)
+  * [Package Resolution and Layout](#package-resolution-and-layout)
+  * [Better `npm link` workflow](#better-npm-link-workflow)
+* [Install](#install)
+* [Using fyn](#using-fyn)
+* [Configuring fyn](#configuring-fyn)
+* [node_modules Compatibility](#node_modules-compatibility)
+* [Using flat-module](#using-flat-module)
+  * [Requirements](#requirements)
+  * [`flat-module` Compatibility](#flat-module-compatibility)
+  * [Preserving Symlinks](#preserving-symlinks)
+  * [Setup flat-module](#setup-flat-module)
+    * [Unix with `bash`](#unix-with-bash)
+    * [Windows](#windows)
+    * [Node 6 and lower](#node-6-and-lower)
+
 # Overview
 
 ## Package Resolution and Layout
 
 The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
 
-`fyn`'s `node_modules` layout is much easier to view and smaller in size. You can easily see all versions of a packages with the Unix bash command `ls node_modules/*/__fv_`.
+`fyn`'s `node_modules` layout is much easier to view and smaller in size. You can easily see all the extra versions of a packages with the Unix bash command `ls node_modules/@*/*/__fv_ node_modules/*/__fv_`.
 
 `fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 
 ## Better `npm link` workflow
 
 With [flat-module], `fyn` offers a better workflow than `npm link`. Local packages are subjected to the same dependency resolution logic as those from the npm registry.
+
+To enable, use the path to your local modules as semver in your package.json, or you can use the `fyn add` command.
+
+For example:
+
+```bash
+fyn add ../my-awesome-module
+```
+
+That will install `my-awesome-module` into your node_modules. You can continue to develop and test `my-awesome-module` in its own directory and have the changes reflected in your app directly. Unlike `npm link`, your app resolves dependencies for `my-awesome-module` instead of relying on having them installed under `my-awesome-module/node_modules`.
 
 See [using flat-module](#using-flat-module) if you are interested in trying it out.
 
@@ -104,9 +132,9 @@ If there's no RC file or command line override, then these defaults are used:
 
 # node_modules Compatibility
 
-[flat-module] not withstanding, `fyn`'s top level `node_modules` are 100% compatible with NodeJS and all 3rd party tools and modules.
+`fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
 
-The way `fyn` uses symlinks to link a certain version of a package for another package is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path. If you want to keep the symlink path, set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`.
+The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path. If you want to keep the symlink path, set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`.
 
 `fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
 
