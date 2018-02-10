@@ -2,13 +2,17 @@
   "name": "fyn",
   "version": "0.1.46",
   "description": "Fast Node Package Manager with focus on easy local development.",
-  "main": "bin/fyn.js",
+  "main": "./bin/fyn.js",
   "scripts": {
     "test": "clap check"
   },
   "bin": {
-    "fyn": "bin/fyn.js"
+    "fyn": "./bin/fyn.js"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "keywords": [
     "node",
     "flat",

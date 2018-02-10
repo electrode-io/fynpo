@@ -37,7 +37,7 @@ xclap.load("fyn", {
 
       mkdirp.sync(Path.resolve(".tmp"));
       Fs.writeFileSync(Path.resolve(".tmp/package.json"), data);
-      Fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+      Fs.writeFileSync(pkgFile, `${JSON.stringify(pkg, null, 2)}\n`);
     }
   },
 
@@ -47,8 +47,10 @@ xclap.load("fyn", {
     }
   },
 
+  ".prepare": ["fyn/prepack", "fyn/bundle"],
+
   release: {
-    task: ["fyn/bundle", "fyn/prepack", "fyn/publish"],
+    task: ["fyn/.prepare", "fyn/publish"],
     finally: ["fyn/postpack"]
   },
 
