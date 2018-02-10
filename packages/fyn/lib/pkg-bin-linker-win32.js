@@ -1,12 +1,8 @@
 "use strict";
 
-/* eslint-disable global-require */
+/* eslint-disable global-require, prefer-template */
 
 const Fs = require("fs");
-const Path = require("path");
-const _ = require("lodash");
-const logger = require("./logger");
-const mkdirp = require("mkdirp");
 const PkgBinLinkerBase = require("./pkg-bin-linker-base");
 
 //

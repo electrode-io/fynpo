@@ -29,7 +29,7 @@ With [flat-module] `fyn` offers a better local module development workflow than 
 * [Install](#install)
 * [Using fyn](#using-fyn)
 * [Configuring fyn](#configuring-fyn)
-* [node_modules Compatibility](#node_modules-compatibility)
+* [fyn Compatibility](#fyn-compatibility)
 * [Using flat-module](#using-flat-module)
   * [Requirements](#requirements)
   * [`flat-module` Compatibility](#flat-module-compatibility)
@@ -130,13 +130,19 @@ If there's no RC file or command line override, then these defaults are used:
 * `progress` - `normal`
 * `logLevel` - `info`
 
-# node_modules Compatibility
+# fyn Compatibility
 
-`fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
+* `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
 
-The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path. If you want to keep the symlink path, set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`.
+* The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path.
 
-`fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
+  For example, if `A` depends on `B@1.0.0` that's not at the top level, then `node_modules/A/node_modules/B` is a symlink to `node_modules/B/__fv_/1.0.0/B`.
+
+  Without preserve symlinks, `B`'s path would be resolved to the real path `node_modules/B/__fv_/1.0.0/B`, instead of the symlink path `node_modules/A/node_modules/B`.
+
+  If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which is not something good anyways.
+
+* `fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
 
 # Using flat-module
 
