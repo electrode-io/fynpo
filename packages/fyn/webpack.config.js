@@ -26,7 +26,7 @@ module.exports = {
   },
   output: {
     filename: `[name]`,
-    path: Path.resolve("bin"),
+    path: Path.resolve("dist"),
     libraryTarget: "commonjs2"
   },
   target: "node",
