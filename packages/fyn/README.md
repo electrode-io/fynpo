@@ -140,9 +140,9 @@ If there's no RC file or command line override, then these defaults are used:
 
   Without preserve symlinks, `B`'s path would be resolved to the real path `node_modules/B/__fv_/1.0.0/B`, instead of the symlink path `node_modules/A/node_modules/B`.
 
-  If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which is not something good anyways.
+  If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which should be avoided. The subtle difference is that with preserve symlink, each symlink path of the same module will be loaded as its own instance by Node's module system.
 
-* `fyn` can't handle npm's `shrinkwrap.json` and `package-lock.json` files.
+* `fyn` can't handle npm's `npm-shrinkwrap.json` and `package-lock.json` files.
 
 # Using flat-module
 
