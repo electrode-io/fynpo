@@ -29,7 +29,7 @@ describe("scenario", function() {
     fyntil.exit = code => {
       throw new Error(`exit ${code}`);
     };
-    return mockNpm().then(s => {
+    return mockNpm({ logLevel: "warn" }).then(s => {
       server = s;
       registry = `--reg=http://localhost:${server.info.port}`;
     });

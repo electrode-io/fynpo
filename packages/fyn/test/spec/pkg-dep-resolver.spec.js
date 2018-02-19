@@ -17,7 +17,7 @@ describe("pkg-dep-resolver", function() {
   let server;
   let fynDir;
   before(() => {
-    return mockNpm().then(s => (server = s));
+    return mockNpm({ logLevel: "warn" }).then(s => (server = s));
   });
 
   after(done => {
