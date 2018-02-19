@@ -3,7 +3,7 @@
 /*
  * Dependencies Data
  *
- * Class to contain the entire dependencies tree after
+ * Class to contain the all the packages needed after
  * fetching meta data and resolve each package's
  * dependencies.
  *
