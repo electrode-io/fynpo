@@ -8,6 +8,7 @@ const Ini = require("ini");
 const _ = require("lodash");
 const logger = require("../lib/logger");
 const assert = require("assert");
+const defaultRc = require("./default-rc");
 
 function readRc(fname) {
   const rcFname = Path.basename(fname);
@@ -34,11 +35,6 @@ function readRc(fname) {
 function loadRc(cwd) {
   let rcName, rcData;
 
-  const defaults = {
-    registry: "https://registry.npmjs.org",
-    targetDir: "node_modules"
-  };
-
   const homeDir = os.homedir();
 
   const rc = [
@@ -48,7 +44,7 @@ function loadRc(cwd) {
     Path.join(cwd, ".fynrc")
   ].map(readRc);
 
-  const merged = _.merge.apply(_, [defaults].concat(rc));
+  const merged = _.merge.apply(_, [defaultRc].concat(rc));
 
   return merged;
 }

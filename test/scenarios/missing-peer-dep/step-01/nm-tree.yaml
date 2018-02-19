@@ -1,0 +1,25 @@
+node_modules:
+  __fyn_resolutions__.json: 151
+  mod-a:
+    __fv_:
+      0.2.0:
+        mod-a:
+          package.json: 276
+      0.4.5:
+        mod-a:
+          package.json: 276
+    package.json: 303
+  mod-b:
+    node_modules:
+      __fyn_ignore__: 0
+      mod-a: '-> ../../mod-a/__fv_/0.2.0/mod-a'
+    package.json: 574
+  mod-d:
+    package.json: 423
+  mod-e:
+    node_modules:
+      __fyn_ignore__: 0
+      mod-a: '-> ../../mod-a/__fv_/0.4.5/mod-a'
+    package.json: 578
+  mod-f:
+    package.json: 376

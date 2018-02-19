@@ -1,0 +1,13 @@
+{
+  "name": "locked-change-major",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-a": "^0.3.0",
+    "mod-b": "^1.0.0"
+  }
+}
