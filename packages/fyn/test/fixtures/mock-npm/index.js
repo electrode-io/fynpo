@@ -16,9 +16,15 @@ const TGZ_DIR_NAME = ".tgz";
 
 const CALC_SHASUM = Symbol("calc-shasum");
 
-const metaCache = {};
+let metaCache = {};
 
-function calcShasum(meta) {
+const DEFAULT_PORT = 4873;
+const DEFAULT_PORT_STR = `:${DEFAULT_PORT}`;
+
+let PORT = DEFAULT_PORT;
+let PORT_STR = DEFAULT_PORT_STR;
+
+function updateDist(meta) {
   if (meta[CALC_SHASUM]) return;
   meta[CALC_SHASUM] = true;
   _.each(meta.versions, vpkg => {
@@ -27,6 +33,7 @@ function calcShasum(meta) {
     const sha = Crypto.createHash("sha1");
     sha.update(tgzData);
     vpkg.dist.shasum = sha.digest("hex");
+    vpkg.dist.tarball = vpkg.dist.tarball.replace(DEFAULT_PORT_STR, PORT_STR);
   });
 }
 
@@ -38,12 +45,13 @@ function readMeta(pkgName) {
     meta = Yaml.safeLoad(metaData);
     metaCache[pkgName] = meta;
   }
-  calcShasum(meta);
+  updateDist(meta);
 
   return meta;
 }
 
-function mockNpm({ port = 4873, logLevel = "info" }) {
+function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
+  metaCache = {};
   const logger = new CliLogger();
   logger._logLevel = CliLogger.Levels.info;
   return electrodeServer({
@@ -56,6 +64,8 @@ function mockNpm({ port = 4873, logLevel = "info" }) {
       logLevel
     }
   }).tap(server => {
+    PORT = server.info.port;
+    PORT_STR = `:${PORT}`;
     server.route({
       method: "GET",
       path: "/{pkgName}",
@@ -99,5 +109,5 @@ function mockNpm({ port = 4873, logLevel = "info" }) {
 module.exports = mockNpm;
 
 if (require.main === module) {
-  createTgz().then(() => mockNpm({ port: 4873 }));
+  createTgz().then(() => mockNpm({}));
 }
