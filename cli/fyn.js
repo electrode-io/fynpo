@@ -43,7 +43,7 @@ const pickOptions = argv => {
     cwd = Path.join(process.cwd(), cwd);
   }
 
-  const rc = loadRc(cwd);
+  const rc = (argv.opts.rcfile && loadRc(cwd)) || {};
 
   nixClap.applyConfig(rc, argv);
 
@@ -117,6 +117,10 @@ const options = {
     requireArg: true,
     desc: "Set fyn's working directory"
   },
+  "fyn-dir": {
+    type: "string",
+    desc: "Set fyn's directory for cache etc, default {HOME}/.fyn"
+  },
   "force-cache": {
     alias: "f",
     type: "boolean",
@@ -154,6 +158,11 @@ const options = {
     default: false,
     desc: "Do not install devDependencies",
     allowCmd: ["add", "remove", "install"]
+  },
+  rcfile: {
+    type: "boolean",
+    default: true,
+    desc: "Load .fynrc and .npmrc files"
   },
   registry: {
     type: "string",
@@ -310,8 +319,13 @@ if (process.platform === "win32") {
   };
 }
 
-const run = () => {
-  return nixClap.init(options, commands).parseAsync();
+const run = args => {
+  const start = args !== undefined ? 0 : undefined;
+  return nixClap.init(options, commands).parseAsync(args, start);
 };
 
-run();
+module.exports = run;
+
+if (require.main === module) {
+  run();
+}
