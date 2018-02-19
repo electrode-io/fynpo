@@ -5,6 +5,7 @@ const Path = require("path");
 const _ = require("lodash");
 const Yaml = require("js-yaml");
 const Promise = require("bluebird");
+const rimraf = require("rimraf");
 const dirTree = require("../dir-tree");
 const fynRun = require("../../cli/fyn");
 const fyntil = require("../../lib/util/fyntil");
@@ -31,9 +32,9 @@ describe("scenario", function() {
     fyntil.exit = code => {
       throw new Error(`exit ${code}`);
     };
-    return mockNpm({ logLevel: "warn" }).then(s => {
+    return mockNpm({ port: 0, logLevel: "warn" }).then(s => {
       server = s;
-      registry = `--reg=http://localhost:${server.info.port}`;
+      registry = `http://localhost:${server.info.port}`;
     });
   });
 
@@ -109,7 +110,7 @@ describe("scenario", function() {
               });
             }
 
-            const args = [].concat(registry, BASE_ARGS, getFynDirArg(fynDir), [
+            const args = [].concat(`--reg=${registry}`, BASE_ARGS, getFynDirArg(fynDir), [
               `--cwd=${cwd}`,
               "install"
             ]);
@@ -137,6 +138,7 @@ describe("scenario", function() {
     }
   }
 
+  const cleanUp = false;
   const filter = {
     // "locked-change-major": { stopStep: "step-03" }
   };
@@ -148,6 +150,18 @@ describe("scenario", function() {
       const f = filter[s] || {};
       describe(s, function() {
         const cwd = Path.join(scenarioDir, s);
+        const clean = () => {
+          rimraf.sync(Path.join(cwd, "package.json"));
+          rimraf.sync(Path.join(cwd, "fyn-lock.yaml"));
+          rimraf.sync(Path.join(cwd, ".fyn"));
+          rimraf.sync(Path.join(cwd, "node_modules"));
+        };
+
+        before(clean);
+
+        if (cleanUp) {
+          after(clean);
+        }
         return executeScenario(cwd, f.stopStep);
       });
     }
