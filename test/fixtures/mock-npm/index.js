@@ -43,7 +43,7 @@ function readMeta(pkgName) {
   return meta;
 }
 
-function mockNpm(port) {
+function mockNpm({ port = 4873, logLevel = "info" }) {
   const logger = new CliLogger();
   logger._logLevel = CliLogger.Levels.info;
   return electrodeServer({
@@ -51,6 +51,9 @@ function mockNpm(port) {
       default: {
         port: Number.isFinite(port) ? port : 0
       }
+    },
+    electrode: {
+      logLevel
     }
   }).tap(server => {
     server.route({
@@ -96,5 +99,5 @@ function mockNpm(port) {
 module.exports = mockNpm;
 
 if (require.main === module) {
-  createTgz().then(() => mockNpm(4873));
+  createTgz().then(() => mockNpm({ port: 4873 }));
 }
