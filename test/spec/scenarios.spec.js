@@ -4,11 +4,13 @@ const Fs = require("fs");
 const Path = require("path");
 const _ = require("lodash");
 const Yaml = require("js-yaml");
+const Promise = require("bluebird");
 const dirTree = require("../dir-tree");
 const fynRun = require("../../cli/fyn");
 const fyntil = require("../../lib/util/fyntil");
 const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
+const optionalRequire = require("optional-require")(require);
 
 const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
@@ -47,24 +49,49 @@ describe("scenario", function() {
     logger._logData = [];
   });
 
+  const nulStepAction = {
+    before: _.noop,
+    after: _.noop,
+    verify: _.noop
+  };
+
   function executeScenario(cwd) {
     const pkgJsonFile = Path.join(cwd, "package.json");
     const pkgJson = {};
     const files = Fs.readdirSync(cwd).filter(x => x.startsWith("step-"));
     files.sort().forEach(step => {
-      it(step, () => {
-        const stepDir = Path.join(cwd, step);
-        const pkg = readJson(Path.join(stepDir, "pkg.json"));
-        _.merge(pkgJson, pkg);
-        Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
-        return fynRun(
-          [].concat(registry, BASE_ARGS, getFynDirArg(Path.join(cwd, ".fyn")), [
-            `--cwd=${cwd}`,
-            "install"
-          ])
-        )
-          .catch(err => {
-            if (err.message !== "exit 0") throw err;
+      const stepDir = Path.join(cwd, step);
+      const stepAction = optionalRequire(Path.join(stepDir), { default: {} });
+      _.defaults(stepAction, nulStepAction);
+      const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
+
+      it(`${step}${stepTitle}`, () => {
+        return Promise.try(() => stepAction.before())
+          .then(() => {
+            const pkg = readJson(Path.join(stepDir, "pkg.json"));
+            _.merge(pkgJson, pkg);
+            Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
+
+            const fynDir = Path.join(cwd, ".fyn");
+            if (stepAction.run) {
+              return stepAction.run({
+                registry,
+                fynDir,
+                cwd,
+                baseArgs: BASE_ARGS,
+                pkgJson,
+                pkgJsonFile
+              });
+            }
+
+            const args = [].concat(registry, BASE_ARGS, getFynDirArg(fynDir), [
+              `--cwd=${cwd}`,
+              "install"
+            ]);
+
+            return fynRun(args).catch(err => {
+              if (err.message !== "exit 0") throw err;
+            });
           })
           .then(() => {
             const nmTree = dirTree.make(cwd, "node_modules");
@@ -72,7 +99,9 @@ describe("scenario", function() {
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
             );
             expect(nmTree).to.deep.equal(expectNmTree);
-          });
+          })
+          .then(() => stepAction.verify())
+          .finally(() => stepAction.after());
       });
     });
   }
