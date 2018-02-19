@@ -10,11 +10,11 @@ versions:
     dependencies:
       mod-a: ^3.0.0
     dist:
-      shasum: 33333
+      shasum: ''
       tarball: 'http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz'
 dist-tags:
   latest: 4.5.1
 _rev: 9-f5a60b1743717bf9
-readme: >
+readme: |
   #mod-err
 _attachments: {}

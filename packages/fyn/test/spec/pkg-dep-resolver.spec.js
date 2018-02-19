@@ -41,14 +41,19 @@ describe("pkg-dep-resolver", function() {
   };
 
   const sortRequests = data => {
-    _.each(data.pkgs, pkg => {
-      _.each(pkg, v => {
-        v.requests = v.requests.map(r => r.join("!")).sort();
-        if (v.src) v.src = sortSrc(v.src);
-        if (v.dsrc) v.dsrc = sortSrc(v.dsrc);
-        delete v.extracted;
+    const sort = pkgs => {
+      _.each(pkgs, pkg => {
+        _.each(pkg, v => {
+          v.requests = v.requests.map(r => r.join("!")).sort();
+          if (v.src) v.src = sortSrc(v.src);
+          if (v.dsrc) v.dsrc = sortSrc(v.dsrc);
+          delete v.extracted;
+          v.dist.shasum = "test";
+        });
       });
-    });
+    };
+    sort(data.pkgs);
+    sort(data.badPkgs);
     return data;
   };
 

@@ -1,13 +1,14 @@
-/node_modules
+node_modules
 /.vscode
 /coverage
 /.nyc*
 /*.swp
 /*.log*
 /tmp
-/tgz
+.tgz
 /.cache
 /xout
 .tmp*
 /*.tgz
 /dist
+.fyn

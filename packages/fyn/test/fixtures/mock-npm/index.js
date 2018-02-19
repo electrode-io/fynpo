@@ -10,6 +10,9 @@ const chalk = require("chalk");
 const Crypto = require("crypto");
 const CliLogger = require("../../../lib/cli-logger");
 const _ = require("lodash");
+const createTgz = require("./create-tgz");
+
+const TGZ_DIR_NAME = ".tgz";
 
 const CALC_SHASUM = Symbol("calc-shasum");
 
@@ -20,7 +23,7 @@ function calcShasum(meta) {
   meta[CALC_SHASUM] = true;
   _.each(meta.versions, vpkg => {
     const tgzFile = Path.basename(vpkg.dist.tarball);
-    const tgzData = Fs.readFileSync(Path.join(__dirname, "tgz", tgzFile));
+    const tgzData = Fs.readFileSync(Path.join(__dirname, TGZ_DIR_NAME, tgzFile));
     const sha = Crypto.createHash("sha1");
     sha.update(tgzData);
     vpkg.dist.shasum = sha.digest("hex");
@@ -73,7 +76,7 @@ function mockNpm(port) {
       }
     });
 
-    const packagesDir = Path.join(__dirname, "tgz");
+    const packagesDir = Path.join(__dirname, TGZ_DIR_NAME);
     server.route({
       method: "GET",
       path: "/{pkgName}/-/{tgzFile}",
@@ -93,5 +96,5 @@ function mockNpm(port) {
 module.exports = mockNpm;
 
 if (require.main === module) {
-  mockNpm(4873);
+  createTgz().then(() => mockNpm(4873));
 }
