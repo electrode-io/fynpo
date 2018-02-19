@@ -12,11 +12,11 @@ versions:
     optionalDependencies:
       mod-a: ^0.4.0
     dist:
-      shasum: 33333
+      shasum: ''
       tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
 dist-tags:
   latest: 2.1.1
 _rev: 9-f5a60b1743717bf9
-readme: >
+readme: |
   #mod-e
 _attachments: {}

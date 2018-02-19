@@ -6,14 +6,14 @@ versions:
     description: test fixture mod-a
     version: 0.1.0
     dist:
-      shasum: 11111
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-0.1.0.tgz'
   0.2.0:
     name: mod-a
     description: test fixture mod-a
     version: 0.2.0
     dist:
-      shasum: 22222
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
   0.3.2:
     name: mod-a
@@ -22,74 +22,74 @@ versions:
     dependencies:
       mod-g: ^3.0.0
     dist:
-      shasum: 22222
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
   0.4.5:
     name: mod-a
     description: test fixture mod-a
     version: 0.4.5
     dist:
-      shasum: 88888
-      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'      
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
   1.0.0:
     name: mod-a
     description: test fixture mod-a
     version: 1.0.0
     dist:
-      shasum: 33333
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.0.tgz'
   1.0.1:
     name: mod-a
     description: test fixture mod-a
     version: 1.0.1
     dist:
-      shasum: 44444
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.1.tgz'
   1.0.2:
     name: mod-a
     description: test fixture mod-a
     version: 1.0.2
     dist:
-      shasum: 55555
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.2.tgz'
   1.1.0:
     name: mod-a
     description: test fixture mod-a
     version: 1.1.0
     dist:
-      shasum: 66666
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.0.tgz'
   1.1.1:
     name: mod-a
     description: test fixture mod-a
     version: 1.1.1
     dist:
-      shasum: 77777
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.1.tgz'
   1.1.2:
     name: mod-a
     description: test fixture mod-a
     version: 1.1.2
     dist:
-      shasum: 88888
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
   2.0.0:
     name: mod-a
     description: test fixture mod-a
     version: 2.0.0
     dist:
-      shasum: 88888
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
   3.1.0:
     name: mod-a
     description: test fixture mod-a
     version: 3.1.0
     dist:
-      shasum: 88888
+      shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-3.1.0.tgz'
 dist-tags:
   latest: 2.0.0
 _rev: 9-f5a60b1743717bf9
-readme: >
+readme: |
   #mod-a
 _attachments: {}

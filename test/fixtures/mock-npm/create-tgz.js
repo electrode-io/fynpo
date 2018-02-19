@@ -41,53 +41,72 @@ const makePackage = options => {
   );
 };
 
-const tmpDir = Path.join(__dirname, "package");
-mkdirp.sync(tmpDir);
-mkdirp.sync(Path.join(__dirname, "tgz"));
+const TGZ_DIR_NAME = ".tgz";
 
-const modSum = optionalRequire("./pkg-sum.json", { default: {} });
-let changed = 0;
+const createTgz = () => {
+  const modSum = optionalRequire(`./${TGZ_DIR_NAME}/pkg-sum.json`, { default: {} });
+  let changed = 0;
+  const tmpDir = Path.join(__dirname, "package");
+  mkdirp.sync(tmpDir);
+  mkdirp.sync(Path.join(__dirname, TGZ_DIR_NAME));
 
-Promise.resolve(metas)
-  .each(m => {
-    const f = Path.join(__dirname, "metas", m);
-    const ymlStr = Fs.readFileSync(f).toString();
-    const meta = Yml.safeLoad(ymlStr);
+  return Promise.resolve(metas)
+    .each(m => {
+      const f = Path.join(__dirname, "metas", m);
+      const ymlStr = Fs.readFileSync(f).toString();
+      const meta = Yml.safeLoad(ymlStr);
 
-    return Promise.resolve(Object.keys(meta.versions)).each(v => {
-      const pkg = makePackage(meta.versions[v]);
-      const fname = `${pkg.name}-${pkg.version}.tgz`;
-      const file = Path.join(__dirname, "tgz", fname);
-      const pkgJson = `${JSON.stringify(pkg, null, 2)}\n`;
-      const sum = Crypto.createHash("md5")
-        .update(pkgJson)
-        .digest("hex");
-      if (modSum[fname] === sum) return undefined;
-      changed++;
-      console.log("updating/creating", fname, modSum[fname], sum);
-      modSum[fname] = sum;
-      return writeFile(Path.join(tmpDir, "package.json"), pkgJson).then(() => {
-        return Tar.c(
-          {
-            gzip: true,
-            file,
-            cwd: __dirname
-          },
-          ["package"]
-        );
+      return Promise.resolve(Object.keys(meta.versions)).each(v => {
+        const metaPkg = meta.versions[v];
+        const pkg = makePackage(metaPkg);
+        const fname = `${pkg.name}-${pkg.version}.tgz`;
+        const file = Path.join(__dirname, TGZ_DIR_NAME, fname);
+        const pkgJson = `${JSON.stringify(pkg, null, 2)}\n`;
+        const sum = Crypto.createHash("md5")
+          .update(pkgJson)
+          .digest("hex");
+        if (modSum[fname] === sum) return undefined;
+        changed++;
+        console.log("updating/creating", fname, modSum[fname], sum);
+        modSum[fname] = sum;
+
+        return writeFile(Path.join(tmpDir, "package.json"), pkgJson)
+          .then(() => {
+            return Tar.c(
+              {
+                gzip: true,
+                file,
+                cwd: __dirname
+              },
+              ["package"]
+            ).then(() => {
+              metaPkg.dist = {
+                shasum: "",
+                tarball: `http://localhost:4873/${pkg.name}/-/${fname}`
+              };
+            });
+          })
+          .then(() => {
+            return writeFile(Path.join(__dirname, "metas", m), Yml.dump(meta));
+          });
       });
+    })
+    .catch(e => {
+      console.log(e.stack);
+    })
+    .finally(() => {
+      if (changed > 0) {
+        Fs.writeFileSync(
+          Path.join(__dirname, TGZ_DIR_NAME, "pkg-sum.json"),
+          `${JSON.stringify(modSum, null, 2)}\n`
+        );
+      }
+      rimraf.sync(tmpDir);
     });
-  })
-  .catch(e => {
-    console.log(e.stack);
-  })
-  .finally(() => {
-    console.log("removing", tmpDir);
-    if (changed > 0) {
-      Fs.writeFileSync(
-        Path.join(__dirname, "pkg-sum.json"),
-        `${JSON.stringify(modSum, null, 2)}\n`
-      );
-    }
-    rimraf.sync(tmpDir);
-  });
+};
+
+module.exports = createTgz;
+
+if (require.main === module) {
+  createTgz();
+}
