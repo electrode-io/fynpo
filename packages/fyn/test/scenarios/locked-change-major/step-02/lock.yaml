@@ -1,0 +1,28 @@
+mod-a:
+ _:
+  ^0.3.0: 0.3.2
+  ^2.0.0: 2.0.0
+ 2.0.0:
+  $: 194dfd4193c25f8fea6d1f25be026f70e7861bac
+  _: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
+ 0.3.2:
+  top: 1
+  $: 6313c4b21d6019c20cb62042dabe31171cee7544
+  _: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
+  dependencies:
+   mod-g: ^3.0.0
+mod-b:
+ _:
+  ^2.0.0: 2.0.0
+ 2.0.0:
+  top: 1
+  $: 94eab3c7af36b32ae28c1de285153d71cd24d6cd
+  _: 'http://localhost:4873/mod-b/-/mod-b-2.0.0.tgz'
+  dependencies:
+   mod-a: ^2.0.0
+mod-g:
+ _:
+  ^3.0.0: 3.0.11
+ 3.0.11:
+  $: 5f43b46f945a2f0d0d8acfad9fe9318026e85e9e
+  _: 'http://localhost:4873/mod-g/-/mod-g-3.0.11.tgz'

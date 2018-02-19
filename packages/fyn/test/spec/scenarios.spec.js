@@ -55,11 +55,36 @@ describe("scenario", function() {
     verify: _.noop
   };
 
-  function executeScenario(cwd) {
+  function executeScenario(cwd, stopStep) {
     const pkgJsonFile = Path.join(cwd, "package.json");
     const pkgJson = {};
     const files = Fs.readdirSync(cwd).filter(x => x.startsWith("step-"));
-    files.sort().forEach(step => {
+
+    const cleanLock = lock => {
+      _.each(lock, pkg => {
+        _.each(pkg, (vpkg, ver) => {
+          if (ver === "_") return;
+          vpkg.$ = "test";
+          vpkg._ = vpkg._.replace(/:[0-9]+\//, "/");
+        });
+      });
+
+      return lock;
+    };
+
+    const verifyLock = stepDir => {
+      const expectLockFile = Path.join(stepDir, "lock.yaml");
+      if (Fs.existsSync(expectLockFile)) {
+        const actualLockFile = Path.join(cwd, "fyn-lock.yaml");
+        const expectLock = Yaml.safeLoad(Fs.readFileSync(expectLockFile).toString());
+        const actualLock = Yaml.safeLoad(Fs.readFileSync(actualLockFile).toString());
+        expect(cleanLock(actualLock), "lock file should match").to.deep.equal(
+          cleanLock(expectLock)
+        );
+      }
+    };
+
+    const makeStep = step => {
       const stepDir = Path.join(cwd, step);
       const stepAction = optionalRequire(Path.join(stepDir), { default: {} });
       _.defaults(stepAction, nulStepAction);
@@ -99,19 +124,32 @@ describe("scenario", function() {
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
             );
             expect(nmTree).to.deep.equal(expectNmTree);
+            verifyLock(stepDir);
           })
           .then(() => stepAction.verify())
           .finally(() => stepAction.after());
       });
-    });
+    };
+
+    for (const step of files.sort()) {
+      if (step === stopStep) break;
+      makeStep(step);
+    }
   }
+
+  const filter = {
+    // "locked-change-major": { stopStep: "step-03" }
+  };
 
   const scenarioDir = Path.join(__dirname, "../scenarios");
   const scenarios = Fs.readdirSync(scenarioDir).filter(x => !x.startsWith("."));
   scenarios.sort().forEach(s => {
-    describe(s, function() {
-      const cwd = Path.join(scenarioDir, s);
-      return executeScenario(cwd);
-    });
+    if (_.isEmpty(filter) || filter[s]) {
+      const f = filter[s] || {};
+      describe(s, function() {
+        const cwd = Path.join(scenarioDir, s);
+        return executeScenario(cwd, f.stopStep);
+      });
+    }
   });
 });
