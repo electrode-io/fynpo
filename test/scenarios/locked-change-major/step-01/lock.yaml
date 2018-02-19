@@ -1,0 +1,67 @@
+mod-a:
+ _:
+  ^0.2.0: 0.2.0
+  ^0.3.0: 0.3.2
+  ^0.4.0: 0.4.5
+  ^1.0.1: 1.1.2
+ 1.1.2:
+  $: e5e8e511f97f9ebb9e0c77b7eb7e8e08da3f5a57
+  _: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
+ 0.4.5:
+  $: 49d898e513773ec9fbb616d3f470e44c23c7ad0c
+  _: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
+ 0.3.2:
+  top: 1
+  $: 6313c4b21d6019c20cb62042dabe31171cee7544
+  _: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
+  dependencies:
+   mod-g: ^3.0.0
+ 0.2.0:
+  $: dedbb0960264a9a94cca6d68214b0a73d035e3a4
+  _: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
+mod-b:
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  top: 1
+  $: c9787201a052212bca88671e856dc4961490d8d7
+  _: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
+  dependencies:
+   mod-a: ^0.2.0
+   mod-d: ^3.0.0
+  optionalDependencies:
+   mod-e: ^2.0.0
+mod-d:
+ _:
+  ^3.0.0: 3.0.1
+ 3.0.1:
+  $: 8771e73b05b2a2244ea90dbe4b25aaa9265e5f16
+  _: 'http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz'
+  dependencies:
+   mod-a: ^1.0.1
+   mod-b: ^1.0.0
+mod-e:
+ _:
+  ^2.0.0: 2.1.1
+ 2.1.1:
+  hasPI: 1
+  $: a0f98617c5d6bf88fee0567179590c8c69f29128
+  _: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+  dependencies:
+   mod-f: ^2.0.0
+  optionalDependencies:
+   mod-a: ^0.4.0
+mod-f:
+ _:
+  ^2.0.0: 2.1.1
+ 2.1.1:
+  $: 896e05aa49ad961bca4039c85d3d65a75c7faf5e
+  _: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
+  peerDependencies:
+   mod-a: ^0.3.0
+mod-g:
+ _:
+  ^3.0.0: 3.0.11
+ 3.0.11:
+  $: 5f43b46f945a2f0d0d8acfad9fe9318026e85e9e
+  _: 'http://localhost:4873/mod-g/-/mod-g-3.0.11.tgz'
