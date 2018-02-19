@@ -3,6 +3,7 @@
 const Fs = require("fs");
 const Path = require("path");
 const chalk = require("chalk");
+const Promise = require("bluebird");
 const FynCli = require("./fyn-cli");
 const _ = require("lodash");
 const CliLogger = require("../lib/cli-logger");
@@ -11,8 +12,10 @@ const NixClap = require("nix-clap");
 const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
 const findFlatModule = require("./find-flat-module");
+const defaultRc = require("./default-rc");
 
 const nixClap = new NixClap({
+  Promise,
   name: myPkg.name,
   version: myPkg.version,
   usage: "$0 [options] <command>"
@@ -43,7 +46,7 @@ const pickOptions = argv => {
     cwd = Path.join(process.cwd(), cwd);
   }
 
-  const rc = (argv.opts.rcfile && loadRc(cwd)) || {};
+  const rc = (argv.opts.rcfile && loadRc(cwd)) || defaultRc;
 
   nixClap.applyConfig(rc, argv);
 
@@ -184,7 +187,7 @@ const commands = {
     desc: "Install modules",
     exec: argv => {
       const cli = new FynCli(pickOptions(argv));
-      cli.install();
+      return cli.install();
     },
     default: true
   },
@@ -198,7 +201,7 @@ const commands = {
       options.lockfile = false;
       const cli = new FynCli(options);
       const opts = Object.assign({}, argv.opts, argv.args);
-      cli.add(opts).then(added => {
+      return cli.add(opts).then(added => {
         if (!added || !argv.opts.install) return;
         options.lockfile = argv.opts.lockfile;
         options.noStartupInfo = true;

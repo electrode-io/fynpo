@@ -14,7 +14,7 @@ const logger = require("../lib/logger");
 const CliLogger = require("../lib/cli-logger");
 const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
-const exit = require("../lib/util/exit");
+const fyntil = require("../lib/util/fyntil");
 const showStat = require("./show-stat");
 const showSetupInfo = require("./show-setup-info");
 
@@ -95,7 +95,7 @@ class FynCli {
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
     this.saveLogs(dbgLog);
-    exit(err);
+    fyntil.exit(err);
   }
 
   add(argv) {

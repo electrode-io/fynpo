@@ -20,7 +20,7 @@ const readFile = Promise.promisify(Fs.readFile);
 const readdir = Promise.promisify(Fs.readdir);
 const mkdirpAsync = Promise.promisify(mkdirp);
 const rimrafAsync = Promise.promisify(rimraf);
-const exit = require("./util/exit");
+const fyntil = require("./util/fyntil");
 
 /* eslint-disable no-magic-numbers */
 
@@ -46,7 +46,7 @@ class Fyn {
       } catch (err) {
         logger.error("failed to read package.json file", pkgFile);
         logger.error(err.message);
-        exit(err);
+        fyntil.exit(err);
       }
     } else {
       this._pkg = options.pkgData;
