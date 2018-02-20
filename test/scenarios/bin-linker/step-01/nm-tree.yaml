@@ -1,0 +1,10 @@
+node_modules:
+  .bin:
+    bin1: '-> ../mod-g/bin/bin1.js'
+    bin2: '-> ../mod-g/bin/bin2.js'
+  __fyn_resolutions__.json: 85
+  mod-g:
+    bin:
+      bin1.js: 0
+      bin2.js: 0
+    package.json: 394

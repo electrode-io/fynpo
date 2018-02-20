@@ -34,10 +34,13 @@ const makePackage = options => {
     _.pick(options, [
       "name",
       "version",
+      "description",
+      "bin",
+      "scripts",
+      "license",
       "dependencies",
       "peerDependencies",
-      "optionalDependencies",
-      "description"
+      "optionalDependencies"
     ]),
     customPkg,
     customVerPkg
