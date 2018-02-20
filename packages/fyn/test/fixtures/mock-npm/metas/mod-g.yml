@@ -1,6 +1,17 @@
 etag: mod-g-1
 name: mod-g
 versions:
+  2.0.1:
+    name: mod-g
+    description: test fixture mod-g
+    version: 2.0.1
+    bin:
+      bin1: bin/bin1.js
+      bin2: bin/bin2.js
+    dependencies: {}
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-g/-/mod-g-2.0.1.tgz'
   3.0.11:
     name: mod-g
     description: test fixture mod-g

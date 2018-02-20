@@ -8,13 +8,15 @@ const _ = require("lodash");
 const mkdirp = require("mkdirp");
 const Promise = require("bluebird");
 const Tar = require("tar");
+const xsh = require("xsh");
 const rimraf = Promise.promisify(require("rimraf"));
 const writeFile = Promise.promisify(Fs.writeFile);
 const optionalRequire = require("optional-require")(require);
 const metas = Fs.readdirSync(Path.join(__dirname, "metas"));
 
 const makePackage = options => {
-  const customPkg = optionalRequire(`./pkg/${options.name}.json`, {});
+  const customPkg = optionalRequire(`./pkg/${options.name}/pkg.json`, {});
+  const customVerPkg = optionalRequire(`./pkg/${options.name}/${options.version}/pkg.json`, {});
   return _.merge(
     {},
     {
@@ -37,7 +39,8 @@ const makePackage = options => {
       "optionalDependencies",
       "description"
     ]),
-    customPkg
+    customPkg,
+    customVerPkg
   );
 };
 
@@ -47,7 +50,6 @@ const createTgz = () => {
   const modSum = optionalRequire(`./${TGZ_DIR_NAME}/pkg-sum.json`, { default: {} });
   let changed = 0;
   const tmpDir = Path.join(__dirname, "package");
-  mkdirp.sync(tmpDir);
   mkdirp.sync(Path.join(__dirname, TGZ_DIR_NAME));
 
   return Promise.resolve(metas)
@@ -57,6 +59,9 @@ const createTgz = () => {
       const meta = Yml.safeLoad(ymlStr);
 
       return Promise.resolve(Object.keys(meta.versions)).each(v => {
+        rimraf.sync(tmpDir);
+        mkdirp.sync(tmpDir);
+
         const metaPkg = meta.versions[v];
         const pkg = makePackage(metaPkg);
         const fname = `${pkg.name}-${pkg.version}.tgz`;
@@ -71,6 +76,15 @@ const createTgz = () => {
         modSum[fname] = sum;
 
         return writeFile(Path.join(tmpDir, "package.json"), pkgJson)
+          .then(() => {
+            const pkgDir = Path.join(
+              Path.join(__dirname, "pkg", metaPkg.name, metaPkg.version, "package")
+            );
+            console.log("package dir", pkgDir);
+            if (Fs.existsSync(pkgDir)) {
+              xsh.$.cp("-Rf", `${pkgDir}/*`, tmpDir);
+            }
+          })
           .then(() => {
             return Tar.c(
               {
