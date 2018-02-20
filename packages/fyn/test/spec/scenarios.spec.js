@@ -138,11 +138,13 @@ describe("scenario", function() {
     }
   }
 
-  const cleanUp = false;
+  const cleanUp = true;
   const filter = {
     // "locked-change-major": { stopStep: "step-03" }
+    // "bin-linker": { stopStep: "" }
   };
 
+  const saveCwd = process.cwd();
   const scenarioDir = Path.join(__dirname, "../scenarios");
   const scenarios = Fs.readdirSync(scenarioDir).filter(x => !x.startsWith("."));
   scenarios.sort().forEach(s => {
@@ -162,6 +164,11 @@ describe("scenario", function() {
         if (cleanUp) {
           after(clean);
         }
+
+        afterEach(() => {
+          process.chdir(saveCwd);
+        });
+
         return executeScenario(cwd, f.stopStep);
       });
     }
