@@ -22,6 +22,7 @@ function dirTree(parent, dir, name) {
       me[f] = "";
     }
   }
+
   return parent;
 }
 
