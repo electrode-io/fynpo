@@ -1,0 +1,8 @@
+node_modules:
+  .bin:
+    binx: '-> ../mod-g/bin/binx.js'
+  __fyn_resolutions__.json: file
+  mod-g:
+    bin:
+      binx.js: file
+    package.json: file
