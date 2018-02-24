@@ -76,7 +76,8 @@
       "webpack.config.js",
       "bin",
       "dist",
-      "stubs"
+      "stubs",
+      "*/pkg-bin-linker-win32.js"
     ]
   },
   "engines": {
