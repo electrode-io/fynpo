@@ -12,6 +12,16 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-g/-/mod-g-2.0.1.tgz'
+  3.0.0:
+    name: mod-g
+    description: test fixture mod-g
+    version: 3.0.0
+    bin:
+      binx: bin/binx.js
+    dependencies: {}
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-g/-/mod-g-3.0.0.tgz'
   3.0.11:
     name: mod-g
     description: test fixture mod-g

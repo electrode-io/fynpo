@@ -17,9 +17,17 @@ function dirTree(parent, dir, name) {
       const target = Fs.readlinkSync(meFile);
       me[f] = `-> ${target}`;
     } else if (stat.isFile()) {
-      me[f] = stat.size;
+      me[f] = "file";
+    } else if (stat.isBlockDevice()) {
+      me[f] = "block_dev";
+    } else if (stat.isCharacterDevice()) {
+      me[f] = "char_dev";
+    } else if (stat.isFIFO()) {
+      me[f] = "fifo";
+    } else if (stat.isSocket()) {
+      me[f] = "socket";
     } else {
-      me[f] = "";
+      me[f] = "???";
     }
   }
 
