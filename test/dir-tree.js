@@ -2,6 +2,10 @@ const Path = require("path");
 const Fs = require("fs");
 const Yaml = require("js-yaml");
 
+function readJson(file) {
+  return JSON.parse(Fs.readFileSync(file).toString());
+}
+
 function dirTree(parent, dir, name) {
   const meDir = Path.join(dir, name);
   const files = Fs.readdirSync(meDir);
@@ -17,7 +21,12 @@ function dirTree(parent, dir, name) {
       const target = Fs.readlinkSync(meFile);
       me[f] = `-> ${target}`;
     } else if (stat.isFile()) {
-      me[f] = "file";
+      if (f === "package.json") {
+        const pkg = readJson(meFile);
+        me[f] = `${pkg.name}@${pkg.version}`;
+      } else {
+        me[f] = "file";
+      }
     } else if (stat.isBlockDevice()) {
       me[f] = "block_dev";
     } else if (stat.isCharacterDevice()) {

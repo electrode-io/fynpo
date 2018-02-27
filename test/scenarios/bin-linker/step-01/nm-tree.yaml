@@ -7,4 +7,4 @@ node_modules:
     bin:
       bin1.js: file
       bin2.js: file
-    package.json: file
+    package.json: mod-g@2.0.1

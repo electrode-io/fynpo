@@ -91,7 +91,7 @@ describe("scenario", function() {
       _.defaults(stepAction, nulStepAction);
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
 
-      it(`${step}${stepTitle}`, () => {
+      const testCase = it(`${step}${stepTitle}`, () => {
         return Promise.try(() => stepAction.before())
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
@@ -130,18 +130,21 @@ describe("scenario", function() {
           .then(() => stepAction.verify())
           .finally(() => stepAction.after());
       });
+
+      if (stepAction.timeout) testCase.timeout(stepAction.timeout);
     };
 
     for (const step of files.sort()) {
-      if (step === stopStep) break;
       makeStep(step);
+      if (step === stopStep) break;
     }
   }
 
   const cleanUp = true;
   const filter = {
-    // "locked-change-major": { stopStep: "step-03" }
-    // "bin-linker": { stopStep: "" }
+    // "locked-change-major": { stopStep: "step-02" }
+    // "bin-linker": { stopStep: "step-03" }
+    // "missing-peer-dep": {}
   };
 
   const saveCwd = process.cwd();
