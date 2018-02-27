@@ -1,25 +1,25 @@
 node_modules:
+  __fv_:
+    0.2.0:
+      mod-a:
+        package.json: mod-a@0.2.0
+    0.4.5:
+      mod-a:
+        package.json: mod-a@0.4.5
   __fyn_resolutions__.json: file
   mod-a:
-    __fv_:
-      0.2.0:
-        mod-a:
-          package.json: file
-      0.4.5:
-        mod-a:
-          package.json: file
-    package.json: file
+    package.json: mod-a@1.1.2
   mod-b:
     node_modules:
       __fyn_ignore__: file
-      mod-a: '-> ../../mod-a/__fv_/0.2.0/mod-a'
-    package.json: file
+      mod-a: '-> ../../__fv_/0.2.0/mod-a'
+    package.json: mod-b@1.0.0
   mod-d:
-    package.json: file
+    package.json: mod-d@3.0.1
   mod-e:
     node_modules:
       __fyn_ignore__: file
-      mod-a: '-> ../../mod-a/__fv_/0.4.5/mod-a'
-    package.json: file
+      mod-a: '-> ../../__fv_/0.4.5/mod-a'
+    package.json: mod-e@2.1.1
   mod-f:
-    package.json: file
+    package.json: mod-f@2.1.1

@@ -195,7 +195,7 @@ class PkgDepLinker {
     const existTarget = this.validateExistSymlink(fvDir, targetPath);
 
     //
-    // create symlink from app's node_modules/<pkg-name>/__fv_/ to the target
+    // create symlink from app's node_modules/__fv_/<version>/<pkg-name> to the target
     //
     if (!existTarget) {
       //

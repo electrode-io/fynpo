@@ -3,17 +3,16 @@
 /* eslint-disable no-magic-numbers */
 
 const Tar = require("tar");
-const Path = require("path");
 const Fs = require("fs");
 const Promise = require("bluebird");
 const _ = require("lodash");
 const logger = require("./logger");
 const PromiseQueue = require("./util/promise-queue");
-const pathUpEach = require("./util/path-up-each");
-const readdir = Promise.promisify(Fs.readdir);
 const rename = Promise.promisify(Fs.rename);
 const rmdir = Promise.promisify(Fs.rmdir);
 const logFormat = require("./util/log-format");
+const mkdirp = require("mkdirp");
+const mkdirpAsync = Promise.promisify(mkdirp);
 const { LOAD_PACKAGE } = require("./log-items");
 
 class PkgDistExtractor {
@@ -51,22 +50,21 @@ class PkgDistExtractor {
       fullOutDir
     );
 
-    const move = () => {
-      return readdir(pkg.extracted)
-        .each(f => rename(Path.join(pkg.extracted, f), Path.join(fullOutDir, f)))
-        .then(() => {
-          // Since it's been promoted, we know fullOutDir doesn't have __fv_, this
-          // will attempt to remove empty dirs, including __fv_, up to the top out dir
-          return Promise.resolve(pathUpEach(pkg.extracted, x => x === fullOutDir))
-            .each(x => rmdir(x))
-            .catch(err => {
-              logger.debug("movePromotedPkgFromFV - rmdir failed", err.message);
-            });
-        });
-    };
-
     // first make sure top dir is clear of any other files
-    return this._fyn.clearPkgOutDir(fullOutDir).then(() => move());
+    // then rename node_modules/__fv_/<version>/<pkg-name>/ to node_modules/<pkg-name>
+
+    return Promise.try(
+      () =>
+        Fs.existsSync(fullOutDir) &&
+        mkdirpAsync(this._fyn.getExtraDir()).then(() =>
+          rename(fullOutDir, this._fyn.getExtraDir(`${pkg.name}-${pkg.version}`))
+        )
+    )
+      .then(() => rename(pkg.extracted, fullOutDir))
+      .then(() => {
+        // clean empty node_modules/__fv_/<version> directory
+        return rmdir(this._fyn.getFvDir(pkg.version)).catch(_.noop);
+      });
   }
 
   processItem(data) {

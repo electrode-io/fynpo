@@ -128,17 +128,49 @@ class Fyn {
   }
 
   getInstalledPkgDir(name, version, pkg) {
-    return Path.join(this.getOutputDir(), name, pkg.promoted ? "" : `__fv_/${version}/${name}`);
+    return pkg.promoted
+      ? Path.join(this.getOutputDir(), name)
+      : Path.join(this.getOutputDir(), `__fv_`, version, name);
   }
 
-  getOutputDir() {
-    return Path.join(this._cwd, this._options.targetDir);
+  getFvDir(x) {
+    return Path.join(this._cwd, this._options.targetDir, "__fv_", x || "");
+  }
+
+  getOutputDir(x) {
+    return Path.join(this._cwd, this._options.targetDir, x || "");
+  }
+
+  getExtraDir(x) {
+    return Path.join(this._cwd, this._options.targetDir, ".extra", x || "");
   }
 
   clearPkgOutDir(dir) {
-    return readdir(dir)
-      .then(files => files.filter(x => x !== "__fv_"))
-      .each(f => rimrafAsync(Path.join(dir, f)));
+    return readdir(dir).each(f => rimrafAsync(Path.join(dir, f)));
+  }
+
+  loadFvVersions() {
+    const fvVersions = {};
+    const fvDir = this.getOutputDir("__fv_");
+
+    const versions = (Fs.existsSync(fvDir) && Fs.readdirSync(fvDir)) || [];
+    for (const v of versions) {
+      const verDir = Path.join(fvDir, v);
+      const mods = Fs.readdirSync(verDir);
+      for (let m of mods) {
+        if (m.startsWith("@")) {
+          const scopeDir = Path.join(verDir, m);
+          const scope2 = Fs.readdirSync(scopeDir);
+          m = Path.join(m, scope2[0]);
+        }
+        if (!fvVersions[m]) {
+          fvVersions[m] = [];
+        }
+        fvVersions[m].push(v);
+      }
+    }
+
+    return fvVersions;
   }
 
   createPkgOutDir(dir) {
@@ -154,9 +186,7 @@ class Fyn {
   }
 
   clearPkgOutDirSync(dir) {
-    Fs.readdirSync(dir)
-      .filter(x => x !== "__fv_")
-      .forEach(f => rimraf.sync(Path.join(dir, f)));
+    Fs.readdirSync(dir).forEach(f => rimraf.sync(Path.join(dir, f)));
   }
 
   createPkgOutDirSync(dir, keep) {
