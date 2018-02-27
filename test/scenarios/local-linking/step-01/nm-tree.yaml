@@ -1,8 +1,6 @@
 node_modules:
   .bin:
-    bin1: '-> ../__fv_/1.0.0-fynlocal/mod-h/bin/bin1.js'
-  __fv_:
-    1.0.0-fynlocal:
-      __fyn_link_mod-h__.json: file
-      mod-h: '-> ../../../../../fixtures/mod-h'
+    bin1: '-> ../mod-h/bin/bin1.js'
+  __fyn_link_mod-h__.json: file
   __fyn_resolutions__.json: file
+  mod-h: '-> ../../../fixtures/mod-h'
