@@ -71,10 +71,8 @@ class PkgSrcManager {
     return false;
   }
 
-  makeLocalId(v, fullPath) {
-    const md5 = crypto.createHash("md5");
-    md5.update(fullPath);
-    return semverUtil.localify(v, md5.digest("hex"));
+  makeLocalId(v) {
+    return semverUtil.localify(v);
   }
 
   getLocalPackageMeta(item, resolved) {
@@ -95,7 +93,7 @@ class PkgSrcManager {
       if (parent.local) {
         fullPath = Path.join(parent.fullPath, localPath);
       } else {
-        fullPath = Path.resolve(localPath);
+        fullPath = Path.resolve(this._fyn.cwd, localPath);
       }
     } else {
       fullPath = localPath;

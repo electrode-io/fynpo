@@ -18,6 +18,10 @@ const FYN_IGNORE_FILE = "__fyn_ignore__";
 const isWin32 = process.platform === "win32";
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
 
+const makeFynLinkFName = pkgName => {
+  return `__fyn_link_${pkgName}__.json`;
+};
+
 const createFileSymlink = (linkName, targetName) => {
   if (isWin32) {
     // Windows symlink require admin permission
@@ -204,6 +208,9 @@ class PkgDepLinker {
       //
       const vdirOneUp = Path.join(fvDir, "..");
       this._fyn.createPkgOutDirSync(vdirOneUp);
+      if (Path.isAbsolute(targetPath)) {
+        targetPath = Path.relative(vdirOneUp, targetPath);
+      }
       Fs.symlinkSync(targetPath, fvDir, DIR_SYMLINK_TYPE);
     }
   }
@@ -266,7 +273,7 @@ class PkgDepLinker {
     //
     const nameX = fvDir.lastIndexOf(depInfo.name);
     const vdirNoName = fvDir.substring(0, nameX);
-    const nmFynLinkName = Path.join(vdirNoName, FYN_LINK_JSON);
+    const nmFynLinkName = Path.join(vdirNoName, makeFynLinkFName(depInfo.name));
     const fynLinkData = this._fyn.readJson(nmFynLinkName);
     // existing link data matches what we want to write
     if (fynLinkData.targetPath === depInfo.dist.fullPath) {

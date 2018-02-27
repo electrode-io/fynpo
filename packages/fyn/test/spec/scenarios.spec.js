@@ -112,6 +112,8 @@ describe("scenario", function() {
 
             const args = [].concat(`--reg=${registry}`, BASE_ARGS, getFynDirArg(fynDir), [
               `--cwd=${cwd}`,
+              // "-q",
+              // "debug",
               "install"
             ]);
 
@@ -145,6 +147,7 @@ describe("scenario", function() {
     // "locked-change-major": { stopStep: "step-02" }
     // "bin-linker": { stopStep: "step-03" }
     // "missing-peer-dep": {}
+    // "local-linking": {}
   };
 
   const saveCwd = process.cwd();
