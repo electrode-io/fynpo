@@ -20,9 +20,8 @@ module.exports = {
         version = name.version;
       } else if (name.resolved) {
         version = name.resolved;
-      } else if (name.semver) {
-        version = name.semver;
       }
+
       name = name.name;
     }
     const dimAt = chalk.cyan.dim("@");

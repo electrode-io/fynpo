@@ -38,7 +38,10 @@ class PkgBinLinkerBase {
 
     const link = (file, sym) => {
       if (this._linked[sym]) {
-        logger.verbose(`bin-linker: bin ${sym} already linked to ${this._linked[sym]}`);
+        logger.verbose(
+          `bin-linker: bin ${sym} already linked to ${this._linked[sym]}`,
+          depInfo.top
+        );
         return;
       }
 
@@ -59,6 +62,7 @@ class PkgBinLinkerBase {
       }
 
       this._chmod(target);
+      logger.debug("bin-linker setting linked for", sym, "to", relTarget);
       this._linked[sym] = relTarget;
     };
 

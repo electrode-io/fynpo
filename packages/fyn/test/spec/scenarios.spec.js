@@ -16,6 +16,8 @@ const optionalRequire = require("optional-require")(require);
 const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
 
+const debug = false;
+
 function readJson(path) {
   try {
     return JSON.parse(Fs.readFileSync(path).toString());
@@ -85,6 +87,16 @@ describe("scenario", function() {
       }
     };
 
+    const deleteNullFields = obj => {
+      _.each(obj, (v, k) => {
+        if (v === null || v === undefined) {
+          delete obj[k];
+        } else if (v && v.constructor.name === "Object") {
+          deleteNullFields(v);
+        }
+      });
+    };
+
     const makeStep = step => {
       const stepDir = Path.join(cwd, step);
       const stepAction = optionalRequire(Path.join(stepDir), { default: {} });
@@ -96,6 +108,7 @@ describe("scenario", function() {
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
             _.merge(pkgJson, pkg);
+            deleteNullFields(pkgJson);
             Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
 
             const fynDir = Path.join(cwd, ".fyn");
@@ -110,12 +123,13 @@ describe("scenario", function() {
               });
             }
 
-            const args = [].concat(`--reg=${registry}`, BASE_ARGS, getFynDirArg(fynDir), [
-              `--cwd=${cwd}`,
-              // "-q",
-              // "debug",
-              "install"
-            ]);
+            const args = [].concat(
+              `--reg=${registry}`,
+              BASE_ARGS,
+              getFynDirArg(fynDir),
+              (debug && ["-q", "debug"]) || [],
+              [`--cwd=${cwd}`, "install"]
+            );
 
             return fynRun(args).catch(err => {
               if (err.message !== "exit 0") throw err;
@@ -142,13 +156,15 @@ describe("scenario", function() {
     }
   }
 
-  const cleanUp = true;
-  const filter = {
-    // "locked-change-major": { stopStep: "step-02" }
-    // "bin-linker": { stopStep: "step-03" }
-    // "missing-peer-dep": {}
-    // "local-linking": {}
-  };
+  const cleanUp = !debug;
+  const filter = debug
+    ? {
+        // "locked-change-major": { stopStep: "step-02" }
+        // "bin-linker": { stopStep: "step-03" }
+        // "missing-peer-dep": {}
+        "local-linking": { stopStep: "step-07" }
+      }
+    : {};
 
   const saveCwd = process.cwd();
   const scenarioDir = Path.join(__dirname, "../scenarios");

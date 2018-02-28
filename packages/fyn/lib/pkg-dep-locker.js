@@ -83,7 +83,7 @@ class PkgDepLocker {
           }
           if (vpkg.local) {
             meta.$ = "local";
-            meta._ = Path.relative(process.cwd(), dist.fullPath).replace(/\\/g, "/");
+            meta._ = dist.fullPath;
           } else {
             meta.$ = dist.shasum || 0;
             meta._ = dist.tarball;

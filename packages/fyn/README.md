@@ -43,9 +43,7 @@ With [flat-module] `fyn` offers a better local module development workflow than 
 
 ## Package Resolution and Layout
 
-The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
-
-`fyn`'s `node_modules` layout is much easier to view and smaller in size. You can easily see all the extra versions of a packages with the Unix bash command `ls node_modules/@*/*/__fv_ node_modules/*/__fv_`.
+The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
 
 `fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 
