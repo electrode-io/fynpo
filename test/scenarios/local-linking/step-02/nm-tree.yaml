@@ -3,6 +3,7 @@ node_modules:
     bin1: '-> ../mod-h/bin/bin1.js'
     bin2: '-> ../mod-g/bin/bin2.js'
   __fyn_link_mod-h__.json: file
+  __fyn_link_mod-i__.json: file
   __fyn_resolutions__.json: file
   mod-g:
     bin:
@@ -10,3 +11,4 @@ node_modules:
       bin2.js: file
     package.json: mod-g@2.0.1
   mod-h: '-> ../../../fixtures/mod-h'
+  mod-i: '-> ../../../fixtures/mod-i'

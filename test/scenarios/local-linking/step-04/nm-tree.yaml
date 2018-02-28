@@ -1,0 +1,18 @@
+node_modules:
+  .bin:
+    bin1: '-> ../mod-g/bin/bin1.js'
+    bin2: '-> ../mod-g/bin/bin2.js'
+  __fv_:
+    2.0.1:
+      mod-g:
+        bin:
+          bin1.js: file
+          bin2.js: file
+        package.json: mod-g@2.0.1
+  __fyn_link_mod-g__.json: file
+  __fyn_link_mod-h__.json: file
+  __fyn_link_mod-i__.json: file
+  __fyn_resolutions__.json: file
+  mod-g: '-> ../../../fixtures/mod-g'
+  mod-h: '-> ../../../fixtures/mod-h'
+  mod-i: '-> ../../../fixtures/mod-i'

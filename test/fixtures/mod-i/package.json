@@ -1,5 +1,5 @@
 {
-  "name": "mod-h",
+  "name": "mod-i",
   "version": "1.0.0",
   "description": "module for testing local linking",
   "main": "index.js",
@@ -13,6 +13,6 @@
     "bin1": "bin/bin1.js"
   },
   "dependencies": {
-    "mod-g": "^2.0.0"
+    "mod-h": "../mod-h"
   }
 }
