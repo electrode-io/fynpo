@@ -164,7 +164,7 @@ describe("scenario", function() {
         // "locked-change-major": { stopStep: "step-02" }
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
-        "local-linking": { stopStep: "step-02" }
+        "local-linking": { stopStep: "step-06" }
       }
     : {};
 

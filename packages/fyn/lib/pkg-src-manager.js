@@ -85,8 +85,7 @@ class PkgSrcManager {
 
   /* eslint-disable max-statements */
   fetchLocalItem(item) {
-    const semver = item.semver;
-    const localPath = this.getSemverAsFilepath(semver);
+    const localPath = item.semverPath;
 
     if (!localPath) return false;
 
