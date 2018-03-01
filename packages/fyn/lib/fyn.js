@@ -95,6 +95,10 @@ class Fyn {
     return this._options.concurrency;
   }
 
+  get preferLock() {
+    return this._options.preferLock;
+  }
+
   get remoteMetaDisabled() {
     // force-cache only force use cache when it exists but if it's
     // cache miss then we should retrieve from remote

@@ -139,6 +139,10 @@ const options = {
     type: "boolean",
     desc: "Only resolve with lockfile. Fail if needs changes."
   },
+  "prefer-lock": {
+    type: "boolean",
+    desc: "Prefer resolving with lock data when locally linked exist"
+  },
   lockfile: {
     type: "boolean",
     alias: "lf",

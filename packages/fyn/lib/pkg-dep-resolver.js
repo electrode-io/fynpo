@@ -440,7 +440,7 @@ class PkgDepResolver {
       this.findVersionFromDistTag(meta, item.semver) ||
       (meta && searchMeta());
 
-    // logger.log("resolved to ", resolved, item.name, item.semver);
+    // logger.debug("resolved to", resolved, "for", item.name, item.semver);
 
     return resolved;
   }
@@ -475,6 +475,21 @@ class PkgDepResolver {
     //
     const force = this._lockOnly && item.dsrc !== "opt";
 
+    if (!this._fyn.preferLock) {
+      logger.debug("checking local over lock", item.name);
+      const localMeta = this._pkgSrcMgr.getAllLocalMetaOfPackage(item.name);
+
+      if (localMeta) {
+        const localResolve = Object.keys(localMeta).find(v =>
+          this._resolveWithMeta(item, localMeta[v])
+        );
+        if (localResolve) {
+          logger.debug("override nested lock resolve with local", localResolve);
+          return true;
+        }
+      }
+    }
+
     const locked = this._fyn.depLocker.convert(item);
     if (locked) {
       return this._resolveWithMeta(item, locked, force);
@@ -489,9 +504,26 @@ class PkgDepResolver {
   }
 
   processItem(item) {
-    // always fetch the item and let pkg src manager deal with caching
-    return Promise.try(() => this._resolveWithLockData(item)).then(r => {
-      if (r || this._lockOnly) return undefined;
+    const tryLocal = () =>
+      Promise.try(() => this._pkgSrcMgr.fetchLocalItem(item)).then(meta => {
+        if (meta) {
+          const updated = this._fyn.depLocker.update(item, meta);
+          return this._resolveWithMeta(item, updated, true);
+        }
+        return false;
+      });
+
+    const tryLock = () => Promise.try(() => this._resolveWithLockData(item));
+
+    const promise = this._fyn.preferLock
+      ? tryLock().then(r => r || tryLocal())
+      : tryLocal().then(r => r || tryLock());
+
+    return promise.then(r => {
+      if (r || this._lockOnly || item.local) return undefined;
+      // neither local nor lock was able to resolve for item
+      // so try to fetch from registry for real meta to resolve
+      // always fetch the item and let pkg src manager deal with caching
       return this._pkgSrcMgr.fetchMeta(item).then(meta => {
         if (!meta) {
           throw new Error(`Unable to retrieve meta for package ${item.name}`);
