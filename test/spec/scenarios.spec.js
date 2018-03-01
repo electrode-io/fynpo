@@ -55,7 +55,8 @@ describe("scenario", function() {
   const nulStepAction = {
     before: _.noop,
     after: _.noop,
-    verify: _.noop
+    verify: _.noop,
+    extraArgs: []
   };
 
   function executeScenario(cwd, stopStep) {
@@ -127,6 +128,7 @@ describe("scenario", function() {
               `--reg=${registry}`,
               BASE_ARGS,
               getFynDirArg(fynDir),
+              stepAction.extraArgs,
               (debug && ["-q", "debug"]) || [],
               [`--cwd=${cwd}`, "install"]
             );
@@ -162,7 +164,7 @@ describe("scenario", function() {
         // "locked-change-major": { stopStep: "step-02" }
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
-        "local-linking": { stopStep: "step-07" }
+        "local-linking": { stopStep: "step-02" }
       }
     : {};
 
