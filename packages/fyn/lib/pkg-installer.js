@@ -302,7 +302,7 @@ class PkgInstaller {
     const versions = this._fvVersions[pkgName];
     if (!versions || versions.length < 1) return;
     for (const ver of versions) {
-      if (!pkg[ver] || pkg[ver].promoted) {
+      if (!pkg || !pkg[ver] || pkg[ver].promoted) {
         const pkgInstalledPath = this._fyn.getFvDir(Path.join(ver, pkgName));
         const stat = Fs.lstatSync(pkgInstalledPath);
         if (stat.isSymbolicLink()) {
