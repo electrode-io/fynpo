@@ -317,6 +317,12 @@ class PkgInstaller {
           logger.verbose("removing extraneous version", ver, "of", pkgName);
           rimraf.sync(pkgInstalledPath);
         }
+        // a scoped package, remove the scope dir
+        try {
+          if (pkgName.startsWith("@")) {
+            Fs.rmdirSync(Path.join(pkgInstalledPath, ".."));
+          }
+        } catch (e) {}
       }
       try {
         Fs.rmdirSync(this._fyn.getFvDir(ver));
