@@ -133,7 +133,7 @@ class PkgDepLinker {
     const pkgs = this._fyn._data.getPkgsData();
     const fvDeps = [];
 
-    _.each(["dep", "opt"], section => {
+    _.each(["dep", "per", "opt"], section => {
       const dep = resData[section] || {};
 
       Object.keys(dep)
@@ -147,7 +147,11 @@ class PkgDepLinker {
           if (!pkgInfo.promoted) {
             fvDeps.push(pkgInfo);
           }
-          depRes[depName] = { resolved: depPkg.resolved };
+          if (depRes[depName]) {
+            depRes[depName].type += `;${section}`;
+          } else {
+            depRes[depName] = { resolved: depPkg.resolved, type: section };
+          }
         });
     });
 
