@@ -310,17 +310,24 @@ if (process.platform === "win32") {
       const keep = argv.opts.keep;
       const del = keep ? "" : `@(goto) 2>nul & del "%~f0"\r\n`;
       Fs.writeFileSync(Path.resolve("fynwin.cmd"), `${cmd}\r\n${del}`);
-      logger.fyi(
-        `${chalk.green("fynwin.cmd")} generated at ${chalk.magenta(process.cwd())} for you.`
-      );
-      logger.fyi(
-        `You can run it by typing ${chalk.magenta("fynwin")}.`,
-        keep ? "" : `It will delete itself.`
-      );
+      if (!argv.opts.quiet) {
+        logger.fyi(
+          `${chalk.green("fynwin.cmd")} generated at ${chalk.magenta(process.cwd())} for you.`
+        );
+        logger.fyi(
+          `You can run it by typing ${chalk.magenta("fynwin")}.`,
+          keep ? "" : `It will delete itself.`
+        );
+      }
     },
     options: {
       keep: {
         desc: "fynwin.cmd does not delete itself",
+        type: "boolean",
+        default: false
+      },
+      quiet: {
+        desc: "don't show any message",
         type: "boolean",
         default: false
       }
