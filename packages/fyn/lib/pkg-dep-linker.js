@@ -172,6 +172,9 @@ class PkgDepLinker {
     //
     try {
       existTarget = Fs.readlinkSync(symlinkDir);
+      if (DIR_SYMLINK_TYPE === "junction" && !Path.isAbsolute(targetPath)) {
+        targetPath = Path.join(symlinkDir, "..", targetPath) + "\\";
+      }
     } catch (e) {
       existTarget = e.code !== "ENOENT";
     }
@@ -189,7 +192,7 @@ class PkgDepLinker {
         rimraf.sync(symlinkDir);
       }
     } else {
-      logger.debug("local link existTarget", existTarget, "new target", targetPath);
+      logger.debug("local link existTarget", existTarget, "match new target", targetPath);
     }
 
     return existTarget;
