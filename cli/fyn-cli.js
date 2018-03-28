@@ -4,6 +4,7 @@ const Module = require("module");
 const Fs = require("fs");
 const Yaml = require("yamljs");
 const Path = require("path");
+const Promise = require("bluebird");
 const Fyn = require("../lib/fyn");
 const _ = require("lodash");
 const PkgInstaller = require("../lib/pkg-installer");
@@ -105,12 +106,13 @@ class FynCli {
       if (_.isEmpty(packages)) return [];
 
       const items = packages.map(x => {
-        const fpath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
-        if (fpath) {
+        const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
+        if (semverPath) {
           return {
             $: x,
             name: "",
             semver: x,
+            semverPath,
             section
           };
         }
@@ -158,35 +160,37 @@ class FynCli {
       stopOnError: true,
       processItem: item => {
         let found;
-        return this.fyn.pkgSrcMgr.fetchMeta(item).then(meta => {
-          // logger.info("adding", x.name, x.semver, meta);
-          // look at dist tags
-          const tags = meta["dist-tags"];
-          if (meta.local) {
-            logger.info("adding local package at", item.fullPath);
-            item.name = meta.name;
-            found = Path.relative(this.fyn.cwd, item.fullPath).replace(/\\/g, "/");
-          } else if (tags && tags[item.semver]) {
-            logger.debug("adding with dist tag for", item.name, item.semver, tags[item.semver]);
-            found = `^${tags[item.semver]}`;
-            if (!semver.validRange(found)) found = tags[item.semver];
-          } else {
-            // search
-            const versions = Object.keys(meta.versions).filter(v =>
-              semver.satisfies(v, item.semver)
-            );
-            if (versions.length > 0) {
-              found = item.semver;
+        return Promise.try(() => this._fyn._pkgSrcMgr.fetchLocalItem(item))
+          .then(meta => meta || this.fyn.pkgSrcMgr.fetchMeta(item))
+          .then(meta => {
+            // logger.info("adding", x.name, x.semver, meta);
+            // look at dist tags
+            const tags = meta["dist-tags"];
+            if (meta.local) {
+              logger.info("adding local package at", item.fullPath);
+              item.name = meta.name;
+              found = Path.relative(this.fyn.cwd, item.fullPath).replace(/\\/g, "/");
+            } else if (tags && tags[item.semver]) {
+              logger.debug("adding with dist tag for", item.name, item.semver, tags[item.semver]);
+              found = `^${tags[item.semver]}`;
+              if (!semver.validRange(found)) found = tags[item.semver];
             } else {
-              logger.error(chalk.red(`no matching version found for ${item.$}`));
+              // search
+              const versions = Object.keys(meta.versions).filter(v =>
+                semver.satisfies(v, item.semver)
+              );
+              if (versions.length > 0) {
+                found = item.semver;
+              } else {
+                logger.error(chalk.red(`no matching version found for ${item.$}`));
+              }
             }
-          }
-          if (found) {
-            logger.info(`found ${found} for ${item.$}`);
-            item.found = found;
-            results.push(item);
-          }
-        });
+            if (found) {
+              logger.info(`found ${found} for ${item.$}`);
+              item.found = found;
+              results.push(item);
+            }
+          });
       },
       watchTime: 5000,
       itemQ: items
