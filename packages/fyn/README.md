@@ -1,10 +1,10 @@
 # fyn: Flatten Your Node_modules
 
-`fyn` is a fast node package manager for the [flat node_modules design].
+`fyn` is a fast node package manager for the [flat node_modules design] but maintains [100% compatibility](#fyn-compatibility).
 
-It installs only one copy of every package and uses symlink/junction to setup the nested dependencies.
+It installs only one copy of every package in a flat structure and uses symlink/junction to setup the nested dependencies.
 
-With [flat-module] `fyn` offers a better local module development workflow than `npm link`.
+With [flat-module], `fyn` offers a better local module development workflow than `npm link`.
 
 ![fyn demo][fyn-demo-gif]
 
@@ -174,13 +174,13 @@ If you want all paths to appear within your application's directory, set [NODE_P
 
 If you are using bash, to setup the [NODE_OPTIONS] env for [flat-module], you have two options:
 
-1. Use `eval` for bash:
+1.  Use `eval` for bash:
 
 ```bash
 eval `fyn bash`
 ```
 
-2. Set it up manually:
+2.  Set it up manually:
 
 ```bash
 export NODE_OPTIONS="-r <path-to-flat-module>"
@@ -198,14 +198,13 @@ fyn fm
 
 On Windows, you have two options:
 
-1. Run `fyn win` to generate a batch file `fynwin.cmd` in your current directory. Invoke `fynwin.cmd` to setup [NODE_OPTIONS]. The file will delete itself.
+1.  Run `fyn win` to generate a batch file `fynwin.cmd` in your current directory. Invoke `fynwin.cmd` to setup [NODE_OPTIONS]. The file will delete itself.
 
 ```batch
-fyn win
-fynwin
+fyn win && fynwin
 ```
 
-2. Run the following command yourself:
+2.  Run the following command yourself:
 
 ```batch
 set NODE_OPTIONS=-r <path-to-flat-module>
