@@ -4,7 +4,6 @@
 
 const Fs = require("fs");
 const PkgBinLinkerBase = require("./pkg-bin-linker-base");
-const logger = require("./logger");
 
 //
 // Look at each promoted package and link their bin

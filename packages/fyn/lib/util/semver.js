@@ -12,7 +12,7 @@ const os = require("os");
 // - Assume versions are properly formed
 //
 
-/* eslint-disable max-statements, no-magic-numbers */
+/* eslint-disable max-statements, no-magic-numbers, complexity */
 
 function split(v, sep, index = 0) {
   const x = v.indexOf(sep, index);

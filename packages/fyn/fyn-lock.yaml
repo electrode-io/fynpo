@@ -4024,10 +4024,10 @@ ws:
    ultron: ~1.1.0
 xclap:
  _:
-  ^0.2.0: 0.2.21
- 0.2.21:
-  $: a005c24d6362671d15f97d6dcdf4194521aa2574
-  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.21.tgz'
+  ^0.2.0: 0.2.22
+ 0.2.22:
+  $: 726e9673830a338459879b09b45020aaebdd84d6
+  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.22.tgz'
   dependencies:
    chalk: ^2.0.1
    insync: ^2.1.1

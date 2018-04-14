@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers,max-statements */
+/* eslint-disable no-magic-numbers,max-statements,prefer-template */
 
 const Crypto = require("crypto");
 const Path = require("path");
