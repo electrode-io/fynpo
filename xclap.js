@@ -50,6 +50,7 @@ xclap.load("fyn", {
   ".prepare": ["fyn/prepack", "fyn/bundle"],
 
   release: {
+    desc: "Release a new version to npm.  package.json must be updated.",
     task: ["fyn/.prepare", "fyn/publish"],
     finally: ["fyn/postpack"]
   },
