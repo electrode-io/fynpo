@@ -87,7 +87,11 @@ class PkgDepResolver {
     // - When ready to resolve a depth, all names are queued for processing.
     //
     this._depthResolving = { 0: {} };
-    this.addPkgDep(pkg, !this._fyn.production);
+    this.addPkgDep(
+      pkg,
+      !this._fyn.production,
+      new DepItem({ name: "~", semver: "-", src: "", dsrc: "pkg", resolved: "~" })
+    );
     this.queueDepth(0);
   }
 
@@ -191,7 +195,7 @@ class PkgDepResolver {
   }
 
   queueDepth(depth) {
-    if (depth >= 1) {
+    if (depth > 1) {
       const parentDepth = this._depthResolving[depth - 1];
       Object.keys(parentDepth).forEach(x => {
         if (parentDepth[x].deps) {
@@ -212,7 +216,7 @@ class PkgDepResolver {
   addResolving(pkg, section, dsrc, parent) {
     const bundled = pkg.bundleDependencies;
     const dep = pkg[section] || {};
-    const src = (parent && parent.src) || dsrc;
+    const src = parent.src || dsrc;
     let count = 0;
     for (const name in dep) {
       if (!bundled || bundled.indexOf(name) < 0) {
@@ -356,7 +360,7 @@ class PkgDepResolver {
       pkgV.json = metaJson;
     }
 
-    if (!item.parent) {
+    if (!item.parent.depth) {
       pkgV.top = true;
     }
 

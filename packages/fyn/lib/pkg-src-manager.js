@@ -92,7 +92,7 @@ class PkgSrcManager {
     let fullPath;
 
     if (!Path.isAbsolute(localPath)) {
-      const parent = item.parent || {};
+      const parent = item.parent;
       if (parent.local) {
         fullPath = Path.join(parent.fullPath, localPath);
       } else {
