@@ -34,6 +34,7 @@ class DepItem {
     this.parent = parent;
     // was this item promoted out of __fv_?
     this.promoted = undefined;
+    this.depth = (parent && parent.depth + 1) || options.depth || 0;
   }
 
   unref() {
