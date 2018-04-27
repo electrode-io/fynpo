@@ -248,13 +248,13 @@ const commands = {
     desc: "Remove packages from package.json and install",
     exec: argv => {
       const options = pickOptions(argv);
-      const lockFile = options.lockFile;
+      const lockFile = options.lockfile;
       options.lockfile = false;
       const cli = new FynCli(options);
       const opts = Object.assign({}, argv.opts, argv.args);
       if (cli.remove(opts)) {
         if (!argv.opts.install) return;
-        options.lockfile = options.lockFile;
+        options.lockfile = lockFile;
         options.noStartupInfo = true;
         logger.info("installing...");
         return new FynCli(options).install();
