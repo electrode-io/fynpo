@@ -159,6 +159,11 @@ const options = {
     type: "boolean",
     desc: "Force show deprecated messages"
   },
+  "deep-resolve": {
+    alias: "dr",
+    type: "boolean",
+    desc: "Resolve as deep into the dependency tree as possible"
+  },
   production: {
     type: "boolean",
     alias: "prod",

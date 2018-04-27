@@ -62,31 +62,47 @@ describe("pkg-dep-resolver", function() {
     expect(sortRequests(fyn._data)).to.deep.equal(sortRequests(expected));
   };
 
-  const testPkgAFixture = () => {
+  const testPkgAFixture = deepResolve => {
     const fyn = new Fyn({
       registry: `http://localhost:${server.info.port}`,
       pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
       targetDir: "xout",
       cwd: fynDir,
       fynDir,
-      ignoreDist: true
+      ignoreDist: true,
+      deepResolve
     });
+    const outFname = `fyn-data${deepResolve ? "-dr" : ""}.yaml`;
+    const expectOutput = `../fixtures/pkg-a/${outFname}`;
     return fyn.resolveDependencies().then(() => {
-      // Fs.writeFileSync(Path.resolve("fyn-data.yaml"), Yaml.safeDump(fyn._data));
-      checkResolvedData(fyn, Path.join(__dirname, "../fixtures/pkg-a/fyn-data.yaml"));
+      // Fs.writeFileSync(Path.resolve(outFname), Yaml.safeDump(fyn._data));
+      checkResolvedData(fyn, Path.join(__dirname, expectOutput));
     });
   };
 
-  it("should resolve dependencies for pkg-a fixture", () => {
-    return testPkgAFixture()
-      .then(() => testPkgAFixture())
+  it("should resolve dependencies for pkg-a fixture @deepResolve true", () => {
+    return testPkgAFixture(true)
+      .then(() => testPkgAFixture(true))
       .then(() => {
         rimraf.sync(Path.join(fynDir, "xout"));
-        return testPkgAFixture();
+        return testPkgAFixture(true);
       })
       .then(() => {
         rimraf.sync(Path.join(fynDir, "cache"));
-        return testPkgAFixture();
+        return testPkgAFixture(true);
+      });
+  }).timeout(10000);
+
+  it("should resolve dependencies for pkg-a fixture @deepResolve false", () => {
+    return testPkgAFixture(false)
+      .then(() => testPkgAFixture(false))
+      .then(() => {
+        rimraf.sync(Path.join(fynDir, "xout"));
+        return testPkgAFixture(false);
+      })
+      .then(() => {
+        rimraf.sync(Path.join(fynDir, "cache"));
+        return testPkgAFixture(false);
       });
   }).timeout(10000);
 
