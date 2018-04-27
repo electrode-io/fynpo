@@ -163,6 +163,10 @@ class FynCli {
         return Promise.try(() => this._fyn._pkgSrcMgr.fetchLocalItem(item))
           .then(meta => meta || this.fyn.pkgSrcMgr.fetchMeta(item))
           .then(meta => {
+            if (!meta) {
+              logger.error("Unable to retrieve meta for package", item.name);
+              return;
+            }
             // logger.info("adding", x.name, x.semver, meta);
             // look at dist tags
             const tags = meta["dist-tags"];
