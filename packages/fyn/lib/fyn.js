@@ -95,6 +95,10 @@ class Fyn {
     return this._options.concurrency;
   }
 
+  get deepResolve() {
+    return this._options.deepResolve;
+  }
+
   get preferLock() {
     return this._options.preferLock;
   }

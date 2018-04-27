@@ -297,7 +297,7 @@ class PkgDepResolver {
 
       this.addKnownRSemver(kpkg, item, resolved);
 
-      if (pkgV && !item.optChecked && item.isCircular()) {
+      if (this._fyn.deepResolve && pkgV && !item.optChecked && item.isCircular()) {
         // if package is already seen, then check parents to make sure
         // it's not one of them because that would be a circular dependencies
         // logger.log("circular dep detected", item.name, item.resolved);
@@ -307,6 +307,7 @@ class PkgDepResolver {
       }
     }
 
+    //
     // specified as optionalDependencies
     // add to opt resolver to resolve later
     //
@@ -376,10 +377,11 @@ class PkgDepResolver {
     //
     if (!item.optFailed) {
       if (metaJson.deprecated) pkgV.deprecated = metaJson.deprecated;
-      const pkgDepth = this._depthResolving[item.depth][item.name];
-      if (!pkgDepth.deps) pkgDepth.deps = [];
-      pkgDepth.deps.push([meta.versions[resolved], item]);
-      // this.addDepOfDep(meta.versions[resolved], item);
+      if (firstSeenVersion || this._fyn.deepResolve) {
+        const pkgDepth = this._depthResolving[item.depth][item.name];
+        if (!pkgDepth.deps) pkgDepth.deps = [];
+        pkgDepth.deps.push([meta.versions[resolved], item]);
+      }
       item.addRequestToPkg(pkgV, firstSeenVersion);
       item.addResolutionToParent(this._data);
     }
