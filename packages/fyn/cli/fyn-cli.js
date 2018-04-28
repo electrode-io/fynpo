@@ -113,7 +113,8 @@ class FynCli {
             name: "",
             semver: x,
             semverPath,
-            section
+            section,
+            parent: {}
           };
         }
         const atX = x.lastIndexOf("@");
@@ -121,7 +122,8 @@ class FynCli {
           $: x,
           name: atX > 0 ? x.substr(0, atX) : x,
           semver: atX > 0 ? x.substr(atX + 1) : "latest",
-          section
+          section,
+          parent: {}
         };
       });
 
