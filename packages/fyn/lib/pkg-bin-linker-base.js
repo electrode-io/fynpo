@@ -38,9 +38,9 @@ class PkgBinLinkerBase {
 
     const link = (file, sym) => {
       if (this._linked[sym]) {
-        logger.verbose(
+        logger.debug(
           `bin-linker: bin ${sym} already linked to ${this._linked[sym]}`,
-          depInfo.top
+          depInfo.top ? "(top)" : "(__fv)"
         );
         return;
       }
