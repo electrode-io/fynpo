@@ -64,7 +64,7 @@ class LifecycleScripts {
   _addNpmConfig(config, env) {
     if (config) {
       Object.keys(config).forEach(x => {
-        env[`npm_config_${x}`] = this._pkg.config[x];
+        env[`npm_package_config_${x}`] = config[x];
       });
     }
   }
