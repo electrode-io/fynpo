@@ -89,10 +89,10 @@ class PkgInstaller {
     const updateRunning = s => {
       logger.updateItem(INSTALL_PACKAGE, `running ${s}: ${running.join(", ")}`);
     };
-    const removeRunning = pkgId => {
+    const removeRunning = (step, pkgId) => {
       const x = running.indexOf(pkgId);
       running.splice(x, 1);
-      updateRunning("preinstall");
+      updateRunning(step);
     };
     return Promise.resolve(this.preInstall)
       .map(
@@ -110,7 +110,7 @@ class PkgInstaller {
               }
             })
             .finally(() => {
-              removeRunning(pkgId);
+              removeRunning("preinstall", pkgId);
             });
         },
         { concurrency: 3 }
@@ -168,7 +168,7 @@ class PkgInstaller {
               );
             })
             .finally(() => {
-              removeRunning(pkgId);
+              removeRunning("install", pkgId);
             });
         },
         { concurrency: 3 }
