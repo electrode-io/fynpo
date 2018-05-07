@@ -2,7 +2,11 @@
 
 `fyn` is a fast node package manager for the [flat node_modules design] but maintains [100% compatibility](#fyn-compatibility).
 
-It installs only one copy of every package in a flat structure and uses symlink/junction to setup the nested dependencies.
+It installs only one copy of every required versions of a package.
+
+At the top level, it installs a chosen version of each package in a flat structure. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
+
+For packages with dependencies under the `__fv_` directory, they have their own `node_modules` with symlinks/junctions inside pointing to those.
 
 With [flat-module], `fyn` offers a better local module development workflow than `npm link`.
 
