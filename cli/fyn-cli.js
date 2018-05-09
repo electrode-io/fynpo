@@ -18,6 +18,7 @@ const sortObjKeys = require("../lib/util/sort-obj-keys");
 const fyntil = require("../lib/util/fyntil");
 const showStat = require("./show-stat");
 const showSetupInfo = require("./show-setup-info");
+const logFormat = require("../lib/util/log-format");
 
 const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
 
@@ -26,7 +27,15 @@ const checkFlatModule = () => {
     .map(x => x.toString())
     .filter(x => x.indexOf("node-flat-module") >= 0);
 
-  if (symbols.length === 0) {
+  return symbols.length > 0;
+};
+
+const warnFlatModule = pkgs => {
+  if (!checkFlatModule()) {
+    pkgs.forEach(depInfo => {
+      const pkgId = logFormat.pkgId(depInfo);
+      logger.warn(`locally linked module ${pkgId} require flat-module for nested dependencies`);
+    });
     logger.fyi(
       "local package linking requires",
       chalk.green("node-flat-module"),
@@ -100,8 +109,6 @@ class FynCli {
   }
 
   add(argv) {
-    checkFlatModule();
-
     const addSec = (section, packages) => {
       if (_.isEmpty(packages)) return [];
 
@@ -278,7 +285,6 @@ class FynCli {
 
   install() {
     const spinner = CliLogger.spinners[1];
-    checkFlatModule();
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
@@ -304,6 +310,9 @@ class FynCli {
       .then(() => {
         logger.removeItem(INSTALL_PACKAGE);
         const end = Date.now();
+        if (this.fyn.needFlatModule) {
+          warnFlatModule(this.fyn.localPkgWithNestedDep);
+        }
         logger.info(
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
