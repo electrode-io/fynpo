@@ -281,6 +281,7 @@ class PkgOptResolver {
           logger.updateItem(OPTIONAL_RESOLVER, `running preinstall for ${displayId}`);
           const ls = new LifecycleScripts({
             appDir: this._fyn.cwd,
+            _fyn: this._fyn,
             dir: res.path,
             json: res.pkg
           });

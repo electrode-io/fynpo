@@ -104,7 +104,7 @@ class PkgInstaller {
         script => {
           running.push(pkgId);
           updateRunning(script);
-          const ls = new LifecycleScripts(Object.assign({ appDir }, depInfo));
+          const ls = new LifecycleScripts(Object.assign({ appDir, _fyn: this._fyn }, depInfo));
           return ls
             .execute(script, true)
             .then(() => undefined)
