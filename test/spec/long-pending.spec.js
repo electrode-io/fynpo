@@ -17,8 +17,8 @@ describe("long-pending", function() {
     sandbox.stub(logger, "addItem").callsFake(o => {
       logItems[o.name] = o;
     });
-    sandbox.stub(logger, "updateItem").callsFake((name, msg) => {
-      logs.push(`${name}: ${msg}`);
+    sandbox.stub(logger, "updateItem").callsFake((name, data) => {
+      logs.push(`${name}: ${data.msg}`);
     });
     sandbox.stub(logger, "removeItem").callsFake(name => {
       delete logItems[name];
