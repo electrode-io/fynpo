@@ -588,6 +588,7 @@ class PkgDepResolver {
     const tryLocal = () =>
       Promise.try(() => this._pkgSrcMgr.fetchLocalItem(item)).then(meta => {
         if (meta) {
+          this._fyn.needFlatModule = true;
           const updated = this._fyn.depLocker.update(item, meta);
           return this._resolveWithMeta(item, updated, true);
         }

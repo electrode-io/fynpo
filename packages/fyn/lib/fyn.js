@@ -30,10 +30,14 @@ class Fyn {
     this._cwd = options.cwd || process.cwd();
 
     this.loadPkg(options);
+
+    logger.debug(`fyn options`, JSON.stringify(options));
+
     this._pkgSrcMgr = options.pkgSrcMgr || new PkgSrcManager(Object.assign({ fyn: this }, options));
     this._data = options.data || new DepData();
     this._depLocker = new PkgDepLocker(this.lockOnly, options.lockfile);
     this._depLocker.read(Path.join(this._cwd, "fyn-lock.yaml"));
+    this.localPkgWithNestedDep = [];
   }
 
   loadPkg(options) {
@@ -117,6 +121,18 @@ class Fyn {
 
   get pkgSrcMgr() {
     return this._pkgSrcMgr;
+  }
+
+  get needFlatModule() {
+    return this._needFlatModule;
+  }
+
+  set needFlatModule(x) {
+    this._needFlatModule = x;
+  }
+
+  addLocalPkgWithNestedDep(depInfo) {
+    this.localPkgWithNestedDep.push(depInfo);
   }
 
   resolveDependencies() {
