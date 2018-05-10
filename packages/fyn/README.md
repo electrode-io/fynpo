@@ -1,6 +1,6 @@
 # fyn: Flatten Your Node_modules
 
-`fyn` is a fast node package manager for the [flat node_modules design] but maintains [100% compatibility](#fyn-compatibility).
+`fyn` is a fast node package manager for the [flat node_modules design] and maintains [100% compatibility](#fyn-compatibility).
 
 It installs only one copy of every required versions of a package.
 
