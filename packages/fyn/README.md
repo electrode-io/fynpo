@@ -1,23 +1,26 @@
-# fyn: Flatten Your Node_modules
+# fyn
 
-`fyn` is a fast node package manager for the [flat node_modules design] and maintains [100% compatibility](#fyn-compatibility).
+`fyn` is the result of a long pursuit for an easier workflow when developing over multiple node modules locally. It offers a simple way to develop and test across multiple modules effortlessly.
 
-It installs only one copy of every required versions of a package.
+Over the course of realizing this goal, `fyn` gradually became a fully functional and super fast node package manager for the [flat node_modules design] that maintains [100% compatibility](#fyn-compatibility).
 
-At the top level, it installs a chosen version of each package in a flat structure. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
+As a package manager, it employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
 
-For packages with dependencies under the `__fv_` directory, they have their own `node_modules` with symlinks/junctions inside pointing to those.
+At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
 
-With [flat-module], `fyn` offers a better local module development workflow than `npm link`.
+When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
 
 ![fyn demo][fyn-demo-gif]
 
 # Features
 
-* A single copy of each installed packages.
+* As its primary goal: effortlessly develop and test changes across multiple modules locally. (with [flat-module])
+
+As a node package manager:
+
 * Dependencies retained and checked at runtime. (with [flat-module])
 * Your application will not silently load bad dependencies. (with [flat-module])
-* Better local development workflow than `npm link`. (with [flat-module])
+* A single copy of each installed packages.
 * Always deterministic node_modules installation.
 * Super fast performance. (faster than npm@5 and yarn, and even pnpm in some cases)
 * Clean and flexible dependency locking.
@@ -28,8 +31,8 @@ With [flat-module], `fyn` offers a better local module development workflow than
 # Table Of Contents
 
 * [Overview](#overview)
+  * [Enhanced Local Modules Development](#enhanced-local-modules-development)
   * [Package Resolution and Layout](#package-resolution-and-layout)
-  * [Better `npm link` workflow](#better-npm-link-workflow)
 * [Install](#install)
 * [Using fyn](#using-fyn)
 * [Configuring fyn](#configuring-fyn)
@@ -45,15 +48,9 @@ With [flat-module], `fyn` offers a better local module development workflow than
 
 # Overview
 
-## Package Resolution and Layout
+## Enhanced Local Modules Development
 
-The top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
-
-`fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
-
-## Better `npm link` workflow
-
-With [flat-module], `fyn` offers a better workflow than `npm link`. Local packages are subjected to the same dependency resolution logic as those from the npm registry.
+What is this? Think `npm link`, but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then with [flat-module], you can test changes to any module locally as if they were published.
 
 To enable, use the path to your local modules as semver in your package.json, or you can use the `fyn add` command.
 
@@ -66,6 +63,12 @@ fyn add ../my-awesome-module
 That will install `my-awesome-module` into your node_modules. You can continue to develop and test `my-awesome-module` in its own directory and have the changes reflected in your app directly. Unlike `npm link`, your app resolves dependencies for `my-awesome-module` instead of relying on having them installed under `my-awesome-module/node_modules`.
 
 See [using flat-module](#using-flat-module) if you are interested in trying it out.
+
+## Package Resolution and Layout
+
+As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
+
+`fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 
 # Install
 
