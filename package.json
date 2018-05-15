@@ -1,7 +1,7 @@
 {
   "name": "fyn",
   "version": "0.1.64",
-  "description": "Fast Node Package Manager with focus on easy local development.",
+  "description": "enhanced node modules development and fast node package manager",
   "main": "./bin/fyn.js",
   "scripts": {
     "test": "clap check"
@@ -20,7 +20,10 @@
     "module",
     "fast",
     "package",
-    "manager"
+    "manager",
+    "ehanced",
+    "local",
+    "development"
   ],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
