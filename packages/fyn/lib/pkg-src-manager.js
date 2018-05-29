@@ -449,7 +449,7 @@ class PkgSrcManager {
       pass.on("data", chunk => shaHash.update(chunk));
       return new Promise((resolve, reject) => {
         needle
-          .get(pkgUrl)
+          .get(pkgUrl, { follow_max: 2 })
           .on("header", resolve)
           .on("done", doneErr => {
             if (doneErr) reject(doneErr);
