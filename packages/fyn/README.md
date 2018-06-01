@@ -1,3 +1,8 @@
+[![NPM version][npm-image]][npm-url]
+[![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
+[![Build Status][travis-image]][travis-url]
+[![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
+
 # fyn
 
 `fyn` is the result of a long pursuit for an easier workflow when developing over multiple node modules locally. It offers a simple way to develop and test across multiple modules effortlessly.
@@ -231,6 +236,12 @@ node -r <path-to-flat-module>
 
 However, [flat-module] doesn't really work well even with this, because child process spawn from Node will not inherit that option.
 
+# License
+
+Copyright (c) 2015-present, WalmartLabs
+
+Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
 [flat-module]: https://github.com/jchip/node-flat-module
 [flat node_modules design]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
@@ -239,3 +250,14 @@ However, [flat-module] doesn't really work well even with this, because child pr
 [ini]: https://www.npmjs.com/package/ini
 [node_preserve_symlinks]: https://nodejs.org/docs/latest-v8.x/api/cli.html#cli_node_preserve_symlinks_1
 [require-at]: https://www.npmjs.com/package/require-at
+[travis-image]: https://travis-ci.org/jchip/fyn.svg?branch=master
+[travis-url]: https://travis-ci.org/jchip/fyn
+[npm-image]: https://badge.fury.io/js/fyn.svg
+[npm-url]: https://npmjs.org/package/fyn
+[daviddm-image]: https://david-dm.org/jchip/fyn/status.svg
+[daviddm-url]: https://david-dm.org/jchip/fyn
+[daviddm-dev-image]: https://david-dm.org/jchip/fyn/dev-status.svg
+[daviddm-dev-url]: https://david-dm.org/jchip/fyn?type=dev
+[apache-2.0-blue-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[apache-2.0-url]: https://www.apache.org/licenses/LICENSE-2.0
+[npm scripts]: https://docs.npmjs.com/misc/scripts
