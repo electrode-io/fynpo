@@ -8,5 +8,9 @@ node_modules:
     bin:
       bin1.js: file
       bin2.js: file
+    node_modules:
+      .bin:
+        bin1: '-> ../../bin/bin1.js'
+      __fyn_ignore__: file
     package.json: mod-g@2.0.1
   mod-h: '-> ../../../fixtures/mod-h'
