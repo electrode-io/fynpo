@@ -14,7 +14,6 @@ const fynTil = require("./util/fyntil");
 
 const FYN_RESOLUTIONS_JSON = "__fyn_resolutions__.json";
 const FYN_LINK_JSON = "__fyn_link__.json";
-const FYN_IGNORE_FILE = "__fyn_ignore__";
 
 const isWin32 = process.platform === "win32";
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
@@ -74,13 +73,9 @@ class PkgDepLinker {
       return;
     }
 
-    const subjectDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
-    const subjectNmDir = Path.join(subjectDir, "node_modules");
-    mkdirp.sync(subjectNmDir);
-    const fynIgnoreFile = Path.join(subjectNmDir, FYN_IGNORE_FILE);
-    if (!Fs.existsSync(fynIgnoreFile)) {
-      Fs.writeFileSync(fynIgnoreFile, "");
-    }
+    const subjectNmDir = fynTil.createSubNodeModulesDir(
+      this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo)
+    );
 
     const getDirForScope = name => {
       if (name.startsWith("@") && name.indexOf("/") > 0) {

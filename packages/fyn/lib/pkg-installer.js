@@ -38,9 +38,9 @@ class PkgInstaller {
     // _depResolutions into its package.json
     const pkgsData = this._data.getPkgsData();
     _.each(this._data.resolvedPackages, info => {
-      logger.debug("queuing", info.name, info.version, "for install");
       const depInfo = pkgsData[info.name][info.version];
-      this._gatherPkg(depInfo, info.version);
+      logger.debug("queuing", depInfo.name, depInfo.version, "for install");
+      this._gatherPkg(depInfo);
     });
 
     this._depLinker.linkApp(this._data.res, this._fynFo, this._fyn.getOutputDir());
@@ -209,7 +209,8 @@ class PkgInstaller {
       });
   }
 
-  _gatherPkg(depInfo, version) {
+  _gatherPkg(depInfo) {
+    const { name, version } = depInfo;
     if (depInfo.local) this._linkLocalPkg(depInfo);
 
     const json = depInfo.json || {};
