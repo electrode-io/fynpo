@@ -1566,7 +1566,7 @@ fresh:
   _: 'https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz'
 fs-minipass:
  _:
-  ^1.2.3: 1.2.5
+  ^1.2.5: 1.2.5
  1.2.5:
   $: 06c277218454ec288df77ada54a03b8702aacb9d
   _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-1.2.5.tgz'
@@ -2262,8 +2262,12 @@ locate-path:
 lodash:
  _:
   '^4.13.1,^4.14.0,^4.17.4,^4.3.0,^4.5.1': 4.17.4
- 4.17.4:
+  ^4.17.10: 4.17.10
+ 4.17.10:
   top: 1
+  $: 1b7793cf7259ea38fb3661d4d38b3260af8ae4e7
+  _: 'https://registry.npmjs.org/lodash/-/lodash-4.17.10.tgz'
+ 4.17.4:
   $: 78203a4d1c328ae1d86dca6460e369b57f4055ae
   _: 'https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz'
 lodash.camelcase:
@@ -2483,6 +2487,13 @@ minimist:
 minipass:
  _:
   ^2.2.1: 2.2.1
+  ^2.3.3: 2.3.3
+ 2.3.3:
+  $: a7dcc8b7b833f5d368759cce544dccb55f50f233
+  _: 'https://registry.npmjs.org/minipass/-/minipass-2.3.3.tgz'
+  dependencies:
+   safe-buffer: ^5.1.2
+   yallist: ^3.0.0
  2.2.1:
   $: 5ada97538b1027b4cf7213432428578cb564011f
   _: 'https://registry.npmjs.org/minipass/-/minipass-2.2.1.tgz'
@@ -3305,6 +3316,10 @@ rx-lite-aggregates:
 safe-buffer:
  _:
   '5.1.1,^5.0.1,^5.1.0,^5.1.1,~5.1.0,~5.1.1': 5.1.1
+  ^5.1.2: 5.1.2
+ 5.1.2:
+  $: 991ec69d296e0313747d59bdfd2b745c35f8828d
+  _: 'https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz'
  5.1.1:
   $: 893312af69b2123def71f57889001671eeb2c853
   _: 'https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz'
@@ -3663,17 +3678,18 @@ tapable:
   _: 'https://registry.npmjs.org/tapable/-/tapable-0.2.8.tgz'
 tar:
  _:
-  ^4.0.0: 4.3.0
- 4.3.0:
+  ^4.0.0: 4.4.4
+ 4.4.4:
   top: 1
-  $: 11351be1c7944c59dd197850119c2081d8bc7fe5
-  _: 'https://registry.npmjs.org/tar/-/tar-4.3.0.tgz'
+  $: ec8409fae9f665a4355cc3b4087d0820232bb8cd
+  _: 'https://registry.npmjs.org/tar/-/tar-4.4.4.tgz'
   dependencies:
    chownr: ^1.0.1
-   fs-minipass: ^1.2.3
-   minipass: ^2.2.1
+   fs-minipass: ^1.2.5
+   minipass: ^2.3.3
    minizlib: ^1.1.0
    mkdirp: ^0.5.0
+   safe-buffer: ^5.1.2
    yallist: ^3.0.2
 text-encoding:
  _:
