@@ -19,6 +19,11 @@ class DepData {
     this.pkgs = data.pkgs || {};
     this.badPkgs = {};
     this.res = data.res || {};
+    this.resolvedPackages = [];
+  }
+
+  addResolved(info) {
+    this.resolvedPackages.push(info);
   }
 
   sortPackagesByKeys() {

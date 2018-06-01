@@ -36,8 +36,11 @@ class PkgInstaller {
     this._fyn._depResolver.resolvePkgPeerDep(this._fyn._pkg, "your app", this._data);
     // go through each package and insert
     // _depResolutions into its package.json
-    _.each(this._data.getPkgsData(), (pkg, name) => {
-      this._gatherPkg(pkg, name);
+    const pkgsData = this._data.getPkgsData();
+    _.each(this._data.resolvedPackages, info => {
+      logger.debug("queuing", info.name, info.version, "for install");
+      const depInfo = pkgsData[info.name][info.version];
+      this._gatherPkg(depInfo, info.version);
     });
 
     this._depLinker.linkApp(this._data.res, this._fynFo, this._fyn.getOutputDir());
@@ -206,46 +209,44 @@ class PkgInstaller {
       });
   }
 
-  _gatherPkg(pkg, name) {
-    _.each(pkg, (depInfo, version) => {
-      if (depInfo.local) this._linkLocalPkg(depInfo);
+  _gatherPkg(depInfo, version) {
+    if (depInfo.local) this._linkLocalPkg(depInfo);
 
-      const json = depInfo.json || {};
+    const json = depInfo.json || {};
 
-      if (_.isEmpty(json) || json.fromLocked) {
-        const dir = this._fyn.getInstalledPkgDir(name, version, depInfo);
-        const file = Path.join(dir, "package.json");
-        const str = Fs.readFileSync(file).toString();
-        Object.assign(json, JSON.parse(str));
-        Object.assign(depInfo, { str, json });
-        if (!depInfo.dir) depInfo.dir = dir;
+    if (_.isEmpty(json) || json.fromLocked) {
+      const dir = this._fyn.getInstalledPkgDir(name, version, depInfo);
+      const file = Path.join(dir, "package.json");
+      const str = Fs.readFileSync(file).toString();
+      Object.assign(json, JSON.parse(str));
+      Object.assign(depInfo, { str, json });
+      if (!depInfo.dir) depInfo.dir = dir;
+    }
+
+    if (!json._fyn) json._fyn = {};
+    const scripts = json.scripts || {};
+    const hasPI = json.hasPI || Boolean(scripts.preinstall);
+    const piExed = json._fyn.preinstall || Boolean(depInfo.preinstall);
+
+    if (!piExed && hasPI) {
+      if (depInfo.preInstalled) {
+        json._fyn.preinstall = true;
+      } else {
+        logger.debug("adding preinstall step for", depInfo.dir);
+        this.preInstall.push(depInfo);
       }
+    }
 
-      if (!json._fyn) json._fyn = {};
-      const scripts = json.scripts || {};
-      const hasPI = json.hasPI || Boolean(scripts.preinstall);
-      const piExed = json._fyn.preinstall || Boolean(depInfo.preinstall);
+    this.toLink.push(depInfo);
 
-      if (!piExed && hasPI) {
-        if (depInfo.preInstalled) {
-          json._fyn.preinstall = true;
-        } else {
-          logger.debug("adding preinstall step for", depInfo.dir);
-          this.preInstall.push(depInfo);
-        }
+    if (!json._fyn.install) {
+      const install = ["install", "postinstall", "postInstall"].filter(x => Boolean(scripts[x]));
+      if (install.length > 0) {
+        logger.debug("adding install step for", depInfo.dir);
+        depInfo.install = install;
+        this.postInstall.push(depInfo);
       }
-
-      this.toLink.push(depInfo);
-
-      if (!json._fyn.install) {
-        const install = ["install", "postinstall", "postInstall"].filter(x => Boolean(scripts[x]));
-        if (install.length > 0) {
-          logger.debug("adding install step for", depInfo.dir);
-          depInfo.install = install;
-          this.postInstall.push(depInfo);
-        }
-      }
-    });
+    }
   }
 
   _cleanBin() {

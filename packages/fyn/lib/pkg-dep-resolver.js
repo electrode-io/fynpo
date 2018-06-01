@@ -153,6 +153,7 @@ class PkgDepResolver {
       logger.info(`${chalk.green("done resolving dependencies")} ${time}`);
       this._data.sortPackagesByKeys();
       this.promotePackages();
+      this._depthResolving = undefined;
       this._defer.resolve();
     }
   }
@@ -190,9 +191,13 @@ class PkgDepResolver {
       // that's in the parent's dependency lists, therefore guaranteeing
       // a consistent resolving order
       Object.keys(parentDepth).forEach(x => {
-        if (parentDepth[x].depItems) {
-          parentDepth[x].depItems.forEach(x2 => this.addPkgDepItems(x2));
-          parentDepth[x].depItems = undefined;
+        const depthInfo = parentDepth[x];
+        if (depthInfo.firstSeen) {
+          this._data.addResolved({ name: x, version: depthInfo.resolved });
+        }
+        if (depthInfo.depItems) {
+          depthInfo.depItems.forEach(x2 => this.addPkgDepItems(x2));
+          depthInfo.depItems = undefined;
         }
       });
     }
@@ -384,6 +389,8 @@ class PkgDepResolver {
       if (metaJson.deprecated) pkgV.deprecated = metaJson.deprecated;
       if (firstSeenVersion || this._fyn.deepResolve) {
         const pkgDepth = this._depthResolving[item.depth][item.name];
+        pkgDepth.firstSeen = firstSeenVersion;
+        pkgDepth.resolved = resolved;
         if (!pkgDepth.depItems) pkgDepth.depItems = [];
         pkgDepth.depItems.push(this.makePkgDepItems(meta.versions[resolved], item, false));
       }
