@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.1.69",
+  "version": "0.1.70",
   "description": "enhanced node modules development and fast node package manager",
   "main": "./bin/fyn.js",
   "scripts": {
