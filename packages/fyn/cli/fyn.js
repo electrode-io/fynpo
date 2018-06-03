@@ -284,6 +284,20 @@ const commands = {
       }
     }
   },
+  json: {
+    desc: "output flat-module env as JSON",
+    exec: () => {
+      try {
+        console.log(
+          JSON.stringify({
+            NODE_OPTIONS: makeNodeOptions()
+          })
+        );
+      } catch (e) {
+        console.log(JSON.stringify({ error: e.message }));
+      }
+    }
+  },
   stat: {
     desc: "Show stats of installed packages",
     usage: "$0 $1 <package-name>[@semver] [...]",
