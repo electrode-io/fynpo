@@ -192,8 +192,8 @@ class PkgDepResolver {
       // a consistent resolving order
       Object.keys(parentDepth).forEach(x => {
         const depthInfo = parentDepth[x];
-        if (depthInfo.firstSeen) {
-          this._data.addResolved({ name: x, version: depthInfo.resolved });
+        if (depthInfo.versions) {
+          depthInfo.versions.forEach(version => this._data.addResolved({ name: x, version }));
         }
         if (depthInfo.depItems) {
           depthInfo.depItems.forEach(x2 => this.addPkgDepItems(x2));
@@ -389,8 +389,10 @@ class PkgDepResolver {
       if (metaJson.deprecated) pkgV.deprecated = metaJson.deprecated;
       if (firstSeenVersion || this._fyn.deepResolve) {
         const pkgDepth = this._depthResolving[item.depth][item.name];
-        pkgDepth.firstSeen = firstSeenVersion;
-        pkgDepth.resolved = resolved;
+        if (firstSeenVersion) {
+          if (!pkgDepth.versions) pkgDepth.versions = [resolved];
+          else pkgDepth.versions.push(resolved);
+        }
         if (!pkgDepth.depItems) pkgDepth.depItems = [];
         pkgDepth.depItems.push(this.makePkgDepItems(meta.versions[resolved], item, false));
       }
