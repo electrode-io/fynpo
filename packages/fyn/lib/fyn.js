@@ -18,11 +18,12 @@ const fynConfig = require("./fyn-config");
 const semverUtil = require("./util/semver");
 const readFile = Promise.promisify(Fs.readFile);
 const readdir = Promise.promisify(Fs.readdir);
+const lstat = Promise.promisify(Fs.lstat);
 const mkdirpAsync = Promise.promisify(mkdirp);
 const rimrafAsync = Promise.promisify(rimraf);
 const fyntil = require("./util/fyntil");
 
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, max-statements */
 
 class Fyn {
   constructor(options) {
@@ -261,8 +262,64 @@ class Fyn {
     }
   }
 
-  readPkgJson(pkg) {
-    const fullOutDir = this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
+  async moveToBackup(dir, reason) {
+    // TODO: create backup dir and move
+    logger.warn("Removing", dir, "due to", reason);
+    return await rimrafAsync(dir);
+  }
+
+  async unlinkLocalPackage(pkg, dir) {
+    // TODO: look for __fyn_link_<name>.json file and
+    // update accordingly
+    logger.warn("Removing symlink", dir);
+    return await rimrafAsync(dir);
+  }
+
+  //
+  // A pkg that's to be extracted must:
+  //
+  // - not have its target dir exist
+  // - if exist then must be a dir and have a package.json
+  //   with the right name and version
+  //
+  // If dir exist with proper package.json, then returns it,
+  // else returns undefined.
+  //
+  async ensureProperPkgDir(pkg, dir) {
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
+
+    let ostat;
+    let reason;
+
+    try {
+      ostat = await lstat(fullOutDir);
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        return undefined;
+      }
+      throw err;
+    }
+
+    if (ostat.isDirectory()) {
+      try {
+        return await this.readPkgJson(pkg, fullOutDir);
+      } catch (err) {
+        reason = "invalid package.json";
+      }
+    } else {
+      reason = "not a directory";
+    }
+
+    if (ostat.isSymbolicLink()) {
+      await this.unlinkLocalPackage(pkg, fullOutDir);
+    } else {
+      await this.moveToBackup(fullOutDir, reason);
+    }
+    return undefined;
+  }
+
+  readPkgJson(pkg, dir) {
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
     const pkgJsonFname = Path.join(fullOutDir, "package.json");
     const gypFile = Path.join(fullOutDir, "binding.gyp");
     const gypExist = Fs.existsSync(gypFile);
@@ -272,7 +329,7 @@ class Fyn {
         pkg.str = buf.toString().trim();
         return JSON.parse(pkg.str);
       })
-      .tap(x => {
+      .then(x => {
         const id = `${x.name}@${x.version}`;
         if (x.version !== pkg.version) {
           x.version = semver.valid(x.version) || semverUtil.clean(x.version);
@@ -296,6 +353,8 @@ class Fyn {
         }
 
         pkg.json = x;
+
+        return pkg.json;
       });
   }
 }
