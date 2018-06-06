@@ -39,19 +39,18 @@ class PkgDistFetcher {
     this._promiseQ.on("failItem", _.noop);
   }
 
-  wait() {
-    return this._promiseQ
-      .wait()
-      .then(() => {
-        return this._distExtractor.wait().then(() => {
-          const time = logFormat.time(Date.now() - this._startTime);
-          logger.info(`${chalk.green("done loading packages")} ${time}`);
-        });
-      })
-      .catch(err => {
-        // TODO: should interrupt and stop dist exractor
-        throw err;
-      });
+  async wait() {
+    try {
+      await this._promiseQ.wait();
+
+      await this._distExtractor.wait();
+
+      const time = logFormat.time(Date.now() - this._startTime);
+      logger.info(`${chalk.green("done loading packages")} ${time}`);
+    } catch (err) {
+      // TODO: should interrupt and stop dist exractor
+      throw err;
+    }
   }
 
   start() {
@@ -93,28 +92,26 @@ class PkgDistFetcher {
     }
   }
 
-  fetchItem(item) {
+  async fetchItem(item) {
     const pkg = this._packages[item];
-    if (pkg.local) {
-      return Promise.resolve();
-    }
 
-    return this._fyn.ensureProperPkgDir(pkg).then(json => {
-      // valid json read from pkg dir, assume previous installed node_modules, do nothing
-      if (json) return {};
-      // fetch package tarball
-      return this._pkgSrcMgr
-        .fetchTarball(pkg)
-        .then(r => {
-          return r ? { fullTgzFile: r.fullTgzFile, pkg } : {};
-        })
-        .catch(err => {
-          const pkgName = logFormat.pkgId(pkg);
-          logger.debug(`dist-fetcher fetch ${pkgName} tarball failed`, chalk.red(err.message));
-          logger.debug("STACK", err.stack);
-          throw err;
-        });
-    });
+    if (pkg.local) return undefined;
+
+    const json = await this._fyn.ensureProperPkgDir(pkg);
+
+    // valid json read from pkg dir, assume previous installed node_modules, do nothing
+    if (json) return {};
+
+    // fetch package tarball
+    try {
+      const r = await this._pkgSrcMgr.fetchTarball(pkg);
+      return r ? { fullTgzFile: r.fullTgzFile, pkg } : {};
+    } catch (err) {
+      const pkgName = logFormat.pkgId(pkg);
+      logger.debug(`dist-fetcher fetch ${pkgName} tarball failed`, chalk.red(err.message));
+      logger.debug("STACK", err.stack);
+      throw err;
+    }
   }
 }
 

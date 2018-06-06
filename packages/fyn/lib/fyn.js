@@ -4,7 +4,6 @@ const Fs = require("fs");
 const Path = require("path");
 const assert = require("assert");
 const semver = require("semver");
-const Promise = require("bluebird");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
 const _ = require("lodash");
@@ -16,14 +15,10 @@ const PkgDepLocker = require("./pkg-dep-locker");
 const DepData = require("./dep-data");
 const fynConfig = require("./fyn-config");
 const semverUtil = require("./util/semver");
-const readFile = Promise.promisify(Fs.readFile);
-const readdir = Promise.promisify(Fs.readdir);
-const lstat = Promise.promisify(Fs.lstat);
-const mkdirpAsync = Promise.promisify(mkdirp);
-const rimrafAsync = Promise.promisify(rimraf);
+const fOps = require("./util/file-ops");
 const fyntil = require("./util/fyntil");
 
-/* eslint-disable no-magic-numbers, max-statements */
+/* eslint-disable no-magic-numbers, max-statements, no-empty */
 
 class Fyn {
   constructor(options) {
@@ -171,7 +166,7 @@ class Fyn {
   }
 
   clearPkgOutDir(dir) {
-    return readdir(dir).each(f => rimrafAsync(Path.join(dir, f)));
+    return fOps.readdir(dir).each(f => fOps.rimraf(Path.join(dir, f)));
   }
 
   loadFvVersions() {
@@ -199,10 +194,11 @@ class Fyn {
   }
 
   createPkgOutDir(dir) {
-    return mkdirpAsync(dir)
+    return fOps
+      .mkdirp(dir)
       .catch(err => {
         // exist but is not a dir? delete it and mkdir.
-        return err.code === "EEXIST" && rimrafAsync(dir).then(() => mkdirpAsync(dir));
+        return err.code === "EEXIST" && fOps.rimraf(dir).then(() => fOps.mkdirp(dir));
       })
       .then(r => {
         // dir already exist? clear it.
@@ -265,14 +261,14 @@ class Fyn {
   async moveToBackup(dir, reason) {
     // TODO: create backup dir and move
     logger.warn("Removing", dir, "due to", reason);
-    return await rimrafAsync(dir);
+    return await fOps.rimraf(dir);
   }
 
   async unlinkLocalPackage(pkg, dir) {
     // TODO: look for __fyn_link_<name>.json file and
     // update accordingly
     logger.warn("Removing symlink", dir);
-    return await rimrafAsync(dir);
+    return await fOps.rimraf(dir);
   }
 
   //
@@ -289,73 +285,67 @@ class Fyn {
     const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
 
     let ostat;
-    let reason;
 
     try {
-      ostat = await lstat(fullOutDir);
+      ostat = await fOps.lstat(fullOutDir);
     } catch (err) {
-      if (err.code === "ENOENT") {
-        return undefined;
-      }
-      throw err;
-    }
-
-    if (ostat.isDirectory()) {
-      try {
-        return await this.readPkgJson(pkg, fullOutDir);
-      } catch (err) {
-        reason = "invalid package.json";
-      }
-    } else {
-      reason = "not a directory";
+      if (err.code !== "ENOENT") throw err;
+      return undefined;
     }
 
     if (ostat.isSymbolicLink()) {
       await this.unlinkLocalPackage(pkg, fullOutDir);
+    } else if (!ostat.isDirectory()) {
+      await this.moveToBackup(fullOutDir, "not a directory");
     } else {
-      await this.moveToBackup(fullOutDir, reason);
+      try {
+        return await this.readPkgJson(pkg, fullOutDir);
+      } catch (err) {
+        await this.moveToBackup(fullOutDir, "invalid existing package");
+      }
     }
+
     return undefined;
   }
 
-  readPkgJson(pkg, dir) {
+  async readPkgJson(pkg, dir) {
     const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
     const pkgJsonFname = Path.join(fullOutDir, "package.json");
-    const gypFile = Path.join(fullOutDir, "binding.gyp");
-    const gypExist = Fs.existsSync(gypFile);
-    return readFile(pkgJsonFname)
-      .then(buf => {
-        pkg.dir = fullOutDir;
-        pkg.str = buf.toString().trim();
-        return JSON.parse(pkg.str);
-      })
-      .then(x => {
-        const id = `${x.name}@${x.version}`;
-        if (x.version !== pkg.version) {
-          x.version = semver.valid(x.version) || semverUtil.clean(x.version);
-          assert(
-            semver.valid(x.version),
-            `Pkg ${id} version is not valid semver and fyn was unable to fix it.`
-          );
-        }
 
-        assert(
-          x && x.name === pkg.name && semverUtil.equal(x.version, pkg.version),
-          `Pkg in ${fullOutDir} ${id} doesn't match ${pkg.name}@${pkg.version}`
-        );
+    const buf = await fOps.readFile(pkgJsonFname);
 
-        if (gypExist) {
-          x.gypfile = true;
-          const scr = x.scripts;
-          if (_.isEmpty(scr) || (!scr.install && !scr.postinstall && !scr.postInstall)) {
-            _.set(x, "scripts.install", "node-gyp rebuild");
-          }
-        }
+    pkg.dir = fullOutDir;
+    pkg.str = buf.toString().trim();
+    const json = JSON.parse(pkg.str);
 
-        pkg.json = x;
+    const id = `${json.name}@${json.version}`;
+    if (json.version !== pkg.version) {
+      json.version = semver.valid(json.version) || semverUtil.clean(json.version);
+      assert(
+        semver.valid(json.version),
+        `Pkg ${id} version is not valid semver and fyn was unable to fix it.`
+      );
+    }
 
-        return pkg.json;
-      });
+    assert(
+      json && json.name === pkg.name && semverUtil.equal(json.version, pkg.version),
+      `Pkg in ${fullOutDir} ${id} doesn't match ${pkg.name}@${pkg.version}`
+    );
+
+    try {
+      const gypFile = Path.join(fullOutDir, "binding.gyp");
+      await fOps.lstat(gypFile);
+
+      json.gypfile = true;
+      const scr = json.scripts;
+      if (_.isEmpty(scr) || (!scr.install && !scr.postinstall && !scr.postInstall)) {
+        _.set(json, "scripts.install", "node-gyp rebuild");
+      }
+    } catch (err) {}
+
+    pkg.json = json;
+
+    return json;
   }
 }
 
