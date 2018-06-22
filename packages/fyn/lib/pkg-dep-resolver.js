@@ -18,6 +18,7 @@ const simpleSemverCompare = semverUtil.simpleCompare;
 const logFormat = require("./util/log-format");
 const { LONG_WAIT_META } = require("./log-items");
 const {
+  SEMVER,
   RSEMVERS,
   LOCK_RSEMVERS,
   SORTED_VERSIONS,
@@ -363,7 +364,7 @@ class PkgDepResolver {
         dist: metaJson.dist,
         name: item.name,
         version: resolved,
-        semver: item.semver,
+        [SEMVER]: item.semver,
         res: {}
       };
       if (meta[LOCK_RSEMVERS]) pkgV.fromLock = true;

@@ -230,15 +230,15 @@ class Fyn {
     }
   }
 
-  createDirSync(dir) {
+  async createDir(dir) {
     try {
-      mkdirp.sync(dir);
+      await fOps.mkdirp(dir);
     } catch (err) {
       // mkdirp fails with EEXIST if file exist and is not a directory
       if (err.code === "EEXIST") {
         // remove it and create as a directory
-        rimraf.sync(dir);
-        mkdirp.sync(dir);
+        await fOps.rimraf(dir);
+        await fOps.mkdirp(dir);
       } else {
         throw err;
       }
