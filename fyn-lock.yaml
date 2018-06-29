@@ -2782,6 +2782,15 @@ opener:
  1.4.3:
   $: 5c6da2c5d7e5831e8ffa3964950f8d6674ac90b8
   _: 'https://registry.npmjs.org/opener/-/opener-1.4.3.tgz'
+opfs:
+ _:
+  ^1.0.2: 1.0.2
+ 1.0.2:
+  top: 1
+  $: 589958bdc02fb61d0f41e27b66e256cba166f490
+  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.2.tgz'
+  dependencies:
+   optional-require: ^1.0.0
 optional-require:
  _:
   ^1.0.0: 1.0.0
