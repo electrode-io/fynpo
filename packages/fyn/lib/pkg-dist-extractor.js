@@ -50,7 +50,7 @@ class PkgDistExtractor {
     // then rename node_modules/__fv_/<version>/<pkg-name>/ to node_modules/<pkg-name>
 
     if (await xaa.try(() => fOps.lstat(fullOutDir))) {
-      await fOps.mkdirp(this._fyn.getExtraDir());
+      await fOps.$.mkdirp(this._fyn.getExtraDir());
       await fOps.rename(fullOutDir, this._fyn.getExtraDir(`${pkg.name}-${pkg.version}`));
     }
 

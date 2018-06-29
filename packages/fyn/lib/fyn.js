@@ -166,7 +166,7 @@ class Fyn {
   }
 
   clearPkgOutDir(dir) {
-    return fOps.readdir(dir).each(f => fOps.rimraf(Path.join(dir, f)));
+    return fOps.readdir(dir).each(f => fOps.$.rimraf(Path.join(dir, f)));
   }
 
   loadFvVersions() {
@@ -193,12 +193,12 @@ class Fyn {
     return fvVersions;
   }
 
-  createPkgOutDir(dir) {
-    return fOps
+  async createPkgOutDir(dir) {
+    return fOps.$
       .mkdirp(dir)
       .catch(err => {
         // exist but is not a dir? delete it and mkdir.
-        return err.code === "EEXIST" && fOps.rimraf(dir).then(() => fOps.mkdirp(dir));
+        return err.code === "EEXIST" && fOps.$.rimraf(dir).then(() => fOps.$.mkdirp(dir));
       })
       .then(r => {
         // dir already exist? clear it.
@@ -232,13 +232,13 @@ class Fyn {
 
   async createDir(dir) {
     try {
-      await fOps.mkdirp(dir);
+      await fOps.$.mkdirp(dir);
     } catch (err) {
       // mkdirp fails with EEXIST if file exist and is not a directory
       if (err.code === "EEXIST") {
         // remove it and create as a directory
-        await fOps.rimraf(dir);
-        await fOps.mkdirp(dir);
+        await fOps.$.rimraf(dir);
+        await fOps.$.mkdirp(dir);
       } else {
         throw err;
       }
@@ -261,14 +261,14 @@ class Fyn {
   async moveToBackup(dir, reason) {
     // TODO: create backup dir and move
     logger.warn("Removing", dir, "due to", reason);
-    return await fOps.rimraf(dir);
+    return await fOps.$.rimraf(dir);
   }
 
   async unlinkLocalPackage(pkg, dir) {
     // TODO: look for __fyn_link_<name>.json file and
     // update accordingly
     logger.warn("Removing symlink", dir);
-    return await fOps.rimraf(dir);
+    return await fOps.$.rimraf(dir);
   }
 
   //
