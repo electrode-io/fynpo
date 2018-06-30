@@ -4,8 +4,7 @@
 
 const Crypto = require("crypto");
 const Path = require("path");
-const Fs = require("fs");
-const fOps = require("./util/file-ops");
+const Fs = require("./util/file-ops");
 const _ = require("lodash");
 const rimraf = require("rimraf");
 const logger = require("./logger");
@@ -23,9 +22,9 @@ const createFileSymlink = async (linkName, targetName) => {
     // Windows symlink require admin permission
     // And Junction is only for directories
     // Too bad, just make a hard link.
-    await fOps.link(targetName, linkName);
+    await Fs.link(targetName, linkName);
   } else {
-    await fOps.symlink(targetName, linkName);
+    await Fs.symlink(targetName, linkName);
   }
 };
 
@@ -243,7 +242,7 @@ class PkgDepLinker {
     //
     const targetPath = depInfo.dist.fullPath;
     const targetNmDir = Path.join(targetPath, "node_modules");
-    await fOps.$.mkdirp(targetNmDir);
+    await Fs.$.mkdirp(targetNmDir);
     // save link file for target module to FYN_DIR/links
     const fynLinkId = this._createLinkName(targetNmDir, depInfo.name);
     const fynLinkFile = Path.join(this._fyn.linkDir, `${fynLinkId}.json`);
@@ -253,18 +252,18 @@ class PkgDepLinker {
     fynLinkData.targetPath = targetPath;
     fynLinkData.timestamps[this._fyn.cwd] = Date.now();
     fynLinkData[this._fyn.cwd] = _.pick(depInfo.json, "_depResolutions");
-    await fOps.writeFile(fynLinkFile, `${JSON.stringify(fynLinkData, null, 2)}\n`);
+    await Fs.writeFile(fynLinkFile, `${JSON.stringify(fynLinkData, null, 2)}\n`);
     //
     // create symlink from the local package dir to the link file
     //
     const symlinkFile = Path.join(targetNmDir, FYN_LINK_JSON);
-    await fOps.$.rimraf(symlinkFile);
+    await Fs.$.rimraf(symlinkFile);
     createFileSymlink(symlinkFile, fynLinkFile);
 
     //
     // Save fynlink data for the app
     //
-    await fOps.writeFile(depInfo.nmFynLinkName, JSON.stringify(depInfo.fynLinkData, null, 2));
+    await Fs.writeFile(depInfo.nmFynLinkName, JSON.stringify(depInfo.fynLinkData, null, 2));
   }
 
   //

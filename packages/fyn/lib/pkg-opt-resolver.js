@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("assert");
-const Fs = require("fs");
+const Fs = require("./util/file-ops");
 const Path = require("path");
 const Tar = require("tar");
 const xsh = require("xsh");
