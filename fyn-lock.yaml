@@ -2784,11 +2784,11 @@ opener:
   _: 'https://registry.npmjs.org/opener/-/opener-1.4.3.tgz'
 opfs:
  _:
-  ^1.0.2: 1.0.2
- 1.0.2:
+  ^1.0.3: 1.0.3
+ 1.0.3:
   top: 1
-  $: 589958bdc02fb61d0f41e27b66e256cba166f490
-  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.2.tgz'
+  $: 95b55738652a31fe39bfa58ebca3ea85c977afe5
+  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.3.tgz'
   dependencies:
    optional-require: ^1.0.0
 optional-require:
