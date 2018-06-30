@@ -210,7 +210,7 @@ class PkgDepLinker {
       // create the directory one level up so the actual package name or the second part
       // of it if it's scoped can be a symlinked to the local package's directory.
       //
-      this._fyn.createPkgOutDirSync(vdirOneUp);
+      this._fyn.createPkgOutDirSync(vdirOneUp, true);
       logger.debug("linking local package", fvDir, "to", targetPath);
       Fs.symlinkSync(targetPath, fvDir, DIR_SYMLINK_TYPE);
     } else {
