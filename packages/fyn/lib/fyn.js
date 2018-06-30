@@ -1,6 +1,5 @@
 "use strict";
 
-const Fs = require("fs");
 const Path = require("path");
 const assert = require("assert");
 const semver = require("semver");
@@ -15,7 +14,7 @@ const PkgDepLocker = require("./pkg-dep-locker");
 const DepData = require("./dep-data");
 const fynConfig = require("./fyn-config");
 const semverUtil = require("./util/semver");
-const fOps = require("./util/file-ops");
+const Fs = require("./util/file-ops");
 const fyntil = require("./util/fyntil");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty */
@@ -166,39 +165,43 @@ class Fyn {
   }
 
   clearPkgOutDir(dir) {
-    return fOps.readdir(dir).each(f => fOps.$.rimraf(Path.join(dir, f)));
+    return Fs.readdir(dir).each(f => Fs.$.rimraf(Path.join(dir, f)));
   }
 
-  loadFvVersions() {
+  async loadFvVersions() {
     const fvVersions = {};
     const fvDir = this.getOutputDir("__fv_");
+    try {
+      for (const version of await Fs.readdir(fvDir)) {
+        const verDir = Path.join(fvDir, version);
 
-    const versions = (Fs.existsSync(fvDir) && Fs.readdirSync(fvDir)) || [];
-    for (const v of versions) {
-      const verDir = Path.join(fvDir, v);
-      const mods = Fs.readdirSync(verDir);
-      for (let m of mods) {
-        if (m.startsWith("@")) {
-          const scopeDir = Path.join(verDir, m);
-          const scope2 = Fs.readdirSync(scopeDir);
-          m = Path.join(m, scope2[0]);
+        const pkgNamesOfVersion = await Fs.readdir(verDir);
+
+        for (let pkgName of pkgNamesOfVersion) {
+          if (pkgName.startsWith("@")) {
+            const scopeDir = Path.join(verDir, pkgName);
+            const scope2 = await Fs.readdir(scopeDir);
+            pkgName = Path.join(pkgName, scope2[0]);
+          }
+
+          if (!fvVersions[pkgName]) {
+            fvVersions[pkgName] = [];
+          }
+
+          fvVersions[pkgName].push(version);
         }
-        if (!fvVersions[m]) {
-          fvVersions[m] = [];
-        }
-        fvVersions[m].push(v);
       }
-    }
+    } catch (err) {}
 
     return fvVersions;
   }
 
   async createPkgOutDir(dir) {
-    return fOps.$
+    return Fs.$
       .mkdirp(dir)
       .catch(err => {
         // exist but is not a dir? delete it and mkdir.
-        return err.code === "EEXIST" && fOps.$.rimraf(dir).then(() => fOps.$.mkdirp(dir));
+        return err.code === "EEXIST" && Fs.$.rimraf(dir).then(() => Fs.$.mkdirp(dir));
       })
       .then(r => {
         // dir already exist? clear it.
@@ -232,13 +235,13 @@ class Fyn {
 
   async createDir(dir) {
     try {
-      await fOps.$.mkdirp(dir);
+      await Fs.$.mkdirp(dir);
     } catch (err) {
       // mkdirp fails with EEXIST if file exist and is not a directory
       if (err.code === "EEXIST") {
         // remove it and create as a directory
-        await fOps.$.rimraf(dir);
-        await fOps.$.mkdirp(dir);
+        await Fs.$.rimraf(dir);
+        await Fs.$.mkdirp(dir);
       } else {
         throw err;
       }
@@ -261,14 +264,14 @@ class Fyn {
   async moveToBackup(dir, reason) {
     // TODO: create backup dir and move
     logger.warn("Removing", dir, "due to", reason);
-    return await fOps.$.rimraf(dir);
+    return await Fs.$.rimraf(dir);
   }
 
   async unlinkLocalPackage(pkg, dir) {
     // TODO: look for __fyn_link_<name>.json file and
     // update accordingly
     logger.warn("Removing symlink", dir);
-    return await fOps.$.rimraf(dir);
+    return await Fs.$.rimraf(dir);
   }
 
   //
@@ -287,7 +290,7 @@ class Fyn {
     let ostat;
 
     try {
-      ostat = await fOps.lstat(fullOutDir);
+      ostat = await Fs.lstat(fullOutDir);
     } catch (err) {
       if (err.code !== "ENOENT") throw err;
       return undefined;
@@ -312,7 +315,7 @@ class Fyn {
     const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
     const pkgJsonFname = Path.join(fullOutDir, "package.json");
 
-    const buf = await fOps.readFile(pkgJsonFname);
+    const buf = await Fs.readFile(pkgJsonFname);
 
     pkg.dir = fullOutDir;
     pkg.str = buf.toString().trim();
@@ -334,7 +337,7 @@ class Fyn {
 
     try {
       const gypFile = Path.join(fullOutDir, "binding.gyp");
-      await fOps.lstat(gypFile);
+      await Fs.lstat(gypFile);
 
       json.gypfile = true;
       const scr = json.scripts;
