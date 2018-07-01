@@ -478,6 +478,11 @@ class PkgDepResolver {
       // resolve process, so caching them is very important for performance.
       //
       if (!meta[SORTED_VERSIONS]) {
+        if (!meta.versions) {
+          const msg = `Meta for package ${item.name} doesn't have versions`;
+          logger.error(msg);
+          throw new Error(msg);
+        }
         meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(simpleSemverCompare);
       }
 

@@ -4,7 +4,7 @@ const Path = require("path");
 const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-module.exports = {
+const base = {
   //devtool: "source-map",
   entry: {
     "fyn.js": Path.resolve("cli/fyn.js")
@@ -17,6 +17,7 @@ module.exports = {
     process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin()
   ].filter(x => x),
   resolve: {
+    symlinks: false, // don't resolve symlinks to their real path
     alias: {
       xml2js: Path.resolve("stubs/xml2js.js"),
       "iconv-lite": Path.resolve("stubs/iconv-lite.js"),
@@ -35,3 +36,22 @@ module.exports = {
     __dirname: false
   }
 };
+
+const node6 = Object.assign({}, base, {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: x => x.indexOf("node_modules") > 0,
+        use: "babel-loader"
+      }
+    ]
+  },
+  output: {
+    filename: `node6-[name]`,
+    path: Path.resolve("dist"),
+    libraryTarget: "commonjs2"
+  }
+});
+
+module.exports = [base, node6];
