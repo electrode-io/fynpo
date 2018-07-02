@@ -64,7 +64,7 @@ class PkgDepLinker {
     }
   }
 
-  addSubNodeModules(depInfo, fvDeps) {
+  async addSubNodeModules(depInfo, fvDeps) {
     if (fvDeps.length <= 0) return;
 
     if (depInfo.local) {
@@ -111,7 +111,7 @@ class PkgDepLinker {
     });
   }
 
-  addPackageRes(depInfo) {
+  async addPackageRes(depInfo) {
     const pkgJson = depInfo.json;
     if (depInfo.promoted) pkgJson._flatVersion = pkgJson.version;
 
@@ -145,13 +145,13 @@ class PkgDepLinker {
         });
     });
 
-    this.addSubNodeModules(depInfo, fvDeps);
+    await this.addSubNodeModules(depInfo, fvDeps);
 
     return true;
   }
 
-  linkPackage(depInfo) {
-    depInfo.linkDep = this.addPackageRes(depInfo);
+  async linkPackage(depInfo) {
+    depInfo.linkDep = await this.addPackageRes(depInfo);
     return depInfo.linkDep;
   }
 

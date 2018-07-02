@@ -143,11 +143,11 @@ class PkgInstaller {
       { concurrency: 3 }
     )
       .return(this.toLink)
-      .each(depInfo => {
+      .each(async depInfo => {
         const pkgId = logFormat.pkgId(depInfo);
         logger.updateItem(INSTALL_PACKAGE, `linking package ${pkgId}`);
         this._fyn._depResolver.resolvePeerDep(depInfo);
-        this._depLinker.linkPackage(depInfo);
+        await this._depLinker.linkPackage(depInfo);
         //
         if (depInfo.deprecated && !depInfo.json._deprecated) {
           depInfo.json._deprecated = depInfo.deprecated;
