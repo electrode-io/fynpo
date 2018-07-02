@@ -6,7 +6,6 @@ const Crypto = require("crypto");
 const Path = require("path");
 const Fs = require("./util/file-ops");
 const _ = require("lodash");
-const rimraf = require("rimraf");
 const logger = require("./logger");
 const logFormat = require("./util/log-format");
 const fynTil = require("./util/fyntil");
@@ -101,7 +100,7 @@ class PkgDepLinker {
         if (!(await Fs.exists(scope.dir))) {
           await Fs.mkdir(scope.dir);
         }
-        const existTarget = this.validateExistSymlink(symlinkName, relLinkPath);
+        const existTarget = await this.validateExistSymlink(symlinkName, relLinkPath);
         if (!existTarget) {
           await Fs.symlink(relLinkPath, symlinkName, DIR_SYMLINK_TYPE);
         }
@@ -155,13 +154,13 @@ class PkgDepLinker {
     return depInfo.linkDep;
   }
 
-  validateExistSymlink(symlinkDir, targetPath) {
+  async validateExistSymlink(symlinkDir, targetPath) {
     let existTarget;
     //
     // Check if the dir already exist and try to read it as a symlink
     //
     try {
-      existTarget = Fs.readlinkSync(symlinkDir);
+      existTarget = await Fs.readlink(symlinkDir);
       if (DIR_SYMLINK_TYPE === "junction" && !Path.isAbsolute(targetPath)) {
         targetPath = Path.join(symlinkDir, "..", targetPath) + "\\";
       }
@@ -176,10 +175,10 @@ class PkgDepLinker {
       existTarget = false;
       try {
         // try to unlink it as a symlink/file first
-        Fs.unlinkSync(symlinkDir);
+        await Fs.unlink(symlinkDir);
       } catch (e) {
         // else remove the directory
-        rimraf.sync(symlinkDir);
+        await Fs.$.rimraf(symlinkDir);
       }
     } else {
       logger.debug("local link existTarget", existTarget, "match new target", targetPath);
@@ -199,7 +198,7 @@ class PkgDepLinker {
       targetPath = Path.relative(vdirOneUp, targetPath);
     }
 
-    const existTarget = this.validateExistSymlink(fvDir, targetPath);
+    const existTarget = await this.validateExistSymlink(fvDir, targetPath);
 
     //
     // create symlink from app's node_modules/__fv_/<version>/<pkg-name> to the target
