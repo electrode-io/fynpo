@@ -55,9 +55,9 @@ class PkgDepLinker {
     );
   }
 
-  readAppRes(outputDir) {
+  async readAppRes(outputDir) {
     try {
-      return JSON.parse(Fs.readFileSync(Path.join(outputDir, FYN_RESOLUTIONS_JSON)));
+      return JSON.parse(await Fs.readFile(Path.join(outputDir, FYN_RESOLUTIONS_JSON)));
     } catch (e) {
       return { _fynFo: {} };
     }
