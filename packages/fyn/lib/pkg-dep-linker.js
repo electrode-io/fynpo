@@ -84,7 +84,7 @@ class PkgDepLinker {
       return { dir: subjectNmDir, name };
     };
 
-    fvDeps.forEach(di => {
+    for (const di of fvDeps) {
       const diDir = this._fyn.getInstalledPkgDir(di.name, di.version, di);
       const scope = getDirForScope(di.name);
       const relLinkPath = Path.relative(scope.dir, diDir);
@@ -98,17 +98,17 @@ class PkgDepLinker {
       );
       try {
         const symlinkName = Path.join(scope.dir, scope.name);
-        if (!Fs.existsSync(scope.dir)) {
-          Fs.mkdirSync(scope.dir);
+        if (!(await Fs.exists(scope.dir))) {
+          await Fs.mkdir(scope.dir);
         }
         const existTarget = this.validateExistSymlink(symlinkName, relLinkPath);
         if (!existTarget) {
-          Fs.symlinkSync(relLinkPath, symlinkName, DIR_SYMLINK_TYPE);
+          await Fs.symlink(relLinkPath, symlinkName, DIR_SYMLINK_TYPE);
         }
       } catch (e) {
         logger.warn("symlink sub node_modules failed", e.message);
       }
-    });
+    }
   }
 
   async addPackageRes(depInfo) {
