@@ -53,13 +53,13 @@ class PkgInstaller {
     });
   }
 
-  _linkLocalPkg(depInfo) {
+  async _linkLocalPkg(depInfo) {
     // avoid linking multiple times
     if (depInfo.linkLocal) return;
     depInfo.linkLocal = true;
 
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
-    this._depLinker.linkLocalPackage(vdir, depInfo.dir);
+    await this._depLinker.linkLocalPackage(vdir, depInfo.dir);
     this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
   }
 
@@ -216,7 +216,7 @@ class PkgInstaller {
 
   async _gatherPkg(depInfo) {
     const { name, version } = depInfo;
-    if (depInfo.local) this._linkLocalPkg(depInfo);
+    if (depInfo.local) await this._linkLocalPkg(depInfo);
 
     const json = depInfo.json || {};
 
