@@ -154,8 +154,9 @@ class PkgInstaller {
           depInfo.showDepr = true;
         }
         if (depInfo.top) {
-          this._binLinker.linkBin(depInfo);
+          return this._binLinker.linkBin(depInfo);
         }
+        return undefined;
       })
       .tap(() => logger.debug("linking bin for non-top but promoted packages"))
       .return(this.toLink) // Link bin for all none top but promoted pkg first

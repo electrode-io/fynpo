@@ -33,7 +33,7 @@ class PkgBinLinkerBase {
     }
   }
 
-  linkBin(depInfo, binList) {
+  async linkBin(depInfo, binList) {
     const isPrivate = Boolean(binList);
     const conflicts = {};
     const pkgDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
@@ -85,16 +85,16 @@ class PkgBinLinkerBase {
     if (!_.isEmpty(conflicts)) {
       depInfo.privateBin = conflicts;
       logger.debug(`bin-linker: symlinking private bin for ${pkgDir}`);
-      this._linkPrivateBin(fynTil.createSubNodeModulesDir(pkgDir), depInfo, conflicts);
+      await this._linkPrivateBin(await fynTil.createSubNodeModulesDir(pkgDir), depInfo, conflicts);
       logger.debug(`bin-linker: done symlinking private bin`);
     }
 
     return true;
   }
 
-  _linkPrivateBin(outputDir, depInfo, binList) {
+  async _linkPrivateBin(outputDir, depInfo, binList) {
     const binLinker = new this.constructor({ fyn: this._fyn, outputDir });
-    binLinker.linkBin(depInfo, binList);
+    await binLinker.linkBin(depInfo, binList);
   }
 
   _unlinkFile(symlink) {
