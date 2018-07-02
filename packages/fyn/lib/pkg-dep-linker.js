@@ -39,7 +39,7 @@ class PkgDepLinker {
   }
 
   // link top level package
-  linkApp(resData, fynFo, outputDir) {
+  async linkApp(resData, fynFo, outputDir) {
     const depRes = {};
 
     _.each(["dep", "dev", "opt"], section => {
@@ -50,7 +50,7 @@ class PkgDepLinker {
 
     depRes._fynFo = fynFo;
 
-    Fs.writeFileSync(
+    await Fs.writeFile(
       Path.join(outputDir, FYN_RESOLUTIONS_JSON),
       `${JSON.stringify(depRes, null, 2)}\n`
     );
