@@ -192,7 +192,7 @@ class PkgDepLinker {
   // Creates the package's directory under node_modules/__fv_/<version>
   // and make a symlink from there to the actual directory of the local package.
   //
-  linkLocalPackage(fvDir, targetPath) {
+  async linkLocalPackage(fvDir, targetPath) {
     const vdirOneUp = Path.join(fvDir, "..");
 
     if (Path.isAbsolute(targetPath)) {
@@ -209,9 +209,9 @@ class PkgDepLinker {
       // create the directory one level up so the actual package name or the second part
       // of it if it's scoped can be a symlinked to the local package's directory.
       //
-      this._fyn.createPkgOutDirSync(vdirOneUp, true);
+      await this._fyn.createPkgOutDir(vdirOneUp, true);
       logger.debug("linking local package", fvDir, "to", targetPath);
-      Fs.symlinkSync(targetPath, fvDir, DIR_SYMLINK_TYPE);
+      await Fs.symlink(targetPath, fvDir, DIR_SYMLINK_TYPE);
     } else {
       logger.debug("linking local package", fvDir, "already exist", existTarget);
     }
