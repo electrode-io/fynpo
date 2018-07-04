@@ -27,21 +27,24 @@ function findPkgsById(pkgs, id) {
     .value();
 }
 
-function findDependents(fyn, pkgs, ask) {
+async function findDependents(fyn, pkgs, ask) {
+  const dependents = [];
   const depLinker = new PkgDepLinker({ fyn });
-  return _(pkgs)
-    .map((pkg, name) => {
-      return _(pkg)
-        .map((vpkg, version) => {
-          depLinker.loadPkgDepData(vpkg);
-          const res = _.get(vpkg, ["json", "_depResolutions", ask.name]);
-          return res && semverUtil.satisfies(res.resolved, ask.version) && vpkg;
-        })
-        .filter(x => x)
-        .value();
-    })
-    .flatMap()
-    .value();
+  for (const name in pkgs) {
+    const pkg = pkgs[name];
+    for (const version in pkg) {
+      const vpkg = pkg[version];
+
+      await depLinker.loadPkgDepData(vpkg);
+      const res = _.get(vpkg, ["json", "_depResolutions", ask.name]);
+
+      if (res && semverUtil.satisfies(res.resolved, ask.version)) {
+        dependents.push(vpkg);
+      }
+    }
+  }
+
+  return dependents;
 }
 
 function formatPkgId(pkg) {
@@ -49,8 +52,8 @@ function formatPkgId(pkg) {
   return `${logFormat.pkgId(pkg)}${top}`;
 }
 
-function showPkgStat(fyn, pkgs, ask) {
-  const dependents = findDependents(fyn, pkgs, ask).sort((a, b) => {
+async function showPkgStat(fyn, pkgs, ask) {
+  const dependents = (await findDependents(fyn, pkgs, ask)).sort((a, b) => {
     if (a.name === b.name) {
       return semverUtil.simpleCompare(a.version, b.version);
     }
@@ -67,6 +70,7 @@ function _show(fyn, pkgIds, follow) {
     const askPkgs = findPkgsById(data.pkgs, pkgId).sort((a, b) =>
       semverUtil.simpleCompare(a.version, b.version)
     );
+
     if (askPkgs.length === 0) {
       logger.info(chalk.yellow(pkgId), "is not installed");
     } else {
@@ -80,6 +84,7 @@ function _show(fyn, pkgIds, follow) {
         if (follow > 0) {
           return Promise.each(askDeps, deps => {
             const followIds = deps.slice(0, follow).map(x => x.name);
+
             return _show(fyn, followIds, follow);
           });
         }

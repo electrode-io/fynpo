@@ -292,16 +292,17 @@ class PkgDepLinker {
   }
 
   //
-  // take a pkg dep info and load previously saved dep data into it
+  // Take a pkg dep info and load previously saved dep data into it
+  // Used by fyn stat command
   //
-  loadPkgDepData(depInfo) {
+  async loadPkgDepData(depInfo) {
     // a normal installed package's dep data are saved to its package.json
     // so loading that is usually enough
     const installedDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
 
     if (!depInfo.json) {
       const fname = Path.join(installedDir, "package.json");
-      depInfo.json = JSON.parse(Fs.readFileSync(fname));
+      depInfo.json = JSON.parse(await Fs.readFile(fname));
     }
 
     // for a locally linked package, the dep data is in the __fyn_link__ JSON file
@@ -313,7 +314,7 @@ class PkgDepLinker {
         FYN_LINK_JSON
       );
 
-      const depRes = JSON.parse(Fs.readFileSync(targetFynlinkFile));
+      const depRes = JSON.parse(await Fs.readFile(targetFynlinkFile));
       depInfo.json._depResolutions = depRes[this._fyn.cwd]._depResolutions;
     }
   }
