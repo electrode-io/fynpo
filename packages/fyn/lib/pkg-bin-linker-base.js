@@ -64,7 +64,7 @@ class PkgBinLinkerBase {
         }
       }
 
-      this._chmod(target);
+      await this._chmod(target);
       logger.debug(`bin-linker: setting linked for ${sym} => ${relTarget}`);
       this._linked[sym] = relTarget;
     };
@@ -127,7 +127,7 @@ class PkgBinLinkerBase {
     }
   }
 
-  _chmod() {}
+  async _chmod() {}
 }
 
 module.exports = PkgBinLinkerBase;

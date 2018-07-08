@@ -34,16 +34,16 @@ class PkgBinLinker extends PkgBinLinkerBase {
     return false;
   }
 
-  _chmod(target) {
+  async _chmod(target) {
     try {
-      Fs.accessSync(target, Fs.constants.X_OK);
+      await Fs.access(target, Fs.constants.X_OK);
       return;
     } catch (e) {
       //
     }
 
     try {
-      Fs.chmodSync(target, "0755");
+      await Fs.chmod(target, "0755");
     } catch (err) {
       logger.error(`bin-linker: chmod on ${target} failed`, err.message);
     }
