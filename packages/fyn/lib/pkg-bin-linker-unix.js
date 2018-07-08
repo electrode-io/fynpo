@@ -49,8 +49,8 @@ class PkgBinLinker extends PkgBinLinkerBase {
     }
   }
 
-  _generateBinLink(relTarget, symlink) {
-    Fs.symlinkSync(relTarget, symlink);
+  async _generateBinLink(relTarget, symlink) {
+    return Fs.symlink(relTarget, symlink);
   }
 
   async _rmBinLink(symlink) {

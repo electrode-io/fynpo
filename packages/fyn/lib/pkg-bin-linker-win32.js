@@ -59,9 +59,9 @@ class PkgBinLinkerWin32 extends PkgBinLinkerBase {
     return false;
   }
 
-  _generateBinLink(relTarget, symlink) {
-    this._saveCmd(symlink, CYGWIN_LINK, relTarget);
-    this._saveCmd(symlink + ".cmd", CMD_BATCH, relTarget);
+  async _generateBinLink(relTarget, symlink) {
+    await this._saveCmd(symlink, CYGWIN_LINK, relTarget);
+    await this._saveCmd(symlink + ".cmd", CMD_BATCH, relTarget);
   }
 
   async _rmBinLink(symlink) {
@@ -73,8 +73,8 @@ class PkgBinLinkerWin32 extends PkgBinLinkerBase {
     return (await Fs.readdir(this._binDir)).filter(x => !x.endsWith(".cmd"));
   }
 
-  _saveCmd(name, data, target) {
-    Fs.writeFileSync(name, data.replace(/{{TARGET}}/g, target));
+  async _saveCmd(name, data, target) {
+    return Fs.writeFile(name, data.replace(/{{TARGET}}/g, target));
   }
 }
 
