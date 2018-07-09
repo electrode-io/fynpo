@@ -3708,11 +3708,11 @@ opener:
   _: 'https://registry.npmjs.org/opener/-/opener-1.4.3.tgz'
 opfs:
  _:
-  ^1.0.0: 1.0.0
- 1.0.0:
+  ^1.0.0: 1.0.5
+ 1.0.5:
   top: 1
-  $: 68d8241357083766a8b84c255c44e2f7e9a61f74
-  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.0.tgz'
+  $: 3f118e6c1f4f0a6897dfb9d51483acba7ad5d875
+  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.5.tgz'
 optional-require:
  _:
   ^1.0.0: 1.0.0
