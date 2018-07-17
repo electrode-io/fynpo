@@ -18,11 +18,7 @@ class DepItem {
     // name of the package
     this.name = options.name;
     // semver that was used to specify this dep
-    this.semver = options.semver;
-    const semverPath = semverUtil.getAsFilepath(options.semver);
-    if (semverPath) {
-      this.semverPath = semverPath;
-    }
+    this._semver = semverUtil.analyze(options.semver);
     // original top level package.json dep section (dep, dev, per, opt)
     //    dep - dependencies, dev: dev, opt: optional, per: peer
     this.src = options.src;
@@ -35,6 +31,18 @@ class DepItem {
     // was this item promoted out of __fv_?
     this.promoted = undefined;
     this.depth = (parent && parent.depth + 1) || options.depth || 0;
+  }
+
+  get semver() {
+    return this._semver.$;
+  }
+
+  get semverPath() {
+    return this._semver.path;
+  }
+
+  get localType() {
+    return this._semver.localType;
   }
 
   unref() {
