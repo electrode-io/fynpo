@@ -41,6 +41,10 @@ class DepItem {
     return this._semver.path;
   }
 
+  set localType(type) {
+    this._semver.localType = type;
+  }
+
   get localType() {
     return this._semver.localType;
   }

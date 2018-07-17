@@ -371,8 +371,12 @@ class PkgDepResolver {
       if (metaJson.hasPI) pkgV.hasPI = 1;
     }
 
-    if (meta.local || metaJson.local) {
-      item.local = pkgV.local = true;
+    const localFromMeta = meta.local || metaJson.local;
+    if (localFromMeta) {
+      if (!item.localType) {
+        item.localType = localFromMeta;
+      }
+      pkgV.local = item.localType;
       item.fullPath = pkgV.dir = pkgV.dist.fullPath;
       pkgV.str = pkgV.dist.str;
       pkgV.json = metaJson;
@@ -625,7 +629,7 @@ class PkgDepResolver {
 
     return promise
       .then(r => {
-        if (r || this._lockOnly || item.local) return undefined;
+        if (r || this._lockOnly || item.localType) return undefined;
         // neither local nor lock was able to resolve for item
         // so try to fetch from registry for real meta to resolve
         // always fetch the item and let pkg src manager deal with caching
