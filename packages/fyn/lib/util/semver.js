@@ -92,12 +92,12 @@ function isLocalHard(v) {
   return v.indexOf(FYN_LOCAL_HARD_TAG) > 0;
 }
 
-function localify(v, hash = "") {
-  return `${v}${FYN_LOCAL_TAG}${hash}`;
+function localify(v, localType, hash = "") {
+  return `${v}${localType === "hard" ? FYN_LOCAL_HARD_TAG : FYN_LOCAL_TAG}${hash}`;
 }
 
 function localifyHard(v, hash = "") {
-  return `${v}${FYN_LOCAL_HARD_TAG}${hash}`;
+  return localify(v, true, hash);
 }
 
 function unlocalify(v) {

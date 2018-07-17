@@ -52,7 +52,7 @@ describe("semver", function() {
     });
 
     it("should add tag with hash", () => {
-      const x = semver.localify("0.1.1", "xyz");
+      const x = semver.localify("0.1.1", false, "xyz");
       expect(x).to.equal("0.1.1-fynlocalxyz");
       expect(semver.isLocal(x)).to.be.true;
     });
