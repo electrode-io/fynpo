@@ -97,7 +97,7 @@ function localify(v, localType, hash = "") {
 }
 
 function localifyHard(v, hash = "") {
-  return localify(v, true, hash);
+  return localify(v, "hard", hash);
 }
 
 function unlocalify(v) {
