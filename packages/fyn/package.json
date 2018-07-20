@@ -79,7 +79,6 @@
       "xout",
       "tmp",
       "flat-module.js",
-      "cli",
       "webpack.config.js",
       "bin",
       "dist",
