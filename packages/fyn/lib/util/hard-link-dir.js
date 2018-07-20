@@ -12,7 +12,7 @@ const assert = require("assert");
 const Fs = require("./file-ops");
 const xaa = require("./xaa");
 
-async function link(src, dest) {
+async function link(src, dest, filter = []) {
   const files = await Fs.readdir(src);
 
   const statDest = await xaa.try(() => Fs.lstat(dest));
@@ -24,6 +24,7 @@ async function link(src, dest) {
   }
 
   for (const file of files) {
+    if (filter.indexOf(file) >= 0) continue;
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
     const stat = await Fs.lstat(srcFp);

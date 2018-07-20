@@ -12,6 +12,7 @@ const LifecycleScripts = require("./lifecycle-scripts");
 const logger = require("./logger");
 const logFormat = require("./util/log-format");
 const fynTil = require("./util/fyntil");
+const hardLinkDir = require("./util/hard-link-dir");
 const { INSTALL_PACKAGE } = require("./log-items");
 
 const { SEMVER } = require("./symbols");
@@ -60,8 +61,12 @@ class PkgInstaller {
     depInfo.linkLocal = true;
 
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
-    await this._depLinker.linkLocalPackage(vdir, depInfo.dir);
-    this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
+    if (depInfo.local === "hard") {
+      await hardLinkDir.link(depInfo.dir, vdir, ["node_modules"]);
+    } else {
+      await this._depLinker.linkLocalPackage(vdir, depInfo.dir);
+      this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
+    }
   }
 
   _savePkgJson(log) {
@@ -218,7 +223,9 @@ class PkgInstaller {
 
   async _gatherPkg(depInfo) {
     const { name, version } = depInfo;
-    if (depInfo.local) await this._linkLocalPkg(depInfo);
+    if (depInfo.local) {
+      await this._linkLocalPkg(depInfo);
+    }
 
     const json = depInfo.json || {};
 
