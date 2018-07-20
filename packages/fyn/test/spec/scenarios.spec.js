@@ -24,9 +24,9 @@ function readJson(path) {
   }
 }
 
-const debug = true;
+const debug = false;
 
-describe.only("scenario", function() {
+describe("scenario", function() {
   let server;
   const saveExit = fyntil.exit;
   let registry;
