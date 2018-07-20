@@ -3161,7 +3161,6 @@ log-update:
  _:
   ^2.3.0: 2.3.0
  2.3.0:
-  top: 1
   $: 88328fd7d1ce7938b29283746f0b1bc126b24708
   _: 'https://registry.npmjs.org/log-update/-/log-update-2.3.0.tgz'
   dependencies:
