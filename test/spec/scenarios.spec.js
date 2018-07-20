@@ -16,8 +16,6 @@ const optionalRequire = require("optional-require")(require);
 const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
 
-const debug = false;
-
 function readJson(path) {
   try {
     return JSON.parse(Fs.readFileSync(path).toString());
@@ -26,7 +24,9 @@ function readJson(path) {
   }
 }
 
-describe("scenario", function() {
+const debug = true;
+
+describe.only("scenario", function() {
   let server;
   const saveExit = fyntil.exit;
   let registry;
@@ -139,6 +139,9 @@ describe("scenario", function() {
           })
           .then(() => {
             const nmTree = dirTree.make(cwd, "node_modules");
+            if (debug) {
+              console.log("nmTree", Yaml.dump(nmTree, 2));
+            }
             const expectNmTree = Yaml.safeLoad(
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
             );
@@ -164,7 +167,8 @@ describe("scenario", function() {
         // "locked-change-major": { stopStep: "step-02" }
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
-        "local-linking": { stopStep: "step-06" }
+        // "local-linking": { stopStep: "step-06" }
+        "local-hard-linking": {}
       }
     : {};
 
