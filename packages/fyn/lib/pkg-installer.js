@@ -65,7 +65,7 @@ class PkgInstaller {
       await hardLinkDir.link(depInfo.dir, vdir, ["node_modules"]);
     } else {
       await this._depLinker.linkLocalPackage(vdir, depInfo.dir);
-      this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
+      await this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
     }
   }
 
