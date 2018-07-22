@@ -236,8 +236,6 @@ class PkgDepLinker {
   async saveLocalPackageFynLink(depInfo) {
     if (depInfo.local !== "sym") return;
 
-    // TODO: save it for hard linking locals
-
     //
     // take depInfo.json._depResolutions and save it to fyn link file
     //

@@ -69,28 +69,52 @@ class PkgInstaller {
     }
   }
 
-  _savePkgJson(log) {
+  _saveLocalFynSymlink() {
     return Promise.each(this.toLink, depInfo => {
-      if (depInfo.local) {
+      if (depInfo.local === "sym") {
         // return so don't override locally linked module's package.json
         return this._depLinker.saveLocalPackageFynLink(depInfo);
       }
+    });
+  }
+
+  _savePkgJson(log) {
+    return Promise.each(this.toLink, depInfo => {
       depInfo.json._from = `${depInfo.name}@${depInfo[SEMVER]}`;
       depInfo.json._id = `${depInfo.name}@${depInfo.version}`;
       const outputStr = `${JSON.stringify(depInfo.json, null, 2)}\n`;
-      if (depInfo.str !== outputStr) {
-        if (log && depInfo.linkDep) {
-          const pkgJson = depInfo.json;
-          logger.debug(
-            "linked dependencies for",
-            pkgJson.name,
-            pkgJson.version,
-            depInfo.promoted ? "" : "__fv_"
-          );
-        }
-        return Fs.writeFile(Path.join(depInfo.dir, "package.json"), outputStr);
+
+      if (depInfo.str === outputStr) {
+        return undefined;
       }
-      return undefined;
+
+      if (log && depInfo.linkDep) {
+        const pkgJson = depInfo.json;
+        logger.debug(
+          "linked dependencies for",
+          pkgJson.name,
+          pkgJson.version,
+          depInfo.promoted ? "" : "__fv_"
+        );
+      }
+
+      let promise;
+      let pkgJsonFp;
+
+      if (depInfo.local === "hard") {
+        // do not override hardlinked package.json, instead remove it, and
+        // write a physically new file.
+        const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+        pkgJsonFp = Path.join(vdir, "package.json");
+        promise = Fs.unlink(pkgJsonFp);
+      } else {
+        pkgJsonFp = Path.join(depInfo.dir, "package.json");
+        promise = Promise.resolve();
+      }
+
+      return promise.then(() => Fs.writeFile(pkgJsonFp, outputStr)).then(() => {
+        depInfo.str = outputStr;
+      });
     });
   }
 
@@ -170,7 +194,11 @@ class PkgInstaller {
       .tap(() => logger.debug("linking bin for __fv_ packages"))
       .return(this.toLink) // Link bin for all pkg under __fv_
       .each(x => !x.top && !x.promoted && this._binLinker.linkBin(x))
-      .then(() => this._savePkgJson())
+      .then(() => {
+        // we are about to run install/postInstall scripts
+        // save pkg JSON to disk in case any updates were done
+        return this._savePkgJson();
+      })
       .then(() => this._initFvVersions())
       .then(() => this._cleanUp())
       .then(() => this._cleanBin())
@@ -186,7 +214,11 @@ class PkgInstaller {
         },
         { concurrency: 3 }
       )
-      .then(() => this._savePkgJson(true))
+      .then(() => {
+        // Go through save package.json again in case any changed
+        return this._savePkgJson(true);
+      })
+      .then(() => this._saveLocalFynSymlink())
       .return(this.toLink)
       .filter(di => {
         if (di.deprecated && (di.showDepr || this._fyn.showDeprecated)) {

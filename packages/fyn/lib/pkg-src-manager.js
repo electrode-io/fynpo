@@ -152,14 +152,14 @@ class PkgSrcManager {
       const name = item.name || json.name;
       json.dist = {
         localPath,
-        fullPath,
-        str
+        fullPath
       };
       const localMeta = {
         local: item.localType,
         localId: version,
         name,
         json,
+        jsonStr: str,
         versions: {
           [version]: json
         },
