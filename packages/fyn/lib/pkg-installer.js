@@ -69,24 +69,26 @@ class PkgInstaller {
     }
   }
 
-  _saveLocalFynSymlink() {
-    return Promise.each(this.toLink, depInfo => {
+  async _saveLocalFynSymlink() {
+    for (const depInfo of this.toLink) {
       if (depInfo.local === "sym") {
         // return so don't override locally linked module's package.json
-        return this._depLinker.saveLocalPackageFynLink(depInfo);
+        await this._depLinker.saveLocalPackageFynLink(depInfo);
       }
-    });
+    }
   }
 
-  _savePkgJson(log) {
-    return Promise.each(this.toLink, depInfo => {
+  async _savePkgJson(log) {
+    for (const depInfo of this.toLink) {
+      // can't touch package.json if package is a symlink to the real
+      // local package.
+      if (depInfo.local === "sym") {
+        continue;
+      }
+
       depInfo.json._from = `${depInfo.name}@${depInfo[SEMVER]}`;
       depInfo.json._id = `${depInfo.name}@${depInfo.version}`;
       const outputStr = `${JSON.stringify(depInfo.json, null, 2)}\n`;
-
-      if (depInfo.str === outputStr) {
-        return undefined;
-      }
 
       if (log && depInfo.linkDep) {
         const pkgJson = depInfo.json;
@@ -98,24 +100,26 @@ class PkgInstaller {
         );
       }
 
-      let promise;
+      if (depInfo.str === outputStr) {
+        continue;
+      }
+
       let pkgJsonFp;
 
       if (depInfo.local === "hard") {
-        // do not override hardlinked package.json, instead remove it, and
-        // write a physically new file.
+        // do not override hard linked package.json, instead remove it and
+        // write a new physical file.
         const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
         pkgJsonFp = Path.join(vdir, "package.json");
-        promise = Fs.unlink(pkgJsonFp);
+        await Fs.unlink(pkgJsonFp);
       } else {
         pkgJsonFp = Path.join(depInfo.dir, "package.json");
-        promise = Promise.resolve();
       }
 
-      return promise.then(() => Fs.writeFile(pkgJsonFp, outputStr)).then(() => {
-        depInfo.str = outputStr;
-      });
-    });
+      depInfo.str = outputStr;
+
+      await Fs.writeFile(pkgJsonFp, outputStr);
+    }
   }
 
   _doInstall() {
