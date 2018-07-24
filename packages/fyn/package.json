@@ -2,6 +2,7 @@
   "name": "fyn",
   "version": "0.1.75",
   "description": "enhanced node modules development and fast node package manager",
+  "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
     "test": "clap check"
