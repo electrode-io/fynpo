@@ -1,5 +1,7 @@
 "use strict";
 
+/* eslint-disable max-params */
+
 /*
  * clone another directory by:
  * - Creating the same directories
@@ -11,6 +13,7 @@ const Path = require("path");
 const Fs = require("./file-ops");
 const xaa = require("./xaa");
 const npmPacklist = require("npm-packlist");
+const fynTil = require("./fyntil");
 
 async function linkFile(srcFp, destFp, srcStat) {
   try {
@@ -88,7 +91,7 @@ async function generatePackTree(path) {
   return fmap;
 }
 
-async function linkPackTree(tree, src, dest) {
+async function linkPackTree(tree, src, dest, sym1) {
   const files = tree[FILES];
 
   const destFiles = await prepDestDir(dest);
@@ -102,7 +105,14 @@ async function linkPackTree(tree, src, dest) {
 
   for (const dir in tree) {
     destFiles[dir] = true;
-    await linkPackTree(tree[dir], Path.join(src, dir), Path.join(dest, dir));
+    const srcFp = Path.join(src, dir);
+    const destFp = Path.join(dest, dir);
+    if (!sym1) {
+      await linkPackTree(tree[dir], srcFp, destFp);
+    } else {
+      // make symlink to directories in the top level
+      await fynTil.symlinkDir(destFp, srcFp);
+    }
   }
 
   // any file exist in dest but not in src are removed
@@ -115,6 +125,13 @@ async function link(src, dest) {
   return await linkPackTree(tree, src, dest);
 }
 
+async function linkSym1(src, dest) {
+  const tree = await generatePackTree(src);
+
+  return await linkPackTree(tree, src, dest, true);
+}
+
 module.exports = {
-  link
+  link,
+  linkSym1
 };
