@@ -26,7 +26,7 @@ function readJson(path) {
 
 const debug = false;
 
-describe("scenario", function() {
+(debug ? describe.only : describe)("scenario", function() {
   let server;
   const saveExit = fyntil.exit;
   let registry;
@@ -167,7 +167,7 @@ describe("scenario", function() {
         // "locked-change-major": { stopStep: "step-02" }
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
-        // "local-linking": { stopStep: "step-06" }
+        "local-sym-linking": { stopStep: "step-02" },
         "local-hard-linking": {}
       }
     : {};

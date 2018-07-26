@@ -116,6 +116,10 @@ function localSplit(v) {
 
 // https://docs.npmjs.com/files/package.json#dependencies
 function getAsFilepath(semver) {
+  if (semver.startsWith("file:")) {
+    return semver.substr(5);
+  }
+
   const a = semver[0];
   const b = semver[1];
 
@@ -139,14 +143,17 @@ function getAsFilepath(semver) {
 function analyze(semver) {
   const sv = { $: semver };
 
-  if (semver.startsWith("file:")) {
+  if (semver.startsWith("sym:")) {
+    sv.path = semver.substr(4);
+    sv.localType = "sym";
+  } else if (semver.startsWith("sym1:")) {
     sv.path = semver.substr(5);
-    sv.localType = "hard";
+    sv.localType = "sym1";
   } else {
     const fp = getAsFilepath(semver);
     if (fp) {
       sv.path = fp;
-      sv.localType = "sym";
+      sv.localType = "hard";
     }
   }
 

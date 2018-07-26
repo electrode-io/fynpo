@@ -13,6 +13,6 @@
     "bin1": "bin/bin1.js"
   },
   "dependencies": {
-    "mod-h": "../mod-h"
+    "mod-h": "sym:../mod-h"
   }
 }

@@ -7,6 +7,6 @@
   "license": "ISC",
   "repository": "test",
   "dependencies": {
-    "mod-h": "../../fixtures/mod-h"
+    "mod-g": "sym:../../fixtures/mod-g-v3"
   }
 }
