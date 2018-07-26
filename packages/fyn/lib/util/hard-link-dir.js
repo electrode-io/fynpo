@@ -42,7 +42,11 @@ async function prepDestDir(dest) {
   const destFiles = {};
 
   if (!statDest) {
-    await Fs.mkdir(dest);
+    try {
+      await Fs.mkdir(dest);
+    } catch (e) {
+      await Fs.$.mkdirp(dest);
+    }
   } else if (!statDest.isDirectory()) {
     await Fs.unlink(dest);
     return prepDestDir(dest);

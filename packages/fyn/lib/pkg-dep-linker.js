@@ -144,7 +144,7 @@ class PkgDepLinker {
   // Creates the package's directory under node_modules/__fv_/<version>
   // and make a symlink from there to the actual directory of the local package.
   //
-  async linkLocalPackage(fvDir, targetPath) {
+  async symlinkLocalPackage(fvDir, targetPath) {
     const vdirOneUp = Path.join(fvDir, "..");
 
     if (Path.isAbsolute(targetPath)) {
