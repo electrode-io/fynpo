@@ -88,7 +88,7 @@ class PkgInstaller {
 
       depInfo.json._from = `${depInfo.name}@${depInfo[SEMVER]}`;
       depInfo.json._id = `${depInfo.name}@${depInfo.version}`;
-      const outputStr = `${JSON.stringify(depInfo.json, null, 2)}\n`;
+      const outputStr = JSON.stringify(depInfo.json, null, 2);
 
       if (log && depInfo.linkDep) {
         const pkgJson = depInfo.json;
@@ -100,7 +100,7 @@ class PkgInstaller {
         );
       }
 
-      if (depInfo.str === outputStr) {
+      if (depInfo.str.trim() === outputStr.trim()) {
         continue;
       }
 
@@ -118,13 +118,20 @@ class PkgInstaller {
 
       depInfo.str = outputStr;
 
-      await Fs.writeFile(pkgJsonFp, outputStr);
+      await Fs.writeFile(pkgJsonFp, `${outputStr}\n`);
     }
   }
 
   _doInstall() {
     const start = Date.now();
     const appDir = this._fyn.cwd;
+
+    let stepTime = start;
+    const timeCheck = x => {
+      const tmp = Date.now();
+      logger.debug(`${chalk.green("install time check", x)} ${logFormat.time(tmp - stepTime)}`);
+      stepTime = tmp;
+    };
 
     const running = [];
     const updateRunning = s => {
@@ -176,10 +183,13 @@ class PkgInstaller {
       },
       { concurrency: 3 }
     )
+      .tap(() => timeCheck("preInstall"))
+      .tap(() => {
+        logger.updateItem(INSTALL_PACKAGE, `linking packages...`);
+      })
       .return(this.toLink)
       .each(async depInfo => {
         const pkgId = logFormat.pkgId(depInfo);
-        logger.updateItem(INSTALL_PACKAGE, `linking package ${pkgId}`);
         this._fyn._depResolver.resolvePeerDep(depInfo);
         await this._depLinker.linkPackage(depInfo);
         //
@@ -192,21 +202,29 @@ class PkgInstaller {
         }
         return undefined;
       })
+      .tap(() => timeCheck("linking packages"))
       .tap(() => logger.debug("linking bin for non-top but promoted packages"))
       .return(this.toLink) // Link bin for all none top but promoted pkg first
       .each(x => !x.top && x.promoted && this._binLinker.linkBin(x))
+      .tap(() => timeCheck("linking bin promoted non-top"))
       .tap(() => logger.debug("linking bin for __fv_ packages"))
       .return(this.toLink) // Link bin for all pkg under __fv_
       .each(x => !x.top && !x.promoted && this._binLinker.linkBin(x))
+      .tap(() => timeCheck("linking bin __fv_"))
       .then(() => {
         // we are about to run install/postInstall scripts
         // save pkg JSON to disk in case any updates were done
         return this._savePkgJson();
       })
+      .tap(() => timeCheck("first _savePkgJson"))
       .then(() => this._initFvVersions())
+      .tap(() => timeCheck("_initFvVersions"))
       .then(() => this._cleanUp())
+      .tap(() => timeCheck("_cleanUp"))
       .then(() => this._cleanOrphanedFv())
+      .tap(() => timeCheck("_cleanOrphanedFv"))
       .then(() => this._cleanBin())
+      .tap(() => timeCheck("_cleanBin"))
       .return(this.postInstall)
       .map(
         depInfo => {
@@ -219,10 +237,12 @@ class PkgInstaller {
         },
         { concurrency: 3 }
       )
+      .tap(() => timeCheck("postInstall"))
       .then(() => {
         // Go through save package.json again in case any changed
         return this._savePkgJson(true);
       })
+      .tap(() => timeCheck("second _savePkgJson"))
       .then(() => this._saveLocalFynSymlink())
       .return(this.toLink)
       .filter(di => {
@@ -244,6 +264,7 @@ class PkgInstaller {
         }
         return false;
       })
+      .tap(() => timeCheck("show deprecated"))
       .then(warned => {
         if (this._fyn.showDeprecated && _.isEmpty(warned)) {
           logger.info(chalk.green("HOORAY!!! None of your dependencies are marked deprecated."));
