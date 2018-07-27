@@ -3,7 +3,7 @@
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-# fyn
+# fyn - Node Module Development Made Easy
 
 `fyn` is the result of a long pursuit for an easier workflow when developing over multiple node modules locally. It offers a simple way to develop and test across multiple modules effortlessly.
 
@@ -29,9 +29,6 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 
 # Table Of Contents
 
-- [fyn](#fyn)
-- [Features](#features)
-- [Table Of Contents](#table-of-contents)
 - [Overview](#overview)
   - [Enhanced Local Modules Development](#enhanced-local-modules-development)
   - [Package Resolution and Layout](#package-resolution-and-layout)
