@@ -24,16 +24,13 @@ const mkdirp = require("mkdirp");
 const Path = require("path");
 const Url = require("url");
 const PromiseQueue = require("./util/promise-queue");
-const access = Promise.promisify(Fs.access);
-const readFile = Promise.promisify(Fs.readFile);
-const writeFile = Promise.promisify(Fs.writeFile);
-const rename = Promise.promisify(Fs.rename);
+const { access, readFile, writeFile, rename } = Fs;
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
 const uniqId = require("./util/uniq-id");
 const semverUtil = require("./util/semver");
 const longPending = require("./long-pending");
-const { LOCAL_VERSION_MAPS } = require("./symbols");
+const { LOCAL_VERSION_MAPS, PACKAGE_RAW_INFO } = require("./symbols");
 const { LONG_WAIT_META, FETCH_META, FETCH_PACKAGE } = require("./log-items");
 
 const WATCH_TIME = 5000;
@@ -145,9 +142,7 @@ class PkgSrcManager {
       return Promise.resolve(existLocalMeta);
     }
 
-    return readFile(pkgJsonFile).then(raw => {
-      const str = raw.toString();
-      const json = JSON.parse(str);
+    return this._fyn.loadPackageJsonFile(pkgJsonFile).then(json => {
       const version = semverUtil.localify(json.version, item.localType);
       const name = item.name || json.name;
       json.dist = {
@@ -159,7 +154,7 @@ class PkgSrcManager {
         localId: version,
         name,
         json,
-        jsonStr: str,
+        jsonStr: json[PACKAGE_RAW_INFO].str,
         versions: {
           [version]: json
         },
