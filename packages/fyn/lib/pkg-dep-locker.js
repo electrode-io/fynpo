@@ -252,11 +252,11 @@ class PkgDepLocker {
     }
   }
 
-  read(filename) {
+  async read(filename) {
     if (!this._enable) return;
     try {
       if (!Path.isAbsolute(filename)) filename = Path.resolve(filename);
-      const data = Fs.readFileSync(filename).toString();
+      const data = (await Fs.readFile(filename)).toString();
       this._shaSum = this.shasum(data);
       this._lockData = Yaml.parse(data);
       const basedir = Path.dirname(filename);

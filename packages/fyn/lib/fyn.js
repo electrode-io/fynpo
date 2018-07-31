@@ -32,7 +32,6 @@ class Fyn {
       const options = this._options;
 
       await this.loadPkg(options);
-      logger.info("package.json loaded", this._pkg.name);
       this._pkgSrcMgr =
         options.pkgSrcMgr || new PkgSrcManager(Object.assign({ fyn: this }, options));
       this._data = options.data || new DepData();
