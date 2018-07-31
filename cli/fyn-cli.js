@@ -109,17 +109,24 @@ class FynCli {
   }
 
   add(argv) {
+    return this.fyn._initialize().then(() => this._add(argv));
+  }
+
+  _add(argv) {
     const addSec = (section, packages) => {
       if (_.isEmpty(packages)) return [];
 
       const items = packages.map(x => {
         const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
+
+        logger.info("found semverPath", semverPath);
         if (semverPath) {
           return {
             $: x,
             name: "",
             semver: x,
             semverPath,
+            localType: "hard",
             section,
             parent: {}
           };
@@ -222,13 +229,21 @@ class FynCli {
 
         const pkg = this.fyn._pkg;
         results.forEach(item => {
-          _.set(pkg, [item.section, item.name], item.found);
+          if (item.semverPath) {
+            _.set(pkg, ["fyn", item.section, item.name], item.found);
+            if (!_.get(pkg, [item.section, item.name])) {
+              _.set(pkg, [item.section, item.name], item.found);
+            }
+          } else {
+            _.set(pkg, [item.section, item.name], item.found);
+          }
           added[item.section].push(item.name);
         });
 
         Object.keys(sections).forEach(sec => {
           if (added[sec].length > 0 && pkg[sec]) {
             pkg[sec] = sortObjKeys(pkg[sec]);
+            if (_.get(pkg, ["fyn", sec])) pkg.fyn[sec] = sortObjKeys(pkg.fyn[sec]);
             logger.info(`Packages added to ${sec}:`, added[sec].join(", "));
           }
         });
