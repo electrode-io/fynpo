@@ -259,7 +259,7 @@ class PkgDepLinker {
     }
 
     // for a locally linked package, the dep data is in the __fyn_link__ JSON file
-    if (depInfo.local) {
+    if (depInfo.local === "sym") {
       await this.loadLocalPackageAppFynLink(depInfo, installedDir);
       const targetFynlinkFile = Path.join(
         depInfo.fynLinkData.targetPath,
