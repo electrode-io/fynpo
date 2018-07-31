@@ -246,18 +246,19 @@ const commands = {
     alias: "rm",
     args: "<packages..>",
     desc: "Remove packages from package.json and install",
-    exec: argv => {
+    exec: async argv => {
       const options = pickOptions(argv);
       const lockFile = options.lockfile;
       options.lockfile = false;
       const cli = new FynCli(options);
       const opts = Object.assign({}, argv.opts, argv.args);
-      if (cli.remove(opts)) {
+      const removed = await cli.remove(opts);
+      if (removed) {
         if (!argv.opts.install) return;
         options.lockfile = lockFile;
         options.noStartupInfo = true;
         logger.info("installing...");
-        return new FynCli(options).install();
+        return await new FynCli(options).install();
       }
     },
     options: {

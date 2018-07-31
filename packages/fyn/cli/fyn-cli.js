@@ -253,7 +253,12 @@ class FynCli {
       });
   }
 
-  remove(argv) {
+  async remove(argv) {
+    await this.fyn._initialize();
+    return this._remove(argv);
+  }
+
+  _remove(argv) {
     if (_.isEmpty(argv.packages)) {
       logger.error("No packages to remove");
       exit(1);
@@ -267,24 +272,48 @@ class FynCli {
     ];
 
     const packages = argv.packages.slice();
-
     const removed = [];
-    sections.forEach(sec => {
-      const section = this.fyn._pkg[sec];
-      if (_.isEmpty(section)) return;
+
+    const removeFromSection = sec => {
+      const section = _.get(this.fyn._pkg, sec);
+      const fynSection = _.get(this.fyn._pkg, ["fyn", sec], {});
+
+      if (_.isEmpty(section) && _.isEmpty(fynSection)) return;
       for (let i = 0; i < packages.length; i++) {
-        const pkg = packages[i];
-        if (section.hasOwnProperty(pkg)) {
-          delete section[pkg];
-          removed.push(pkg);
+        const pkgName = packages[i];
+        let found = false;
+        if (fynSection.hasOwnProperty(pkgName)) {
+          delete fynSection[pkgName];
+          found = true;
+        }
+        if (section.hasOwnProperty(pkgName)) {
+          delete section[pkgName];
+          found = true;
+        }
+        if (found) {
+          removed.push(pkgName);
           packages[i] = undefined;
         }
       }
-    });
+
+      if (_.isEmpty(section)) {
+        _.unset(this.fyn._pkg, sec);
+      }
+
+      if (_.isEmpty(fynSection)) {
+        _.unset(this.fyn._pkg, ["fyn", sec]);
+      }
+    };
+
+    sections.forEach(removeFromSection);
 
     const remaining = packages.filter(x => x);
     if (!_.isEmpty(remaining)) {
       logger.error("These packages don't exist in your package.json:", remaining.join(", "));
+    }
+
+    if (_.isEmpty(this.fyn._pkg.fyn)) {
+      _.unset(this.fyn._pkg, "fyn");
     }
 
     if (removed.length > 0) {
