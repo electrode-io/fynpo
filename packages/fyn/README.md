@@ -35,7 +35,7 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 - [Install](#install)
 - [Using fyn](#using-fyn)
 - [Configuring fyn](#configuring-fyn)
-- [fyn Compatibility](#fyn-compatibility)
+- [Compatibility](#compatibility)
 - [License](#license)
 
 # Overview
@@ -127,7 +127,7 @@ If there's no RC file or command line override, then these defaults are used:
 - `progress` - `normal`
 - `logLevel` - `info`
 
-# fyn Compatibility
+# Compatibility
 
 - `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
 
