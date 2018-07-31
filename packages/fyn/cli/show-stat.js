@@ -97,8 +97,7 @@ function showStat(fyn, pkgIds, follow) {
   const spinner = CliLogger.spinners[1];
   logger.addItem({ name: FETCH_META, color: "green", spinner });
   logger.updateItem(FETCH_META, "resolving dependencies...");
-  return fyn
-    .resolveDependencies()
+  return Promise.resolve(fyn.resolveDependencies())
     .then(() => {
       logger.removeItem(FETCH_META);
       return _show(fyn, pkgIds, follow);
