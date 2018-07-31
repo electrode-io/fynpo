@@ -60,7 +60,7 @@ async function prepDestDir(dest) {
 async function cleanExtraDest(dest, destFiles) {
   for (const k in destFiles) {
     if (destFiles[k] === false) {
-      await Fs.$.rimraf(Path.join(dest, destFiles[k]));
+      await Fs.$.rimraf(Path.join(dest, k));
     }
   }
 }
