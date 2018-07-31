@@ -271,7 +271,6 @@ class PkgDepResolver {
     //
     const filterOptional = (deps, optDep) => {
       if (_.isEmpty(optDep)) return deps;
-      deps = Object.assign({}, deps);
       _.each(optDep, (v, n) => {
         if (deps[n]) {
           optDep[n] = deps[n]; // take semver from deps
