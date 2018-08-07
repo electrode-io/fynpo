@@ -289,13 +289,22 @@ class PkgDepResolver {
       for (const name in fynDeps) {
         if (!deps[name]) {
           logger.warn(`You ONLY defined ${name} in fyn.${sec}!`);
+          continue;
         }
+        if (!rawInfo.dir) continue;
         try {
           Fs.statSync(Path.join(rawInfo.dir, fynDeps[name]));
           deps[name] = fynDeps[name];
           logger.info(`fyn.${sec} ${name} will use`, fynDeps[name]);
         } catch (err) {
-          logger.warn(`fyn.${sec} ${name} not found`, err.message);
+          logger.warn(
+            `fyn.${sec} ${name} not found`,
+            err.message,
+            "pkg local dir",
+            rawInfo.dir,
+            "dep name",
+            fynDeps[name]
+          );
           if (err.code !== "ENOENT") {
             logger.error("checking local package failed", err.stack);
           }
