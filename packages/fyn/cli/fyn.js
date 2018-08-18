@@ -129,8 +129,7 @@ const options = {
     type: "boolean",
     desc: "Don't check registry if cache exists."
   },
-  "local-only": {
-    alias: "l",
+  "offline": {
     type: "boolean",
     desc: "Use only lockfile or local cache.  Fail if miss."
   },
@@ -226,7 +225,6 @@ const commands = {
         desc: "List of packages to add to devDependencies"
       },
       opt: {
-        alias: ["o"],
         type: "array",
         desc: "List of packages to add to optionalDependencies"
       },
