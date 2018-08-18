@@ -190,6 +190,9 @@ class FynCli {
               logger.info("adding local package at", item.fullPath);
               item.name = meta.name;
               found = Path.relative(this.fyn.cwd, item.fullPath).replace(/\\/g, "/");
+              if (found !== item.fullPath && !found.startsWith(".")) {
+                found = `./${found}`;
+              }
             } else if (tags && tags[item.semver]) {
               logger.debug("adding with dist tag for", item.name, item.semver, tags[item.semver]);
               found = `^${tags[item.semver]}`;
