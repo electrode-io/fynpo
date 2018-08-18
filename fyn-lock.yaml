@@ -54,6 +54,22 @@ acorn-jsx:
   _: 'https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-3.0.1.tgz'
   dependencies:
    acorn: ^3.0.4
+agent-base:
+ _:
+  '4,^4.1.0,~4.2.0': 4.2.1
+ 4.2.1:
+  $: d89e5999f797875674c07d87f260fc41e83e8ca9
+  _: 'https://registry.npmjs.org/agent-base/-/agent-base-4.2.1.tgz'
+  dependencies:
+   es6-promisify: ^5.0.0
+agentkeepalive:
+ _:
+  ^3.4.1: 3.5.1
+ 3.5.1:
+  $: 4eba75cf2ad258fc09efd506cdb8d8c2971d35a4
+  _: 'https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-3.5.1.tgz'
+  dependencies:
+   humanize-ms: ^1.2.1
 ajv:
  _:
   '^5.2.3,^5.3.0': 5.5.2
@@ -144,6 +160,12 @@ anymatch:
   dependencies:
    micromatch: ^3.1.4
    normalize-path: ^2.1.1
+aproba:
+ _:
+  ^1.1.1: 1.2.0
+ 1.2.0:
+  $: 6802e6264efd18c790a1b0d517f0f2627bf2c94a
+  _: 'https://registry.npmjs.org/aproba/-/aproba-1.2.0.tgz'
 argparse:
  _:
   ^1.0.7: 1.0.10
@@ -1095,12 +1117,39 @@ builtin-status-codes:
  3.0.0:
   $: 85982878e21b98e1c66425e03d0174788f569ee8
   _: 'https://registry.npmjs.org/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz'
+builtins:
+ _:
+  ^1.0.3: 1.0.3
+ 1.0.3:
+  $: cb94faeb61c8696451db36534e1422f94f0aee88
+  _: 'https://registry.npmjs.org/builtins/-/builtins-1.0.3.tgz'
 bytes:
  _:
   3.0.0: 3.0.0
  3.0.0:
   $: d32815404d689699f85a4ea4fa8755dd13a96048
   _: 'https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz'
+cacache:
+ _:
+  '^11.0.1,^11.0.2': 11.2.0
+ 11.2.0:
+  $: 617bdc0b02844af56310e411c0878941d5739965
+  _: 'https://registry.npmjs.org/cacache/-/cacache-11.2.0.tgz'
+  dependencies:
+   bluebird: ^3.5.1
+   chownr: ^1.0.1
+   figgy-pudding: ^3.1.0
+   glob: ^7.1.2
+   graceful-fs: ^4.1.11
+   lru-cache: ^4.1.3
+   mississippi: ^3.0.0
+   mkdirp: ^0.5.1
+   move-concurrently: ^1.0.1
+   promise-inflight: ^1.0.1
+   rimraf: ^2.6.2
+   ssri: ^6.0.0
+   unique-filename: ^1.1.0
+   y18n: ^4.0.0
 cache-base:
  _:
   ^1.0.1: 1.0.1
@@ -1393,7 +1442,7 @@ concat-map:
   _: 'https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz'
 concat-stream:
  _:
-  ^1.6.0: 1.6.2
+  '^1.5.0,^1.6.0': 1.6.2
  1.6.2:
   $: 904bdf194cd3122fc675c77fc4ac3d4ff0fd1a34
   _: 'https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.2.tgz'
@@ -1454,6 +1503,19 @@ cookie-signature:
  1.0.6:
   $: e303a882b342cc3ee8ca513a79999734dab3ae2c
   _: 'https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz'
+copy-concurrently:
+ _:
+  ^1.0.0: 1.0.5
+ 1.0.5:
+  $: 92297398cae34937fcafd6ec8139c18051f0b5e0
+  _: 'https://registry.npmjs.org/copy-concurrently/-/copy-concurrently-1.0.5.tgz'
+  dependencies:
+   aproba: ^1.1.1
+   fs-write-stream-atomic: ^1.0.8
+   iferr: ^0.1.5
+   mkdirp: ^0.5.1
+   rimraf: ^2.5.4
+   run-queue: ^1.0.0
 copy-descriptor:
  _:
   ^0.1.0: 0.1.1
@@ -1542,6 +1604,12 @@ crypto-browserify:
    public-encrypt: ^4.0.0
    randombytes: ^2.0.0
    randomfill: ^1.0.3
+cyclist:
+ _:
+  ~0.2.2: 0.2.2
+ 0.2.2:
+  $: 1b33792e11e914a2fd6d6ed6447464444e5fa640
+  _: 'https://registry.npmjs.org/cyclist/-/cyclist-0.2.2.tgz'
 d:
  _:
   '1': 1.0.0
@@ -1700,6 +1768,17 @@ duplexer:
  0.1.1:
   $: ace6ff808c1ce66b57d1ebf97977acb02334cfc1
   _: 'https://registry.npmjs.org/duplexer/-/duplexer-0.1.1.tgz'
+duplexify:
+ _:
+  '^3.4.2,^3.6.0': 3.6.0
+ 3.6.0:
+  $: 592903f5d80b38d037220541264d69a198fb3410
+  _: 'https://registry.npmjs.org/duplexify/-/duplexify-3.6.0.tgz'
+  dependencies:
+   end-of-stream: ^1.0.0
+   inherits: ^2.0.1
+   readable-stream: ^2.0.0
+   stream-shift: ^1.0.0
 ee-first:
  _:
   1.1.1: 1.1.1
@@ -1787,6 +1866,22 @@ encodeurl:
  1.0.2:
   $: ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59
   _: 'https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz'
+encoding:
+ _:
+  ^0.1.11: 0.1.12
+ 0.1.12:
+  $: 538b66f3ee62cd1ab51ec323829d1f9480c74beb
+  _: 'https://registry.npmjs.org/encoding/-/encoding-0.1.12.tgz'
+  dependencies:
+   iconv-lite: ~0.4.13
+end-of-stream:
+ _:
+  '^1.0.0,^1.1.0': 1.4.1
+ 1.4.1:
+  $: ed29634d19baba463b6ce6b80a37213eab71ec43
+  _: 'https://registry.npmjs.org/end-of-stream/-/end-of-stream-1.4.1.tgz'
+  dependencies:
+   once: ^1.4.0
 enhanced-resolve:
  _:
   ^3.4.0: 3.4.1
@@ -1798,6 +1893,12 @@ enhanced-resolve:
    memory-fs: ^0.4.0
    object-assign: ^4.0.1
    tapable: ^0.2.7
+err-code:
+ _:
+  ^1.0.0: 1.1.2
+ 1.1.2:
+  $: 06e0116d3028f6aef4806849eb0ea6a748ae6960
+  _: 'https://registry.npmjs.org/err-code/-/err-code-1.1.2.tgz'
 errno:
  _:
   ^0.1.3: 0.1.7
@@ -1847,6 +1948,20 @@ es6-map:
    es6-set: ~0.1.5
    es6-symbol: ~3.1.1
    event-emitter: ~0.3.5
+es6-promise:
+ _:
+  ^4.0.3: 4.2.4
+ 4.2.4:
+  $: dc4221c2b16518760bd8c39a52d8f356fc00ed29
+  _: 'https://registry.npmjs.org/es6-promise/-/es6-promise-4.2.4.tgz'
+es6-promisify:
+ _:
+  ^5.0.0: 5.0.0
+ 5.0.0:
+  $: 5109d62f3e56ea967c4b63505aef08291c8a5203
+  _: 'https://registry.npmjs.org/es6-promisify/-/es6-promisify-5.0.0.tgz'
+  dependencies:
+   es6-promise: ^4.0.3
 es6-set:
  _:
   ~0.1.5: 0.1.5
@@ -2181,6 +2296,12 @@ fast-levenshtein:
  2.0.6:
   $: 3d8a5c66883a16a30ca8643e851f19baa7797917
   _: 'https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz'
+figgy-pudding:
+ _:
+  '^3.1.0,^3.2.0,^3.2.1': 3.4.1
+ 3.4.1:
+  $: af66da1991fa2f94ff7f33b545a38ea4b3869696
+  _: 'https://registry.npmjs.org/figgy-pudding/-/figgy-pudding-3.4.1.tgz'
 figures:
  _:
   ^2.0.0: 2.0.0
@@ -2265,6 +2386,15 @@ flat-module:
   top: 1
   $: 7bb0658b01f49333dab3ed3de92f8fb9751aa91a
   _: 'https://registry.npmjs.org/flat-module/-/flat-module-1.2.1.tgz'
+flush-write-stream:
+ _:
+  ^1.0.0: 1.0.3
+ 1.0.3:
+  $: c5d586ef38af6097650b49bc41b55fabb19f35bd
+  _: 'https://registry.npmjs.org/flush-write-stream/-/flush-write-stream-1.0.3.tgz'
+  dependencies:
+   inherits: ^2.0.1
+   readable-stream: ^2.0.4
 for-in:
  _:
   ^1.0.2: 1.0.2
@@ -2291,6 +2421,15 @@ fresh:
  0.5.2:
   $: 3d8cadd90d976569fa835ab1f8e4b23a105605a7
   _: 'https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz'
+from2:
+ _:
+  ^2.1.0: 2.3.0
+ 2.3.0:
+  $: 8bfb5502bde4a4d36cfdeea007fcca21d7e382af
+  _: 'https://registry.npmjs.org/from2/-/from2-2.3.0.tgz'
+  dependencies:
+   inherits: ^2.0.1
+   readable-stream: ^2.0.0
 fs-minipass:
  _:
   ^1.2.5: 1.2.5
@@ -2299,6 +2438,17 @@ fs-minipass:
   _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-1.2.5.tgz'
   dependencies:
    minipass: ^2.2.1
+fs-write-stream-atomic:
+ _:
+  ^1.0.8: 1.0.10
+ 1.0.10:
+  $: b47df53493ef911df75731e70a9ded0189db40c9
+  _: 'https://registry.npmjs.org/fs-write-stream-atomic/-/fs-write-stream-atomic-1.0.10.tgz'
+  dependencies:
+   graceful-fs: ^4.1.2
+   iferr: ^0.1.5
+   imurmurhash: ^0.1.4
+   readable-stream: '1 || 2'
 fs.realpath:
  _:
   ^1.0.0: 1.0.0
@@ -2322,6 +2472,12 @@ functional-red-black-tree:
  1.0.1:
   $: 1b0ab3bd553b2a0d6399d29c0e3ea0b252078327
   _: 'https://registry.npmjs.org/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz'
+genfun:
+ _:
+  ^4.0.1: 4.0.1
+ 4.0.1:
+  $: ed10041f2e4a7f1b0a38466d17a5c3e27df1dfc1
+  _: 'https://registry.npmjs.org/genfun/-/genfun-4.0.1.tgz'
 get-caller-file:
  _:
   ^1.0.1: 1.0.2
@@ -2393,7 +2549,7 @@ globby:
    pinkie-promise: ^2.0.0
 graceful-fs:
  _:
-  ^4.1.2: 4.1.11
+  '^4.1.11,^4.1.2': 4.1.11
  4.1.11:
   $: 0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658
   _: 'https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz'
@@ -2547,10 +2703,16 @@ home-or-tmp:
    os-tmpdir: ^1.0.1
 hosted-git-info:
  _:
-  ^2.1.4: 2.6.1
+  '^2.1.4,^2.6.0': 2.6.1
  2.6.1:
   $: 6e4cee78b01bb849dcf93527708c69fdbee410df
   _: 'https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.6.1.tgz'
+http-cache-semantics:
+ _:
+  ^3.8.1: 3.8.1
+ 3.8.1:
+  $: 39b0e16add9b605bf0a9ef3d9daaf4843b4cacd2
+  _: 'https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-3.8.1.tgz'
 http-errors:
  _:
   1.6.2: 1.6.2
@@ -2571,16 +2733,42 @@ http-errors:
    inherits: 2.0.3
    setprototypeof: 1.0.3
    statuses: '>= 1.3.1 < 2'
+http-proxy-agent:
+ _:
+  ^2.1.0: 2.1.0
+ 2.1.0:
+  $: e4821beef5b2142a2026bd73926fe537631c5405
+  _: 'https://registry.npmjs.org/http-proxy-agent/-/http-proxy-agent-2.1.0.tgz'
+  dependencies:
+   agent-base: '4'
+   debug: 3.1.0
 https-browserify:
  _:
   ^1.0.0: 1.0.0
  1.0.0:
   $: ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73
   _: 'https://registry.npmjs.org/https-browserify/-/https-browserify-1.0.0.tgz'
+https-proxy-agent:
+ _:
+  ^2.2.1: 2.2.1
+ 2.2.1:
+  $: 51552970fa04d723e04c56d04178c3f92592bbc0
+  _: 'https://registry.npmjs.org/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz'
+  dependencies:
+   agent-base: ^4.1.0
+   debug: ^3.1.0
+humanize-ms:
+ _:
+  ^1.2.1: 1.2.1
+ 1.2.1:
+  $: c46e3159a293f6b896da29316d8b6fe8bb79bbed
+  _: 'https://registry.npmjs.org/humanize-ms/-/humanize-ms-1.2.1.tgz'
+  dependencies:
+   ms: ^2.0.0
 iconv-lite:
  _:
   0.4.19: 0.4.19
-  '^0.4.17,^0.4.4': 0.4.23
+  '^0.4.17,^0.4.4,~0.4.13': 0.4.23
  0.4.23:
   $: 297871f63be507adcfbfca715d0cd0eed84e9a63
   _: 'https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.23.tgz'
@@ -2595,6 +2783,12 @@ ieee754:
  1.1.12:
   $: 50bf24e5b9c8bb98af4964c941cdb0918da7b60b
   _: 'https://registry.npmjs.org/ieee754/-/ieee754-1.1.12.tgz'
+iferr:
+ _:
+  ^0.1.5: 0.1.5
+ 0.1.5:
+  $: c60eed69e6d8fdb6b3104a1fcbca1c192dc5b501
+  _: 'https://registry.npmjs.org/iferr/-/iferr-0.1.5.tgz'
 ignore:
  _:
   ^3.3.3: 3.3.10
@@ -2700,6 +2894,12 @@ invert-kv:
  1.0.0:
   $: 104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6
   _: 'https://registry.npmjs.org/invert-kv/-/invert-kv-1.0.0.tgz'
+ip:
+ _:
+  ^1.1.5: 1.1.5
+ 1.1.5:
+  $: bdded70114290828c0a039e72ef25f5aaec4354a
+  _: 'https://registry.npmjs.org/ip/-/ip-1.1.5.tgz'
 ipaddr.js:
  _:
   1.6.0: 1.6.0
@@ -3007,6 +3207,12 @@ json-loader:
  0.5.7:
   $: dca14a70235ff82f0ac9a3abeb60d337a365185d
   _: 'https://registry.npmjs.org/json-loader/-/json-loader-0.5.7.tgz'
+json-parse-better-errors:
+ _:
+  ^1.0.0: 1.0.2
+ 1.0.2:
+  $: bb867cfb3450e69107c131d1c514bab3dc8bcaa9
+  _: 'https://registry.npmjs.org/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz'
 json-schema-traverse:
  _:
   ^0.3.0: 0.3.1
@@ -3197,7 +3403,7 @@ loose-envify:
    js-tokens: ^3.0.0
 lru-cache:
  _:
-  ^4.0.1: 4.1.3
+  '^4.0.1,^4.1.2,^4.1.3': 4.1.3
  4.1.3:
   $: a1175cf3496dfc8436c156c334b4955992bce69c
   _: 'https://registry.npmjs.org/lru-cache/-/lru-cache-4.1.3.tgz'
@@ -3212,6 +3418,24 @@ make-dir:
   _: 'https://registry.npmjs.org/make-dir/-/make-dir-1.3.0.tgz'
   dependencies:
    pify: ^3.0.0
+make-fetch-happen:
+ _:
+  ^4.0.1: 4.0.1
+ 4.0.1:
+  $: 141497cb878f243ba93136c83d8aba12c216c083
+  _: 'https://registry.npmjs.org/make-fetch-happen/-/make-fetch-happen-4.0.1.tgz'
+  dependencies:
+   agentkeepalive: ^3.4.1
+   cacache: ^11.0.1
+   http-cache-semantics: ^3.8.1
+   http-proxy-agent: ^2.1.0
+   https-proxy-agent: ^2.2.1
+   lru-cache: ^4.1.2
+   mississippi: ^3.0.0
+   node-fetch-npm: ^2.0.2
+   promise-retry: ^1.1.1
+   socks-proxy-agent: ^4.0.0
+   ssri: ^6.0.0
 map-cache:
  _:
   ^0.2.2: 0.2.2
@@ -3381,6 +3605,23 @@ minizlib:
   _: 'https://registry.npmjs.org/minizlib/-/minizlib-1.1.0.tgz'
   dependencies:
    minipass: ^2.2.1
+mississippi:
+ _:
+  ^3.0.0: 3.0.0
+ 3.0.0:
+  $: ea0a3291f97e0b5e8776b363d5f0a12d94c67022
+  _: 'https://registry.npmjs.org/mississippi/-/mississippi-3.0.0.tgz'
+  dependencies:
+   concat-stream: ^1.5.0
+   duplexify: ^3.4.2
+   end-of-stream: ^1.1.0
+   flush-write-stream: ^1.0.0
+   from2: ^2.1.0
+   parallel-transform: ^1.1.0
+   pump: ^3.0.0
+   pumpify: ^1.3.3
+   stream-each: ^1.1.0
+   through2: ^2.0.0
 mixin-deep:
  _:
   ^1.2.0: 1.3.1
@@ -3425,9 +3666,22 @@ mock-require:
   _: 'https://registry.npmjs.org/mock-require/-/mock-require-2.0.2.tgz'
   dependencies:
    caller-id: ^0.1.0
+move-concurrently:
+ _:
+  ^1.0.1: 1.0.1
+ 1.0.1:
+  $: be2c005fda32e0b29af1f05d7c4b33214c701f92
+  _: 'https://registry.npmjs.org/move-concurrently/-/move-concurrently-1.0.1.tgz'
+  dependencies:
+   copy-concurrently: ^1.0.0
+   aproba: ^1.1.1
+   fs-write-stream-atomic: ^1.0.8
+   mkdirp: ^0.5.1
+   rimraf: ^2.5.4
+   run-queue: ^1.0.3
 ms:
  _:
-  2.0.0: 2.0.0
+  '2.0.0,^2.0.0': 2.0.0
  2.0.0:
   $: 5608aeadfc00be6c2901df5f9861788de0d597c8
   _: 'https://registry.npmjs.org/ms/-/ms-2.0.0.tgz'
@@ -3526,6 +3780,16 @@ nix-clap:
   _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.1.tgz'
   dependencies:
    strip-ansi: ^4.0.0
+node-fetch-npm:
+ _:
+  ^2.0.2: 2.0.2
+ 2.0.2:
+  $: 7258c9046182dca345b4208eda918daf33697ff7
+  _: 'https://registry.npmjs.org/node-fetch-npm/-/node-fetch-npm-2.0.2.tgz'
+  dependencies:
+   encoding: ^0.1.11
+   json-parse-better-errors: ^1.0.0
+   safe-buffer: ^5.1.1
 node-libs-browser:
  _:
   ^2.0.0: 2.1.0
@@ -3558,7 +3822,7 @@ node-libs-browser:
    vm-browserify: 0.0.4
 normalize-package-data:
  _:
-  ^2.3.2: 2.4.0
+  '^2.3.2,^2.4.0': 2.4.0
  2.4.0:
   $: 12f95a307d58352075a04907b84ac8be98ac012f
   _: 'https://registry.npmjs.org/normalize-package-data/-/normalize-package-data-2.4.0.tgz'
@@ -3581,9 +3845,20 @@ npm-bundled:
  1.0.3:
   $: 7e71703d973af3370a9591bafe3a63aca0be2308
   _: 'https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.0.3.tgz'
+npm-package-arg:
+ _:
+  ^6.1.0: 6.1.0
+ 6.1.0:
+  $: 15ae1e2758a5027efb4c250554b85a737db7fcc1
+  _: 'https://registry.npmjs.org/npm-package-arg/-/npm-package-arg-6.1.0.tgz'
+  dependencies:
+   hosted-git-info: ^2.6.0
+   osenv: ^0.1.5
+   semver: ^5.5.0
+   validate-npm-package-name: ^3.0.0
 npm-packlist:
  _:
-  ^1.1.11: 1.1.11
+  '^1.1.10,^1.1.11': 1.1.11
  1.1.11:
   top: 1
   $: 84e8c683cbe7867d34b1d357d893ce29e28a02de
@@ -3591,6 +3866,24 @@ npm-packlist:
   dependencies:
    ignore-walk: ^3.0.1
    npm-bundled: ^1.0.1
+npm-pick-manifest:
+ _:
+  ^2.1.0: 2.1.0
+ 2.1.0:
+  $: dc381bdd670c35d81655e1d5a94aa3dd4d87fce5
+  _: 'https://registry.npmjs.org/npm-pick-manifest/-/npm-pick-manifest-2.1.0.tgz'
+npm-registry-fetch:
+ _:
+  ^3.0.0: 3.2.1
+ 3.2.1:
+  $: e25f306dbe7f0a1e388f04a51086f09f3dec57af
+  _: 'https://registry.npmjs.org/npm-registry-fetch/-/npm-registry-fetch-3.2.1.tgz'
+  dependencies:
+   bluebird: ^3.5.1
+   figgy-pudding: ^3.2.0
+   lru-cache: ^4.1.3
+   make-fetch-happen: ^4.0.1
+   npm-package-arg: ^6.1.0
 npm-run-path:
  _:
   ^2.0.0: 2.0.2
@@ -3709,7 +4002,7 @@ on-finished:
    ee-first: 1.1.1
 once:
  _:
-  ^1.3.0: 1.4.0
+  '^1.3.0,^1.3.1,^1.4.0': 1.4.0
  1.4.0:
   $: 583b1aa775961d4b113ac17d9c50baef9dd76bd1
   _: 'https://registry.npmjs.org/once/-/once-1.4.0.tgz'
@@ -3780,10 +4073,19 @@ os-locale:
    mem: ^1.1.0
 os-tmpdir:
  _:
-  '^1.0.1,~1.0.2': 1.0.2
+  '^1.0.0,^1.0.1,~1.0.2': 1.0.2
  1.0.2:
   $: bbe67406c79aa85c5cfec766fe5734555dfa1274
   _: 'https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz'
+osenv:
+ _:
+  ^0.1.5: 0.1.5
+ 0.1.5:
+  $: 85cdfafaeb28e8677f416e287592b5f3f49ea410
+  _: 'https://registry.npmjs.org/osenv/-/osenv-0.1.5.tgz'
+  dependencies:
+   os-homedir: ^1.0.0
+   os-tmpdir: ^1.0.0
 p-finally:
  _:
   ^1.0.0: 1.0.0
@@ -3812,12 +4114,57 @@ p-try:
  1.0.0:
   $: cbc79cdbaf8fd4228e13f621f2b1a237c1b207b3
   _: 'https://registry.npmjs.org/p-try/-/p-try-1.0.0.tgz'
+pacote:
+ _:
+  ^9.1.0: 9.1.0
+ 9.1.0:
+  top: 1
+  $: 59810859bbd72984dcb267269259375d32f391e5
+  _: 'https://registry.npmjs.org/pacote/-/pacote-9.1.0.tgz'
+  dependencies:
+   bluebird: ^3.5.1
+   cacache: ^11.0.2
+   figgy-pudding: ^3.2.1
+   get-stream: ^3.0.0
+   glob: ^7.1.2
+   lru-cache: ^4.1.3
+   make-fetch-happen: ^4.0.1
+   minimatch: ^3.0.4
+   minipass: ^2.3.3
+   mississippi: ^3.0.0
+   mkdirp: ^0.5.1
+   normalize-package-data: ^2.4.0
+   npm-package-arg: ^6.1.0
+   npm-packlist: ^1.1.10
+   npm-pick-manifest: ^2.1.0
+   npm-registry-fetch: ^3.0.0
+   osenv: ^0.1.5
+   promise-inflight: ^1.0.1
+   promise-retry: ^1.1.1
+   protoduck: ^5.0.0
+   rimraf: ^2.6.2
+   safe-buffer: ^5.1.2
+   semver: ^5.5.0
+   ssri: ^6.0.0
+   tar: ^4.4.3
+   unique-filename: ^1.1.0
+   which: ^1.3.0
 pako:
  _:
   ~1.0.5: 1.0.6
  1.0.6:
   $: 0101211baa70c4bca4a0f63f2206e97b7dfaf258
   _: 'https://registry.npmjs.org/pako/-/pako-1.0.6.tgz'
+parallel-transform:
+ _:
+  ^1.1.0: 1.1.0
+ 1.1.0:
+  $: d410f065b05da23081fcd10f28854c29bda33b06
+  _: 'https://registry.npmjs.org/parallel-transform/-/parallel-transform-1.1.0.tgz'
+  dependencies:
+   cyclist: ~0.2.2
+   inherits: ^2.0.3
+   readable-stream: ^2.1.5
 parse-asn1:
  _:
   ^5.0.0: 5.1.1
@@ -4020,6 +4367,29 @@ progress:
  2.0.0:
   $: 8a1be366bf8fc23db2bd23f10c6fe920b4389d1f
   _: 'https://registry.npmjs.org/progress/-/progress-2.0.0.tgz'
+promise-inflight:
+ _:
+  ^1.0.1: 1.0.1
+ 1.0.1:
+  $: 98472870bf228132fcbdd868129bad12c3c029e3
+  _: 'https://registry.npmjs.org/promise-inflight/-/promise-inflight-1.0.1.tgz'
+promise-retry:
+ _:
+  ^1.1.1: 1.1.1
+ 1.1.1:
+  $: 6739e968e3051da20ce6497fb2b50f6911df3d6d
+  _: 'https://registry.npmjs.org/promise-retry/-/promise-retry-1.1.1.tgz'
+  dependencies:
+   err-code: ^1.0.0
+   retry: ^0.10.0
+protoduck:
+ _:
+  ^5.0.0: 5.0.0
+ 5.0.0:
+  $: 752145e6be0ad834cb25716f670a713c860dce70
+  _: 'https://registry.npmjs.org/protoduck/-/protoduck-5.0.0.tgz'
+  dependencies:
+   genfun: ^4.0.1
 proxy-addr:
  _:
   ~2.0.3: 2.0.3
@@ -4053,6 +4423,32 @@ public-encrypt:
    create-hash: ^1.1.0
    parse-asn1: ^5.0.0
    randombytes: ^2.0.1
+pump:
+ _:
+  ^2.0.0: 2.0.1
+  ^3.0.0: 3.0.0
+ 3.0.0:
+  $: b4a2116815bde2f4e1ea602354e8c75565107a64
+  _: 'https://registry.npmjs.org/pump/-/pump-3.0.0.tgz'
+  dependencies:
+   end-of-stream: ^1.1.0
+   once: ^1.3.1
+ 2.0.1:
+  $: 12399add6e4cf7526d973cbc8b5ce2e2908b3909
+  _: 'https://registry.npmjs.org/pump/-/pump-2.0.1.tgz'
+  dependencies:
+   end-of-stream: ^1.1.0
+   once: ^1.3.1
+pumpify:
+ _:
+  ^1.3.3: 1.5.1
+ 1.5.1:
+  $: 36513be246ab27570b1a374a5ce278bfd74370ce
+  _: 'https://registry.npmjs.org/pumpify/-/pumpify-1.5.1.tgz'
+  dependencies:
+   duplexify: ^3.6.0
+   inherits: ^2.0.3
+   pump: ^2.0.0
 punycode:
  _:
   1.3.2: 1.3.2
@@ -4140,7 +4536,7 @@ read-pkg-up:
    read-pkg: ^2.0.0
 readable-stream:
  _:
-  '^2.0.1,^2.0.2,^2.2.2,^2.3.3,^2.3.6': 2.3.6
+  '1 || 2,^2.0.0,^2.0.1,^2.0.2,^2.0.4,^2.1.5,^2.2.2,^2.3.3,^2.3.6': 2.3.6
  2.3.6:
   $: b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf
   _: 'https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.6.tgz'
@@ -4298,6 +4694,12 @@ ret:
  0.1.15:
   $: b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc
   _: 'https://registry.npmjs.org/ret/-/ret-0.1.15.tgz'
+retry:
+ _:
+  ^0.10.0: 0.10.1
+ 0.10.1:
+  $: e76388d217992c252750241d3d3956fed98d8ff4
+  _: 'https://registry.npmjs.org/retry/-/retry-0.10.1.tgz'
 right-align:
  _:
   ^0.1.1: 0.1.3
@@ -4308,7 +4710,7 @@ right-align:
    align-text: ^0.1.1
 rimraf:
  _:
-  '^2.2.8,^2.6.2': 2.6.2
+  '^2.2.8,^2.5.4,^2.6.2': 2.6.2
  2.6.2:
   top: 1
   $: 2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36
@@ -4332,6 +4734,14 @@ run-async:
   _: 'https://registry.npmjs.org/run-async/-/run-async-2.3.0.tgz'
   dependencies:
    is-promise: ^2.1.0
+run-queue:
+ _:
+  '^1.0.0,^1.0.3': 1.0.3
+ 1.0.3:
+  $: e848396f057d223f24386924618e25694161ec47
+  _: 'https://registry.npmjs.org/run-queue/-/run-queue-1.0.3.tgz'
+  dependencies:
+   aproba: ^1.1.1
 rx-lite:
  _:
   '*,^4.0.8': 4.0.8
@@ -4384,7 +4794,7 @@ sax:
   _: 'https://registry.npmjs.org/sax/-/sax-1.2.4.tgz'
 semver:
  _:
-  '2 || 3 || 4 || 5,^5.3.0': 5.5.0
+  '2 || 3 || 4 || 5,^5.3.0,^5.5.0': 5.5.0
  5.5.0:
   top: 1
   $: dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab
@@ -4551,6 +4961,12 @@ slice-ansi:
   _: 'https://registry.npmjs.org/slice-ansi/-/slice-ansi-1.0.0.tgz'
   dependencies:
    is-fullwidth-code-point: ^2.0.0
+smart-buffer:
+ _:
+  ^4.0.1: 4.0.1
+ 4.0.1:
+  $: 07ea1ca8d4db24eb4cac86537d7d18995221ace3
+  _: 'https://registry.npmjs.org/smart-buffer/-/smart-buffer-4.0.1.tgz'
 snapdragon:
  _:
   ^0.8.1: 0.8.2
@@ -4584,6 +5000,24 @@ snapdragon-util:
   _: 'https://registry.npmjs.org/snapdragon-util/-/snapdragon-util-3.0.1.tgz'
   dependencies:
    kind-of: ^3.2.0
+socks:
+ _:
+  ~2.2.0: 2.2.1
+ 2.2.1:
+  $: 68ad678b3642fbc5d99c64c165bc561eab0215f9
+  _: 'https://registry.npmjs.org/socks/-/socks-2.2.1.tgz'
+  dependencies:
+   ip: ^1.1.5
+   smart-buffer: ^4.0.1
+socks-proxy-agent:
+ _:
+  ^4.0.0: 4.0.1
+ 4.0.1:
+  $: 5936bf8b707a993079c6f37db2091821bffa6473
+  _: 'https://registry.npmjs.org/socks-proxy-agent/-/socks-proxy-agent-4.0.1.tgz'
+  dependencies:
+   agent-base: ~4.2.0
+   socks: ~2.2.0
 source-list-map:
  _:
   ^2.0.0: 2.0.0
@@ -4670,6 +5104,12 @@ sprintf-js:
  1.0.3:
   $: 04e6926f662895354f3dd015203633b857297e2c
   _: 'https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz'
+ssri:
+ _:
+  ^6.0.0: 6.0.0
+ 6.0.0:
+  $: fc21bfc90e03275ac3e23d5a42e38b8a1cbc130d
+  _: 'https://registry.npmjs.org/ssri/-/ssri-6.0.0.tgz'
 stack-trace:
  _:
   ~0.0.7: 0.0.10
@@ -4713,6 +5153,15 @@ stream-browserify:
   dependencies:
    inherits: ~2.0.1
    readable-stream: ^2.0.2
+stream-each:
+ _:
+  ^1.1.0: 1.2.3
+ 1.2.3:
+  $: ebe27a0c389b04fbcc233642952e10731afa9bae
+  _: 'https://registry.npmjs.org/stream-each/-/stream-each-1.2.3.tgz'
+  dependencies:
+   end-of-stream: ^1.1.0
+   stream-shift: ^1.0.0
 stream-http:
  _:
   ^2.7.2: 2.8.3
@@ -4725,6 +5174,12 @@ stream-http:
    readable-stream: ^2.3.6
    to-arraybuffer: ^1.0.0
    xtend: ^4.0.0
+stream-shift:
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  $: d5c752825e5367e786f78e18e445ea223a155952
+  _: 'https://registry.npmjs.org/stream-shift/-/stream-shift-1.0.0.tgz'
 string-array:
  _:
   ^1.0.0: 1.0.1
@@ -4845,7 +5300,7 @@ tapable:
   _: 'https://registry.npmjs.org/tapable/-/tapable-0.2.8.tgz'
 tar:
  _:
-  ^4.0.0: 4.4.4
+  '^4.0.0,^4.4.3': 4.4.4
  4.4.4:
   top: 1
   $: ec8409fae9f665a4355cc3b4087d0820232bb8cd
@@ -4876,6 +5331,15 @@ through:
  2.3.8:
   $: 0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5
   _: 'https://registry.npmjs.org/through/-/through-2.3.8.tgz'
+through2:
+ _:
+  ^2.0.0: 2.0.3
+ 2.0.3:
+  $: 0004569b37c7c74ba39c43f3ced78d1ad94140be
+  _: 'https://registry.npmjs.org/through2/-/through2-2.0.3.tgz'
+  dependencies:
+   readable-stream: ^2.1.5
+   xtend: ~4.0.1
 timers-browserify:
  _:
   ^2.0.4: 2.0.10
@@ -5027,6 +5491,22 @@ union-value:
    get-value: ^2.0.6
    is-extendable: ^0.1.1
    set-value: ^0.4.3
+unique-filename:
+ _:
+  ^1.1.0: 1.1.0
+ 1.1.0:
+  $: d05f2fe4032560871f30e93cbe735eea201514f3
+  _: 'https://registry.npmjs.org/unique-filename/-/unique-filename-1.1.0.tgz'
+  dependencies:
+   unique-slug: ^2.0.0
+unique-slug:
+ _:
+  ^2.0.0: 2.0.0
+ 2.0.0:
+  $: db6676e7c7cc0629878ff196097c78855ae9f4ab
+  _: 'https://registry.npmjs.org/unique-slug/-/unique-slug-2.0.0.tgz'
+  dependencies:
+   imurmurhash: ^0.1.4
 unpipe:
  _:
   '1.0.0,~1.0.0': 1.0.0
@@ -5114,6 +5594,14 @@ validate-npm-package-license:
   dependencies:
    spdx-correct: ^3.0.0
    spdx-expression-parse: ^3.0.0
+validate-npm-package-name:
+ _:
+  ^3.0.0: 3.0.0
+ 3.0.0:
+  $: 5fa912d81eb7d0c74afc140de7317f0ca7df437e
+  _: 'https://registry.npmjs.org/validate-npm-package-name/-/validate-npm-package-name-3.0.0.tgz'
+  dependencies:
+   builtins: ^1.0.3
 vary:
  _:
   ~1.1.2: 1.1.2
@@ -5217,7 +5705,7 @@ webpack-sources:
    source-map: ~0.6.1
 which:
  _:
-  ^1.2.9: 1.3.1
+  '^1.2.9,^1.3.0': 1.3.1
  1.3.1:
   $: a45043d54f5805316da8d62f9f50918d3da70b0a
   _: 'https://registry.npmjs.org/which/-/which-1.3.1.tgz'
@@ -5339,13 +5827,17 @@ xstdout:
   _: 'https://registry.npmjs.org/xstdout/-/xstdout-0.1.1.tgz'
 xtend:
  _:
-  ^4.0.0: 4.0.1
+  '^4.0.0,~4.0.1': 4.0.1
  4.0.1:
   $: a5c6d532be656e23db820efb943a1f04998d63af
   _: 'https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz'
 y18n:
  _:
   ^3.2.1: 3.2.1
+  ^4.0.0: 4.0.0
+ 4.0.0:
+  $: 95ef94f85ecc81d007c264e190a120f0a3c8566b
+  _: 'https://registry.npmjs.org/y18n/-/y18n-4.0.0.tgz'
  3.2.1:
   $: 6d15fba884c08679c0d77e88e7759e811e07fa41
   _: 'https://registry.npmjs.org/y18n/-/y18n-3.2.1.tgz'
