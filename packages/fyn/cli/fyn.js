@@ -90,6 +90,11 @@ const makeNodeOptions = () => {
 };
 
 const options = {
+  "fynlocal": {
+    type: "boolean",
+    desc: "Enable (or disable no-) fynlocal mode for local packages",
+    default: true
+  },
   "log-level": {
     alias: "q",
     type: "string",
