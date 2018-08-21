@@ -41,6 +41,13 @@ module.exports = {
 
     msg += all
       .slice(0, MAX_PENDING_SHOW) // show max 10 pendings
+      .sort((a, b) => {
+        a = typeof a.item === "string" ? a.item : a.item.name;
+        b = typeof b.item === "string" ? b.item : b.item.name;
+        if (a === b) return 0;
+        if (a > b) return 1;
+        return -1;
+      })
       .map(x => {
         const id = typeof x.item === "string" ? chalk.magenta(x.item) : options.makeId(x.item);
         return `${id} (${logFormat.timeWarn(x.time)})`;

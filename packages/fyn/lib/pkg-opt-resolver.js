@@ -179,26 +179,24 @@ class PkgOptResolver {
       return this._fyn.pkgSrcMgr
         .fetchTarball({ name, version, dist })
         .tap(() => Fs.$.mkdirp(installedPath))
-        .then(res => {
+        .then(stream => {
           logger.updateItem(OPTIONAL_RESOLVER, `extracting package ${displayId}`);
           // extract tarball to node_modules/__fv_/<version>/<name>
-          const tarXOpt = { file: res.fullTgzFile, strip: 1, strict: true, C: installedPath };
-          return Promise.try(() => Tar.x(tarXOpt))
+          const tarXOpt = { strip: 1, strict: true, C: installedPath };
+          return new Promise((resolve, reject) => {
+            const exStream = stream.pipe(Tar.x(tarXOpt));
+            exStream.once("error", reject);
+            exStream.once("close", resolve);
+          })
             .then(() => checkPkg(installedPath))
             .catch(err => {
-              logger.error(
-                "opt-resolver: reading package.json from package extracted from",
-                res.fullTgzFile,
-                "failed."
-              );
+              logger.error("opt-resolver: fail reading package.json from package of", name);
               throw err;
             })
             .tap(x => {
               assert(
                 x,
-                `opt-resolver: version of package in ${installedPath} extracted from ${
-                  res.fullTgzFile
-                } didn't match ${version}!`
+                `opt-resolver: extracted ${installedPath} package version didn't match ${version}!`
               );
               logger.updateItem(OPTIONAL_RESOLVER, `extracted package ${displayId}`);
               this._extractedPkgs[pkgId] = installedPath;

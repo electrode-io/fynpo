@@ -10,14 +10,11 @@
 
 /* eslint-disable no-magic-numbers, prefer-template, max-statements */
 
-const crypto = require("crypto");
-const { PassThrough } = require("stream");
-const needle = require("needle");
 const Promise = require("bluebird");
+const cacache = require("cacache");
 const createDefer = require("./util/defer");
 const os = require("os");
 const pacote = require("pacote");
-const Fs = require("./util/file-ops");
 const _ = require("lodash");
 const chalk = require("chalk");
 const logger = require("./logger");
@@ -25,10 +22,8 @@ const mkdirp = require("mkdirp");
 const Path = require("path");
 const Url = require("url");
 const PromiseQueue = require("./util/promise-queue");
-const { access, readFile, writeFile, rename } = Fs;
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
-const uniqId = require("./util/uniq-id");
 const semverUtil = require("./util/semver");
 const longPending = require("./long-pending");
 const { LOCAL_VERSION_MAPS, PACKAGE_RAW_INFO } = require("./symbols");
@@ -43,11 +38,11 @@ class PkgSrcManager {
       fynCacheDir: ""
     });
     this._meta = {};
+    this._manifest = {};
     this._cacheDir = this._options.fynCacheDir;
     mkdirp.sync(this._cacheDir);
     this._inflights = {
-      meta: new Inflight(),
-      tarball: new Inflight()
+      meta: new Inflight()
     };
     this._fyn = options.fyn;
     logger.debug("pkg src manager registry", this._options.registry);
@@ -72,6 +67,8 @@ class PkgSrcManager {
         _save: false
       });
     });
+
+    this._pacoteOpts = { cache: this._cacheDir, registry: this._registry };
 
     this._metaStat = {
       wait: 0,
@@ -111,6 +108,10 @@ class PkgSrcManager {
 
   getAllLocalMetaOfPackage(name) {
     return _.get(this._localMeta, [name, "byVersion"]);
+  }
+
+  getPacoteOpts(extra) {
+    return Object.assign({}, extra, this._pacoteOpts);
   }
 
   /* eslint-disable max-statements */
@@ -185,13 +186,6 @@ class PkgSrcManager {
     });
   }
 
-  // formatMetaUrl(item) {
-  //   const reg = Object.assign({}, this._registry);
-  //   const name = item.name.replace("/", "%2F");
-  //   reg.pathname = Path.posix.join(reg.pathname, name);
-  //   return Url.format(reg);
-  // }
-
   updateFetchMetaStatus(_render) {
     const { wait, inTx, done } = this._metaStat;
     const statStr = `(${chalk.red(wait)}⇨ ${chalk.yellow(inTx)}⇨ ${chalk.green(done)})`;
@@ -204,8 +198,6 @@ class PkgSrcManager {
 
   netRetrieveMeta(qItem) {
     const pkgName = qItem.item.name;
-    let retries = 0;
-    const networkRequestId = uniqId();
 
     const startTime = Date.now();
 
@@ -219,18 +211,15 @@ class PkgSrcManager {
       }
     };
 
-    // const cacheMetaFile = qItem.cacheMetaFile;
-    // const cached = qItem.cached;
-    // const metaUrl = this.formatMetaUrl(qItem.item);
-
     const pacoteRequest = () => {
       return pacote
-        .packument(pkgName, {
-          registry: this._registry,
-          "full-metadata": false,
-          cache: this._cacheDir,
-          retries: 3
-        })
+        .packument(
+          pkgName,
+          this.getPacoteOpts({
+            "full-metadata": false,
+            "fetch-retries": 3
+          })
+        )
         .tap(x => {
           this._metaStat.inTx--;
           updateItem(x._cached ? "cached" : "200");
@@ -279,9 +268,6 @@ class PkgSrcManager {
       return inflight;
     }
 
-    // const pkgCacheDir = this.makePkgCacheDir(pkgName);
-    // const cacheMetaFile = `${pkgCacheDir}/meta-${this._cleanHost}.json`;
-
     const doRequest = cached => {
       const rd = this._fyn.remoteMetaDisabled;
 
@@ -325,7 +311,14 @@ class PkgSrcManager {
     // TODO: pass in offline/prefer-offline/prefer-online flags to pacote so it can
     // handle these directly.
     const promise = pacote
-      .packument(pkgName, { offline: true, cache: this._cacheDir })
+      .packument(
+        pkgName,
+        this.getPacoteOpts({
+          offline: true,
+          "full-metadata": false,
+          "fetch-retries": 3
+        })
+      )
       .then(cached => {
         foundCache = true;
         logger.debug("found", pkgName, "packument cache");
@@ -347,142 +340,85 @@ class PkgSrcManager {
     return this._inflights.meta.add(pkgName, promise);
   }
 
-  formatTarballUrl(item) {
-    const tgzFile = `${item.name}-${item.version}.tgz`;
+  pacotePrefetch(pkgId, integrity) {
+    const stream = this.pacoteTarballStream(pkgId, integrity);
 
-    let tarball = _.get(item, "dist.tarball", "");
+    const defer = createDefer();
+    stream.once("end", () => {
+      stream.destroy();
+      defer.resolve();
+    });
+    stream.once("error", defer.reject);
+    stream.on("data", _.noop);
 
-    if (this._fyn.ignoreDist || !tarball) {
-      // we should still use dist tarball's pathname if it exist because
-      // the tarball URL doesn't always match the version in the package.json
-      tarball = Url.parse(tarball);
-      tarball = Url.format(
-        Object.assign(
-          _.defaults(tarball, { pathname: `${item.name}/-/${tgzFile}` }),
-          this._tgzRegistry
-        )
-      );
-      logger.debug("package tarball url generated", tarball);
-    } else {
-      logger.debug("package tarball url from dist", tarball);
+    return defer.promise;
+  }
+
+  pacoteTarballStream(pkgId, integrity) {
+    return pacote.tarball.stream(pkgId, this.getPacoteOpts({ integrity }));
+  }
+
+  getIntegrity(item) {
+    const integrity = _.get(item, "dist.integrity");
+    if (integrity) return integrity;
+
+    const shasum = _.get(item, "dist.shasum");
+
+    if (shasum) {
+      const b64 = Buffer.from(shasum, "hex").toString("base64");
+      return `sha1-${b64}`;
     }
 
-    return tarball;
+    return undefined;
   }
 
   fetchTarball(item) {
     const startTime = Date.now();
-    const pkgName = item.name;
-    const pkgCacheDir = this.makePkgCacheDir(pkgName);
-    const tmpFile = `tmp-${uniqId()}-${item.dist.shasum}-${item.version}.tgz`;
-    const tgzFile = `pkg-${item.dist.shasum}-${item.version}.tgz`;
-    const fullTmpFile = Path.join(pkgCacheDir, tmpFile);
-    const fullTgzFile = Path.join(pkgCacheDir, tgzFile);
+    const pkgId = `${item.name}@${item.version}`;
+    const integrity = this.getIntegrity(item);
 
-    const pkgUrl = this.formatTarballUrl(item);
-
-    let retries = 0;
-    const networkRequestId = uniqId();
     const doFetch = () => {
-      const shaHash = crypto.createHash("sha1");
-      const stream = Fs.createWriteStream(fullTmpFile);
-      const pass = new PassThrough();
-      pass.on("data", chunk => shaHash.update(chunk));
-      return new Promise((resolve, reject) => {
-        needle
-          .get(pkgUrl, { follow_max: 2 })
-          .on("header", resolve)
-          .on("done", doneErr => {
-            if (doneErr) reject(doneErr);
-          })
-          .once("err", reject)
-          // TODO: .on("timeout")
-          .pipe(pass)
-          .pipe(stream);
-      })
-        .then(statusCode => {
-          if (statusCode !== 200) {
-            logger.error(`fetchTarball: ${pkgUrl} response error`, statusCode);
-            return false;
-          }
-          logger.debug(`fetchTarball: ${pkgUrl} response code`, statusCode);
-          return new Promise((resolve, reject) => {
-            let closed;
-            let finish;
-            const close = () => {
-              clearTimeout(finish);
-              if (closed) return undefined;
-              closed = true;
-              const shaSum = shaHash.digest("hex");
-              logger.debug(`${fullTgzFile} shasum`, shaSum);
-              if (shaSum !== item.dist.shasum) {
-                const msg = `${fullTgzFile} shasum mismatched`;
-                logger.error(msg);
-                return reject(new Error(msg));
-              }
-              const status = chalk.cyan(`${statusCode}`);
-              const time = logFormat.time(Date.now() - startTime);
-              logger.updateItem(FETCH_PACKAGE, `${status} ${time} ${chalk.red.bgGreen(pkgName)}`);
-              return resolve();
-            };
-            stream.on("finish", () => (finish = setTimeout(close, 1000)));
-            stream.on("error", reject);
-            stream.on("close", close);
-          })
-            .then(() => rename(fullTmpFile, fullTgzFile))
-            .return({ fullTgzFile });
-        })
-        .catch(netErr => {
-          retries++;
-          logger.addItem({
-            name: networkRequestId,
-            display: `Network error fetching package ${pkgUrl}\n  Error`,
-            color: "red"
-          });
-          logger.updateItem(networkRequestId, netErr.message + `; Retrying ${retries}`);
+      const fetchStartTime = Date.now();
 
-          if (retries < 5) {
-            return doFetch().tap(() => {
-              logger.removeItem(networkRequestId);
-            });
-          }
+      if (!this._fetching) {
+        this._fetching = [];
+        this._fetchingMsg = "waiting...";
+      }
 
-          logger.error(`fetchTarball: ${pkgUrl} failed:`, netErr.message);
-          logger.debug("STACK:", netErr.stack);
+      this._fetching.push(pkgId);
 
-          throw netErr;
-        });
+      logger.updateItem(FETCH_PACKAGE, `${this._fetching.length} ${this._fetchingMsg}`);
+
+      return this.pacotePrefetch(pkgId, integrity).then(() => {
+        const status = chalk.cyan(`200`);
+        const time = logFormat.time(Date.now() - fetchStartTime);
+        const ix = this._fetching.indexOf(pkgId);
+        this._fetching.splice(ix, 1);
+        this._fetchingMsg = `${status} ${time} ${chalk.red.bgGreen(item.name)}`;
+        logger.updateItem(FETCH_PACKAGE, `${this._fetching.length} ${this._fetchingMsg}`);
+        return this.pacoteTarballStream(pkgId, integrity);
+      });
     };
 
-    const promise = access(fullTgzFile)
-      .then(() => ({ fullTgzFile }))
-      .catch(err => {
-        if (err.code !== "ENOENT") throw err;
-        const rd = this._fyn.remoteTgzDisabled;
-        if (rd) {
-          throw new Error(`option ${rd} has disabled retrieving tarball from remote`);
-        }
-        const inflight = this._inflights.tarball.get(fullTgzFile);
-        if (inflight) {
-          return inflight;
-        }
-        const fetchPromise = doFetch().finally(() => {
-          this._inflights.tarball.remove(fullTgzFile);
-        });
+    // - check cached tarball with manifest._integrity
+    // - use stream from cached tarball if exist
+    // - else fetch from network
 
-        this._inflights.tarball.add(fullTgzFile, fetchPromise);
-
-        return fetchPromise;
-      });
+    const promise = cacache.get.hasContent(this._cacheDir, integrity).then(content => {
+      if (content) return this.pacoteTarballStream(pkgId, integrity);
+      const rd = this._fyn.remoteTgzDisabled;
+      if (rd) {
+        throw new Error(`option ${rd} has disabled retrieving tarball from remote`);
+      }
+      return doFetch();
+    });
 
     return {
       then: (r, e) => promise.then(r, e),
       catch: e => promise.catch(e),
       tap: f => promise.tap(f),
       promise,
-      pkgUrl,
-      startTime,
-      fullTgzFile
+      startTime
     };
   }
 }

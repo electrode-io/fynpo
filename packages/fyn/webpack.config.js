@@ -14,7 +14,8 @@ const base = {
       banner: "#!/usr/bin/env node",
       raw: true
     }),
-    process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin()
+    process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin(),
+    new webpack.IgnorePlugin(/\/iconv-loader$/)
   ].filter(x => x),
   resolve: {
     symlinks: false, // don't resolve symlinks to their real path

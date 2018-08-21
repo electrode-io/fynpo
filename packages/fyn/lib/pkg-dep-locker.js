@@ -33,6 +33,12 @@ class PkgDepLocker {
     return this._lockData;
   }
 
+  intFromSha1(ss) {
+    if (!ss) return undefined;
+    if (ss.startsWith("sha")) return ss;
+    return `sha1-${Buffer.from(ss, "hex").toString("base64")}`;
+  }
+
   //
   // generate lock data from dep data
   //
@@ -85,7 +91,7 @@ class PkgDepLocker {
             meta.$ = "local";
             meta._ = dist.fullPath;
           } else {
-            meta.$ = dist.shasum || 0;
+            meta.$ = dist.integrity || this.intFromSha1(dist.shasum) || 0;
             meta._ = dist.tarball;
           }
           if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
@@ -160,12 +166,12 @@ class PkgDepLocker {
           if (vpkg.$ === "local") {
             vpkg.local = true;
             vpkg.dist = {
-              shasum: "local",
+              integrity: "local",
               fullPath: vpkg._
             };
           } else {
             vpkg.dist = {
-              shasum: vpkg.$,
+              integrity: this.intFromSha1(vpkg.$),
               tarball: vpkg._
             };
           }

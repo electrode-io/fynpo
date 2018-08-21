@@ -1626,7 +1626,7 @@ date-now:
   _: 'https://registry.npmjs.org/date-now/-/date-now-0.1.4.tgz'
 debug:
  _:
-  '2.6.9,^2.1.2,^2.2.0,^2.3.3,^2.6.8,^2.6.9': 2.6.9
+  '2.6.9,^2.2.0,^2.3.3,^2.6.8,^2.6.9': 2.6.9
   '3.1.0,^3.1.0': 3.1.0
  3.1.0:
   $: 5bb5a0672628b64149566ba16819e61518c67261
@@ -1948,20 +1948,13 @@ es6-map:
    es6-set: ~0.1.5
    es6-symbol: ~3.1.1
    event-emitter: ~0.3.5
-es6-promise:
- _:
-  ^4.0.3: 4.2.4
- 4.2.4:
-  $: dc4221c2b16518760bd8c39a52d8f356fc00ed29
-  _: 'https://registry.npmjs.org/es6-promise/-/es6-promise-4.2.4.tgz'
 es6-promisify:
  _:
-  ^5.0.0: 5.0.0
- 5.0.0:
-  $: 5109d62f3e56ea967c4b63505aef08291c8a5203
-  _: 'https://registry.npmjs.org/es6-promisify/-/es6-promisify-5.0.0.tgz'
-  dependencies:
-   es6-promise: ^4.0.3
+  './es6-promisify,^5.0.0': 5.0.0-fynlocal_h
+ 5.0.0-fynlocal_h:
+  top: 1
+  $: local
+  _: es6-promisify
 es6-set:
  _:
   ~0.1.5: 0.1.5
@@ -2768,7 +2761,7 @@ humanize-ms:
 iconv-lite:
  _:
   0.4.19: 0.4.19
-  '^0.4.17,^0.4.4,~0.4.13': 0.4.23
+  '^0.4.17,~0.4.13': 0.4.23
  0.4.23:
   $: 297871f63be507adcfbfca715d0cd0eed84e9a63
   _: 'https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.23.tgz'
@@ -3721,17 +3714,6 @@ natural-compare:
  1.4.0:
   $: 4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7
   _: 'https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz'
-needle:
- _:
-  ^2.1.0: 2.2.1
- 2.2.1:
-  top: 1
-  $: b5e325bd3aae8c2678902fa296f729455d1d3a7d
-  _: 'https://registry.npmjs.org/needle/-/needle-2.2.1.tgz'
-  dependencies:
-   debug: ^2.1.2
-   iconv-lite: ^0.4.4
-   sax: ^1.2.4
 negotiator:
  _:
   0.6.1: 0.6.1
@@ -3847,7 +3829,7 @@ npm-bundled:
   _: 'https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.0.3.tgz'
 npm-package-arg:
  _:
-  ^6.1.0: 6.1.0
+  '^6.0.0,^6.1.0': 6.1.0
  6.1.0:
   $: 15ae1e2758a5027efb4c250554b85a737db7fcc1
   _: 'https://registry.npmjs.org/npm-package-arg/-/npm-package-arg-6.1.0.tgz'
@@ -3872,6 +3854,9 @@ npm-pick-manifest:
  2.1.0:
   $: dc381bdd670c35d81655e1d5a94aa3dd4d87fce5
   _: 'https://registry.npmjs.org/npm-pick-manifest/-/npm-pick-manifest-2.1.0.tgz'
+  dependencies:
+   npm-package-arg: ^6.0.0
+   semver: ^5.4.1
 npm-registry-fetch:
  _:
   ^3.0.0: 3.2.1
@@ -4786,15 +4771,9 @@ samsam:
  1.3.0:
   $: 8d1d9350e25622da30de3e44ba692b5221ab7c50
   _: 'https://registry.npmjs.org/samsam/-/samsam-1.3.0.tgz'
-sax:
- _:
-  ^1.2.4: 1.2.4
- 1.2.4:
-  $: 2816234e2378bddc4e5354fab5caa895df7100d9
-  _: 'https://registry.npmjs.org/sax/-/sax-1.2.4.tgz'
 semver:
  _:
-  '2 || 3 || 4 || 5,^5.3.0,^5.5.0': 5.5.0
+  '2 || 3 || 4 || 5,^5.3.0,^5.4.1,^5.5.0': 5.5.0
  5.5.0:
   top: 1
   $: dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab
