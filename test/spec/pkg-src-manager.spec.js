@@ -32,7 +32,7 @@ describe("pkg-src-manager", function() {
     xsh.$.rm("-rf", fynCacheDir);
   });
 
-  it("should save meta cache with etag", () => {
+  it.skip("should save meta cache with etag", () => {
     const host = `localhost:${server.info.port}`;
     const mgr = new PkgSrcManager({
       registry: `http://${host}`,
@@ -49,7 +49,7 @@ describe("pkg-src-manager", function() {
       });
   });
 
-  it("should handle 304 when fetching meta that's already in local cache", () => {
+  it.skip("should handle 304 when fetching meta that's already in local cache", () => {
     const host = `localhost:${server.info.port}`;
     const options = {
       registry: `http://${host}`,
