@@ -216,12 +216,13 @@ class PkgSrcManager {
         .packument(
           pkgName,
           this.getPacoteOpts({
-            "full-metadata": false,
+            "full-metadata": true,
             "fetch-retries": 3
           })
         )
         .tap(x => {
           this._metaStat.inTx--;
+          if (x.readme) delete x.readme; // don't need this
           updateItem(x._cached ? "cached" : "200");
         })
         .catch(err => {
