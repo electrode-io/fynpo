@@ -29,6 +29,7 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 
 # Table Of Contents
 
+- [Thank you `npm`](#thank-you-npm)
 - [Overview](#overview)
   - [Enhanced Local Modules Development](#enhanced-local-modules-development)
   - [Package Resolution and Layout](#package-resolution-and-layout)
@@ -37,6 +38,19 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 - [Configuring fyn](#configuring-fyn)
 - [Compatibility](#compatibility)
 - [License](#license)
+
+# Thank you `npm`
+
+Node Package Manager is a very large and complex piece of software. `fyn` would've been 10 times more work without all the generous work that's been released as individual packages from `npm`, and all the great packages others generously released as open sourced software to the `npm` registry.
+
+Other than benefiting from the massive package ecosystem and all the documents from `npm`, these are the concrete packages from `npm` that `fyn` is using directly.
+
+- [node-tar] - for untaring `tgz` files.
+- [semver] - for handling Semver versions.
+- [pacote] - for retrieving `npm` package data.
+- [ini] - for handling `ini` config files.
+- [npm-packlist] - for filtering files according to npm ignore rules.
+- And all the other packages that the above depend on.
 
 # Overview
 
@@ -97,7 +111,6 @@ From `.npmrc`, only fields `registry`, `email`, and `_auth` are read.
 Below is an `YAML` example, with all the options set to their default values:
 
 ```yaml
----
 registry: https://registry.npmjs.org
 localOnly: false
 forceCache: false
@@ -130,6 +143,8 @@ If there's no RC file or command line override, then these defaults are used:
 # Compatibility
 
 - `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
+
+- `fyn` uses npm's [pacote] to do data retrieval. That means its package data handling is the same as npm and it can use npm's cache directly.
 
 - The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path.
 
@@ -166,3 +181,8 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [apache-2.0-blue-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-2.0-url]: https://www.apache.org/licenses/LICENSE-2.0
 [npm scripts]: https://docs.npmjs.com/misc/scripts
+[node-tar]: https://www.npmjs.com/package/tar
+[semver]: https://www.npmjs.com/package/semver
+[pacote]: https://www.npmjs.com/package/pacote
+[ini]: https://www.npmjs.com/package/ini
+[npm-packlist]: https://www.npmjs.com/package/npm-packlist
