@@ -24,7 +24,7 @@ module.exports = function fynConfig(override) {
   const configKeys = Object.keys(spec);
   const userConfig = _.pick(override, configKeys);
   const config = xenvConfig(spec, userConfig, { sources: ["option", "env"] });
-  config.fynCacheDir = Path.join(config.fynDir, "cache");
+  config.fynCacheDir = Path.join(config.fynDir, "_cacache");
   config.lockfile = true;
 
   return Object.assign(config, _.omit(override, configKeys));
