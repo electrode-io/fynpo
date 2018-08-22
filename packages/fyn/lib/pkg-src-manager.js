@@ -20,7 +20,6 @@ const chalk = require("chalk");
 const logger = require("./logger");
 const mkdirp = require("mkdirp");
 const Path = require("path");
-const Url = require("url");
 const PromiseQueue = require("./util/promise-queue");
 const Inflight = require("./util/inflight");
 const logFormat = require("./util/log-format");
