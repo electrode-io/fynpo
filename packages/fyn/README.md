@@ -31,11 +31,14 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 
 - [Thank you `npm`](#thank-you-npm)
 - [Overview](#overview)
-  - [Enhanced Local Modules Development](#enhanced-local-modules-development)
-  - [Package Resolution and Layout](#package-resolution-and-layout)
+  * [Enhanced Local Modules Development](#enhanced-local-modules-development)
+  * [Package Resolution and Layout](#package-resolution-and-layout)
 - [Install](#install)
 - [Using fyn](#using-fyn)
 - [Configuring fyn](#configuring-fyn)
+  * [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
+  * [Other RC Options](#other-rc-options)
+    + [Scope registry](#scope-registry)
 - [Compatibility](#compatibility)
 - [License](#license)
 
@@ -104,14 +107,16 @@ fyn --help
 
 fyn loads config from `CWD/.fynrc`, `CWD/.npmrc`, `~/.fynrc`, and `~/.npmrc` in this specified order, from highest to lowest priority.
 
-From `.npmrc`, only fields `registry`, `email`, and `_auth` are read.
+From `.npmrc`, only fields `registry`, `@<scope>:registry`,`email`, and `_auth` are read.
 
 `.fynrc` file can be an [ini] or `YAML` format. For the `YAML` format, the first line must be `---`.
 
 Below is an `YAML` example, with all the options set to their default values:
 
 ```yaml
+---
 registry: https://registry.npmjs.org
+"@scope:registry": https://registry.custom.com
 localOnly: false
 forceCache: false
 lockOnly: false
@@ -124,6 +129,7 @@ Or as an ini:
 
 ```ini
 registry=https://registry.npmjs.org
+@scope:registry=https://registry.custom.com
 localOnly=false
 forceCache=false
 lockOnly=false
@@ -132,6 +138,8 @@ logLevel=info
 production=false
 ```
 
+## Command Line Option to RC Mapping
+
 > Any command line option can be converted to an option in the RC file by changing the name to camelCase form.
 
 If there's no RC file or command line override, then these defaults are used:
@@ -139,6 +147,25 @@ If there's no RC file or command line override, then these defaults are used:
 - `registry` - `https://registry.npmjs.org`
 - `progress` - `normal`
 - `logLevel` - `info`
+
+## Other RC Options
+
+### Scope registry
+
+Scope registry can be specified in the RC files, the same as `.npmrc`.
+
+For example, in Yaml format:
+
+```yaml
+---
+"@scope:registry": https://registry.custom.com
+```
+
+In ini format:
+
+```ini
+@scope:registry=https://registry.custom.com
+```
 
 # Compatibility
 
