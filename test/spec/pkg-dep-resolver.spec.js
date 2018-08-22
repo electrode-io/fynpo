@@ -25,6 +25,7 @@ describe("pkg-dep-resolver", function() {
   });
 
   beforeEach(() => {
+    // to debug test, set log level to 0
     logger._logLevel = 999;
     fynDir = Path.join(__dirname, "..", `.tmp_${Date.now()}`);
   });
@@ -48,7 +49,7 @@ describe("pkg-dep-resolver", function() {
           if (v.src) v.src = sortSrc(v.src);
           if (v.dsrc) v.dsrc = sortSrc(v.dsrc);
           delete v.extracted;
-          v.dist.shasum = "test";
+          v.dist = Object.assign({}, v.dist, { shasum: "test" });
         });
       });
     };
