@@ -48,7 +48,7 @@ class PkgSrcManager {
     logger.debug("pkg src manager registry", this._options.registry);
     const registry = this._options.registry && Url.parse(this._options.registry);
     this._registry = Url.format(_.pick(registry, ["protocol", "auth", "host", "port", "hostname"]));
-    logger.info("PkgSrcManager registry", this._registry);
+
     this._tgzRegistry = registry;
     this._localMeta = {};
     this._netQ = new PromiseQueue({
