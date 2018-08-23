@@ -31,20 +31,20 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 
 - [Thank you `npm`](#thank-you-npm)
 - [Overview](#overview)
-  * [Enhanced Local Modules Development](#enhanced-local-modules-development)
-  * [Package Resolution and Layout](#package-resolution-and-layout)
+  - [Enhanced Local Modules Development](#enhanced-local-modules-development)
+  - [Package Resolution and Layout](#package-resolution-and-layout)
 - [Install](#install)
 - [Using fyn](#using-fyn)
 - [Configuring fyn](#configuring-fyn)
-  * [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
-  * [Other RC Options](#other-rc-options)
-    + [Scope registry](#scope-registry)
+  - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
+  - [Other RC Options](#other-rc-options)
+    - [Scope registry](#scope-registry)
 - [Compatibility](#compatibility)
 - [License](#license)
 
 # Thank you `npm`
 
-Node Package Manager is a very large and complex piece of software. `fyn` would've been 10 times more work without all the generous work that's been released as individual packages from `npm`, and all the great packages others generously released as open sourced software to the `npm` registry.
+Node Package Manager is a very large and complex piece of software. Because of the generous open source software from the community, especially the individual packages that are part of `npm`, `fyn` was probably 10 times less work than what it would've been.
 
 Other than benefiting from the massive package ecosystem and all the documents from `npm`, these are the concrete packages from `npm` that `fyn` is using directly.
 
@@ -53,7 +53,7 @@ Other than benefiting from the massive package ecosystem and all the documents f
 - [pacote] - for retrieving `npm` package data.
 - [ini] - for handling `ini` config files.
 - [npm-packlist] - for filtering files according to npm ignore rules.
-- And all the other packages that the above depend on.
+- And all the other packages they depend on.
 
 # Overview
 
