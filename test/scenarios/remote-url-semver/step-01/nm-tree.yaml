@@ -1,0 +1,8 @@
+node_modules:
+  __fyn_resolutions__.json: file
+  test-from-gh:
+    .babelrc: file
+    README.md: file
+    package.json: test-from-gh@1.0.0
+    src:
+      index.js: file
