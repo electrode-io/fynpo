@@ -1,0 +1,12 @@
+{
+  "name": "local-linking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-h": "^1.0.0"
+  }
+}
