@@ -8,6 +8,7 @@ const SORTED_VERSIONS = Symbol("sorted versions");
 const LOCAL_VERSION_MAPS = Symbol("local version maps");
 const RESOLVE_ORDER = Symbol("resolve order");
 const PACKAGE_RAW_INFO = Symbol("package.json raw info");
+const DEP_ITEM = Symbol("dep item");
 
 module.exports = {
   SEMVER,
@@ -17,5 +18,6 @@ module.exports = {
   LOCK_SORTED_VERSIONS,
   LOCAL_VERSION_MAPS,
   RESOLVE_ORDER,
-  PACKAGE_RAW_INFO
+  PACKAGE_RAW_INFO,
+  DEP_ITEM
 };

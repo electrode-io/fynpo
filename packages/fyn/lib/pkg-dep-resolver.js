@@ -27,7 +27,8 @@ const {
   LOCK_SORTED_VERSIONS,
   LOCAL_VERSION_MAPS,
   RESOLVE_ORDER,
-  PACKAGE_RAW_INFO
+  PACKAGE_RAW_INFO,
+  DEP_ITEM
 } = require("./symbols");
 
 /*
@@ -410,6 +411,7 @@ class PkgDepResolver {
         name: item.name,
         version: resolved,
         [SEMVER]: item.semver,
+        [DEP_ITEM]: item,
         res: {}
       };
       if (meta[LOCK_RSEMVERS]) pkgV.fromLock = true;
