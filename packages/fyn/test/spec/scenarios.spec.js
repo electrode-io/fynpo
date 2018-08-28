@@ -152,7 +152,8 @@ const debug = false;
           .finally(() => stepAction.after());
       });
 
-      if (stepAction.timeout) testCase.timeout(stepAction.timeout);
+      if (debug) testCase.timeout(10000000);
+      else if (stepAction.timeout) testCase.timeout(stepAction.timeout);
     };
 
     for (const step of files.sort()) {
@@ -168,7 +169,8 @@ const debug = false;
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
         "local-sym-linking": { stopStep: "step-02" },
-        "local-hard-linking": {}
+        "local-hard-linking": {},
+        "remote-url-semver": {}
       }
     : {};
 

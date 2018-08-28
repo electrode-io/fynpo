@@ -554,8 +554,15 @@ class PkgDepResolver {
       return false;
     };
 
+    const getUrlVersion = () => {
+      return (
+        Boolean(meta && meta.urlVersions && item.urlType) && meta.urlVersions[item.semver].version
+      );
+    };
+
     const resolved =
       (!noLocal && getLocalVersion()) ||
+      getUrlVersion() ||
       getKnownSemver() ||
       searchKnown() ||
       this.findVersionFromDistTag(meta, item.semver) ||

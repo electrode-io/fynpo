@@ -37,7 +37,6 @@ class PkgSrcManager {
       fynCacheDir: ""
     });
     this._meta = {};
-    this._manifest = {};
     this._cacheDir = this._options.fynCacheDir;
     mkdirp.sync(this._cacheDir);
     this._inflights = {
@@ -238,7 +237,9 @@ class PkgSrcManager {
 
     this.updateFetchMetaStatus(false);
 
-    return pacoteRequest()
+    const promise = qItem.item.urlType ? this.fetchUrlSemverMeta(qItem.item) : pacoteRequest();
+
+    return promise
       .then(x => {
         const time = Date.now() - startTime;
         if (time > 20 * 1000) {
@@ -259,19 +260,35 @@ class PkgSrcManager {
     return Boolean(this._meta[item.name]);
   }
 
+  fetchUrlSemverMeta(item) {
+    return pacote.manifest(`${item.name}@${item.semver}`, this.getPacoteOpts()).then(manifest => {
+      manifest = Object.assign({}, manifest);
+      return {
+        name: item.name,
+        versions: {
+          [manifest.version]: manifest
+        },
+        urlVersions: {
+          [item.semver]: manifest
+        }
+      };
+    });
+  }
+
   fetchMeta(item) {
     const pkgName = item.name;
+    const pkgKey = `${pkgName}@${item.urlType ? item.urlType : "semver"}`;
 
-    if (this._meta[pkgName]) {
-      return Promise.resolve(this._meta[pkgName]);
+    if (this._meta[pkgKey]) {
+      return Promise.resolve(this._meta[pkgKey]);
     }
 
-    const inflight = this._inflights.meta.get(pkgName);
+    const inflight = this._inflights.meta.get(pkgKey);
     if (inflight) {
       return inflight;
     }
 
-    const doRequest = cached => {
+    const queueMetaFetchRequest = cached => {
       const rd = this._fyn.remoteMetaDisabled;
 
       if (this._fyn.forceCache) {
@@ -289,20 +306,13 @@ class PkgSrcManager {
 
       this.updateFetchMetaStatus(false);
 
-      // if (!cached) cached = {};
-
-      // must go out to network.  save up all info and queue it up with netQ
-
       const netQItem = {
         type: "meta",
-        // cached,
-        // cacheMetaFile,
         item,
         defer: createDefer()
       };
 
       this._netQ.addItem(netQItem);
-
       return netQItem.defer.promise;
     };
 
@@ -318,29 +328,29 @@ class PkgSrcManager {
         pkgName,
         this.getPacoteOpts({
           offline: true,
-          "full-metadata": false,
+          "full-metadata": true,
           "fetch-retries": 3
         })
       )
       .then(cached => {
         foundCache = true;
         logger.debug("found", pkgName, "packument cache");
-        return doRequest(cached);
+        return queueMetaFetchRequest(cached);
       })
       .catch(err => {
         if (foundCache) throw err;
-        return doRequest();
+        return queueMetaFetchRequest();
       })
       .then(meta => {
         this._metaStat.done++;
-        this._meta[pkgName] = meta;
+        this._meta[pkgKey] = meta;
         return meta;
       })
       .finally(() => {
-        this._inflights.meta.remove(pkgName);
+        this._inflights.meta.remove(pkgKey);
       });
 
-    return this._inflights.meta.add(pkgName, promise);
+    return this._inflights.meta.add(pkgKey, promise);
   }
 
   pacotePrefetch(pkgId, integrity) {
