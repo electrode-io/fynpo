@@ -1,0 +1,7 @@
+node_modules:
+  .bin:
+    bin1: "-> ../mod-h/bin/bin1.js"
+    bin2: "-> ../mod-h/bin/bin2.js"
+  __fyn_resolutions__.json: file
+  mod-h:
+    package.json: mod-h@1.0.0

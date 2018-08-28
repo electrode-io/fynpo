@@ -299,11 +299,17 @@ class Fyn {
     } else if (!ostat.isDirectory()) {
       await this.moveToBackup(fullOutDir, "not a directory");
     } else {
+      let pkgJson;
       try {
-        return await this.readPkgJson(pkg, fullOutDir);
-      } catch (err) {
-        await this.moveToBackup(fullOutDir, "invalid existing package");
-      }
+        pkgJson = await this.readPkgJson(pkg, fullOutDir);
+        // if _id exist then it should match
+        if (!pkgJson._id || pkgJson._id === `${pkg.name}@${pkg.version}`) {
+          return pkgJson;
+        }
+      } catch (err) {}
+      // no valid package.json found
+      const id = pkgJson && pkgJson._id ? ` (id ${pkgJson._id})` : "";
+      await this.moveToBackup(fullOutDir, `invalid existing package${id}`);
     }
 
     return undefined;
