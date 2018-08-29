@@ -367,6 +367,10 @@ class PkgSrcManager {
     return defer.promise;
   }
 
+  cacacheTarballStream(integrity) {
+    return cacache.get.stream.byDigest(this._cacheDir, integrity);
+  }
+
   pacoteTarballStream(pkgId, integrity) {
     return pacote.tarball.stream(pkgId, this.getPacoteOpts({ integrity }));
   }
@@ -416,7 +420,9 @@ class PkgSrcManager {
         this._fetching.splice(ix, 1);
         this._fetchingMsg = `${status} ${time} ${chalk.red.bgGreen(pkgInfo.name)}`;
         logger.updateItem(FETCH_PACKAGE, `${this._fetching.length} ${this._fetchingMsg}`);
-        return this.pacoteTarballStream(pkgId, integrity);
+        return integrity
+          ? this.cacacheTarballStream(integrity)
+          : this.pacoteTarballStream(pkgId, integrity);
       });
     };
 
@@ -425,7 +431,7 @@ class PkgSrcManager {
     // - else fetch from network
 
     const promise = cacache.get.hasContent(this._cacheDir, integrity).then(content => {
-      if (content) return this.pacoteTarballStream(pkgId, integrity);
+      if (content) return this.cacacheTarballStream(integrity);
       const rd = this._fyn.remoteTgzDisabled;
       if (rd) {
         throw new Error(`option ${rd} has disabled retrieving tarball from remote`);
