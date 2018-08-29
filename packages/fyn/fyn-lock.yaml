@@ -1257,7 +1257,7 @@ chai:
 chalk:
  _:
   '^1.1.1,^1.1.3': 1.1.3
-  '^2.0.0,^2.0.1,^2.1.0,^2.3.0': 2.4.1
+  '^2.0.0,^2.0.1,^2.1.0,^2.3.0,^2.4.1': 2.4.1
  2.4.1:
   top: 1
   $: sha512-ObN6h1v2fTJSmUXoS3nMQ92LbDK9be4TV+6G+omQlGJFdcUX5heKi1LZ1YnRMIgwTLEj3E24bT6tYni50rlCfQ==
@@ -5582,9 +5582,21 @@ vise:
   _: 'https://registry.npmjs.org/vise/-/vise-2.0.2.tgz'
   dependencies:
    hoek: 4.x.x
+visual-exec:
+ _:
+  ^0.1.0: 0.1.0
+ 0.1.0:
+  top: 1
+  $: sha512-idb2icawjWTkbW5vU2RTdwsUYC5MYs8LmTAVERNwclcEhMVF3NDiHIktLrMUUG+rg4VN+kxjesqgDJIAXH5U2w==
+  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.0.tgz'
+  dependencies:
+   bluebird: ^3.5.1
+   chalk: ^2.4.1
+   visual-logger: ^0.1.8
+   xsh: ^0.4.4
 visual-logger:
  _:
-  ^0.1.5: 0.1.8
+  '^0.1.5,^0.1.8': 0.1.8
  0.1.8:
   top: 1
   $: sha512-hIqMetWdHCenbLDiwV6Ytdh6AAu7lY7u4CZOIMwH7WV6wd03LCrgWdx8HREFwkAKJv4gMv7VtSZrXWxek5tMgw==
@@ -5772,7 +5784,7 @@ xenv-config:
 xsh:
  _:
   ^0.3.2: 0.3.7
-  ^0.4.0: 0.4.4
+  '^0.4.0,^0.4.4': 0.4.4
  0.4.4:
   top: 1
   $: sha512-fwl0KsCubpCv/PMwwy6PiaLAak12aROkIgZMec8pzlgB8TvA7jckou7CBDta7SQouiG9KNqWNVOYBKnkEdx4gQ==
