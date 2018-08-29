@@ -117,7 +117,7 @@ Below is an `YAML` example, with all the options set to their default values:
 ---
 registry: https://registry.npmjs.org
 "@scope:registry": https://registry.custom.com
-localOnly: false
+offline: false
 forceCache: false
 lockOnly: false
 progress: normal
@@ -130,7 +130,7 @@ Or as an ini:
 ```ini
 registry=https://registry.npmjs.org
 @scope:registry=https://registry.custom.com
-localOnly=false
+offline=false
 forceCache=false
 lockOnly=false
 progress=normal
