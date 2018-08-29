@@ -12,7 +12,6 @@ const DepData = require("../lib/dep-data");
 const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
-const CliLogger = require("../lib/cli-logger");
 const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
 const fyntil = require("../lib/util/fyntil");
@@ -20,7 +19,13 @@ const showStat = require("./show-stat");
 const showSetupInfo = require("./show-setup-info");
 const logFormat = require("../lib/util/log-format");
 
-const { FETCH_META, FETCH_PACKAGE, LOAD_PACKAGE, INSTALL_PACKAGE } = require("../lib/log-items");
+const {
+  FETCH_META,
+  FETCH_PACKAGE,
+  LOAD_PACKAGE,
+  INSTALL_PACKAGE,
+  spinner
+} = require("../lib/log-items");
 
 const checkFlatModule = () => {
   const symbols = Object.getOwnPropertySymbols(Module)
@@ -165,7 +170,6 @@ class FynCli {
       exit(1);
     }
 
-    const spinner = CliLogger.spinners[1];
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "loading meta...");
 
@@ -331,7 +335,6 @@ class FynCli {
   }
 
   install() {
-    const spinner = CliLogger.spinners[1];
     const start = Date.now();
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
