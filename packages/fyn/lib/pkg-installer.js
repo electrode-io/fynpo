@@ -136,12 +136,14 @@ class PkgInstaller {
     return Promise.map(
       this.preInstall,
       depInfo => {
-        return runNpmScript({ appDir, scripts: ["preinstall"], depInfo }).then(() => {
-          depInfo.json._fyn.install = true;
-          if (depInfo.fynLinkData) {
-            depInfo.fynLinkData.install = true;
+        return runNpmScript({ appDir, fyn: this._fyn, scripts: ["preinstall"], depInfo }).then(
+          () => {
+            depInfo.json._fyn.install = true;
+            if (depInfo.fynLinkData) {
+              depInfo.fynLinkData.install = true;
+            }
           }
-        });
+        );
       },
       { concurrency: 3 }
     )
@@ -189,12 +191,14 @@ class PkgInstaller {
       .return(this.postInstall)
       .map(
         depInfo => {
-          return runNpmScript({ appDir, scripts: depInfo.install, depInfo }).then(() => {
-            depInfo.json._fyn.install = true;
-            if (depInfo.fynLinkData) {
-              depInfo.fynLinkData.install = true;
+          return runNpmScript({ appDir, fyn: this._fyn, scripts: depInfo.install, depInfo }).then(
+            () => {
+              depInfo.json._fyn.install = true;
+              if (depInfo.fynLinkData) {
+                depInfo.fynLinkData.install = true;
+              }
             }
-          });
+          );
         },
         { concurrency: 3 }
       )

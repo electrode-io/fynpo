@@ -2,7 +2,6 @@
 
 const Promise = require("bluebird");
 const LifecycleScripts = require("../lifecycle-scripts");
-const _ = require("lodash");
 const chalk = require("chalk");
 const logFormat = require("./log-format");
 const logger = require("../logger");
@@ -23,28 +22,24 @@ const removeRunning = (step, pkgId) => {
 const runNpmScript = ({ appDir, fyn, scripts, depInfo, ignoreFailure }) => {
   const pkgId = logFormat.pkgId(depInfo);
 
-  return Promise.map(
-    scripts,
-    script => {
-      running.push(pkgId);
-      updateRunning(script);
-      const ls = new LifecycleScripts(Object.assign({ appDir, _fyn: fyn }, depInfo));
-      return ls
-        .execute(script, true)
-        .then(() => undefined)
-        .catch(e => {
-          if (!ignoreFailure) throw e;
-          logger.warn(
-            chalk.yellow(`ignoring ${pkgId} npm script ${script} failure`, chalk.red(e.message))
-          );
-          return e;
-        })
-        .finally(() => {
-          removeRunning(script, pkgId);
-        });
-    },
-    { concurrency: 1 }
-  ).then(errors => errors.filter(_.identity));
+  return Promise.each(scripts, script => {
+    running.push(pkgId);
+    updateRunning(script);
+    const ls = new LifecycleScripts(Object.assign({ appDir, _fyn: fyn }, depInfo));
+    return ls
+      .execute(script, true)
+      .then(() => undefined)
+      .catch(e => {
+        if (!ignoreFailure) throw e;
+        logger.warn(
+          chalk.yellow(`ignoring ${pkgId} npm script ${script} failure`, chalk.red(e.message))
+        );
+        return e;
+      })
+      .finally(() => {
+        removeRunning(script, pkgId);
+      });
+  });
 };
 
 module.exports = runNpmScript;

@@ -18,6 +18,7 @@ const fyntil = require("../lib/util/fyntil");
 const showStat = require("./show-stat");
 const showSetupInfo = require("./show-setup-info");
 const logFormat = require("../lib/util/log-format");
+const runNpmScript = require("../lib/util/run-npm-script");
 
 const {
   FETCH_META,
@@ -334,12 +335,37 @@ class FynCli {
     return false;
   }
 
+  /*
+   * npm scripts execution order on install
+   * 1. preinstall
+   * 1b. install node_modules
+   * 2. install
+   * 3. postinstall
+   * 4. prepare
+   */
   install() {
     const start = Date.now();
-    logger.addItem({ name: FETCH_META, color: "green", spinner });
-    logger.updateItem(FETCH_META, "resolving dependencies...");
-    return this.fyn
-      .resolveDependencies()
+    return Promise.try(() => this.fyn._initialize())
+      .then(() => {
+        const pkg = this.fyn._pkg;
+        const preinstall = _.get(pkg, "scripts.preinstall");
+        if (preinstall) {
+          logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
+          return runNpmScript({
+            appDir: this.fyn._cwd,
+            scripts: ["preinstall"],
+            fyn: this.fyn,
+            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn._cwd }
+          }).then(() => {
+            logger.removeItem(INSTALL_PACKAGE);
+          });
+        }
+      })
+      .then(() => {
+        logger.addItem({ name: FETCH_META, color: "green", spinner });
+        logger.updateItem(FETCH_META, "resolving dependencies...");
+        return this.fyn.resolveDependencies();
+      })
       .then(() => {
         logger.removeItem(FETCH_META);
         logger.addItem({ name: FETCH_PACKAGE, color: "green", spinner });
@@ -356,6 +382,19 @@ class FynCli {
         const installer = new PkgInstaller({ fyn: this.fyn });
 
         return installer.install();
+      })
+      .then(() => {
+        const pkg = this.fyn._pkg;
+        const pkgScripts = pkg.scripts || {};
+        const scripts = ["install", "postinstall", "prepare"].filter(x => Boolean(pkgScripts[x]));
+        if (scripts.length > 0) {
+          return runNpmScript({
+            appDir: this.fyn._cwd,
+            scripts,
+            fyn: this.fyn,
+            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn._cwd }
+          });
+        }
       })
       .then(() => {
         logger.removeItem(INSTALL_PACKAGE);
