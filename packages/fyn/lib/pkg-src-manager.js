@@ -17,6 +17,7 @@ const os = require("os");
 const pacote = require("pacote");
 const _ = require("lodash");
 const chalk = require("chalk");
+const Fs = require("./util/file-ops");
 const logger = require("./logger");
 const mkdirp = require("mkdirp");
 const Path = require("path");
@@ -27,6 +28,11 @@ const semverUtil = require("./util/semver");
 const longPending = require("./long-pending");
 const { LOCAL_VERSION_MAPS, PACKAGE_RAW_INFO, DEP_ITEM } = require("./symbols");
 const { LONG_WAIT_META, FETCH_META, FETCH_PACKAGE } = require("./log-items");
+const PkgPreper = require("pkg-preper");
+const VisualExec = require("visual-exec");
+const { readPkgJson } = require("./util/fyntil");
+const { MARK_URL_SPEC } = require("./constants");
+const pipe = Promise.promisify(require("mississippi").pipe);
 
 const WATCH_TIME = 5000;
 
@@ -260,19 +266,158 @@ class PkgSrcManager {
     return Boolean(this._meta[item.name]);
   }
 
-  fetchUrlSemverMeta(item) {
-    return pacote.manifest(`${item.name}@${item.semver}`, this.getPacoteOpts()).then(manifest => {
-      manifest = Object.assign({}, manifest);
-      return {
-        name: item.name,
-        versions: {
-          [manifest.version]: manifest
-        },
-        urlVersions: {
-          [item.semver]: manifest
-        }
-      };
+  pkgPreperInstallDep(dir, displayTitle) {
+    const node = process.env.NODE || process.execPath;
+    const fyn = Path.join(__dirname, "../bin/fyn.js");
+    return new VisualExec({
+      displayTitle,
+      cwd: dir,
+      command: `${node} ${fyn} --pg simple -q v install --no-production`,
+      visualLogger: logger
+    }).execute();
+  }
+
+  _getPacoteDirPacker() {
+    const pkgPrep = new PkgPreper({
+      tmpDir: this._cacheDir,
+      installDependencies: this.pkgPreperInstallDep
     });
+    return pkgPrep.getDirPackerCb();
+  }
+
+  _packDir(manifest, dir) {
+    return this._getPacoteDirPacker()(manifest, dir);
+  }
+
+  fetchUrlSemverMeta(item) {
+    let dirPacker;
+
+    if (item.urlType.startsWith("git")) {
+      //
+      // pacote's implementation of this is not ideal. It always want to
+      // clone and pack the dir for manifest or tarball.
+      //
+      // So, in the latest npm (as of 6.4.0), it ends up doing twice a full
+      // git clone, install dependencies, pack to tgz, and cache the result.
+      //
+      // Even with package-lock.json, npm still ends up cloning the repo and
+      // install dependencies to pack tgz, despite that tgz may be in cache already.
+      //
+      // To make this more efficient, fyn use pacote only for figuring out
+      // git and clone the package.
+      // Then it moves the cloned dir away for its own use, and throw an
+      // exception to make pacote bail out.
+      //
+      // To figure out the HEAD commit hash, pacote still ends up having to
+      // clone the repo because looks like github doesn't set HEAD ref
+      // for default branch.  So ls-remote doesn't have the HEAD symref.
+      //
+      // Ideally, it'd be nice if pacote has API to return the resolved URL first
+      // before doing a git clone, so we can lookup from cache with it.
+      // however, sometimes a clone is required to find the default branch from github.
+      // maybe use github API to find default branch.
+      // also, should check if there's only one branch and use that automatically.
+      //
+      dirPacker = (manifest, dir) => {
+        const err = new Error("interrupt pacote");
+        const capDir = `${dir}-fyn`;
+        return Fs.rename(dir, capDir).then(() => {
+          err.capDir = capDir;
+          err.manifest = manifest;
+          throw err;
+        });
+      };
+    } else {
+      dirPacker = this._getPacoteDirPacker();
+    }
+
+    return pacote
+      .manifest(`${item.name}@${item.semver}`, this.getPacoteOpts({ dirPacker }))
+      .then(manifest => {
+        manifest = Object.assign({}, manifest);
+        return {
+          name: item.name,
+          versions: {
+            [manifest.version]: manifest
+          },
+          urlVersions: {
+            [item.semver]: manifest
+          }
+        };
+      })
+      .catch(err => {
+        if (!err.capDir) throw err;
+        return this._prepPkgDirForManifest(item, err.manifest, err.capDir);
+      });
+  }
+
+  async _prepPkgDirForManifest(item, manifest, dir) {
+    //
+    // The full git url with commit hash should be available in manifest._resolved
+    // use that as cache key to lookup cached manifest
+    //
+    const tgzCacheKey = `fyn-tarball-for-${manifest._resolved}`;
+    const tgzCacheInfo = await cacache.get.info(this._cacheDir, tgzCacheKey);
+
+    let pkg;
+    let integrity;
+
+    if (tgzCacheInfo) {
+      // found cache
+      pkg = tgzCacheInfo.metadata;
+      integrity = tgzCacheInfo.integrity;
+      logger.debug("gitdep package", pkg.name, "found cache for", manifest._resolved);
+    } else {
+      //
+      // prepare and pack dir into tgz
+      //
+      const packStream = this._packDir(manifest, dir);
+      await new Promise((resolve, reject) => {
+        packStream.on("prepared", resolve);
+        packStream.on("error", reject);
+      });
+      pkg = await readPkgJson(dir);
+      logger.debug("gitdep package", pkg.name, "prepared", manifest._resolved);
+      //
+      // cache tgz
+      //
+      const cacheStream = cacache.put.stream(this._cacheDir, tgzCacheKey, { metadata: pkg });
+      cacheStream.on("integrity", i => (integrity = i.sha512[0].source));
+      await pipe(
+        packStream,
+        cacheStream
+      );
+      logger.debug("gitdep package", pkg.name, "cached with integrity", integrity);
+    }
+
+    // embed info into tarball URL as a JSON string
+    const tarball = JSON.stringify(
+      Object.assign(_.pick(item, ["urlType", "semver"]), _.pick(manifest, ["_resolved", "_id"]))
+    );
+
+    manifest = Object.assign(
+      {},
+      pkg,
+      _.pick(manifest, ["_resolved", "_integrity", "_shasum", "_id"]),
+      {
+        dist: {
+          integrity,
+          tarball: `${MARK_URL_SPEC}${tarball}`
+        }
+      }
+    );
+
+    await Fs.$.rimraf(dir);
+
+    return {
+      name: item.name,
+      versions: {
+        [manifest.version]: manifest
+      },
+      urlVersions: {
+        [item.semver]: manifest
+      }
+    };
   }
 
   fetchMeta(item) {
