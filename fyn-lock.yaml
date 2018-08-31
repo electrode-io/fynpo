@@ -1132,7 +1132,7 @@ bytes:
   _: 'https://registry.npmjs.org/bytes/-/bytes-3.0.0.tgz'
 cacache:
  _:
-  '^11.0.1,^11.0.2': 11.2.0
+  '^11.0.1,^11.0.2,^11.2.0': 11.2.0
  11.2.0:
   $: sha512-IFWl6lfK6wSeYCHUXh+N1lY72UDrpyrYQJNIVQf48paDuWbv5RbAtJYf/4gUQFObTCHZwdZ5sI8Iw7nqwP6nlQ==
   _: 'https://registry.npmjs.org/cacache/-/cacache-11.2.0.tgz'
@@ -3597,6 +3597,7 @@ mississippi:
  _:
   ^3.0.0: 3.0.0
  3.0.0:
+  top: 1
   $: sha512-x471SsVjUtBRtcvd4BzKE9kFC+/2TeWgKCgw0bZcw1b9l2X3QX5vCWgF+KaZaYm87Ss//rHnWryupDrgLvmSkA==
   _: 'https://registry.npmjs.org/mississippi/-/mississippi-3.0.0.tgz'
   dependencies:
@@ -4004,7 +4005,7 @@ opener:
   _: 'https://registry.npmjs.org/opener/-/opener-1.5.0.tgz'
 opfs:
  _:
-  ^1.0.0: 1.0.6
+  '^1.0.0,^1.0.6': 1.0.6
  1.0.6:
   top: 1
   $: sha512-OQSTn2D9LGSqKUMN/lZ9zY7fOI95WHqlLGzouNQ5TPgA+z06z8y74wnPsAtbr2FIRtihhh8hBYPiQibdUd0aRg==
@@ -4295,6 +4296,21 @@ pkg-dir:
   _: 'https://registry.npmjs.org/pkg-dir/-/pkg-dir-2.0.0.tgz'
   dependencies:
    find-up: ^2.1.0
+pkg-preper:
+ _:
+  ^0.1.0: 0.1.0
+ 0.1.0:
+  top: 1
+  $: sha512-NhUNtFjdPXT+GKyippgr5HOFHjsDQZm+ECkJrJ/qWgToCcGJLWcRWQPq/9Kv5L0Cb/T4FEqrmLH3GuISUxAfTw==
+  _: 'https://registry.npmjs.org/pkg-preper/-/pkg-preper-0.1.0.tgz'
+  dependencies:
+   bluebird: ^3.5.1
+   cacache: ^11.2.0
+   mississippi: ^3.0.0
+   npm-packlist: ^1.1.11
+   opfs: ^1.0.6
+   tar: ^4.4.6
+   visual-exec: ^0.1.0
 pluralize:
  _:
   ^7.0.0: 7.0.0
@@ -5268,7 +5284,7 @@ tapable:
   _: 'https://registry.npmjs.org/tapable/-/tapable-0.2.8.tgz'
 tar:
  _:
-  '^4.0.0,^4.4.3': 4.4.6
+  '^4.0.0,^4.4.3,^4.4.6': 4.4.6
  4.4.6:
   top: 1
   $: sha512-tMkTnh9EdzxyfW+6GK6fCahagXsnYk6kE6S9Gr9pjVdys769+laCTbodXDhPAjzVtEBazRgP0gYqOjnk9dQzLg==
