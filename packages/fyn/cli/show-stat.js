@@ -44,9 +44,9 @@ class ShowStat {
 
   async findDependents(pkgs, ask) {
     const dependents = [];
-    if (!this._depLinker) {
-      this._depLinker = new PkgDepLinker({ fyn: this._fyn });
-      this._fynRes = this._depLinker.makeAppFynRes(this._fyn._data.res, {});
+    if (!this._fynRes) {
+      const depLinker = new PkgDepLinker({ fyn: this._fyn });
+      this._fynRes = depLinker.makeAppFynRes(this._fyn._data.res, {});
     }
 
     const check = (res, vpkg) => {
@@ -61,9 +61,11 @@ class ShowStat {
       for (const version in pkg) {
         const vpkg = pkg[version];
 
-        await this._depLinker.loadPkgDepData(vpkg);
-        const res = _.get(vpkg, ["json", "_depResolutions", ask.name]);
-        check(res, vpkg);
+        // no dev because those aren't installed anyways
+        ["dep", "opt", "per"].forEach(s => {
+          const x = vpkg.res[s];
+          check(x && x[ask.name], vpkg);
+        });
       }
     }
     // check app itself
