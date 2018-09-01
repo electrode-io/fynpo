@@ -90,9 +90,9 @@ const makeNodeOptions = () => {
 };
 
 const options = {
-  "fynlocal": {
+  fynlocal: {
     type: "boolean",
-    desc: "Enable (or disable no-) fynlocal mode for local packages",
+    desc: "fynlocal mode",
     default: true
   },
   "log-level": {
@@ -123,20 +123,20 @@ const options = {
   cwd: {
     type: "string",
     requireArg: true,
-    desc: "Set fyn's working directory"
+    desc: "Change current working dir"
   },
   "fyn-dir": {
     type: "string",
-    desc: "Set fyn's directory for cache etc, default {HOME}/.fyn"
+    desc: "Dir for cache etc, default {HOME}/.fyn"
   },
   "force-cache": {
     alias: "f",
     type: "boolean",
     desc: "Don't check registry if cache exists."
   },
-  "offline": {
+  offline: {
     type: "boolean",
-    desc: "Use only lockfile or local cache.  Fail if miss."
+    desc: "Only lockfile or local cache. Fail if miss."
   },
   "lock-only": {
     alias: "k",
@@ -145,13 +145,13 @@ const options = {
   },
   "prefer-lock": {
     type: "boolean",
-    desc: "Prefer resolving with lock data when locally linked exist"
+    desc: "Prefer resolving with lockfile."
   },
   lockfile: {
     type: "boolean",
     alias: "lf",
     default: true,
-    desc: "Enable or disable (--no-lockfile) lockfile"
+    desc: "Support lockfile"
   },
   "ignore-dist": {
     alias: "i",
@@ -166,13 +166,13 @@ const options = {
   "deep-resolve": {
     alias: "dr",
     type: "boolean",
-    desc: "Resolve as deep into the dependency tree as possible"
+    desc: "Resolve dependency tree as deep as possible"
   },
   production: {
     type: "boolean",
     alias: "prod",
     default: false,
-    desc: "Do not install devDependencies",
+    desc: "Ignore devDependencies",
     allowCmd: ["add", "remove", "install"]
   },
   rcfile: {
