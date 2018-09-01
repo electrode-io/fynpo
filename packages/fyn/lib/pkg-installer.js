@@ -1,10 +1,10 @@
 "use strict";
 
 const Path = require("path");
-const Fs = require("./util/file-ops");
 const Promise = require("bluebird");
 const _ = require("lodash");
 const chalk = require("chalk");
+const Fs = require("./util/file-ops");
 const PkgDepLinker = require("./pkg-dep-linker");
 const PkgBinLinker = require("./pkg-bin-linker");
 const PkgDepLocker = require("./pkg-dep-locker");
@@ -14,6 +14,7 @@ const fynTil = require("./util/fyntil");
 const hardLinkDir = require("./util/hard-link-dir");
 const { INSTALL_PACKAGE } = require("./log-items");
 const runNpmScript = require("./util/run-npm-script");
+const xaa = require("./util/xaa");
 
 const { SEMVER } = require("./symbols");
 
@@ -314,7 +315,8 @@ class PkgInstaller {
     scope = scope || "";
     logger.updateItem(INSTALL_PACKAGE, `cleaning extraneous packages... ${scope}`);
 
-    const installedPkgs = await Fs.readdir(Path.join(outDir, scope));
+    const installedPkgs = await xaa.try(() => Fs.readdir(Path.join(outDir, scope)), []);
+
     for (const dirName of installedPkgs) {
       if (dirName.startsWith(".") || dirName.startsWith("_")) continue;
 
@@ -338,14 +340,10 @@ class PkgInstaller {
     }
 
     // get rid of potentially empty scope dir
-    try {
-      if (scope) await Fs.rmdir(Path.join(outDir, scope));
-    } catch (err) {}
+    if (scope) await xaa.try(() => Fs.rmdir(Path.join(outDir, scope)));
 
     // get rid of potentially empty __fv_ dir
-    try {
-      await Fs.rmdir(this._fyn.getFvDir());
-    } catch (err) {}
+    await xaa.try(() => Fs.rmdir(this._fyn.getFvDir()));
   }
 
   async _cleanUpVersions(outDir, pkgName) {
