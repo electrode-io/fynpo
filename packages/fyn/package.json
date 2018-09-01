@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.1.79",
+  "version": "0.1.80",
   "description": "Node Module Development Made Easy",
   "preferGlobal": true,
   "main": "./bin/fyn.js",
