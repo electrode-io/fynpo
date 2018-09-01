@@ -10,7 +10,12 @@ const logFormat = require("../lib/util/log-format");
 const PkgDepLinker = require("../lib/pkg-dep-linker");
 const { FETCH_META } = require("../lib/log-items");
 
+const PACKAGE_JSON = "~package.json";
+
 const formatPkgId = pkg => {
+  if (pkg.name === PACKAGE_JSON) {
+    return chalk.cyan(pkg.name);
+  }
   const top = pkg.promoted ? "" : "(fv)";
   return `${logFormat.pkgId(pkg)}${top}`;
 };
@@ -62,7 +67,7 @@ class ShowStat {
       }
     }
     // check app itself
-    check(this._fynRes[ask.name], { name: "~package.json", promoted: true });
+    check(this._fynRes[ask.name], { name: PACKAGE_JSON, promoted: true });
 
     return dependents;
   }
@@ -99,15 +104,20 @@ class ShowStat {
           askPkgs.map(formatPkgId).join(", ")
         );
 
-        return Promise.map(askPkgs, id => this.showPkgStat(data.pkgs, id)).then(askDeps => {
-          if (follow > 0) {
-            return Promise.each(askDeps, deps => {
-              const followIds = deps.slice(0, follow).map(x => x.name);
+        return Promise.map(askPkgs, id => this.showPkgStat(data.pkgs, id), { concurrency: 1 }).then(
+          askDeps => {
+            if (follow > 0) {
+              return Promise.each(askDeps, deps => {
+                const followIds = deps
+                  .filter(x => x.name !== PACKAGE_JSON)
+                  .slice(0, follow)
+                  .map(x => x.name);
 
-              return this._show(followIds, follow);
-            });
+                return this._show(followIds, follow);
+              });
+            }
           }
-        });
+        );
       }
     });
   }
