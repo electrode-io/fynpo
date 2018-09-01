@@ -15,17 +15,20 @@ At the top level, it installs a chosen version of each package. All other versio
 
 When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
 
+See [features](#features) for its key benefits.
+
 ![fyn demo][fyn-demo-gif]
 
 # Features
 
-- Effortlessly develop and test changes across multiple modules locally.
-- A single copy of each installed packages.
-- Always deterministic node_modules installation.
+- Designed for easy module development.
+- Smallest `node_modules`: only a single copy of each installed packages.
+- Always deterministic `node_modules` installation.
 - Super fast performance.
 - Clean and flexible dependency locking.
 - Detailed stats of your dependencies.
 - Proper handling of `optionalDependencies`.
+- 100% compatible with NodeJS and its eCosystem.
 
 # Table Of Contents
 
