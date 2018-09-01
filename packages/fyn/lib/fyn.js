@@ -62,6 +62,10 @@ class Fyn {
     Fs.writeFileSync(this._pkgFile, `${JSON.stringify(this._pkg, null, 2)}\n`);
   }
 
+  get flatMeta() {
+    return this._options.flatMeta;
+  }
+
   get depLocker() {
     return this._depLocker;
   }
@@ -378,10 +382,19 @@ class Fyn {
 
   async createSubNodeModulesDir(dir) {
     const nmDir = Path.join(dir, "node_modules");
-
-    await Fs.$.mkdirp(nmDir);
     const fynIgnoreFile = Path.join(nmDir, FYN_IGNORE_FILE);
-    if (!(await Fs.exists(fynIgnoreFile))) {
+
+    let ignoreExist = false;
+
+    if (!(await Fs.exists(nmDir))) {
+      await Fs.$.mkdirp(nmDir);
+    } else {
+      ignoreExist = await Fs.exists(fynIgnoreFile);
+    }
+
+    if (ignoreExist && !this.flatMeta) {
+      await Fs.unlink(fynIgnoreFile);
+    } else if (!ignoreExist && this.flatMeta) {
       await Fs.writeFile(fynIgnoreFile, "");
     }
 

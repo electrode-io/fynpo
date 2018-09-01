@@ -186,6 +186,11 @@ const options = {
     requireArg: true,
     desc: "Override registry url"
   },
+  "flat-meta": {
+    type: "boolean",
+    default: false,
+    desc: "create flat-module meta files"
+  },
   concurrency: {
     type: "number",
     alias: "cc",
