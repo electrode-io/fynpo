@@ -47,7 +47,7 @@ See [features](#features) for its key benefits.
 
 # Thank you `npm`
 
-Node Package Manager is a very large and complex piece of software. Because of the generous open source software from the community, especially the individual packages that are part of `npm`, `fyn` was probably 10 times less work than what it would've been.
+Node Package Manager is a very large and complex piece of software. Developing `fyn` was 10 times easier because of the generous open source software from the community, especially the individual packages that are part of `npm`.
 
 Other than benefiting from the massive package ecosystem and all the documents from `npm`, these are the concrete packages from `npm` that `fyn` is using directly.
 
