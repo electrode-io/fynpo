@@ -6,7 +6,6 @@ const Fs = require("./util/file-ops");
 const Path = require("path");
 const _ = require("lodash");
 const logger = require("./logger");
-const fynTil = require("./util/fyntil");
 
 //
 // Look at each promoted package and link their bin
@@ -86,7 +85,8 @@ class PkgBinLinkerBase {
     if (!_.isEmpty(conflicts)) {
       depInfo.privateBin = conflicts;
       logger.debug(`bin-linker: symlinking private bin for ${pkgDir}`);
-      await this._linkPrivateBin(await fynTil.createSubNodeModulesDir(pkgDir), depInfo, conflicts);
+      const nmDir = await this._fyn.createSubNodeModulesDir(pkgDir);
+      await this._linkPrivateBin(nmDir, depInfo, conflicts);
       logger.debug(`bin-linker: done symlinking private bin`);
     }
 

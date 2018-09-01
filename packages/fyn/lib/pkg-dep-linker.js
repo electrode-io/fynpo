@@ -57,7 +57,7 @@ class PkgDepLinker {
       return;
     }
 
-    const subjectNmDir = await fynTil.createSubNodeModulesDir(
+    const subjectNmDir = await this._fyn.createSubNodeModulesDir(
       this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo)
     );
 

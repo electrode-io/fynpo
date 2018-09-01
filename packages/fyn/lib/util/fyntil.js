@@ -11,8 +11,6 @@ const isWin32 = process.platform === "win32";
 
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
 
-const FYN_IGNORE_FILE = "__fyn_ignore__";
-
 module.exports = {
   exit: function exit(err) {
     process.exit(err ? 1 : 0);
@@ -26,18 +24,6 @@ module.exports = {
     return Fs.readFile(Path.join(dir, "package.json"), "utf8")
       .then(x => x.trim())
       .then(JSON.parse);
-  },
-
-  createSubNodeModulesDir: async dir => {
-    const nmDir = Path.join(dir, "node_modules");
-
-    await Fs.$.mkdirp(nmDir);
-    const fynIgnoreFile = Path.join(nmDir, FYN_IGNORE_FILE);
-    if (!(await Fs.exists(fynIgnoreFile))) {
-      await Fs.writeFile(fynIgnoreFile, "");
-    }
-
-    return nmDir;
   },
 
   symlinkDir: async (linkName, targetName) => {
