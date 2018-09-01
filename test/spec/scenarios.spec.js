@@ -13,7 +13,7 @@ const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
 const optionalRequire = require("optional-require")(require);
 
-const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
+const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile", "--flat-meta"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
 
 function readJson(path) {
