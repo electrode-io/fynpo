@@ -26,8 +26,13 @@ module.exports = {
 
       name = name.name;
     }
-    const dimAt = chalk.cyan.dim("@");
-    return chalk.magenta(`${name}${dimAt}${version}`);
+
+    if (version !== undefined) {
+      const dimAt = chalk.cyan.dim("@");
+      return chalk.magenta(`${name}${dimAt}${version}`);
+    }
+
+    return chalk.magenta(name);
   },
 
   time: x => {
