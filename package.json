@@ -5,7 +5,8 @@
   "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
-    "test": "clap check"
+    "test": "clap check",
+    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1"
   },
   "bin": {
     "fyn": "./bin/fyn.js"
