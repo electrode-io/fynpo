@@ -29,8 +29,7 @@ class PkgInstaller {
   async install() {
     const outputDir = this._fyn.getOutputDir();
     this._binLinker = new PkgBinLinker({ outputDir, fyn: this._fyn });
-    this._fynRes = await this._depLinker.readAppRes(outputDir);
-    this._fynFo = this._fynRes._fynFo;
+    const fynRes = await this._depLinker.readAppFynRes(outputDir);
 
     this.preInstall = [];
     this.postInstall = [];
@@ -46,7 +45,7 @@ class PkgInstaller {
       await this._gatherPkg(depInfo);
     }
 
-    await this._depLinker.linkApp(this._data.res, this._fynFo, this._fyn.getOutputDir());
+    await this._depLinker.linkAppFynRes(this._data.res, fynRes._fynFo, this._fyn.getOutputDir());
 
     return this._doInstall().finally(() => {
       this.preInstall = undefined;
