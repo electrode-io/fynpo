@@ -5792,11 +5792,11 @@ xclap:
    xsh: ^0.4.0
 xenv-config:
  _:
-  ^1.1.2: 1.2.3
- 1.2.3:
+  ^1.3.0: 1.3.0
+ 1.3.0:
   top: 1
-  $: sha512-tobH1OVE3vAf7h3r2q4lTF6m0m06fa4v+Eldc0NOPDOxH1EoYSMIQm2Ck9Dz59CtD93lj785EJa345X8WWZ+8w==
-  _: 'https://registry.npmjs.org/xenv-config/-/xenv-config-1.2.3.tgz'
+  $: sha512-uHR9P7EqQRqvQs3mAF2GzKxUPXNfHoatFgPOEVpEGh4o6DvpyLw25GIDeYqDm63Z7UP/akHnwrluqTK7xfgmQA==
+  _: 'https://registry.npmjs.org/xenv-config/-/xenv-config-1.3.0.tgz'
 xsh:
  _:
   ^0.3.2: 0.3.7
