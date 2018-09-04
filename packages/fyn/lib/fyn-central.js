@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers, max-params */
+/* eslint-disable no-magic-numbers, max-params, max-statements, no-empty */
 
 const Path = require("path");
 const Fs = require("./util/file-ops");
@@ -84,7 +84,8 @@ class FynCentral {
 
   async has(integrity) {
     if (this._map.has(integrity)) return true;
-    const has = await this._has(this._analyze(integrity));
+    const info = this._analyze(integrity);
+    const has = await this._has(info);
     return has === 1;
   }
 
@@ -96,8 +97,15 @@ class FynCentral {
 
   async get(integrity) {
     let info;
-    if (this._map.has(integrity)) info = this._map.get(integrity);
-    else info = await this._get(this._analyze(integrity));
+
+    if (this._map.has(integrity)) {
+      info = this._map.get(integrity);
+    } else {
+      info = this._analyze(integrity);
+      if (!(await this._get(info))) {
+        throw new Error("fyn-central can't get package for integrity", integrity);
+      }
+    }
 
     return info.contentPath;
   }
@@ -110,6 +118,7 @@ class FynCentral {
 
   async replicate(integrity, destDir) {
     const info = await this.getInfo(integrity);
+
     const dirTree = await Fs.readFile(Path.join(info.contentPath, "tree.json")).then(JSON.parse);
     const list = flattenTree(dirTree, { dirs: [], files: [] }, "");
 
@@ -133,10 +142,15 @@ class FynCentral {
           C: targetDir,
           onentry: entry => {
             const parts = entry.path.split(/\/|\\/);
-            const dirs = parts.slice(strip, parts.length - 1);
+            const isDir = entry.type === "Directory";
+            const dirs = parts.slice(strip, isDir ? parts.length : parts.length - 1);
+
             const wtree = dirs.reduce((wt, dir) => {
               return wt[dir] || (wt[dir] = { "/": {} });
             }, dirTree);
+
+            if (isDir) return;
+
             const fname = parts[parts.length - 1];
             if (fname) {
               const m = Math.round((entry.mtime ? entry.mtime.getTime() : Date.now()) / 1000);
@@ -191,13 +205,15 @@ class FynCentral {
           // so only retry if target does not exist
           // and remember it in order to delete the tmp work
           if (err.code === "EPERM") return Fs.exists(info.contentPath).then(x => !(exist = x));
+
           return false;
         },
         RENAME_RETRIES,
         100
       );
     } catch (err) {
-      if (!exist) throw err;
+      // rename could fail with ENOTEMPTY if another fyn process got to it first
+      if (!exist && err.code !== "ENOTEMPTY") throw err;
       // all that hardwork down the drain, oh well, but someone else did it first.
       await Fs.$.rimraf(tmp);
     }
