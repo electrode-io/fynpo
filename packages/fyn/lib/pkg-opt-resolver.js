@@ -18,7 +18,7 @@ const CliLogger = require("./cli-logger");
 const logFormat = require("./util/log-format");
 const PkgDepLinker = require("./pkg-dep-linker");
 const semverUtil = require("./util/semver");
-const { OPTIONAL_RESOLVER } = require("./log-items");
+const { OPTIONAL_RESOLVER, spinner } = require("./log-items");
 
 xsh.Promise = Promise;
 
@@ -171,7 +171,6 @@ class PkgOptResolver {
     };
 
     const fetchPkgTarball = installedPath => {
-      const spinner = CliLogger.spinners[1];
       logger.addItem({ name: OPTIONAL_RESOLVER, color: "green", watchTime: 3000, spinner });
       logger.updateItem(OPTIONAL_RESOLVER, `loading package ${displayId}`);
       const dist = data.meta.versions[version].dist;
@@ -179,15 +178,28 @@ class PkgOptResolver {
       return this._fyn.pkgSrcMgr
         .fetchTarball({ name, version, dist })
         .tap(() => Fs.$.mkdirp(installedPath))
-        .then(stream => {
-          logger.updateItem(OPTIONAL_RESOLVER, `extracting package ${displayId}`);
-          // extract tarball to node_modules/__fv_/<version>/<name>
-          const tarXOpt = { strip: 1, strict: true, C: installedPath };
-          return new Promise((resolve, reject) => {
-            const exStream = stream.pipe(Tar.x(tarXOpt));
-            exStream.once("error", reject);
-            exStream.once("close", resolve);
-          })
+        .then(async stream => {
+          let retrieve;
+          let act;
+
+          if (typeof stream === "string") {
+            act = "hardlink";
+            retrieve = () => this._fyn.central.replicate(stream, installedPath);
+          } else {
+            act = "extract";
+            // extract tarball to node_modules/__fv_/<version>/<name>
+            const tarXOpt = { strip: 1, strict: true, C: installedPath };
+            retrieve = () =>
+              new Promise((resolve, reject) => {
+                const exStream = stream.pipe(Tar.x(tarXOpt));
+                exStream.once("error", reject);
+                exStream.once("close", resolve);
+              });
+          }
+
+          logger.updateItem(OPTIONAL_RESOLVER, `${act}ing package ${displayId}`);
+
+          return Promise.try(retrieve)
             .then(() => checkPkg(installedPath))
             .catch(err => {
               logger.error("opt-resolver: fail reading package.json from package of", name);
@@ -196,9 +208,9 @@ class PkgOptResolver {
             .tap(x => {
               assert(
                 x,
-                `opt-resolver: extracted ${installedPath} package version didn't match ${version}!`
+                `opt-resolver: ${act}ed ${installedPath} package version didn't match ${version}!`
               );
-              logger.updateItem(OPTIONAL_RESOLVER, `extracted package ${displayId}`);
+              logger.updateItem(OPTIONAL_RESOLVER, `${act}ed package ${displayId}`);
               this._extractedPkgs[pkgId] = installedPath;
             });
         })
