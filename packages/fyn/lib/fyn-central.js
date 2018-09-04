@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, max-params */
 
 const Path = require("path");
 const Fs = require("./util/file-ops");
@@ -8,6 +8,11 @@ const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
 const { linkFile } = require("./util/hard-link-dir");
+const uniqId = require("./util/uniq-id");
+
+const isWin32 = process.platform === "win32";
+
+const RENAME_RETRIES = isWin32 ? 10 : 0;
 
 function flattenTree(tree, output, baseDir) {
   const dirs = Object.keys(tree);
@@ -25,6 +30,19 @@ function flattenTree(tree, output, baseDir) {
   }
 
   return output;
+}
+
+function retry(func, checks, tries, wait) {
+  return Promise.try(func).catch(err => {
+    if (tries <= 0) throw err;
+    tries--;
+    return Promise.try(
+      () => (Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err))
+    ).then(canRetry => {
+      if (!canRetry) throw err;
+      return Promise.delay(wait).then(() => retry(func, tries, wait));
+    });
+  });
 }
 
 class FynCentral {
@@ -138,9 +156,23 @@ class FynCentral {
 
   async storeTarStream(integrity, stream) {
     const info = this._analyze(integrity);
-    const has = this._has(info);
+    const has = await this._has(info);
 
-    const tmp = `${info.contentPath}.tmp-${Date.now()}`;
+    const tmp = `${info.contentPath}.tmp-${uniqId()}`;
+    let removeExist;
+
+    // why is request storing tar stream again?
+    // but whatever, just move it out of place and untar.
+    // will remove it when new store is ready to be dropped in.
+    if (has !== false) {
+      removeExist = `${info.contentPath}.remove-${uniqId()}`;
+      await retry(
+        () => Fs.rename(info.contentPath, removeExist),
+        ["EACCESS", "EPERM"],
+        RENAME_RETRIES,
+        100
+      );
+    }
 
     const targetDir = Path.join(tmp, "package");
     await Fs.$.mkdirp(targetDir);
@@ -148,12 +180,35 @@ class FynCentral {
 
     await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(dirTree));
 
-    if (has) {
-      await Fs.$.rimraf(info.contentPath);
+    let exist;
+
+    try {
+      await retry(
+        () => Fs.rename(tmp, info.contentPath),
+        err => {
+          if (err.code === "EACCESS") return true;
+          // don't bother if another concurrent fyn install got to it first
+          // so only retry if target does not exist
+          // and remember it in order to delete the tmp work
+          if (err.code === "EPERM") return Fs.exists(info.contentPath).then(x => !(exist = x));
+          return false;
+        },
+        RENAME_RETRIES,
+        100
+      );
+    } catch (err) {
+      if (!exist) throw err;
+      // all that hardwork down the drain, oh well, but someone else did it first.
+      await Fs.$.rimraf(tmp);
     }
 
-    await Fs.rename(tmp, info.contentPath);
     this._map.set(integrity, info);
+
+    if (removeExist) {
+      try {
+        await Fs.$.rimraf(removeExist);
+      } catch (err) {}
+    }
   }
 }
 

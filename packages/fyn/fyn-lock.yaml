@@ -1219,10 +1219,10 @@ camelcase:
   _: 'https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz'
 caniuse-lite:
  _:
-  ^1.0.30000844: 1.0.30000883
- 1.0.30000883:
-  $: sha512-ovvb0uya4cKJct8Rj9Olstz0LaWmyJhCp3NawRG5fVigka8pEhIIwipF7zyYd2Q58UZb5YfIt52pVF444uj2kQ==
-  _: 'https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000883.tgz'
+  ^1.0.30000844: 1.0.30000884
+ 1.0.30000884:
+  $: sha512-ibROerckpTH6U5zReSjbaitlH4gl5V4NWNCBzRNCa3GEDmzzkfStk+2k5mO4ZDM6pwtdjbZ3hjvsYhPGVLWgNw==
+  _: 'https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30000884.tgz'
 catbox:
  _:
   ^7.1.5: 7.1.5
