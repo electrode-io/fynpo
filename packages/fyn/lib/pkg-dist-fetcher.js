@@ -91,9 +91,13 @@ class PkgDistFetcher {
   }
 
   handleItemDone(data) {
-    if (data.res && data.res.tgzStream) {
-      this._distExtractor.addPkgDist({ pkg: data.res.pkg, tgzStream: data.res.tgzStream });
-    }
+    const result = _.get(data, "res.result");
+
+    if (!result) return;
+
+    const pkg = _.get(data, "res.pkg");
+
+    this._distExtractor.addPkgDist({ pkg, result });
   }
 
   async _hardlinkPackage(pkg) {
@@ -137,8 +141,8 @@ class PkgDistFetcher {
       if (await this._hardlinkPackage(pkg)) {
         return {};
       } else {
-        const r = await this._pkgSrcMgr.fetchTarball(pkg);
-        return r ? { tgzStream: r, pkg } : {};
+        const result = await this._pkgSrcMgr.fetchTarball(pkg);
+        return { result, pkg };
       }
     } catch (err) {
       const pkgName = logFormat.pkgId(pkg);

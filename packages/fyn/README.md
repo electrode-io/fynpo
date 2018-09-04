@@ -19,22 +19,14 @@ See [features](#features) for its key benefits.
 
 ![fyn demo][fyn-demo-gif]
 
-# Features
-
-- Designed for easy module development.
-- Smallest `node_modules`: only a single copy of each installed packages.
-- Always deterministic `node_modules` installation.
-- Super fast performance.
-- Clean and flexible dependency locking.
-- Detailed stats of your dependencies.
-- Proper handling of `optionalDependencies`.
-- 100% compatible with NodeJS and its eCosystem.
-
 # Table Of Contents
 
+- [Features](#features)
 - [Thank you `npm`](#thank-you-npm)
 - [Overview](#overview)
   - [Enhanced Local Modules Development](#enhanced-local-modules-development)
+    - [`fyn` Local Linking Install](#fyn-local-linking-install)
+    - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
   - [Package Resolution and Layout](#package-resolution-and-layout)
 - [Install](#install)
 - [Using fyn](#using-fyn)
@@ -42,8 +34,24 @@ See [features](#features) for its key benefits.
   - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
   - [Other RC Options](#other-rc-options)
     - [Scope registry](#scope-registry)
+  - [Central Storage](#central-storage)
 - [Compatibility](#compatibility)
+- [Using with Lerna](#using-with-lerna)
 - [License](#license)
+
+# Features
+
+- A super fast node package manager for installing modules.
+- Designed for easy module development.
+- 100% compatible with NodeJS and its ecosystem.
+- Smallest `node_modules` size possible.
+- Clean and flexible dependency locking.
+- Always deterministic `node_modules` installation.
+- Show detailed stats of your dependencies.
+- Proper handling of `optionalDependencies`.
+- Keeping compatibility by internally using the same modules as [npm].
+- Efficient disk space usage with optional [central storage](#central-storage).
+- Works particularly well with [lerna] monorepos.
 
 # Thank you `npm`
 
@@ -62,6 +70,14 @@ Other than benefiting from the massive package ecosystem and all the documents f
 
 ## Enhanced Local Modules Development
 
+- Have you ever need to set a breakpoint in a module within `node_modules`?
+
+- Maybe you need to make some changes in some code in `node_modules` and test, but then you have to copy them out if you want to keep your changes.
+
+With `fyn`, it comes with features specifically designed to make your "debugging" `node_modules` easier.
+
+### `fyn` Local Linking Install
+
 What is this? Think `npm link`, but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published.
 
 To enable, use the path to your local modules as semver in your package.json, or you can use the `fyn add` command.
@@ -75,6 +91,12 @@ fyn add ../my-awesome-module
 That will install `my-awesome-module` into your node_modules. You can continue to develop and test `my-awesome-module` in its own directory and have the changes within existing files reflected in your app directly. Unlike `npm link`, your app resolves dependencies for `my-awesome-module` instead of relying on having them installed under `my-awesome-module/node_modules`.
 
 If you add/remove files/directories in your local package, then running `fyn` install would take only seconds to update.
+
+### Easier Debugging `node_modules`
+
+`node_modules` installed by [npm] could potentially have multiple copies of the same version of a package. So even if you've identified the module that you think could help you debug your problem, you may still need to deal with multiple copies of the same version.
+
+With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint. Of course you still have to figure out which version if there are multiple versions of a package though.
 
 ## Package Resolution and Layout
 
@@ -116,7 +138,7 @@ From `.npmrc`, only fields `registry`, `@<scope>:registry`,`email`, and `_auth` 
 
 Below is an `YAML` example, with all the options set to their default values:
 
-```yaml
+```yml
 ---
 registry: https://registry.npmjs.org
 "@scope:registry": https://registry.custom.com
@@ -126,6 +148,7 @@ lockOnly: false
 progress: normal
 logLevel: info
 production: false
+centralStore: false
 ```
 
 Or as an ini:
@@ -139,6 +162,7 @@ lockOnly=false
 progress=normal
 logLevel=info
 production=false
+centralStore=false
 ```
 
 ## Command Line Option to RC Mapping
@@ -159,7 +183,7 @@ Scope registry can be specified in the RC files, the same as `.npmrc`.
 
 For example, in Yaml format:
 
-```yaml
+```yml
 ---
 "@scope:registry": https://registry.custom.com
 ```
@@ -170,9 +194,43 @@ In ini format:
 @scope:registry=https://registry.custom.com
 ```
 
+## Central Storage
+
+Inspired by [pnpm], `fyn` supports storing a single copy of all packages at a central location, and use hardlinks to install them into your `node_modules`.
+
+The main advantage of this is to save disk space and slightly faster install if the storage is primed.
+
+However, this feature is not enabled by default due to the following drawbacks:
+
+1. Creating hardlinks actually could take a lot more than trivial time.
+
+   - What this means is the first time you install with `fyn`, when nothing is cached in the storage, central store mode will actually take noticeably more time, but subsequent installs could be faster.
+
+   - In particular, very bad on MacOS (High Sierra). For example, using hardlinks to replicate the module `nyc` actually takes longer than untaring the tgz file. It improves somewhat with concurrency, but still significant.
+
+   - On Linux with ext4 hardlinking appears to be more than 10 times more efficient than MacOS.
+
+2. You can't do your debugging and development by modifying code that's installed into `node_modules` directly.
+
+   - Reason being that any change you make will affect the central copy, and therefore any other `node_modules` that's linked to it.
+
+   - If you do this, then even after you blow away your `node_modules` and reinstall it, your "debugging" changes will be there again.
+
+   - I imagine that this is actually a fairly big drawback for a lot of people.
+
+   - However, the primary design goal of `fyn` is to make your module development easier with its local linking install feature. You should use that to develop and debug multiple modules locally.
+
+Anyways, if you want to use this feature, then you can enable it with the `--central-store` CLI option.
+
+The recommendation is to add the following to `.fynrc` because then you don't have to remember to specify the option in the CLI every time.
+
+```ini
+centralStore=true
+```
+
 # Compatibility
 
-- `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules.
+- `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules. No special updates or changes needed.
 
 - `fyn` uses npm's [pacote] to do data retrieval. That means its package data handling is the same as npm and it can use npm's cache directly.
 
@@ -185,6 +243,16 @@ In ini format:
   If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which should be avoided. The subtle difference is that with preserve symlink, each symlink path of the same module will be loaded as its own instance by Node's module system.
 
 - `fyn` can't handle npm's `npm-shrinkwrap.json` and `package-lock.json` files.
+
+# Using with Lerna
+
+[lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
+
+I haven't been able to bootstrap my [lerna] monorepo with npm since version 5.
+
+`fyn` works particularly well with a [lerna] monorepo, but of course since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
+
+To bootstrap a [lerna] repo with `fyn`'s enhanced `npm link`, please use the module [fynpo].
 
 # License
 
@@ -216,3 +284,7 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [pacote]: https://www.npmjs.com/package/pacote
 [ini]: https://www.npmjs.com/package/ini
 [npm-packlist]: https://www.npmjs.com/package/npm-packlist
+[pnpm]: https://www.npmjs.com/package/pnpm
+[npm]: https://www.npmjs.com/package/npm
+[lerna]: https://www.npmjs.com/package/lerna
+[fynpo]: https://www.npmjs.com/package/fynpo
