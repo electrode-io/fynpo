@@ -95,6 +95,12 @@ const options = {
     desc: "fynlocal mode",
     default: true
   },
+  "central-store": {
+    type: "boolean",
+    alias: ["central", "cs"],
+    desc: "keep single copy of packages in central store",
+    default: false
+  },
   "log-level": {
     alias: "q",
     type: "string",
