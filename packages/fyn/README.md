@@ -7,7 +7,7 @@
 
 `fyn` is the result of a long pursuit for an easier workflow when developing over multiple node modules locally. It offers a simple way to develop and test across multiple modules effortlessly.
 
-Over the course of realizing this goal, `fyn` gradually became a fully functional and super fast node package manager for the [flat node_modules design] that maintains [100% compatibility](#fyn-compatibility).
+Over the course of realizing this goal, `fyn` gradually became a fully functional and super fast node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
 
 As a package manager, it employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
 
@@ -220,7 +220,11 @@ However, this feature is not enabled by default due to the following drawbacks:
 
    - However, the primary design goal of `fyn` is to make your module development easier with its local linking install feature. You should use that to develop and debug multiple modules locally.
 
-Anyways, if you want to use this feature, then you can enable it with the `--central-store` CLI option.
+3. Similar to 2, but if any package has `postinstall` script that modifies its own files, then those modifications would affect all installations.
+
+   - There should not be a lot of packages like this, but if you happen to use one, it's unlikely a central storage would work.
+
+If you don't mind these drawbacks and you want to use this feature, then you can enable it with the `--central-store` CLI option.
 
 The recommendation is to add the following to `.fynrc` because then you don't have to remember to specify the option in the CLI every time.
 
