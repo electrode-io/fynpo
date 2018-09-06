@@ -224,7 +224,9 @@ However, this feature is not enabled by default due to the following drawbacks:
 
    - There should not be a lot of packages like this, but if you happen to use one, it's unlikely a central storage would work.
 
-If you don't mind these drawbacks and you want to use this feature, then you can enable it with the `--central-store` CLI option.
+In general if disk space is not an issue for you, then it's better to avoid this and the issues that will likely creep up on you when you least expect it.
+
+If you do have a use of this feature despite the drawbacks, then you can enable it with the `--central-store` CLI option.
 
 The recommendation is to add the following to `.fynrc` because then you don't have to remember to specify the option in the CLI every time.
 
@@ -251,8 +253,6 @@ centralStore=true
 # Using with Lerna
 
 [lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
-
-I haven't been able to bootstrap my [lerna] monorepo with npm since version 5.
 
 `fyn` works particularly well with a [lerna] monorepo, but of course since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
 
