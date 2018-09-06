@@ -69,58 +69,45 @@ class FynCentral {
     return { algorithm, contentPath, hex };
   }
 
-  async _has(info) {
+  async _loadTree(integrity, info) {
+    info = info || this._analyze(integrity);
+    info.tree = false;
     try {
       const stat = await Fs.stat(info.contentPath);
       if (stat.isDirectory()) {
-        return 1;
-      } else {
-        return -1;
+        const tree = await Fs.readFile(Path.join(info.contentPath, "tree.json")).then(JSON.parse);
+        info.tree = tree;
+        this._map.set(integrity, info);
       }
+      return info;
     } catch (err) {
-      return false;
+      return info;
     }
   }
 
   async has(integrity) {
     if (this._map.has(integrity)) return true;
-    const info = this._analyze(integrity);
-    const has = await this._has(info);
-    return has === 1;
-  }
-
-  async _get(info) {
-    if ((await this._has(info)) !== 1) return false;
-
-    return info;
+    const info = this._loadTree(integrity);
+    return Boolean(info.tree);
   }
 
   async get(integrity) {
-    let info;
-
-    if (this._map.has(integrity)) {
-      info = this._map.get(integrity);
-    } else {
-      info = this._analyze(integrity);
-      if (!(await this._get(info))) {
-        throw new Error("fyn-central can't get package for integrity", integrity);
-      }
-    }
-
-    return info.contentPath;
+    return await this.getInfo(integrity).contentPath;
   }
 
   async getInfo(integrity) {
     if (this._map.has(integrity)) return this._map.get(integrity);
-
-    return await this._get(this._analyze(integrity));
+    const info = await this._loadTree(integrity);
+    if (!info.tree) {
+      throw new Error("fyn-central can't get package for integrity", integrity);
+    }
+    return info;
   }
 
   async replicate(integrity, destDir) {
     const info = await this.getInfo(integrity);
 
-    const dirTree = await Fs.readFile(Path.join(info.contentPath, "tree.json")).then(JSON.parse);
-    const list = flattenTree(dirTree, { dirs: [], files: [] }, "");
+    const list = flattenTree(info.tree, { dirs: [], files: [] }, "");
 
     await Promise.map(list.dirs, dir => Fs.$.mkdirp(Path.join(destDir, dir)), { concurrency: 10 });
 
@@ -169,8 +156,8 @@ class FynCentral {
   }
 
   async storeTarStream(integrity, stream) {
-    const info = this._analyze(integrity);
-    const has = await this._has(info);
+    const info = await this._loadTree(integrity);
+    const has = Boolean(info.tree);
 
     const tmp = `${info.contentPath}.tmp-${uniqId()}`;
     let removeExist;
@@ -190,9 +177,11 @@ class FynCentral {
 
     const targetDir = Path.join(tmp, "package");
     await Fs.$.mkdirp(targetDir);
-    const dirTree = await this._untarStream(stream, targetDir, info);
+    const tree = await this._untarStream(stream, targetDir, info);
 
-    await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(dirTree));
+    await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(tree));
+
+    info.tree = tree;
 
     let exist;
 
