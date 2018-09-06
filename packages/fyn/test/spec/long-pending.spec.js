@@ -41,7 +41,7 @@ describe("long-pending", function() {
         color: "yellow"
       }
     });
-    expect(logs).to.deep.equal(["package pending fetch: test (0.05secs)"]);
+    expect(logs).to.deep.equal(["package pending fetch: test (0.050secs)"]);
   });
 
   it("should remove long wait items that finish", () => {
@@ -53,7 +53,7 @@ describe("long-pending", function() {
         color: "yellow"
       }
     });
-    expect(logs).to.deep.equal(["package pending fetch: test (0.05secs)"]);
+    expect(logs).to.deep.equal(["package pending fetch: test (0.050secs)"]);
     longPending.onWatch({ total: 0 });
     expect(logItems).to.deep.equal({});
   });
@@ -67,11 +67,11 @@ describe("long-pending", function() {
         color: "yellow"
       }
     });
-    expect(logs).to.deep.equal(["package pending fetch: test (0.05secs)"]);
+    expect(logs).to.deep.equal(["package pending fetch: test (0.050secs)"]);
     longPending.onWatch({ total: 1, watched: [], still: [{ item: "test", time: 150 }] });
     expect(logs).to.deep.equal([
-      "package pending fetch: test (0.05secs)",
-      "package pending fetch: test (0.15secs)"
+      "package pending fetch: test (0.050secs)",
+      "package pending fetch: test (0.150secs)"
     ]);
   });
 
@@ -84,7 +84,7 @@ describe("long-pending", function() {
     });
     longPending.onWatch({ total: 13, watched, still }, { makeId: ix => `s${ix}` });
     expect(logs).to.deep.equal([
-      "package pending fetch: Total: 13, first 10: i0 (0.05secs), i1 (0.05secs), i2 (0.05secs), i3 (0.05secs), i4 (0.05secs), i5 (0.05secs), i6 (0.05secs), i7 (0.05secs), s0 (0.15secs), s1 (0.15secs)"
+      "package pending fetch: Total: 13, first 10: i0 (0.050secs), i1 (0.050secs), i2 (0.050secs), i3 (0.050secs), i4 (0.050secs), i5 (0.050secs), i6 (0.050secs), i7 (0.050secs), s0 (0.150secs), s1 (0.150secs)"
     ]);
   });
 });
