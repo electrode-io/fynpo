@@ -8,7 +8,7 @@ const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
 const { linkFile } = require("./util/hard-link-dir");
-const uniqId = require("./util/uniq-id");
+const logger = require("./logger");
 
 const isWin32 = process.platform === "win32";
 
@@ -40,7 +40,7 @@ function retry(func, checks, tries, wait) {
       () => (Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err))
     ).then(canRetry => {
       if (!canRetry) throw err;
-      return Promise.delay(wait).then(() => retry(func, tries, wait));
+      return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
     });
   });
 }
@@ -69,7 +69,7 @@ class FynCentral {
     return { algorithm, contentPath, hex };
   }
 
-  async _loadTree(integrity, info) {
+  async _loadTree(integrity, info, noSet) {
     info = info || this._analyze(integrity);
     info.tree = false;
     try {
@@ -77,7 +77,7 @@ class FynCentral {
       if (stat.isDirectory()) {
         const tree = await Fs.readFile(Path.join(info.contentPath, "tree.json")).then(JSON.parse);
         info.tree = tree;
-        this._map.set(integrity, info);
+        if (!noSet) this._map.set(integrity, info);
       }
       return info;
     } catch (err) {
@@ -155,24 +155,52 @@ class FynCentral {
     });
   }
 
-  async storeTarStream(integrity, stream) {
-    const info = await this._loadTree(integrity);
-    const has = Boolean(info.tree);
-
-    const tmp = `${info.contentPath}.tmp-${uniqId()}`;
-    let removeExist;
-
-    // why is request storing tar stream again?
-    // but whatever, just move it out of place and untar.
-    // will remove it when new store is ready to be dropped in.
-    if (has !== false) {
-      removeExist = `${info.contentPath}.remove-${uniqId()}`;
-      await retry(
-        () => Fs.rename(info.contentPath, removeExist),
-        ["EACCESS", "EPERM"],
-        RENAME_RETRIES,
+  async _waitForAnotherStoreTar(tmp) {
+    // another process already processing
+    // wait up to 1 minute for it to finish
+    try {
+      logger.debug("fyn-central storeTarStream: wait for tmp", tmp);
+      return await retry(
+        async () => {
+          if (await Fs.exists(tmp)) {
+            throw new Error(`still waiting ${tmp}`);
+          }
+        },
+        () => true,
+        10 * 60,
         100
       );
+    } catch (err) {
+      logger.error("fyn-central storeTarStream: tmp didn't complete after 1 min", tmp);
+      throw err;
+    }
+  }
+
+  async storeTarStream(integrity, stream) {
+    let info = await this._loadTree(integrity);
+    if (info.tree) {
+      logger.debug("fyn-central storeTarStream: already exist", info.contentPath);
+      stream.destroy();
+      return undefined;
+    }
+
+    const tmp = `${info.contentPath}.tmp`;
+    await Fs.$.mkdirp(Path.dirname(tmp));
+
+    try {
+      await Fs.mkdir(tmp);
+    } catch (err) {
+      stream.destroy();
+      if (err.code !== "EEXIST") throw err;
+      return await this._waitForAnotherStoreTar(tmp);
+    }
+
+    info = await this._loadTree(integrity, info);
+
+    if (info.tree) {
+      stream.destroy();
+      logger.warn("fyn-central storeTarStream: tree exist after tmp created", tmp);
+      return await Fs.$.rimraf(tmp);
     }
 
     const targetDir = Path.join(tmp, "package");
@@ -183,37 +211,9 @@ class FynCentral {
 
     info.tree = tree;
 
-    let exist;
-
-    try {
-      await retry(
-        () => Fs.rename(tmp, info.contentPath),
-        err => {
-          if (err.code === "EACCESS") return true;
-          // don't bother if another concurrent fyn install got to it first
-          // so only retry if target does not exist
-          // and remember it in order to delete the tmp work
-          if (err.code === "EPERM") return Fs.exists(info.contentPath).then(x => !(exist = x));
-
-          return false;
-        },
-        RENAME_RETRIES,
-        100
-      );
-    } catch (err) {
-      // rename could fail with ENOTEMPTY if another fyn process got to it first
-      if (!exist && err.code !== "ENOTEMPTY") throw err;
-      // all that hardwork down the drain, oh well, but someone else did it first.
-      await Fs.$.rimraf(tmp);
-    }
-
     this._map.set(integrity, info);
 
-    if (removeExist) {
-      try {
-        await Fs.$.rimraf(removeExist);
-      } catch (err) {}
-    }
+    await retry(() => Fs.rename(tmp, info.contentPath), ["EACCESS", "EPERM"], RENAME_RETRIES, 100);
   }
 }
 

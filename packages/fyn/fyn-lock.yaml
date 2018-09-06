@@ -4028,15 +4028,11 @@ opener:
   _: 'https://registry.npmjs.org/opener/-/opener-1.5.1.tgz'
 opfs:
  _:
-  ^1.0.6: 1.0.6
-  ^1.1.0: 1.1.0
+  '^1.0.6,^1.1.0': 1.1.0
  1.1.0:
   top: 1
   $: sha512-EzvsGc6VZrzLOj5Ae/fiqgQTfOMIZA9Ga4NCQaEPtAdrDlz/V+ObWbLPDykVLW4+ifIKjS0NIl9ylYo9dHrxUQ==
   _: 'https://registry.npmjs.org/opfs/-/opfs-1.1.0.tgz'
- 1.0.6:
-  $: sha512-OQSTn2D9LGSqKUMN/lZ9zY7fOI95WHqlLGzouNQ5TPgA+z06z8y74wnPsAtbr2FIRtihhh8hBYPiQibdUd0aRg==
-  _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.6.tgz'
 optional-require:
  _:
   ^1.0.0: 1.0.0
