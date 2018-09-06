@@ -178,7 +178,8 @@ class FynCentral {
     } catch (err) {
       stream.destroy();
       logger.error("fyn-central storeTarStream - unable to acquire", tmpLock);
-      throw new Error(`Unable to acquire ${tmpLock}`);
+      const msg = err.message && err.message.replace(tmpLock, "<lockfile>");
+      throw new Error(`Unable to acquire ${tmpLock} - ${msg}`);
     }
 
     const tmp = `${info.contentPath}.tmp`;
