@@ -8,6 +8,7 @@ const Prepare = require("../lib/prepare");
 const makePkgDeps = require("../lib/make-pkg-deps");
 const readPackages = require("../lib/read-packages");
 const logger = require("../lib/logger");
+const Fs = require("fs");
 
 const makeBootstrap = parsed => {
   const cwd = parsed.opts.cwd || process.cwd();
@@ -16,15 +17,24 @@ const makeBootstrap = parsed => {
 
 const execBootstrap = parsed => {
   const bootstrap = makeBootstrap(parsed);
+  let statusCode = 0;
+  logger.debug("CLI options", JSON.stringify(parsed));
   return bootstrap
-    .exec()
+    .exec({ build: parsed.opts.build })
     .then(() => {
       bootstrap.logErrors();
-      process.exit(bootstrap.failed);
+      statusCode = bootstrap.failed;
     })
     .catch(err => {
       logger.error(err);
-      process.exit(1);
+      logger.error("Please check the file fynpo-debug.log for more info.");
+      statusCode = 1;
+    })
+    .finally(() => {
+      if (statusCode !== 0 || parsed.opts.saveLog) {
+        Fs.writeFileSync("fynpo-debug.log", logger.logData.join("\n") + "\n");
+      }
+      process.exit(statusCode);
     });
 };
 
@@ -57,6 +67,12 @@ const nixClap = new NixClap({
       alias: "i",
       type: "string array",
       desc: "list of packages to ignore"
+    },
+    "save-log": {
+      alias: "sl",
+      type: "boolean",
+      default: false,
+      desc: "save logs to fynpo-debug.log"
     }
   },
   {
@@ -64,7 +80,14 @@ const nixClap = new NixClap({
       alias: "b",
       desc: "bootstrap packages",
       default: true,
-      exec: execBootstrap
+      exec: execBootstrap,
+      options: {
+        build: {
+          type: "boolean",
+          default: true,
+          desc: "run npm script build if no prepare"
+        }
+      }
     },
     local: {
       alias: "l",
