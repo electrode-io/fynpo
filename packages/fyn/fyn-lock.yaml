@@ -3154,11 +3154,11 @@ isobject:
    isarray: 1.0.0
 item-queue:
  _:
-  ^1.0.0: 1.0.2
- 1.0.2:
+  ^1.0.3: 1.0.3
+ 1.0.3:
   top: 1
-  $: sha512-a6WSbYS+sYits4fcYcIP060WPGHzC2Kfrz/fdCx11GCimNnXlnmBAVlW7wTbhR6F8JQ8NQpIb/ug/K7p1EkZSg==
-  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.2.tgz'
+  $: sha512-Up1Bh+ZL7P5+fV+YOcf9nveyMSI89DgWal8O78YZHCDNAL4fRCKeXg6ifabKUG2kGeF7Oir2VrH5Lnf4JxW74Q==
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.3.tgz'
 items:
  _:
   '2.x.x,^2.1.1': 2.1.1
@@ -4028,9 +4028,13 @@ opener:
   _: 'https://registry.npmjs.org/opener/-/opener-1.5.1.tgz'
 opfs:
  _:
-  '^1.0.0,^1.0.6': 1.0.6
- 1.0.6:
+  ^1.0.6: 1.0.6
+  ^1.1.0: 1.1.0
+ 1.1.0:
   top: 1
+  $: sha512-EzvsGc6VZrzLOj5Ae/fiqgQTfOMIZA9Ga4NCQaEPtAdrDlz/V+ObWbLPDykVLW4+ifIKjS0NIl9ylYo9dHrxUQ==
+  _: 'https://registry.npmjs.org/opfs/-/opfs-1.1.0.tgz'
+ 1.0.6:
   $: sha512-OQSTn2D9LGSqKUMN/lZ9zY7fOI95WHqlLGzouNQ5TPgA+z06z8y74wnPsAtbr2FIRtihhh8hBYPiQibdUd0aRg==
   _: 'https://registry.npmjs.org/opfs/-/opfs-1.0.6.tgz'
 optional-require:

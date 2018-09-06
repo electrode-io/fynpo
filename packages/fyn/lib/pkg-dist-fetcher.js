@@ -29,7 +29,6 @@ class PkgDistFetcher {
       optional: [],
       byOptionalParent: []
     };
-    this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
     this._fyn = options.fyn;
     this._promiseQ = new PromiseQueue({
       concurrency: this._fyn.concurrency,
@@ -41,12 +40,15 @@ class PkgDistFetcher {
     this._promiseQ.on("done", x => this.done(x));
     this._promiseQ.on("doneItem", x => this.handleItemDone(x));
     this._promiseQ.on("failItem", _.noop);
+    // down stream extractor
+    this._distExtractor = new PkgDistExtractor({ fyn: options.fyn });
+    // immediately stop if down stream extractor failed
+    this._distExtractor.once("fail", () => this._promiseQ.setItemQ([]));
   }
 
   async wait() {
     try {
       await this._promiseQ.wait();
-
       await this._distExtractor.wait();
 
       const time = logFormat.time(Date.now() - this._startTime);
