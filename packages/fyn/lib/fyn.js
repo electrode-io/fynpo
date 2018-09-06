@@ -347,8 +347,12 @@ class Fyn {
   }
 
   async loadPackageJsonFile(filename) {
-    const buf = await Fs.readFile(filename);
-    return await this.parsePackageJsonData(filename, buf);
+    try {
+      const buf = await Fs.readFile(filename);
+      return await this.parsePackageJsonData(filename, buf);
+    } catch (err) {
+      throw new Error(`reading ${filename} - ${err.message}`);
+    }
   }
 
   async readPkgJson(pkg, dir) {
