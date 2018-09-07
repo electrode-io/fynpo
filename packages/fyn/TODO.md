@@ -10,6 +10,8 @@
 
 ## Support URL semver
 
+Done through the use of npm pacote.
+
 * git URL semver
 
   * If a dep specifies semver as a git URL, then need to retrieve it locally and load its `package.json` into meta and resolve with FS ops.
@@ -51,9 +53,9 @@
 
 ## Windows Support
 
-* Support linking `.bin`
-* Support checking for semver that is a filepath
-* Handle looking up user's home dir for .fynrc and .fyn dir.
+* [x] Support linking `.bin`
+* [x] Support checking for semver that is a filepath
+* [x] Handle looking up user's home dir for .fynrc and .fyn dir.
 
 ## Core
 
