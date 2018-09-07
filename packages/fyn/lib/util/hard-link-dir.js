@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable max-params */
+/* eslint-disable max-params, max-statements */
 
 /*
  * clone another directory by:
