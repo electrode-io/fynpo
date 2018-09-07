@@ -81,37 +81,34 @@ class PkgDistExtractor {
 
       await this._fyn.createPkgOutDir(fullOutDir);
 
-      logger.debug("extracting", `${pkg.name} ${pkg.version}`, "to", fullOutDir);
+      logger.debug("getting", `${pkg.name} ${pkg.version}`, "to", fullOutDir);
 
       const result = data.result;
       let act;
       let retrieve;
       if (typeof result === "string") {
         act = "hardlinked";
-        retrieve = () => this._fyn.central.replicate(result, fullOutDir);
+        await this._fyn.central.replicate(result, fullOutDir);
       } else {
         act = "extracted";
-        retrieve = () =>
-          new Promise((resolve, reject) => {
-            const stream = result.pipe(
-              Tar.x({
-                strip: 1,
-                strict: true,
-                C: fullOutDir
-              })
-            );
-            stream.on("error", reject);
-            stream.on("close", resolve);
-          });
+        await new Promise((resolve, reject) => {
+          const stream = result.pipe(
+            Tar.x({
+              strip: 1,
+              strict: true,
+              C: fullOutDir
+            })
+          );
+          stream.on("error", reject);
+          stream.on("close", resolve);
+        });
       }
 
       const msg = logFormat.pkgPath(pkg.name, fullOutDir);
       logger.updateItem(LOAD_PACKAGE, `${act} ${msg}`);
-
-      await retrieve();
     }
 
-    return await this._fyn.readPkgJson(pkg, fullOutDir);
+    return this._fyn.readPkgJson(pkg, fullOutDir);
   }
 }
 
