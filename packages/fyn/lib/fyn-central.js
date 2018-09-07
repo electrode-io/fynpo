@@ -189,7 +189,7 @@ class FynCentral {
   async _storeTarStream(info, stream) {
     const tmp = `${info.contentPath}.tmp`;
 
-    await Fs.$.mkdirp(tmp);
+    await Fs.$.rimraf(tmp); // in case there was any reminant left from an interrupted install
     const targetDir = Path.join(tmp, "package");
     await Fs.$.mkdirp(targetDir);
     info.tree = await this._untarStream(
