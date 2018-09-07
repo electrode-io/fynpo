@@ -20,7 +20,7 @@ const execBootstrap = parsed => {
   let statusCode = 0;
   logger.debug("CLI options", JSON.stringify(parsed));
   return bootstrap
-    .exec({ build: parsed.opts.build })
+    .exec({ build: parsed.opts.build, fynOpts: parsed.opts.fynOpts })
     .then(() => {
       bootstrap.logErrors();
       statusCode = bootstrap.failed;
