@@ -12,6 +12,8 @@ const logger = require("./logger");
 const lockfile = require("lockfile");
 const acquireLock = Promise.promisify(lockfile.lock, { context: lockfile });
 const releaseLock = Promise.promisify(lockfile.unlock, { context: lockfile });
+const mississippi = require("mississippi");
+const missPipe = Promise.promisify(mississippi.pipe, { context: mississippi });
 
 const isWin32 = process.platform === "win32";
 
@@ -136,39 +138,37 @@ class FynCentral {
 
   _untarStream(tarStream, targetDir) {
     const dirTree = { "/": {} };
+
     const strip = 1;
-    return new Promise((resolve, reject) => {
-      const stream = tarStream.pipe(
-        Tar.x({
-          strip,
-          strict: true,
-          C: targetDir,
-          onentry: entry => {
-            const parts = entry.path.split(/\/|\\/);
-            const isDir = entry.type === "Directory";
-            const dirs = parts.slice(strip, isDir ? parts.length : parts.length - 1);
 
-            const wtree = dirs.reduce((wt, dir) => {
-              return wt[dir] || (wt[dir] = { "/": {} });
-            }, dirTree);
+    const untarStream = Tar.x({
+      strip,
+      strict: true,
+      C: targetDir,
+      onentry: entry => {
+        const parts = entry.path.split(/\/|\\/);
+        const isDir = entry.type === "Directory";
+        const dirs = parts.slice(strip, isDir ? parts.length : parts.length - 1);
 
-            if (isDir) return;
+        const wtree = dirs.reduce((wt, dir) => {
+          return wt[dir] || (wt[dir] = { "/": {} });
+        }, dirTree);
 
-            const fname = parts[parts.length - 1];
-            if (fname) {
-              const m = Math.round((entry.mtime ? entry.mtime.getTime() : Date.now()) / 1000);
-              wtree["/"][fname] = {
-                z: entry.size,
-                m,
-                $: entry.header.cksumValid && entry.header.cksum
-              };
-            }
-          }
-        })
-      );
-      stream.on("error", reject);
-      stream.on("close", () => resolve(dirTree));
+        if (isDir) return;
+
+        const fname = parts[parts.length - 1];
+        if (fname) {
+          const m = Math.round((entry.mtime ? entry.mtime.getTime() : Date.now()) / 1000);
+          wtree["/"][fname] = {
+            z: entry.size,
+            m,
+            $: entry.header.cksumValid && entry.header.cksum
+          };
+        }
+      }
     });
+
+    return missPipe(tarStream, untarStream).then(() => dirTree);
   }
 
   async _acquireTmpLock(info) {
@@ -220,6 +220,7 @@ class FynCentral {
           await this._storeTarStream(info, stream);
           stream = undefined;
           this._map.set(integrity, info);
+          logger.debug("fyn-central storeTarStream: stored", info.contentPath);
         }
       }
     } finally {
