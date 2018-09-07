@@ -559,9 +559,9 @@ class PkgSrcManager {
       }
 
       return integrity;
+    } else {
+      return tarStream();
     }
-
-    return tarStream();
   }
 
   fetchTarball(pkgInfo) {
