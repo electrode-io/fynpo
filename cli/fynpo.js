@@ -20,7 +20,11 @@ const execBootstrap = parsed => {
   let statusCode = 0;
   logger.debug("CLI options", JSON.stringify(parsed));
   return bootstrap
-    .exec({ build: parsed.opts.build, fynOpts: parsed.opts.fynOpts })
+    .exec({
+      build: parsed.opts.build,
+      fynOpts: parsed.opts.fynOpts,
+      concurrency: parsed.opts.concurrency
+    })
     .then(() => {
       bootstrap.logErrors();
       statusCode = bootstrap.failed;
@@ -86,6 +90,12 @@ const nixClap = new NixClap({
           type: "boolean",
           default: true,
           desc: "run npm script build if no prepare"
+        },
+        concurrency: {
+          alias: "cc",
+          type: "number",
+          default: 3,
+          desc: "number of packages to bootstrap concurrenly"
         }
       }
     },
