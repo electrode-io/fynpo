@@ -104,7 +104,7 @@ const debug = false;
       _.defaults(stepAction, nulStepAction);
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
 
-      const testCase = it(`${step}${stepTitle}`, () => {
+      const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
         return Promise.try(() => stepAction.before())
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
