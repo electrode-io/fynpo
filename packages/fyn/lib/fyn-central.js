@@ -7,13 +7,12 @@ const Fs = require("./util/file-ops");
 const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
+const { retry, missPipe } = require("./util/fyntil");
 const { linkFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
 const lockfile = require("lockfile");
 const acquireLock = Promise.promisify(lockfile.lock, { context: lockfile });
 const releaseLock = Promise.promisify(lockfile.unlock, { context: lockfile });
-const mississippi = require("mississippi");
-const missPipe = Promise.promisify(mississippi.pipe, { context: mississippi });
 
 const isWin32 = process.platform === "win32";
 
@@ -35,19 +34,6 @@ function flattenTree(tree, output, baseDir) {
   }
 
   return output;
-}
-
-function retry(func, checks, tries, wait) {
-  return Promise.try(func).catch(err => {
-    if (tries <= 0) throw err;
-    tries--;
-    return Promise.try(
-      () => (Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err))
-    ).then(canRetry => {
-      if (!canRetry) throw err;
-      return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
-    });
-  });
 }
 
 class FynCentral {
@@ -176,7 +162,7 @@ class FynCentral {
 
     try {
       await Fs.$.mkdirp(Path.dirname(info.contentPath));
-      await acquireLock(tmpLock, { wait: 15 * 1000, pollPeriod: 100, stale: 300 * 1000 });
+      await acquireLock(tmpLock, { wait: 45 * 1000, pollPeriod: 250, stale: 300 * 1000 });
     } catch (err) {
       logger.error("fyn-central storeTarStream - unable to acquire", tmpLock);
       const msg = err.message && err.message.replace(tmpLock, "<lockfile>");

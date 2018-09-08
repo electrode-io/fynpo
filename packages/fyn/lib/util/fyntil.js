@@ -6,12 +6,30 @@
 const Fs = require("./file-ops");
 const Path = require("path");
 const logger = require("../logger");
+const Promise = require("bluebird");
+const mississippi = require("mississippi");
+const missPipe = Promise.promisify(mississippi.pipe, { context: mississippi });
 
 const isWin32 = process.platform === "win32";
 
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
 
 module.exports = {
+  missPipe,
+
+  retry: function retry(func, checks, tries, wait) {
+    return Promise.try(func).catch(err => {
+      if (tries <= 0) throw err;
+      tries--;
+      return Promise.try(
+        () => (Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err))
+      ).then(canRetry => {
+        if (!canRetry) throw err;
+        return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
+      });
+    });
+  },
+
   exit: function exit(err) {
     process.exit(err ? 1 : 0);
   },

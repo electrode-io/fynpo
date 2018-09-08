@@ -9,6 +9,7 @@ const Fs = require("./util/file-ops");
 const logFormat = require("./util/log-format");
 const xaa = require("./util/xaa");
 const { LOAD_PACKAGE } = require("./log-items");
+const { retry, missPipe } = require("./util/fyntil");
 
 class PkgDistExtractor {
   constructor(options) {
@@ -91,24 +92,33 @@ class PkgDistExtractor {
         await this._fyn.central.replicate(result, fullOutDir);
       } else {
         act = "extracted";
-        await new Promise((resolve, reject) => {
-          const stream = result.pipe(
-            Tar.x({
-              strip: 1,
-              strict: true,
-              C: fullOutDir
-            })
-          );
-          stream.on("error", reject);
-          stream.on("close", resolve);
+        const untarStream = Tar.x({
+          strip: 1,
+          strict: true,
+          C: fullOutDir
         });
+        await missPipe(result, untarStream);
       }
 
       const msg = logFormat.pkgPath(pkg.name, fullOutDir);
       logger.updateItem(LOAD_PACKAGE, `${act} ${msg}`);
     }
 
-    return this._fyn.readPkgJson(pkg, fullOutDir);
+    // when there're numerous fyn with central store enabled install happening,
+    // somehow read pkg json of the newly linked package fails, but then the
+    // file is there when inspect after. Basically wtf!  anyways, throw in some
+    // retry, and it does occur and then succeeds.  Tested on Macbook pro High Sierra.
+    let retries = 0;
+    return retry(
+      () => this._fyn.readPkgJson(pkg, fullOutDir),
+      () => {
+        retries++;
+        logger.warn(`retrying ${retries} reading package.json`, fullOutDir);
+        return true;
+      },
+      5,
+      10
+    );
   }
 }
 
