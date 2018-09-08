@@ -44,7 +44,7 @@
     "lodash": "^4.17.10",
     "mississippi": "^3.0.0",
     "mkdirp": "^0.5.1",
-    "nix-clap": "^1.3.3",
+    "nix-clap": "^1.3.4",
     "npm-packlist": "^1.1.11",
     "opfs": "^1.1.0",
     "optional-require": "^1.0.0",

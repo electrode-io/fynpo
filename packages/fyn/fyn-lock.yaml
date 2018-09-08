@@ -3782,11 +3782,11 @@ nise:
    text-encoding: ^0.6.4
 nix-clap:
  _:
-  '^1.0.8,^1.3.3': 1.3.3
- 1.3.3:
+  '^1.0.8,^1.3.4': 1.3.4
+ 1.3.4:
   top: 1
-  $: sha512-sXqEgND90DesV02QyDrVE4KLvdYkNUPSydY9Xd12hJn9HM+s9ujBvvJ3fqmHKFc3/cL3C9QrbHvJvy44LZ+oqQ==
-  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.3.tgz'
+  $: sha512-6srKaSF6+dLW2ShyxP+X/5BMxpxNQ552eFjx6rdFqQLt9af7NC5R5e59PabEO3wB96jV0F0Cw3MrbT0zZrQwuw==
+  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.4.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-fetch-npm:
