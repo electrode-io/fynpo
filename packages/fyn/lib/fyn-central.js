@@ -188,7 +188,7 @@ class FynCentral {
     await retry(() => Fs.rename(tmp, info.contentPath), ["EACCESS", "EPERM"], RENAME_RETRIES, 100);
   }
 
-  async storeTarStream(integrity, stream) {
+  async storeTarStream(pkgId, integrity, stream) {
     let tmpLock = false;
 
     try {
@@ -203,10 +203,11 @@ class FynCentral {
         if (info.tree) {
           logger.debug("fyn-central storeTarStream: found after lock acquired", info.contentPath);
         } else {
+          logger.debug("storing tar to central store", pkgId, integrity);
           await this._storeTarStream(info, stream);
           stream = undefined;
           this._map.set(integrity, info);
-          logger.debug("fyn-central storeTarStream: stored", info.contentPath);
+          logger.debug("fyn-central storeTarStream: stored", pkgId, info.contentPath);
         }
       }
     } finally {
