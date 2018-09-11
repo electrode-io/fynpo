@@ -3,17 +3,11 @@
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-# fyn - Node Module Development Made Easy
+# fyn - Large Scale NodeJS Development Made Easy
 
-`fyn` is the result of a long pursuit for an easier workflow when developing over multiple node modules locally. It offers a simple way to develop and test across multiple modules effortlessly.
+`fyn` is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
 
 Over the course of realizing this goal, `fyn` gradually became a fully functional and super fast node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
-
-As a package manager, it employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
-
-At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
-
-When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
 
 See [features](#features) for its key benefits.
 
@@ -24,8 +18,9 @@ See [features](#features) for its key benefits.
 - [Features](#features)
 - [Thank you `npm`](#thank-you-npm)
 - [Overview](#overview)
-  - [Enhanced Local Modules Development](#enhanced-local-modules-development)
+  - [Rationale](#rationale)
     - [`fyn` Local Linking Install](#fyn-local-linking-install)
+  - [Using with Lerna](#using-with-lerna)
     - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
   - [Package Resolution and Layout](#package-resolution-and-layout)
 - [Install](#install)
@@ -36,7 +31,6 @@ See [features](#features) for its key benefits.
     - [Scope registry](#scope-registry)
   - [Central Storage](#central-storage)
 - [Compatibility](#compatibility)
-- [Using with Lerna](#using-with-lerna)
 - [License](#license)
 
 # Features
@@ -68,13 +62,32 @@ Other than benefiting from the massive package ecosystem and all the documents f
 
 # Overview
 
-## Enhanced Local Modules Development
+`fyn`'s intend is to help make your NodeJS development workflow easier. To realize that, it ultimately ends up being a Node Package Manager.
 
-- Have you ever need to set a breakpoint in a module within `node_modules`?
+As a package manager, it employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
 
-- Maybe you need to make some changes in some code in `node_modules` and test, but then you have to copy them out if you want to keep your changes.
+At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
 
-With `fyn`, it comes with features specifically designed to make your "debugging" `node_modules` easier.
+When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
+
+If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, you might want to read on to find out more.
+
+## Rationale
+
+So why would you want to use this?
+
+Well, if you just want to try a different approach to installing your `node_modules`, then it's worth a look. `fyn`'s `node_modules` is the smallest in size because there are no multiple copies of the exact same package installed.
+
+`fyn` is designed to make advanced and complex software projects in NodeJS much easier to maintain and develop.
+
+It has a local linking install feature that makes Node development easy. It would be very useful if you've ever done any of these:
+
+- Debug your application by inspecting code inside `node_modules`.
+- Found and fix a bug in your that's been install within another app's `node_modules`, and then have to copy the changes out to commit.
+- Use [lerna] to maintain and develop multiple packages.
+- Or just have to juggle a lot of packages as part of your development.
+
+In particular, when you work on packages that depend on other packages that you are also working on, keeping updates from one to the other can be hard to manage and track. With `fyn`, it makes developing complex NodeJS projects that involve many packages very managable. It works particularly well with a [lerna] repo.
 
 ### `fyn` Local Linking Install
 
@@ -91,6 +104,16 @@ fyn add ../my-awesome-module
 That will install `my-awesome-module` into your node_modules. You can continue to develop and test `my-awesome-module` in its own directory and have the changes within existing files reflected in your app directly. Unlike `npm link`, your app resolves dependencies for `my-awesome-module` instead of relying on having them installed under `my-awesome-module/node_modules`.
 
 If you add/remove files/directories in your local package, then running `fyn` install would take only seconds to update.
+
+## Using with Lerna
+
+[lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
+
+`fyn` works particularly well with a [lerna] monorepo, but of course since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
+
+To bootstrap a [lerna] repo with `fyn`'s enhanced `npm link`, please use the module [fynpo].
+
+`fyn` also has a [central storage](#central-storage) option that would saves you a lot of disk space when working with [lerna] repos.
 
 ### Easier Debugging `node_modules`
 
@@ -249,14 +272,6 @@ centralStore=true
   If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which should be avoided. The subtle difference is that with preserve symlink, each symlink path of the same module will be loaded as its own instance by Node's module system.
 
 - `fyn` can't handle npm's `npm-shrinkwrap.json` and `package-lock.json` files.
-
-# Using with Lerna
-
-[lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
-
-`fyn` works particularly well with a [lerna] monorepo, but of course since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
-
-To bootstrap a [lerna] repo with `fyn`'s enhanced `npm link`, please use the module [fynpo].
 
 # License
 
