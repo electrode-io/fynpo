@@ -2462,6 +2462,7 @@ fsevents:
  _:
   ^1.2.2: 1.2.4
  1.2.4:
+  hasI: 1
   $: sha512-z8H8/diyk76B7q5wg+Ud0+CqzcAF3mBBI/bA5ne5zrRUUIvNkJY//D3BqyH571KuAC4Nr7Rw7CjWX4r0y9DvNg==
   _: 'https://registry.npmjs.org/fsevents/-/fsevents-1.2.4.tgz'
   dependencies:
@@ -4944,6 +4945,7 @@ sinon:
  _:
   ^4.0.1: 4.5.0
  4.5.0:
+  hasI: 1
   $: sha512-trdx+mB0VBBgoYucy6a9L7/jfQOmvGeaKZT4OOJ+lPAtI8623xyGr8wLiE4eojzBS8G9yXbhx42GHUOVLr4X2w==
   _: 'https://registry.npmjs.org/sinon/-/sinon-4.5.0.tgz'
   dependencies:
@@ -5490,6 +5492,7 @@ uglifyjs-webpack-plugin:
  _:
   ^0.4.6: 0.4.6
  0.4.6:
+  hasI: 1
   $: sha1-uVH0q7a9YX5m9j64kUmOORdj4wk=
   _: 'https://registry.npmjs.org/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-0.4.6.tgz'
   dependencies:

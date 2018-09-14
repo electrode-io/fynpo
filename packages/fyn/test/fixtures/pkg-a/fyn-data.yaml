@@ -10,7 +10,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: 65f76cb93c52f0b5f9ca6d63a8f2154d5a8df5b7
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
+        tarball: "http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz"
       name: mod-a
       version: 1.1.2
       res: {}
@@ -26,7 +26,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: 54037e464c1472bbb0e59650941ac0dce6d24f19
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
+        tarball: "http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz"
       name: mod-a
       version: 2.0.0
       res: {}
@@ -40,7 +40,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: b2a0cd1039bc4abc9edf99bdbc580e572f1ca4e9
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
+        tarball: "http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz"
       name: mod-a
       version: 0.2.0
       res: {}
@@ -54,7 +54,7 @@ pkgs:
       dsrc: opt
       dist:
         shasum: 841f1217199537d9a59b34804a63bcddccaaad2e
-        tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
+        tarball: "http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz"
       name: mod-a
       version: 0.4.5
       res: {}
@@ -73,7 +73,7 @@ pkgs:
       dsrc: dev;dep
       dist:
         shasum: ce4e3d545e0417880e449cf12ed73829bb5f5706
-        tarball: 'http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz'
+        tarball: "http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz"
       name: mod-b
       version: 1.0.0
       res:
@@ -101,7 +101,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: 2efff15fa17d11015003abf2321ae89a65bfdb39
-        tarball: 'http://localhost:4873/mod-c/-/mod-c-1.2.0.tgz'
+        tarball: "http://localhost:4873/mod-c/-/mod-c-1.2.0.tgz"
       name: mod-c
       version: 1.2.0
       res:
@@ -126,7 +126,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: 2a0c1c4352196761a54b3c58f178651411460f2a
-        tarball: 'http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz'
+        tarball: "http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz"
       name: mod-d
       version: 3.0.1
       res:
@@ -152,7 +152,7 @@ pkgs:
       dsrc: opt
       dist:
         shasum: b0db693c46a57df3cea6c4729a23a34e49821978
-        tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+        tarball: "http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz"
       name: mod-e
       version: 2.1.1
       res:
@@ -166,6 +166,7 @@ pkgs:
             resolved: 0.4.5
       top: true
       preInstalled: true
+      hasPI: 1
       firstReqIdx: 0
       dev: 1
       promoted: true
@@ -181,7 +182,7 @@ pkgs:
       dsrc: dep
       dist:
         shasum: 23fb0db8ccc983ae30f4d5521d460de402ec07ad
-        tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
+        tarball: "http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz"
       name: mod-f
       version: 2.1.1
       res: {}
@@ -194,9 +195,10 @@ badPkgs:
       requests: []
       src: opt
       dsrc: opt
+      hasPI: 1
       dist:
         shasum: 10fda4400b6e30ab00165431643b95b1425b7111
-        tarball: 'http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz'
+        tarball: "http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz"
       name: mod-err
       version: 4.5.1
       res: {}
