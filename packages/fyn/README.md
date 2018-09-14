@@ -271,7 +271,10 @@ The recommendation is to add the following to `.fynrc` because then you don't ha
 centralStore=true
 ```
 
-And to work around the issues 2 and 3, `fyn` has a `--copy` option that allows you to force any package to install with copying instead of hardlinking.
+And to work around the issues, `fyn` does the following:
+
+- issue 2: `fyn` has a `--copy` option that allows you to force any package to install with copying instead of hardlinking.
+- issue 3: `fyn` will not hard link packages from central store if they have `preinstall`, `install`, or `postinstall` npm scripts.
 
 # Compatibility
 
