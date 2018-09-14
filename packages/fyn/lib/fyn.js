@@ -66,6 +66,10 @@ class Fyn {
     Fs.writeFileSync(this._pkgFile, `${JSON.stringify(this._pkg, null, 2)}\n`);
   }
 
+  get copy() {
+    return this._options.copy || [];
+  }
+
   get central() {
     return this._central;
   }

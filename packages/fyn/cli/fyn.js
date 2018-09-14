@@ -101,6 +101,11 @@ const options = {
     desc: "keep single copy of packages in central store",
     default: false
   },
+  "copy": {
+    type: "string array",
+    alias: "cp",
+    desc: "copy package even in central store mode"
+  },
   "log-level": {
     alias: "q",
     type: "string",
