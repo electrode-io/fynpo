@@ -80,13 +80,19 @@ class PkgDepLocker {
           const meta = {};
           const dist = vpkg.dist || {};
           if (vpkg.top) meta.top = 1;
+          const scripts = json.scripts || {};
           if (vpkg.optFailed) {
             meta.optFailed = 1;
             // no need to remember whether there's preinstall or not if
             // it's already marked as failed.
-          } else if (_.get(json, "scripts.preinstall") || vpkg.hasPI) {
+          } else if (scripts.preinstall || vpkg.hasPI) {
             meta.hasPI = 1;
           }
+
+          if (scripts.install || scripts.postinstall || scripts.postInstall) {
+            meta.hasI = 1;
+          }
+
           if (vpkg.local) {
             meta.$ = "local";
             meta._ = dist.fullPath;
