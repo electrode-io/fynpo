@@ -26,7 +26,7 @@ class PkgDepLinker {
   makeAppFynRes(resData, fynFo) {
     const depRes = {};
 
-    _.each(["dep", "dev", "opt"], section => {
+    _.each(["dep", "dev", "opt", "devopt"], section => {
       _.each(resData[section], (resInfo, depName) => {
         depRes[depName] = Object.assign({}, resInfo);
       });
