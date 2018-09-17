@@ -50,7 +50,8 @@ class ShowStat {
     }
 
     const check = (res, vpkg) => {
-      if (res && semverUtil.satisfies(res.resolved, ask.version)) {
+      const semv = ask.local ? semverUtil.unlocalify(ask.version) : ask.version;
+      if (res && semverUtil.satisfies(res.resolved, semv)) {
         dependents.push(vpkg);
       }
     };
