@@ -292,7 +292,6 @@ class PkgDepResolver {
       for (const name in fynDeps) {
         if (!deps[name]) {
           logger.warn(`You ONLY defined ${name} in fyn.${sec}!`);
-          continue;
         }
         if (!rawInfo.dir) continue;
         try {
