@@ -16,9 +16,13 @@ See [features](#features) for its key benefits.
 # Table Of Contents
 
 - [Features](#features)
+  - [Unique](#unique)
+  - [General](#general)
 - [Overview](#overview)
   - [Rationale](#rationale)
-    - [`fyn` Local Linking Install](#fyn-local-linking-install)
+    - [Flatten node_modules](#flatten-node_modules)
+    - [Handling Local Package](#handling-local-package)
+    - [`fynlocal` mode](#fynlocal-mode)
     - [The `stat` command](#the-stat-command)
     - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
     - [Using with Lerna](#using-with-lerna)
@@ -36,38 +40,56 @@ See [features](#features) for its key benefits.
 
 # Features
 
-- A super fast node package manager for installing modules.
-- Make developing large NodeJS applications easier and more manageable.
-- 100% compatible with NodeJS and its ecosystem.
-- Smallest `node_modules` size possible.
-- Clean and flexible dependency locking.
-- Always deterministic `node_modules` installation.
-- Show detailed stats of your dependencies.
-- Proper handling of `optionalDependencies`.
-- Keeping compatibility by internally using the same modules as [npm].
+## Unique
+
+- A flatten `node_modules` structure that has smaller size
+- Install local packages like they are published (`fynlocal` mode)
+- Makes developing large NodeJS applications easier and more manageable.
+- Works particularly well with [lerna] monorepos.
+- Shows detailed stats of your dependencies.
 - Efficient disk space usage with optional [central storage](#central-storage).
 - Central storage mode is fast (and very fast on Linux) once cache is hot.
-- Works particularly well with [lerna] monorepos.
+
+## General
+
+- A super fast node package manager for installing modules.
+- 100% compatible with NodeJS and its ecosystem.
+- Clean and flexible dependency locking.
+- Always deterministic `node_modules` installation.
+- Proper handling of `optionalDependencies`.
+- Keeping compatibility by internally using the same modules as [npm].
 
 # Overview
 
 `fyn`'s intend is to help make your NodeJS development workflow easier. To realize that, it ultimately ends up being a Node Package Manager.
 
-As a package manager, it employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
+While it has all the bells and whistles to make it a extremely fast and efficient package manager, it's not just another [npm].
 
-At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
-
-When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
+It comes with two unique features that are very useful when you are working on a large NodeJS application that consists of many packages.
 
 ## Rationale
 
 So why would you want to use this?
 
-Well, if you just want to try a different approach to installing your `node_modules`, then it's worth a look. `fyn`'s `node_modules` is the smallest in size because there are no multiple copies of the exact same package installed.
+Well, if you just want to try a different approach to installing your `node_modules`, then it's worth a look.
 
-Beyond that, `fyn` is designed to make advanced and complex software projects in NodeJS much easier to maintain and develop.
+`fyn`'s flatten `node_modules` is the smallest in size because there are no multiple copies of the exact same package installed.
 
-- It has a local linking install feature that makes Node development easy. It would be very useful if you've ever done any of these:
+It also has a special `fynlocal` mode for handling local packages.
+
+### Flatten node_modules
+
+As a package manager, `fyn` employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
+
+At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
+
+When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
+
+### Handling Local Package
+
+`fyn` is designed to make advanced and complex software projects in NodeJS much easier to maintain and develop.
+
+- It has a so called `fynlocal` mode, which treats your package repo on your local disk like it's published to the registry. This allows you to update all your packages and test them in your application directly without publishing. It would be very useful if you've ever done any of these:
 
   - Debug your application by inspecting code inside `node_modules`.
   - Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.
@@ -78,7 +100,7 @@ In particular, when you have inter depending local packages, keeping updates fro
 
 If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, you might want to read on to find out more.
 
-### `fyn` Local Linking Install
+### `fynlocal` mode
 
 What is this? Think `npm link`, but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published.
 
