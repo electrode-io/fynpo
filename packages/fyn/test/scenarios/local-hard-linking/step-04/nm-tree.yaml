@@ -1,0 +1,17 @@
+node_modules:
+  .bin:
+    bin1: "-> ../mod-h/bin/bin1.js"
+    bin2: "-> ../mod-h/bin/bin2.js"
+  __fv_:
+    3.0.11:
+      mod-h:
+        package.json: mod-h@3.0.11
+  __fyn_resolutions__.json: file
+  e1:
+    index.js: file
+    node_modules:
+      __fyn_ignore__: file
+      mod-h: "-> ../../__fv_/3.0.11/mod-h"
+    package.json: e1@1.0.0
+  mod-h:
+    package.json: mod-h@1.0.0

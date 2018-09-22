@@ -69,7 +69,7 @@ class PkgDepLinker {
   async addSubNodeModules(depInfo, fvDeps) {
     if (fvDeps.length <= 0) return;
 
-    if (depInfo.local) {
+    if (depInfo.local && depInfo.local === "sym1") {
       this._fyn.addLocalPkgWithNestedDep(depInfo);
       return;
     }
@@ -158,8 +158,9 @@ class PkgDepLinker {
   }
 
   //
-  // Creates the package's directory under node_modules/__fv_/<version>
-  // and make a symlink from there to the actual directory of the local package.
+  // Use symlink to connect fynlocal packages.
+  // First creates the package's directory under node_modules/__fv_/<version>
+  // and then make a symlink from there to the actual directory of the local package.
   //
   async symlinkLocalPackage(fvDir, targetPath) {
     const vdirOneUp = Path.join(fvDir, "..");

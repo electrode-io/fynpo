@@ -59,7 +59,9 @@ const debug = false;
     extraArgs: []
   };
 
-  function executeScenario(cwd, stopStep) {
+  function executeScenario(cwd, options) {
+    const stopStep = options.stopStep;
+    const debugStep = options.debugStep;
     const pkgJsonFile = Path.join(cwd, "package.json");
     const pkgJson = {};
     const files = Fs.readdirSync(cwd).filter(x => x.startsWith("step-"));
@@ -105,6 +107,9 @@ const debug = false;
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
 
       const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
+        if (debug && step === debugStep) {
+          debugger; // eslint-disable-line
+        }
         return Promise.try(() => stepAction.before())
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
@@ -169,8 +174,8 @@ const debug = false;
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
         // "local-sym-linking": { stopStep: "step-02" },
-        // "local-hard-linking": {}
-        "remote-url-semver": {}
+        "local-hard-linking": { stopStep: "step-04", debugStep: "step-04" }
+        // "remote-url-semver": {}
       }
     : {};
 
@@ -199,7 +204,7 @@ const debug = false;
           process.chdir(saveCwd);
         });
 
-        return executeScenario(cwd, f.stopStep);
+        return executeScenario(cwd, f);
       });
     }
   });
