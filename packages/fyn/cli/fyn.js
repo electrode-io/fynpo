@@ -101,7 +101,7 @@ const options = {
     desc: "keep single copy of packages in central store",
     default: false
   },
-  "copy": {
+  copy: {
     type: "string array",
     alias: "cp",
     desc: "copy package even in central store mode"
@@ -163,6 +163,10 @@ const options = {
     alias: "lf",
     default: true,
     desc: "Support lockfile"
+  },
+  "lock-time": {
+    type: "string",
+    desc: "Lock dependencies by time"
   },
   "ignore-dist": {
     alias: "i",

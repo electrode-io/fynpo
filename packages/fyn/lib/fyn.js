@@ -27,6 +27,10 @@ class Fyn {
     this._cwd = options.cwd || process.cwd();
     logger.debug(`fyn options`, JSON.stringify(options));
     this.localPkgWithNestedDep = [];
+    if (options.lockTime) {
+      this._lockTime = new Date(options.lockTime);
+      logger.info("dep lock time set to", this._lockTime.toString());
+    }
   }
 
   async _initialize() {
@@ -106,6 +110,10 @@ class Fyn {
   // lock-only allows skip meta retrieval but still retrieve tgz
   get lockOnly() {
     return this._options.lockOnly && "lock-only";
+  }
+
+  get lockTime() {
+    return this._lockTime;
   }
 
   get showDeprecated() {

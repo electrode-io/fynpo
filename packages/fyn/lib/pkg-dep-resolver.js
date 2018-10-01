@@ -552,9 +552,38 @@ class PkgDepResolver {
         meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(simpleSemverCompare);
       }
 
-      const find = versions => versions && _.find(versions, v => satisfies(v, item.semver));
+      const lockTime = this._fyn.lockTime;
 
-      const resolved = find(meta[LOCK_SORTED_VERSIONS]) || find(meta[SORTED_VERSIONS]);
+      const find = (versions, times) => {
+        if (!versions) return null;
+        const countVer = Object.keys(versions).length;
+
+        return _.find(versions, v => {
+          if (!satisfies(v, item.semver)) {
+            return false;
+          }
+
+          if (!lockTime || !times || !times[v] || countVer < 2) return true;
+
+          const time = new Date(times[v]);
+          if (time > this._fyn.lockTime) {
+            // logger.debug("times", times);
+            logger.verbose(
+              item.name,
+              v,
+              "time",
+              time.toString(),
+              "is newer than lock",
+              this._fyn.lockTime.toString()
+            );
+            return false;
+          }
+
+          return true;
+        });
+      };
+
+      const resolved = find(meta[LOCK_SORTED_VERSIONS]) || find(meta[SORTED_VERSIONS], meta.time);
       // logger.log("found meta version", resolved, "that satisfied", item.name, item.semver);
 
       return resolved;

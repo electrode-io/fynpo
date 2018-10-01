@@ -49,6 +49,7 @@ See [features](#features) for its key benefits.
 - Shows detailed stats of your dependencies.
 - Efficient disk space usage with optional [central storage](#central-storage).
 - Central storage mode is fast (and very fast on Linux) once cache is hot.
+- Install dependencies with a time stamp lock.
 
 ## General
 
@@ -77,6 +78,8 @@ Well, if you just want to try a different approach to installing your `node_modu
 
 It also has a special `fynlocal` mode for handling local packages.
 
+If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, you might want to read on to find out more.
+
 ### Flatten node_modules
 
 As a package manager, `fyn` employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
@@ -97,8 +100,6 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
   - Or just have to juggle a lot of packages as part of your development.
 
 In particular, when you have inter depending local packages, keeping updates from one to the other can be hard to manage and track. With `fyn`, it makes developing complex NodeJS projects that involve many packages very managable. It works particularly well with a [lerna] repo.
-
-If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, you might want to read on to find out more.
 
 ### `fynlocal` mode
 
