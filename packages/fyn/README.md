@@ -64,7 +64,7 @@ See [features](#features) for its key benefits.
 
 `fyn`'s intend is to help make your NodeJS development workflow easier. To realize that, it ultimately ends up being a Node Package Manager.
 
-While it has all the bells and whistles to make it a extremely fast and efficient package manager, it's not just another [npm].
+While it has all the bells and whistles to make it an extremely fast and efficient package manager, it's not just another [npm].
 
 It comes with two unique features that are very useful when you are working on a large NodeJS application that consists of many packages.
 
@@ -78,7 +78,7 @@ Well, if you just want to try a different approach to installing your `node_modu
 
 It also has a special `fynlocal` mode for handling local packages.
 
-If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, you might want to read on to find out more.
+If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, then fyn may be helpful to you. Please read further to learn more.
 
 ### Flatten node_modules
 
