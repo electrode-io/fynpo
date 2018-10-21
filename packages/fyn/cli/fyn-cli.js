@@ -95,7 +95,7 @@ class FynCli {
   }
 
   saveLogs(dbgLog) {
-    Fs.writeFileSync(dbgLog, logger.logData.join("\n") + "\n");
+    Fs.writeFileSync(Path.join(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
   }
 
   fail(msg, err) {
