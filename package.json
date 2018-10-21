@@ -5,8 +5,10 @@
   "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
-    "test": "clap check",
-    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1"
+    "test": "clap -n -x create-tgz electrode/test",
+    "coverage": "clap -n -x create-tgz check",
+    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1",
+    "create-tgz": "node test/fixtures/mock-npm/create-tgz"
   },
   "bin": {
     "fyn": "./bin/fyn.js"
