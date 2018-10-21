@@ -105,6 +105,7 @@ const debug = false;
       const stepAction = optionalRequire(Path.join(stepDir), { default: {} });
       _.defaults(stepAction, nulStepAction);
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
+      let failError;
 
       const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
         if (debug && step === debugStep) {
@@ -139,10 +140,19 @@ const debug = false;
             );
 
             return fynRun(args).catch(err => {
-              if (err.message !== "exit 0") throw err;
+              if (err.message !== "exit 0") failError = err;
             });
           })
           .then(() => {
+            if (stepAction.expectFailure) {
+              if (!failError) {
+                throw new Error("step has expectFailure hook but no failure captured");
+              }
+              stepAction.expectFailure(failError);
+            } else if (failError) {
+              throw failError;
+            }
+
             const nmTree = dirTree.make(cwd, "node_modules");
             if (debug) {
               console.log("nmTree", Yaml.dump(nmTree, 2));
@@ -152,6 +162,14 @@ const debug = false;
             );
             expect(nmTree).to.deep.equal(expectNmTree);
             verifyLock(stepDir);
+          })
+          .catch(err => {
+            if (!debug) {
+              console.log(`scenario test "${step}${stepTitle}" failed, fyn-debug.log follows`);
+              const logs = Fs.readFileSync(Path.join(cwd, "fyn-debug.log")).toString();
+              console.log(logs);
+            }
+            throw err;
           })
           .then(() => stepAction.verify())
           .finally(() => stepAction.after());
