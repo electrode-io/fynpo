@@ -174,8 +174,9 @@ const debug = false;
         // "bin-linker": { stopStep: "step-03" }
         // "missing-peer-dep": {}
         // "local-sym-linking": { stopStep: "step-02" },
-        "local-hard-linking": { stopStep: "step-04", debugStep: "step-04" }
+        // "local-hard-linking": { stopStep: "step-04", debugStep: "step-04" }
         // "remote-url-semver": {}
+        "platform-check": {}
       }
     : {};
 
