@@ -40,7 +40,9 @@ const makePackage = options => {
       "license",
       "dependencies",
       "peerDependencies",
-      "optionalDependencies"
+      "optionalDependencies",
+      "os",
+      "cpu"
     ]),
     customPkg,
     customVerPkg
