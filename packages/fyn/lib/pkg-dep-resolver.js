@@ -19,6 +19,8 @@ const createDefer = require("./util/defer");
 const simpleSemverCompare = semverUtil.simpleCompare;
 const logFormat = require("./util/log-format");
 const { LONG_WAIT_META } = require("./log-items");
+const { checkPkgOsCpu } = require("./util/fyntil");
+
 const {
   SEMVER,
   RSEMVERS,
@@ -378,6 +380,8 @@ class PkgDepResolver {
       }
     }
 
+    const metaJson = meta.versions[resolved];
+
     //
     // specified as optionalDependencies
     // add to opt resolver to resolve later
@@ -389,6 +393,12 @@ class PkgDepResolver {
     // to download its tarball again to test.
     //
     if (item.dsrc && item.dsrc.includes("opt") && !item.optChecked) {
+      const sysCheck = checkPkgOsCpu(metaJson);
+      logger.info("doing optional check for", item.name, metaJson, sysCheck);
+      if (sysCheck !== true) {
+        logger.info("package", logFormat.pkgId(item), "optional check failed:", sysCheck);
+        return;
+      }
       logger.verbose("adding package", item.name, item.semver, item.resolved, "to opt check");
       this._optResolver.add({ item, meta });
       return;
@@ -406,8 +416,6 @@ class PkgDepResolver {
     }
 
     let firstSeenVersion = false;
-
-    const metaJson = meta.versions[resolved];
 
     if (!pkgV) {
       firstSeenVersion = true;

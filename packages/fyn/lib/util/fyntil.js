@@ -27,6 +27,35 @@ function retry(func, checks, tries, wait) {
   });
 }
 
+const checkFiltering = (rules, userValue) => {
+  if (!rules || rules.length === 0) {
+    return true;
+  }
+
+  const denies = rules.filter(x => x[0] === "!");
+
+  // explicitly deny value immediately fails
+  if (denies.indexOf(`!${userValue}`) >= 0) {
+    return false;
+  }
+
+  const accepts = rules.filter(x => x[0] !== "!");
+
+  // if no explicitly spelled out values to accept then anything not denied
+  // is accepted.
+  if (accepts.length === 0) {
+    return true;
+  }
+
+  // explicitly accept value immediately satisfies
+  if (rules.indexOf(userValue) >= 0) {
+    return true;
+  }
+
+  // finally not satisfies
+  return false;
+};
+
 module.exports = {
   missPipe,
 
@@ -98,5 +127,19 @@ module.exports = {
     }
 
     return existTarget;
+  },
+
+  checkFiltering,
+
+  checkPkgOsCpu: pkg => {
+    if (pkg.hasOwnProperty("os") && !checkFiltering(pkg.os, process.platform)) {
+      return `your platform ${process.platform} doesn't satisfy required os ${pkg.os}`;
+    }
+
+    if (pkg.hasOwnProperty("cpu") && !checkFiltering(pkg.cpu, process.arch)) {
+      return `your cpu/arch ${process.arch} doesn't satisfy required cpu ${pkg.cpu}`;
+    }
+
+    return true;
   }
 };
