@@ -108,6 +108,8 @@ class PkgDepLocker {
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
           const bd = json.bundleDependencies || json.bundledDependencies;
           if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
+          if (json.os) meta.os = json.os;
+          if (json.cpu) meta.cpu = json.cpu;
 
           pkgLock[version] = meta;
         });
