@@ -7,6 +7,7 @@
   "scripts": {
     "test": "clap -n -x create-tgz electrode/test",
     "coverage": "clap -n -x create-tgz check",
+    "ci": "clap -n -x bundle coverage",
     "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1",
     "create-tgz": "node test/fixtures/mock-npm/create-tgz"
   },
