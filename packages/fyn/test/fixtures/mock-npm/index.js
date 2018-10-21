@@ -96,9 +96,13 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
       handler: (request, reply) => {
         const pkgName = request.params.pkgName;
         const tgzFile = request.params.tgzFile;
+        if (pkgName.indexOf("-bad-") >= 0) {
+          logger.error("mock-npm server: ERROR: trying to fetch tgz of", pkgName);
+          return reply("fetch bad tgz not allowed").code(500);
+        }
         logger.debug(new Date().toLocaleString() + ":", "fetching", pkgName, tgzFile);
         const pkg = Fs.readFileSync(Path.join(packagesDir, tgzFile));
-        reply(pkg)
+        return reply(pkg)
           .header("Content-Disposition", "inline")
           .header("Content-type", "application/x-gzip");
       }

@@ -382,6 +382,13 @@ class PkgDepResolver {
 
     const metaJson = meta.versions[resolved];
 
+    const platformCheck = () => {
+      const sysCheck = checkPkgOsCpu(metaJson);
+      if (sysCheck !== true) {
+        return `package ${logFormat.pkgId(item)} platform check failed: ${sysCheck}`;
+      }
+      return true;
+    };
     //
     // specified as optionalDependencies
     // add to opt resolver to resolve later
@@ -393,10 +400,9 @@ class PkgDepResolver {
     // to download its tarball again to test.
     //
     if (item.dsrc && item.dsrc.includes("opt") && !item.optChecked) {
-      const sysCheck = checkPkgOsCpu(metaJson);
-      logger.info("doing optional check for", item.name, metaJson, sysCheck);
+      const sysCheck = platformCheck();
       if (sysCheck !== true) {
-        logger.info("package", logFormat.pkgId(item), "optional check failed:", sysCheck);
+        logger.info(`optional dependencies ${sysCheck}`);
         return;
       }
       logger.verbose("adding package", item.name, item.semver, item.resolved, "to opt check");
@@ -404,11 +410,10 @@ class PkgDepResolver {
       return;
     }
 
-    const sysCheck = checkPkgOsCpu(metaJson);
+    const sysCheck = platformCheck();
     if (sysCheck !== true) {
-      const msg = `package ${logFormat.pkgId(item)} platform check failed: ${sysCheck}`;
-      logger.error(msg);
-      throw new Error(msg);
+      logger.error(sysCheck);
+      throw new Error(sysCheck);
     }
 
     if (!kpkg) {
