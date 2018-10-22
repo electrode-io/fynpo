@@ -2470,6 +2470,8 @@ fsevents:
    node-pre-gyp: ^0.10.0
   bundleDependencies:
    - node-pre-gyp
+  os:
+   - darwin
 functional-red-black-tree:
  _:
   ^1.0.1: 1.0.1
