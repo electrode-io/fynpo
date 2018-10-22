@@ -7,7 +7,7 @@
 
 `fyn` is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
 
-Over the course of realizing this goal, `fyn` gradually became a fully functional and super fast node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
+This started out as small experiments and PoCs for a single goal of better local package installing and linking, but has gradually grown to a fully functional and super fast production quality node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
 
 See [features](#features) for its key benefits.
 
@@ -42,9 +42,12 @@ See [features](#features) for its key benefits.
 
 ## Unique
 
-- A flatten `node_modules` structure that has smaller size
-- Install local packages like they are published (`fynlocal` mode)
 - Makes developing large NodeJS applications easier and more manageable.
+- Very comprehensive and proper handling of `optionalDependencies`.
+- A new `devOptDependencies` allows optional `devDependencies`.
+- A flatten `node_modules` structure that has smaller size.
+- The best at installing and linking local packages.
+- Install local packages like they are published (`fynlocal` mode)
 - Works particularly well with [lerna] monorepos.
 - Shows detailed stats of your dependencies.
 - Efficient disk space usage with optional [central storage](#central-storage).
@@ -54,10 +57,10 @@ See [features](#features) for its key benefits.
 ## General
 
 - A super fast node package manager for installing modules.
+- Production quality with a lot of unit tests and verified on real applications.
 - 100% compatible with NodeJS and its ecosystem.
-- Clean and flexible dependency locking.
+- A flat and simple dependency lock file that can be diffed and edited.
 - Always deterministic `node_modules` installation.
-- Proper handling of `optionalDependencies`.
 - Keeping compatibility by internally using the same modules as [npm].
 
 # Overview
