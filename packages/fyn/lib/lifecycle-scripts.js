@@ -110,6 +110,7 @@ class LifecycleScripts {
 
     env.npm_node_execpath = env.NODE = env.NODE || process.execPath;
     env.npm_execpath = fynInstalledDir;
+    env.INIT_CWD = this._fyn.cwd;
 
     return env;
   }
