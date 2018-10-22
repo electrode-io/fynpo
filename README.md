@@ -7,7 +7,7 @@
 
 `fyn` is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
 
-This started out as small experiments and PoCs for a single goal of better local package installing and linking, but has gradually grown to a fully functional and super fast production quality node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
+This started out as a few small experiments and PoCs for a single goal of better local package installing and linking, but has since gradually grown to a fully functional and super fast production quality node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
 
 See [features](#features) for its key benefits.
 
