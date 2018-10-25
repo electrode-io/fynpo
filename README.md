@@ -7,7 +7,7 @@
 
 `fyn` is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
 
-This started out as a few small experiments and PoCs for a single goal of better local package installing and linking, but has since gradually grown to a fully functional and super fast production quality node package manager for the [flat node_modules design] that maintains [100% compatibility](#compatibility).
+This started out as small experiments for a single goal of better local package installing and linking, but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
 
 See [features](#features) for its key benefits.
 
@@ -89,20 +89,20 @@ As a package manager, `fyn` employs a different approach that installs only one 
 
 At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
 
-When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies inside `__fv_`.
+When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies under `__fv_`.
 
 ### Handling Local Package
 
-`fyn` is designed to make advanced and complex software projects in NodeJS much easier to maintain and develop.
+`fyn` is designed to make advanced and complex software projects in NodeJS easier to maintain and develop.
 
-- It has a so called `fynlocal` mode, which treats your package repo on your local disk like it's published to the registry. This allows you to update all your packages and test them in your application directly without publishing. It would be very useful if you've ever done any of these:
+- It has a `fynlocal` mode, which treats your package repo on your local disk like it's published to the registry. This allows you to update all your packages and test them in your application directly without publishing. It would be very useful if you've ever done any of these:
 
   - Debug your application by inspecting code inside `node_modules`.
   - Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.
   - Use [lerna] to maintain and develop multiple packages.
   - Or just have to juggle a lot of packages as part of your development.
 
-In particular, when you have inter depending local packages, keeping updates from one to the other can be hard to manage and track. With `fyn`, it makes developing complex NodeJS projects that involve many packages very managable. It works particularly well with a [lerna] repo.
+In particular, when you have inter depending local packages, testing updates from one to the other can be hard to manage and track. With `fyn`, it makes developing complex NodeJS projects that involve many packages very managable. It works particularly well with a [lerna] repo.
 
 ### `fynlocal` mode
 
@@ -137,15 +137,15 @@ $ fyn stat chalk
 
 ### Easier Debugging `node_modules`
 
-`node_modules` installed by [npm] could potentially have multiple copies of the same version of a package. So even if you've identified the module that you think could help you debug your problem, you may still need to deal with multiple copies of the same version.
+`node_modules` installed by [npm] could potentially have multiple copies of an identical package. So even if you've identified the module under `node_modules` to investigate your issue, you may still need to figure which copy.
 
-With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint. Of course you still have to figure out which version if there are multiple versions of a package though.
+With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint.
 
 ### Using with Lerna
 
 [lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
 
-`fyn` works particularly well with a [lerna] monorepo, but of course since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
+`fyn` works particularly well with a [lerna] monorepo, but since it offers an enhanced `npm link`, it replaces [lerna]'s bootstrap feature.
 
 To bootstrap a [lerna] repo with `fyn`'s enhanced `npm link`, please use the module [fynpo].
 
