@@ -168,6 +168,11 @@ const options = {
     type: "string",
     desc: "Lock dependencies by time"
   },
+  "refresh-optionals": {
+    type: "boolean",
+    default: false,
+    desc: "refresh all optionalDependencies"
+  },
   "ignore-dist": {
     alias: "i",
     type: "boolean",
