@@ -255,12 +255,7 @@ class PkgDepLocker {
       const basedir = Path.dirname(filename);
       this._relativeLocalPath(basedir);
       // sort by package names
-      const sortData = {};
-      Object.keys(this._lockData)
-        .sort()
-        .forEach(k => {
-          sortData[k] = this._lockData[k];
-        });
+      const sortData = sortObjKeys(this._lockData);
       this._fullLocalPath(basedir, sortData);
       const data = Yaml.stringify(sortData, 4, 1);
       const shaSum = this.shasum(data);
