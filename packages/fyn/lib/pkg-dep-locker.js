@@ -233,8 +233,8 @@ class PkgDepLocker {
   }
 
   // convert all local packages paths to under base
-  _fullLocalPath(base) {
-    _.each(this._lockData, pkg => {
+  _fullLocalPath(base, lockData) {
+    _.each(lockData || this._lockData, pkg => {
       _.each(pkg, (vpkg, key) => {
         if (key === "_") return;
         if (vpkg.$ === "local" && !Path.isAbsolute(vpkg._)) {
@@ -254,8 +254,15 @@ class PkgDepLocker {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
       const basedir = Path.dirname(filename);
       this._relativeLocalPath(basedir);
-      const data = Yaml.stringify(this._lockData, 4, 1);
-      this._fullLocalPath(basedir);
+      // sort by package names
+      const sortData = {};
+      Object.keys(this._lockData)
+        .sort()
+        .forEach(k => {
+          sortData[k] = this._lockData[k];
+        });
+      this._fullLocalPath(basedir, sortData);
+      const data = Yaml.stringify(sortData, 4, 1);
       const shaSum = this.shasum(data);
       if (shaSum !== this._shaSum) {
         logger.info("saving lock file", filename);

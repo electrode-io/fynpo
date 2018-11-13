@@ -153,7 +153,7 @@ class PkgOptResolver {
       return processCheckResult(inflight);
     }
 
-    if (_.get(data, ["meta", "versions", version, "optFailed"])) {
+    if (!this._fyn.refreshOptionals && _.get(data, ["meta", "versions", version, "optFailed"])) {
       logFail("by flag optFailed in lockfile");
       const rx = {
         passed: false,
@@ -242,9 +242,9 @@ class PkgOptResolver {
     // is it under node_modules/<name> and has the right version?
     const promise = Promise.try(() => {
       const scripts = pkgFromMeta.scripts;
-      if (pkgFromMeta.hasOwnProperty("$")) {
+      if (pkgFromMeta.fromLocked) {
         // it's locked meta and hasPI is not 1
-        if (pkgFromMeta.hasPI !== 1) {
+        if (!this._fyn.refreshOptionals && pkgFromMeta.hasPI !== 1) {
           return pkgFromMeta;
         }
       } else if (!scripts || !scripts.preinstall) {
@@ -281,9 +281,10 @@ class PkgOptResolver {
           return { passed: false };
         }
         // run npm script `preinstall`
-        const checked = _.get(res, "pkg._fyn.preinstall");
-        if (checked) {
-          logPass("preinstall script already passed");
+        if (!this._fyn.refreshOptionals && _.get(res, "pkg._fyn.preinstall")) {
+          // package already installed and its package.json has _fyn.preinstall set
+          // so do not run preinstall script again
+          logPass("_fyn.preinstall from package.json is true => script already passed");
           return { passed: true };
         } else if (_.get(res, "pkg.scripts.preinstall")) {
           data.runningScript = true;
@@ -306,7 +307,7 @@ class PkgOptResolver {
             });
         } else {
           // no preinstall script, always pass
-          logPass("no preinstall script");
+          logPass(`package ${name} has no preinstall script`);
           return { passed: true };
         }
       })
