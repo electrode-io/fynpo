@@ -7,7 +7,7 @@
   "license": "ISC",
   "repository": "test",
   "dependencies": {
-    "e1": "./e1",
+    "e1": "^1.0.0",
     "mod-h": "^1.0.0"
   },
   "fyn": {

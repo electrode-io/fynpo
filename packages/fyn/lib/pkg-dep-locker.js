@@ -221,12 +221,22 @@ class PkgDepLocker {
   }
 
   // convert all local packages paths relative to from
-  _relativeLocalPath(from) {
-    _.each(this._lockData, pkg => {
-      _.each(pkg, (vpkg, key) => {
-        if (key === "_") return;
+  _relativeLocalPath(from, lockData) {
+    _.each(lockData, (pkg, pkgName) => {
+      let copied = false;
+      Object.keys(pkg).forEach(version => {
+        if (version === "_") return;
+        const vpkg = pkg[version];
         if (vpkg.$ === "local" && Path.isAbsolute(vpkg._)) {
-          vpkg._ = Path.relative(from, vpkg._);
+          if (!copied) lockData[pkgName] = pkg = Object.assign({}, pkg);
+          copied = true;
+          let relPath = Path.relative(from, vpkg._);
+          if (!relPath.startsWith(".")) {
+            relPath = `.${Path.sep}${relPath}`;
+          }
+          pkg[version] = Object.assign({}, vpkg, {
+            _: relPath
+          });
         }
       });
     });
@@ -253,10 +263,9 @@ class PkgDepLocker {
     if (!this._lockOnly) {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
       const basedir = Path.dirname(filename);
-      this._relativeLocalPath(basedir);
       // sort by package names
       const sortData = sortObjKeys(this._lockData);
-      this._fullLocalPath(basedir, sortData);
+      this._relativeLocalPath(basedir, sortData);
       const data = Yaml.stringify(sortData, 4, 1);
       const shaSum = this.shasum(data);
       if (shaSum !== this._shaSum) {
