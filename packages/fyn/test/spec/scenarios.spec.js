@@ -111,7 +111,7 @@ const debug = false;
         if (debug && step === debugStep) {
           debugger; // eslint-disable-line
         }
-        return Promise.try(() => stepAction.before())
+        return Promise.try(() => stepAction.before(cwd))
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
             _.merge(pkgJson, pkg);
@@ -155,7 +155,7 @@ const debug = false;
 
             const nmTree = dirTree.make(cwd, "node_modules");
             if (debug) {
-              console.log("nmTree", Yaml.dump(nmTree, 2));
+              console.log(`directory node_modules tree:\n${Yaml.dump(nmTree, 2)}`);
             }
             const expectNmTree = Yaml.safeLoad(
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
@@ -194,7 +194,8 @@ const debug = false;
         // "local-sym-linking": { stopStep: "step-02" },
         // "local-hard-linking": { stopStep: "step-04", debugStep: "step-04" }
         // "remote-url-semver": {}
-        "platform-check": {}
+        // "platform-check": {}
+        "nested-dep": {}
       }
     : {};
 
