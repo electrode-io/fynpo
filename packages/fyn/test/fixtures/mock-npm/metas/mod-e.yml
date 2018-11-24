@@ -1,6 +1,17 @@
 etag: mod-e-1
 name: mod-e
 versions:
+  1.0.0:
+    name: mod-e
+    description: test fixture mod-e
+    version: 1.0.0
+    scripts:
+      preinstall: echo hello there from mod-e
+    dependencies:
+      mod-d: ^1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-e/-/mod-e-1.0.0.tgz'
   2.1.1:
     name: mod-e
     description: test fixture mod-e

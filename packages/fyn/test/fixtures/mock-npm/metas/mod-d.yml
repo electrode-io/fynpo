@@ -1,6 +1,16 @@
 etag: mod-d-1
 name: mod-d
 versions:
+  1.0.1:
+    name: mod-d
+    description: test fixture mod-d
+    version: 1.0.1
+    dependencies:
+      mod-a: ^2.0.0
+      mod-f: ^1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-d/-/mod-d-1.0.1.tgz'
   3.0.1:
     name: mod-d
     description: test fixture mod-d

@@ -1,6 +1,16 @@
 etag: mod-f-1
 name: mod-f
 versions:
+  1.0.0:
+    name: mod-f
+    description: test fixture mod-f
+    version: 1.0.0
+    dependencies: {}
+    peerDependencies:
+      mod-a: ^1.0.0 || ^2.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-f/-/mod-f-1.0.0.tgz'
   2.1.1:
     name: mod-f
     description: test fixture mod-f
