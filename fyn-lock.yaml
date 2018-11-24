@@ -1964,7 +1964,7 @@ es6-promisify:
  5.0.0-fynlocal_h:
   top: 1
   $: local
-  _: es6-promisify
+  _: ./es6-promisify
 es6-set:
  _:
   ~0.1.5: 0.1.5
