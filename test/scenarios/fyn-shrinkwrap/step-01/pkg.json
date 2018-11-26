@@ -1,5 +1,5 @@
 {
-  "name": "netsted-dep",
+  "name": "fyn-shrinkwrap",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,6 +7,7 @@
   "license": "ISC",
   "repository": "test",
   "dependencies": {
-    "mod-a": null
+    "mod-a": "^1.0.0",
+    "mod-h": "^2.0.0"
   }
 }

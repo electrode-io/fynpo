@@ -12,6 +12,19 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-h/-/mod-h-1.0.0.tgz'
+  2.0.0:
+    name: mod-h
+    description: test fixture mod-h
+    version: 2.0.0
+    dependencies:
+      mod-a: ^1.0.0
+    _shrinkwrap:
+      dependencies:
+        mod-a:
+          version: 1.0.1
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-h/-/mod-h-2.0.0.tgz'
   3.0.0:
     name: mod-h
     description: test fixture mod-h
