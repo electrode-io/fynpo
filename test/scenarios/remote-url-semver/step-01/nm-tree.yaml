@@ -3,6 +3,8 @@ node_modules:
   test-from-gh:
     README.md: file
     hello: file
-    package.json: test-from-gh@1.0.0
+    package.json:
+      id: test-from-gh@1.0.0
+      res: {}
     src:
       index.js: file

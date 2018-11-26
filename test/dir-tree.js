@@ -1,9 +1,37 @@
+"use strict";
+
+const _ = require("lodash");
 const Path = require("path");
 const Fs = require("fs");
 const Yaml = require("js-yaml");
 
 function readJson(file) {
   return JSON.parse(Fs.readFileSync(file).toString());
+}
+
+function readPackage(file) {
+  const pkg = readJson(file);
+  const deps = Object.assign({}, pkg.optionalDependencies, pkg.dependencies);
+  const res = {};
+
+  Object.keys(pkg._depResolutions).forEach(depName => {
+    const dr = pkg._depResolutions[depName];
+    const semv = deps[depName] || "undefined";
+    const depKey = `${dr.type}(${depName}@${semv})`;
+    res[depKey] = dr.resolved || "undefined";
+    delete deps[depName];
+  });
+
+  const data = {
+    id: pkg._id || `[${pkg.name}@${pkg.version}]`,
+    res
+  };
+
+  if (!_.isEmpty(deps)) {
+    data.unres = deps;
+  }
+
+  return data;
 }
 
 function dirTree(parent, dir, name) {
@@ -22,8 +50,7 @@ function dirTree(parent, dir, name) {
       me[f] = `-> ${target}`;
     } else if (stat.isFile()) {
       if (f === "package.json") {
-        const pkg = readJson(meFile);
-        me[f] = `${pkg.name}@${pkg.version}`;
+        me[f] = readPackage(meFile);
       } else {
         me[f] = "file";
       }

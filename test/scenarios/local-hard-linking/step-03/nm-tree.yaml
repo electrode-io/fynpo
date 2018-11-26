@@ -4,4 +4,6 @@ node_modules:
     bin2: "-> ../mod-h/bin/bin2.js"
   __fyn_resolutions__.json: file
   mod-h:
-    package.json: mod-h@1.0.0
+    package.json:
+      id: mod-h@1.0.0
+      res: {}

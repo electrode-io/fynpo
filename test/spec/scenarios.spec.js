@@ -188,14 +188,16 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
-        // "locked-change-major": { stopStep: "step-02" }
-        // "bin-linker": { stopStep: "step-03" }
+        // "bin-linker": {}
+        // "fyn-shrinkwrap": {}
+        // "local-hard-linking": {}
+        // "local-sym-linking": {}
+        // "locked-change-major": {}
         // "missing-peer-dep": {}
-        // "local-sym-linking": { stopStep: "step-02" },
-        // "local-hard-linking": { stopStep: "step-04", debugStep: "step-04" }
-        // "remote-url-semver": {}
+        // "nested-dep": {}
         // "platform-check": {}
-        "nested-dep": {}
+        // "platform-check-good": {}
+        // "remote-url-semver": {}
       }
     : {};
 

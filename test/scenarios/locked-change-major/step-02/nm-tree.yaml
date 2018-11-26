@@ -2,14 +2,24 @@ node_modules:
   __fv_:
     2.0.0:
       mod-a:
-        package.json: mod-a@2.0.0
+        package.json:
+          id: mod-a@2.0.0
+          res: {}
   __fyn_resolutions__.json: file
   mod-a:
-    package.json: mod-a@0.3.2
+    package.json:
+      id: mod-a@0.3.2
+      res:
+        dep(mod-g@^3.0.0): 3.0.11
   mod-b:
     node_modules:
       __fyn_ignore__: file
-      mod-a: '-> ../../__fv_/2.0.0/mod-a'
-    package.json: mod-b@2.0.0
+      mod-a: "-> ../../__fv_/2.0.0/mod-a"
+    package.json:
+      id: mod-b@2.0.0
+      res:
+        dep(mod-a@^2.0.0): 2.0.0
   mod-g:
-    package.json: mod-g@3.0.11
+    package.json:
+      id: mod-g@3.0.11
+      res: {}

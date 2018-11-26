@@ -5,13 +5,20 @@ node_modules:
   __fv_:
     3.0.11:
       mod-h:
-        package.json: mod-h@3.0.11
+        package.json:
+          id: mod-h@3.0.11
+          res: {}
   __fyn_resolutions__.json: file
   e1:
     index.js: file
     node_modules:
       __fyn_ignore__: file
       mod-h: "-> ../../__fv_/3.0.11/mod-h"
-    package.json: e1@1.0.0
+    package.json:
+      id: e1@1.0.0-fynlocal_h
+      res:
+        dep(mod-h@^3.0.1): 3.0.11
   mod-h:
-    package.json: mod-h@1.0.0
+    package.json:
+      id: mod-h@1.0.0
+      res: {}
