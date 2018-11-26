@@ -28,6 +28,7 @@ class DepItem {
     this.resolved = options.resolved;
     // parent dependency item that pulled this
     this.parent = parent;
+    this._shrinkwrap = options.shrinkwrap;
     // was this item promoted out of __fv_?
     this.promoted = undefined;
     this.depth = (parent && parent.depth + 1) || options.depth || 0;
@@ -57,12 +58,29 @@ class DepItem {
     this.parent = undefined;
   }
 
-  resolve(version) {
+  resolve(version, meta) {
     this.resolved = version;
+    if (meta && meta.versions) {
+      const pkg = meta.versions[version];
+      this._shrinkwrap = pkg._shrinkwrap;
+    }
   }
 
   get id() {
     return `${this.name}@${this.resolved}`;
+  }
+
+  nestedResolve(name) {
+    if (this._shrinkwrap && this._shrinkwrap.dependencies) {
+      const x = this._shrinkwrap.dependencies[name];
+      if (x && x.version) return x.version;
+    }
+
+    if (this.parent) {
+      return this.parent.nestedResolve(name);
+    }
+
+    return undefined;
   }
 
   addResolutionToParent(data) {

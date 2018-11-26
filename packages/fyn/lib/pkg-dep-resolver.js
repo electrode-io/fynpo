@@ -2,7 +2,6 @@
 
 /* eslint-disable no-magic-numbers, max-params, max-statements */
 
-const assert = require("assert");
 const _ = require("lodash");
 const Fs = require("./util/file-ops");
 const Path = require("path");
@@ -362,7 +361,7 @@ class PkgDepResolver {
   /* eslint-disable max-statements, complexity */
 
   addPackageResolution(item, meta, resolved) {
-    item.resolve(resolved);
+    item.resolve(resolved, meta);
 
     const pkgsData = this._data.getPkgsData(item.optFailed);
     let pkgV; // specific version of the known package
@@ -494,22 +493,22 @@ class PkgDepResolver {
   }
 
   addKnownRSemver(kpkg, item, resolved) {
-    const check = (exist, msg) => {
-      assert(
-        exist === resolved,
-        `${msg} version ${exist} for ${item.name}@${item.semver} doesn't match ${resolved}`
-      );
-    };
-
     const lockRsv = kpkg[LOCK_RSEMVERS];
     const rsv = kpkg[RSEMVERS];
 
-    if (rsv[item.semver]) {
-      check(rsv[item.semver], "already resolved");
-    } else {
+    const toArray = res => {
+      if (res && !Array.isArray(res)) {
+        return [res];
+      }
+      return [];
+    };
+
+    const existResolved = toArray(rsv[item.semver]);
+
+    if (existResolved.indexOf(resolved) < 0) {
       if (lockRsv && lockRsv[item.semver]) {
-        const lockV = lockRsv[item.semver];
-        if (lockV !== resolved) {
+        const lockV = toArray(lockRsv[item.semver]);
+        if (lockV.indexOf(resolved) < 0) {
           logger.info(
             `locked version ${lockV} for ${item.name}@${
               item.semver
@@ -518,7 +517,15 @@ class PkgDepResolver {
         }
       }
 
-      rsv[item.semver] = resolved;
+      if (rsv[item.semver]) {
+        if (Array.isArray(rsv[item.semver])) {
+          rsv[item.semver].push(resolved);
+        } else {
+          rsv[item.semver] = [rsv[item.semver], resolved];
+        }
+      } else {
+        rsv[item.semver] = resolved;
+      }
     }
   }
 
@@ -527,8 +534,9 @@ class PkgDepResolver {
 
     const getKnownSemver = () => {
       const find = rsv => {
-        const x = rsv && rsv[item.semver];
+        let x = rsv && rsv[item.semver];
         if (!x) return x;
+        if (Array.isArray(x)) x = x[0];
         if (noLocal && semverUtil.isLocal(x)) return false;
         return x;
       };
@@ -645,7 +653,9 @@ class PkgDepResolver {
   }
 
   _resolveWithMeta(item, meta, force, noLocal) {
-    const resolved = this.resolvePackage(item, meta, noLocal);
+    const nr = item.nestedResolve(item.name);
+
+    const resolved = nr || this.resolvePackage(item, meta, noLocal);
 
     if (!resolved) {
       if (!force) return false;

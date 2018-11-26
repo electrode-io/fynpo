@@ -52,22 +52,27 @@ class PkgDepLocker {
     const genFrom = pkgsData => {
       _.each(pkgsData, (pkg, name) => {
         const versions = Object.keys(pkg).sort(simpleSemverCompare);
-        // collect all semvers that resolved to a single version
+        // collect all semvers that resolved to the same version
+        // due to shrinkwrapping, sometimes the same semver could resolve to
+        // multiple versions, causing resolved to be an array.
         let _semvers = _.transform(
           pkg[RSEMVERS],
-          (a, v, k) => {
-            if (a[v]) a[v].push(k);
-            else a[v] = [k];
+          (a, resolved, semv) => {
+            const x = resolved.toString();
+            if (a[x]) a[x].push(semv);
+            else a[x] = [semv];
             return a;
           },
           {}
         );
-        // join the collected semvers by , into a single string and
-        // use it as key for the resolved version
+        // join the collected semvers by , into a single string and use it as key
+        // for the resolved version, and make sure multiple resolved versions
+        // are converted back to an array.
         _semvers = _.transform(
           _semvers,
-          (a, v, k) => {
-            a[v.sort().join(",")] = k;
+          (a, semv, resolved) => {
+            const x = resolved.indexOf(",") > 0 ? resolved.split(",") : resolved.toString();
+            a[semv.sort().join(",")] = x;
             return a;
           },
           {}

@@ -1,0 +1,14 @@
+node_modules:
+  __fv_:
+    1.0.1:
+      mod-a:
+        package.json: mod-a@1.0.1
+  __fyn_resolutions__.json: file
+  mod-a:
+    package.json: mod-a@1.1.2
+  mod-h:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/1.0.1/mod-a"
+    npm-shrinkwrap.json: file
+    package.json: mod-h@2.0.0
