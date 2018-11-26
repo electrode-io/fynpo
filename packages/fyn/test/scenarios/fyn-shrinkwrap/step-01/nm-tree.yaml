@@ -2,13 +2,20 @@ node_modules:
   __fv_:
     1.0.1:
       mod-a:
-        package.json: mod-a@1.0.1
+        package.json:
+          id: mod-a@1.0.1
+          res: {}
   __fyn_resolutions__.json: file
   mod-a:
-    package.json: mod-a@1.1.2
+    package.json:
+      id: mod-a@1.1.2
+      res: {}
   mod-h:
     node_modules:
       __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.0.1/mod-a"
     npm-shrinkwrap.json: file
-    package.json: mod-h@2.0.0
+    package.json:
+      id: mod-h@2.0.0
+      res:
+        dep(mod-a@^1.0.0): 1.0.1

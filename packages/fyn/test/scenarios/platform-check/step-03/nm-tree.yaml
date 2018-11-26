@@ -4,9 +4,13 @@ node_modules:
     bin2: "-> ../mod-g/bin/bin2.js"
   __fyn_resolutions__.json: file
   mod-a:
-    package.json: mod-a@1.1.2
+    package.json:
+      id: mod-a@1.1.2
+      res: {}
   mod-g:
     bin:
       bin1.js: file
       bin2.js: file
-    package.json: mod-g@2.0.1
+    package.json:
+      id: mod-g@2.0.1
+      res: {}
