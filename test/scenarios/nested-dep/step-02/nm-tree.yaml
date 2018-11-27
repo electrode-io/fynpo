@@ -33,6 +33,10 @@ node_modules:
       res:
         dep(mod-d@^1.0.0): 1.0.1
   mod-f:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/2.0.0/mod-a"
     package.json:
       id: mod-f@1.0.0
-      res: {}
+      res:
+        dep;per(mod-a@undefined): 2.0.0

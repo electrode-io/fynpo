@@ -27,6 +27,7 @@ module.exports = {
   title: "should resolve non-top parent's version for nested dep",
   timeout: 20000,
   before: cwd => {
+    debugger;
     rimraf.sync(Path.join(cwd, "fyn-lock.yaml"));
   }
 };
