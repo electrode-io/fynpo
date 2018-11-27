@@ -136,6 +136,8 @@ class PkgDepLinker {
           // need to create a node_modules dir within and add a symlink
           // there to the depPkg.
           const pkgInfo = pkgs[depName][depPkg.resolved];
+          // TODO: outdated lock data could cause pkgInfo to be undefined
+          if (!pkgInfo) return;
           if (!pkgInfo.promoted) {
             fvDeps.push(pkgInfo);
           }
