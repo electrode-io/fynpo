@@ -32,4 +32,5 @@ node_modules:
   mod-f:
     package.json:
       id: mod-f@1.0.0
-      res: {}
+      res:
+        dep;per(mod-a@undefined): 2.0.0
