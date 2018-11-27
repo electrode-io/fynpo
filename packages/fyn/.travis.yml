@@ -5,3 +5,6 @@ script: npm run ci
 notifications:
   email:
     - joel123@gmail.com
+install: fyn --pg none install
+before_install:
+  - npm install -g fyn
