@@ -165,9 +165,14 @@ const debug = false;
           })
           .catch(err => {
             if (!debug) {
-              console.log(`scenario test "${step}${stepTitle}" failed, fyn-debug.log follows`);
-              const logs = Fs.readFileSync(Path.join(cwd, "fyn-debug.log")).toString();
-              console.log(logs);
+              const msg = `scenario test "${step}${stepTitle}" failed`;
+              try {
+                const logs = Fs.readFileSync(Path.join(cwd, "fyn-debug.log")).toString();
+                console.log(`${msg}, fyn-debug.log follows:`);
+                console.log(logs);
+              } catch (err2) {
+                console.log(`${msg}, but no fyn-debug.log found:`, err2.message);
+              }
             }
             throw err;
           })
