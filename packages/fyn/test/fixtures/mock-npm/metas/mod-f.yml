@@ -8,8 +8,8 @@ versions:
     dependencies:
       mod-a: ^1.0.0 || ^2.0.0
     dist:
-      shasum: ""
-      tarball: "http://localhost:4873/mod-f/-/mod-f-1.0.0.tgz"
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-f/-/mod-f-1.0.0.tgz'
   2.1.1:
     name: mod-f
     description: test fixture mod-f
@@ -18,8 +18,8 @@ versions:
     peerDependencies:
       mod-a: ^0.3.0
     dist:
-      shasum: ""
-      tarball: "http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz"
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz'
 dist-tags:
   latest: 2.1.1
 _rev: 9-f5a60b1743717bf9

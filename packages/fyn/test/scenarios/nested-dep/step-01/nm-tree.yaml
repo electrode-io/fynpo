@@ -33,4 +33,4 @@ node_modules:
     package.json:
       id: mod-f@1.0.0
       res:
-        dep;per(mod-a@undefined): 2.0.0
+        dep(mod-a@^1.0.0 || ^2.0.0): 2.0.0
