@@ -195,7 +195,7 @@ const debug = false;
     ? {
         // "bin-linker": {}
         // "fyn-shrinkwrap": {}
-        // "local-hard-linking": {}
+        "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
         // "missing-peer-dep": {}
