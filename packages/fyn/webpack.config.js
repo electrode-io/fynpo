@@ -5,6 +5,7 @@ const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const base = {
+  mode: "development",
   //devtool: "source-map",
   entry: {
     "fyn.js": Path.resolve("cli/fyn.js")
