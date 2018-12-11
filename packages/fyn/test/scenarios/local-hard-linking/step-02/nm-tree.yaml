@@ -17,6 +17,9 @@ node_modules:
   mod-h:
     bin:
       bin1.js: file
+    node_modules:
+      .bin:
+        bin1: "-> ../../../mod-g/bin/bin1.js"
     package.json:
       id: mod-h@1.0.0-fynlocal_h
       res:
