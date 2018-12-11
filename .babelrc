@@ -1,4 +1,0 @@
-{
-  "only": "*.js",
-  "presets": [["env", { "targets": { "node": "6" } }]]
-}
