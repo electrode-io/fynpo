@@ -55,6 +55,12 @@ class DepData {
     return this.getPkgsData(item.optFailed)[item.name];
   }
 
+  getPkgById(id) {
+    const splits = id.split("@");
+    const x = this.getPkgsData()[splits[0]];
+    return splits[1] ? x[splits[1]] : x;
+  }
+
   eachVersion(cb) {
     const pkgs = this.pkgs;
     Object.keys(pkgs).forEach(x => {
