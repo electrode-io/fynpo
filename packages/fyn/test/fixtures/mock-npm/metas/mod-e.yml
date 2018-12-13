@@ -25,6 +25,17 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz'
+  3.0.0:
+    name: mod-e
+    description: test fixture mod-e
+    version: 3.0.0
+    scripts:
+      preinstall: echo hello there from mod-e
+    dependencies:
+      mod-b: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-e/-/mod-e-3.0.0.tgz'
 dist-tags:
   latest: 2.1.1
 _rev: 9-f5a60b1743717bf9

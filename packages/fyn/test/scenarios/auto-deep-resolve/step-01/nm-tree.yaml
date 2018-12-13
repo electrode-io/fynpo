@@ -1,0 +1,26 @@
+node_modules:
+  __fyn_resolutions__.json: file
+  mod-a:
+    package.json:
+      id: mod-a@4.0.1
+      res:
+        dep(mod-b@^3.0.0): 3.0.0
+  mod-b:
+    package.json:
+      id: mod-b@3.0.0
+      res:
+        dep(mod-c@^4.0.0): 4.0.0
+  mod-c:
+    package.json:
+      id: mod-c@4.0.0
+      res: {}
+  mod-d:
+    package.json:
+      id: mod-d@4.2.1
+      res:
+        dep(mod-e@^3.0.0): 3.0.0
+  mod-e:
+    package.json:
+      id: mod-e@3.0.0
+      res:
+        dep(mod-b@^3.0.0): 3.0.0

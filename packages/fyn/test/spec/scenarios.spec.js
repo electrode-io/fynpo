@@ -193,9 +193,10 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
+        "auto-deep-resolve": {}
         // "bin-linker": {}
         // "fyn-shrinkwrap": {}
-        "local-hard-linking": {}
+        // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
         // "missing-peer-dep": {}
