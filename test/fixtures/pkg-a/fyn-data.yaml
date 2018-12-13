@@ -9,7 +9,7 @@ pkgs:
       src: dep
       dsrc: dep
       dist:
-        shasum: 65f76cb93c52f0b5f9ca6d63a8f2154d5a8df5b7
+        shasum: b685f6a640355d81b3f90163c332c28e74004f20
         tarball: "http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz"
       name: mod-a
       version: 1.1.2
@@ -25,7 +25,7 @@ pkgs:
       src: dep
       dsrc: dep
       dist:
-        shasum: 54037e464c1472bbb0e59650941ac0dce6d24f19
+        shasum: 17a71d60b32b006b14f96097809b5d7f950c0895
         tarball: "http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz"
       name: mod-a
       version: 2.0.0
@@ -39,7 +39,7 @@ pkgs:
       src: dev
       dsrc: dep
       dist:
-        shasum: b2a0cd1039bc4abc9edf99bdbc580e572f1ca4e9
+        shasum: abdd5cb13bd2f83128f02a6c8d578b3704e282e3
         tarball: "http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz"
       name: mod-a
       version: 0.2.0
@@ -50,16 +50,20 @@ pkgs:
       requests:
         - - opt
           - opt;^2.0.0;mod-e@2.1.1
-      src: opt
+        - - dev
+          - dev;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+      src: opt;dev
       dsrc: opt
       dist:
-        shasum: 841f1217199537d9a59b34804a63bcddccaaad2e
+        shasum: 9b9604492e904679f2ba464536f3577f9bcc02f3
         tarball: "http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz"
       name: mod-a
       version: 0.4.5
       res: {}
       preInstalled: true
       firstReqIdx: 0
+      dev: 1
   mod-b:
     1.0.0:
       dev: 1
@@ -72,7 +76,7 @@ pkgs:
       src: dev;dep
       dsrc: dev;dep
       dist:
-        shasum: ce4e3d545e0417880e449cf12ed73829bb5f5706
+        shasum: 39d57c599e3f8b343c28181117c7422b38e851ab
         tarball: "http://localhost:4873/mod-b/-/mod-b-1.0.0.tgz"
       name: mod-b
       version: 1.0.0
@@ -100,7 +104,7 @@ pkgs:
       src: dep
       dsrc: dep
       dist:
-        shasum: 2efff15fa17d11015003abf2321ae89a65bfdb39
+        shasum: 2ed8780bec6f201a79f908ca1b41af799bcdee68
         tarball: "http://localhost:4873/mod-c/-/mod-c-1.2.0.tgz"
       name: mod-c
       version: 1.2.0
@@ -125,7 +129,7 @@ pkgs:
       src: dep;dev
       dsrc: dep
       dist:
-        shasum: 2a0c1c4352196761a54b3c58f178651411460f2a
+        shasum: e712c2dc8a0c556811d13e8b3fb608770d221983
         tarball: "http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz"
       name: mod-d
       version: 3.0.1
@@ -151,7 +155,7 @@ pkgs:
       src: opt;dev
       dsrc: opt
       dist:
-        shasum: b0db693c46a57df3cea6c4729a23a34e49821978
+        shasum: 2b0871fb748f8d1ab985acc765f96387b7a98178
         tarball: "http://localhost:4873/mod-e/-/mod-e-2.1.1.tgz"
       name: mod-e
       version: 2.1.1
@@ -164,29 +168,33 @@ pkgs:
           mod-a:
             semver: ^0.4.0
             resolved: 0.4.5
+      hasPI: 1
       top: true
       preInstalled: true
-      hasPI: 1
       firstReqIdx: 0
       dev: 1
       promoted: true
       extracted: >-
-        /Users/xchen11/dev/pub/fyn/test/.tmp_1524786750664/xout/__fv_/2.1.1/mod-e
+        /Users/xchen11/dev/pub/fyn/test/.tmp_1544725550196/xout/__fv_/2.1.1/mod-e
   mod-f:
     2.1.1:
       opt: 1
       requests:
         - - opt
           - opt;^2.0.0;mod-e@2.1.1
-      src: opt
+        - - dev
+          - dev;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0;mod-e@2.1.1
+      src: opt;dev
       dsrc: dep
       dist:
-        shasum: 23fb0db8ccc983ae30f4d5521d460de402ec07ad
+        shasum: 9e29467dbf80bf7683ad5103a2448ca02b2d1417
         tarball: "http://localhost:4873/mod-f/-/mod-f-2.1.1.tgz"
       name: mod-f
       version: 2.1.1
       res: {}
       firstReqIdx: 0
+      dev: 1
       promoted: true
 badPkgs:
   mod-err:
@@ -195,31 +203,31 @@ badPkgs:
       requests: []
       src: opt
       dsrc: opt
-      hasPI: 1
       dist:
-        shasum: 10fda4400b6e30ab00165431643b95b1425b7111
+        shasum: 3697525eed9458de7c31196084afdb75e2ec939b
         tarball: "http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz"
       name: mod-err
       version: 4.5.1
       res: {}
+      hasPI: 1
       top: true
       preInstalled: true
       optFailed: true
 res:
-  dep:
-    mod-a:
-      semver: ^1.1.0
-      resolved: 1.1.2
-    mod-d:
-      semver: ^3.0.0
-      resolved: 3.0.1
-    mod-c:
-      semver: ^1.0.0
-      resolved: 1.2.0
   dev:
     mod-b:
       semver: ^1.0.0
       resolved: 1.0.0
+  dep:
+    mod-a:
+      semver: ^1.1.0
+      resolved: 1.1.2
+    mod-c:
+      semver: ^1.0.0
+      resolved: 1.2.0
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
   opt:
     mod-e:
       semver: ^2.0.0

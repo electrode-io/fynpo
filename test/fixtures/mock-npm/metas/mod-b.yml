@@ -22,6 +22,15 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-b/-/mod-b-2.0.0.tgz'
+  3.0.0:
+    name: mod-b
+    description: test fixture mod-b
+    version: 3.0.0
+    dependencies:
+      mod-c: ^4.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-b/-/mod-b-3.0.0.tgz'
 dist-tags:
   latest: 1.0.0
 _rev: 9-f5a60b1743717bf9

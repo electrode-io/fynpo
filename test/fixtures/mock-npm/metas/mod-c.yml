@@ -30,6 +30,15 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-c/-/mod-c-3.0.0.tgz'
+  4.0.0:
+    name: mod-c
+    description: test fixture mod-c (scenario auto-deep-resolve)
+    version: 4.0.0
+    scripts:
+      install: exit 1
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-c/-/mod-c-4.0.0.tgz'
 dist-tags:
   latest: 1.2.0
 _rev: 9-f5a60b1743717bf9
