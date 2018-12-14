@@ -184,10 +184,8 @@ class PkgInstaller {
         if (!pkgDepInfo.optFailed) {
           delete pkgData[resolved];
           // remove resolve order
-          if (pkgData[RESOLVE_ORDER]) {
-            const roIdx = pkgData[RESOLVE_ORDER].indexOf(resolved);
-            if (roIdx >= 0) pkgData[RESOLVE_ORDER].splice(roIdx, 1);
-          }
+          const roIdx = pkgData[RESOLVE_ORDER].indexOf(resolved);
+          if (roIdx >= 0) pkgData[RESOLVE_ORDER].splice(roIdx, 1);
           // remove rsemvers
           _.each(pkgData[RSEMVERS], (v, k) => {
             if (v === resolved) delete pkgData[RSEMVERS][k];
