@@ -106,14 +106,18 @@ class PkgDepLocker {
             meta.$ = dist.integrity || this.intFromSha1(dist.shasum) || 0;
             meta._ = dist.tarball;
           }
-          if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
-          if (!_.isEmpty(json.optionalDependencies)) {
-            meta.optionalDependencies = json.optionalDependencies;
+
+          if (!meta.optFailed) {
+            if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
+            if (!_.isEmpty(json.optionalDependencies)) {
+              meta.optionalDependencies = json.optionalDependencies;
+            }
+            if (!_.isEmpty(json.peerDependencies)) meta.peerDependencies = json.peerDependencies;
+            const bd = json.bundleDependencies || json.bundledDependencies;
+            if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
           }
-          if (!_.isEmpty(json.peerDependencies)) meta.peerDependencies = json.peerDependencies;
+
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
-          const bd = json.bundleDependencies || json.bundledDependencies;
-          if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
           if (json.os) meta.os = json.os;
           if (json.cpu) meta.cpu = json.cpu;
 
