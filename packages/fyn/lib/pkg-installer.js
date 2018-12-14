@@ -182,7 +182,6 @@ class PkgInstaller {
         await Fs.$.rimraf(dir);
         // if a pkg's marked optFailed, then it should be kept
         if (!pkgDepInfo.optFailed) {
-          const resolved = section[name].resolved;
           delete pkgData[resolved];
           // remove resolve order
           if (pkgData[RESOLVE_ORDER]) {
