@@ -142,19 +142,22 @@ class DepItem {
 
   get requestPath() {
     let x = this; // eslint-disable-line
-    const request = [];
+    const reqPath = [];
+    let opt = false;
 
     while (true) {
       if (x.parent.depth) {
         x = x.parent;
-        request.push(`${x.dsrc};${x.semver};${x.id}`);
+        if (x.dsrc === "opt") opt = true;
+        reqPath.push(`${x.dsrc};${x.semver};${x.id}`);
       } else {
-        request.push(`${x.dsrc}`);
+        if (x.dsrc === "opt") opt = true;
+        reqPath.push(`${x.dsrc}`);
         break;
       }
     }
 
-    return request.reverse();
+    return { opt, path: reqPath.reverse() };
   }
 
   addRequestToPkg(pkgV, firstSeen) {
@@ -162,7 +165,11 @@ class DepItem {
       pkgV[this.src] = 0;
     }
     pkgV[this.src]++;
-    pkgV.requests.push(this.requestPath);
+    const reqPath = this.requestPath;
+    pkgV.requests.push(reqPath.path);
+    if (!pkgV._hasNonOpt) {
+      pkgV._hasNonOpt = !reqPath.opt;
+    }
     if (firstSeen) pkgV.firstReqIdx = pkgV.requests.length - 1;
     if (pkgV.dsrc.indexOf(this.dsrc) < 0) {
       pkgV.dsrc += `;${this.dsrc}`;

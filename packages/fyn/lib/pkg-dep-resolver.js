@@ -361,15 +361,7 @@ class PkgDepResolver {
   _shouldDeepResolve(pkgDepInfo) {
     // even if an item has a resolved pkg, we need to make sure the pkg is resolved
     // by more than optionals, since optionals could potentially be removed later.
-    // as long as a single path has no opt
-    const checkNonOpt = () => {
-      const nonOptPath = pkgDepInfo.requests.find(req => {
-        const opt = req.find(r => r.startsWith("opt"));
-        return !opt;
-      });
-      return !nonOptPath; // deep resolve if no non-opt path found
-    };
-    return Boolean(this._fyn.deepResolve || checkNonOpt());
+    return Boolean(this._fyn.deepResolve || !pkgDepInfo._hasNonOpt);
   }
 
   /* eslint-disable max-statements, complexity */

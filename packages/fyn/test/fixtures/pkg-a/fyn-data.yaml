@@ -15,6 +15,7 @@ pkgs:
       version: 1.1.2
       res: {}
       top: true
+      _hasNonOpt: true
       firstReqIdx: 0
       promoted: true
     2.0.0:
@@ -30,6 +31,7 @@ pkgs:
       name: mod-a
       version: 2.0.0
       res: {}
+      _hasNonOpt: true
       firstReqIdx: 0
     0.2.0:
       dev: 1
@@ -44,6 +46,7 @@ pkgs:
       name: mod-a
       version: 0.2.0
       res: {}
+      _hasNonOpt: true
       firstReqIdx: 0
     0.4.5:
       opt: 1
@@ -62,6 +65,7 @@ pkgs:
       version: 0.4.5
       res: {}
       preInstalled: true
+      _hasNonOpt: false
       firstReqIdx: 0
       dev: 1
   mod-b:
@@ -93,6 +97,7 @@ pkgs:
             semver: ^2.0.0
             resolved: 2.1.1
       top: true
+      _hasNonOpt: true
       firstReqIdx: 0
       dep: 2
       promoted: true
@@ -117,6 +122,7 @@ pkgs:
             semver: ^1.0.0
             resolved: 1.0.0
       top: true
+      _hasNonOpt: true
       firstReqIdx: 0
       promoted: true
   mod-d:
@@ -142,6 +148,7 @@ pkgs:
             semver: ^1.0.0
             resolved: 1.0.0
       top: true
+      _hasNonOpt: true
       firstReqIdx: 0
       dev: 1
       promoted: true
@@ -171,11 +178,12 @@ pkgs:
       hasPI: 1
       top: true
       preInstalled: true
+      _hasNonOpt: true
       firstReqIdx: 0
       dev: 1
       promoted: true
       extracted: >-
-        /Users/xchen11/dev/pub/fyn/test/.tmp_1544725550196/xout/__fv_/2.1.1/mod-e
+        /Users/xchen11/dev/pub/fyn/test/.tmp_1544821774095/xout/__fv_/2.1.1/mod-e
   mod-f:
     2.1.1:
       opt: 1
@@ -193,6 +201,7 @@ pkgs:
       name: mod-f
       version: 2.1.1
       res: {}
+      _hasNonOpt: false
       firstReqIdx: 0
       dev: 1
       promoted: true
@@ -214,20 +223,20 @@ badPkgs:
       preInstalled: true
       optFailed: 1
 res:
+  dep:
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
+    mod-c:
+      semver: ^1.0.0
+      resolved: 1.2.0
+    mod-a:
+      semver: ^1.1.0
+      resolved: 1.1.2
   dev:
     mod-b:
       semver: ^1.0.0
       resolved: 1.0.0
-  dep:
-    mod-a:
-      semver: ^1.1.0
-      resolved: 1.1.2
-    mod-c:
-      semver: ^1.0.0
-      resolved: 1.2.0
-    mod-d:
-      semver: ^3.0.0
-      resolved: 3.0.1
   opt:
     mod-e:
       semver: ^2.0.0
