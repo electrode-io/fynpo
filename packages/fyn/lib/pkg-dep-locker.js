@@ -51,6 +51,7 @@ class PkgDepLocker {
     const lockData = (this._lockData = {});
     const genFrom = pkgsData => {
       _.each(pkgsData, (pkg, name) => {
+        if (_.isEmpty(pkg)) return;
         const versions = Object.keys(pkg).sort(simpleSemverCompare);
         // collect all semvers that resolved to the same version
         // due to shrinkwrapping, sometimes the same semver could resolve to

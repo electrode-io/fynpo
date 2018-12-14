@@ -16,7 +16,7 @@ const { INSTALL_PACKAGE } = require("./log-items");
 const runNpmScript = require("./util/run-npm-script");
 const xaa = require("./util/xaa");
 
-const { SEMVER } = require("./symbols");
+const { RESOLVE_ORDER, RSEMVERS, SEMVER } = require("./symbols");
 
 /* eslint-disable max-statements,no-magic-numbers,no-empty,complexity */
 
@@ -150,11 +150,14 @@ class PkgInstaller {
     if (depInfo._removingDeps) return;
     depInfo._removingDeps = true;
 
-    const pkgData = this._fyn._data.getPkgsData();
+    const dataPackages = this._fyn._data.getPkgsData();
     const doRemove = async section => {
       if (!section) return;
       for (const name in section) {
-        const pkgDepInfo = pkgData[name] && pkgData[name][section[name].resolved];
+        const pkgData = dataPackages[name];
+        if (!pkgData) continue;
+        const resolved = section[name].resolved;
+        const pkgDepInfo = pkgData[resolved];
         if (!pkgDepInfo) continue;
 
         await this._removeDepsOf(pkgDepInfo, originId);
@@ -177,8 +180,19 @@ class PkgInstaller {
         );
 
         await Fs.$.rimraf(dir);
+        // if a pkg's marked optFailed, then it should be kept
         if (!pkgDepInfo.optFailed) {
-          delete pkgData[name][section[name].resolved];
+          const resolved = section[name].resolved;
+          delete pkgData[resolved];
+          // remove resolve order
+          if (pkgData[RESOLVE_ORDER]) {
+            const roIdx = pkgData[RESOLVE_ORDER].indexOf(resolved);
+            if (roIdx >= 0) pkgData[RESOLVE_ORDER].splice(roIdx, 1);
+          }
+          // remove rsemvers
+          _.each(pkgData[RSEMVERS], (v, k) => {
+            if (v === resolved) delete pkgData[RSEMVERS][k];
+          });
         }
       }
     };
