@@ -212,7 +212,7 @@ badPkgs:
       hasPI: 1
       top: true
       preInstalled: true
-      optFailed: true
+      optFailed: 1
 res:
   dev:
     mod-b:
