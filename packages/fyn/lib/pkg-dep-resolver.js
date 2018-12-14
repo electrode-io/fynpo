@@ -489,7 +489,7 @@ class PkgDepResolver {
 
     if (item.dsrc && item.dsrc.includes("opt")) {
       pkgV.preInstalled = true;
-      if (item.optFailed) pkgV.optFailed = true;
+      if (item.optFailed) pkgV.optFailed = item.optFailed;
     }
 
     if (!item.optFailed) {
