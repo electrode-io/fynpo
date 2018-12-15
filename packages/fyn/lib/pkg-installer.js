@@ -147,7 +147,7 @@ class PkgInstaller {
   }
 
   async _removeDepsOf(depInfo, originId) {
-    if (depInfo._removingDeps) return;
+    if (depInfo._removingDeps || !originId) return;
     depInfo._removingDeps = true;
 
     const dataPackages = this._fyn._data.getPkgsData();
@@ -163,13 +163,26 @@ class PkgInstaller {
         await this._removeDepsOf(pkgDepInfo, originId);
         // a simple quick check to validate if the dep can be removed
         // won't cover all scenarios so still leave some unneeded pkgs around
-        const remove =
-          originId &&
-          pkgDepInfo.requests.filter(req => {
-            return req.find(r => r.startsWith("opt;") && r.endsWith(originId));
-          }).length === pkgDepInfo.requests.length;
+        const rmSemVs = pkgDepInfo.requests.reduce(
+          (a, req) => {
+            // extract original semv
+            const sv = _.last(req).split(";")[1];
+            const tgt = req.find(r => r.startsWith("opt;") && r.endsWith(originId)) ? a.opt : a.dep;
+            tgt[sv] = true;
+            return a;
+          },
+          { opt: {}, dep: {} }
+        );
 
-        if (!remove) continue;
+        if (!pkgDepInfo.optFailed) {
+          for (const semv in rmSemVs.opt) {
+            if (rmSemVs.dep[semv]) continue;
+            if (pkgData[RSEMVERS]) delete pkgData[RSEMVERS][semv];
+            if (pkgData[LOCK_RSEMVERS]) delete pkgData[LOCK_RSEMVERS][semv];
+          }
+        }
+
+        if (!_.isEmpty(rmSemVs.dep)) continue;
 
         const dir = this._fyn.getInstalledPkgDir(pkgDepInfo.name, pkgDepInfo.version, pkgDepInfo);
         logger.debug(
