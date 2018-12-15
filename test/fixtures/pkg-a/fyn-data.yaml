@@ -4,8 +4,10 @@ pkgs:
       dep: 2
       requests:
         - - dep
+          - dep;^1.1.0
         - - dep
           - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.1
       src: dep
       dsrc: dep
       dist:
@@ -23,6 +25,7 @@ pkgs:
       requests:
         - - dep
           - dep;^1.0.0;mod-c@1.2.0
+          - dep;latest
       src: dep
       dsrc: dep
       dist:
@@ -38,6 +41,7 @@ pkgs:
       requests:
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
+          - dep;^0.2.0
       src: dev
       dsrc: dep
       dist:
@@ -53,9 +57,11 @@ pkgs:
       requests:
         - - opt
           - opt;^2.0.0;mod-e@2.1.1
+          - opt;^0.4.0
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
+          - opt;^0.4.0
       src: opt;dev
       dsrc: opt
       dist:
@@ -73,10 +79,13 @@ pkgs:
       dev: 1
       requests:
         - - dev
+          - dev;^1.0.0
         - - dep
           - dep;^1.0.0;mod-c@1.2.0
+          - dep;^1.0.0
         - - dep
           - dep;^3.0.0;mod-d@3.0.1
+          - dep;^1.0.0
       src: dev;dep
       dsrc: dev;dep
       dist:
@@ -106,6 +115,7 @@ pkgs:
       dep: 1
       requests:
         - - dep
+          - dep;^1.0.0
       src: dep
       dsrc: dep
       dist:
@@ -130,8 +140,10 @@ pkgs:
       dep: 1
       requests:
         - - dep
+          - dep;^3.0.0
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
+          - dep;^3.0.0
       src: dep;dev
       dsrc: dep
       dist:
@@ -157,8 +169,10 @@ pkgs:
       opt: 1
       requests:
         - - opt
+          - opt;^2.0.0
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
+          - opt;^2.0.0
       src: opt;dev
       dsrc: opt
       dist:
@@ -183,16 +197,18 @@ pkgs:
       dev: 1
       promoted: true
       extracted: >-
-        /Users/xchen11/dev/pub/fyn/test/.tmp_1544821774095/xout/__fv_/2.1.1/mod-e
+        /Users/xchen11/dev/pub/fyn/test/.tmp_1544835977151/xout/__fv_/2.1.1/mod-e
   mod-f:
     2.1.1:
       opt: 1
       requests:
         - - opt
           - opt;^2.0.0;mod-e@2.1.1
+          - dep;^2.0.0
         - - dev
           - dev;^1.0.0;mod-b@1.0.0
           - opt;^2.0.0;mod-e@2.1.1
+          - dep;^2.0.0
       src: opt;dev
       dsrc: dep
       dist:
@@ -224,12 +240,12 @@ badPkgs:
       optFailed: 1
 res:
   dep:
-    mod-d:
-      semver: ^3.0.0
-      resolved: 3.0.1
     mod-c:
       semver: ^1.0.0
       resolved: 1.2.0
+    mod-d:
+      semver: ^3.0.0
+      resolved: 3.0.1
     mod-a:
       semver: ^1.1.0
       resolved: 1.1.2
