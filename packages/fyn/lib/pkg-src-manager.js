@@ -168,7 +168,6 @@ class PkgSrcManager {
     }
 
     item.fullPath = fullPath;
-    const pkgJsonFile = Path.join(fullPath, "package.json");
 
     logger.debug("fetchLocalItem localPath", localPath, "fullPath", fullPath);
 
@@ -179,7 +178,7 @@ class PkgSrcManager {
       return Promise.resolve(existLocalMeta);
     }
 
-    return this._fyn.loadPackageJsonFile(pkgJsonFile).then(json => {
+    return readPkgJson(fullPath, true).then(json => {
       const version = semverUtil.localify(json.version, item.localType);
       const name = item.name || json.name;
       json.dist = {

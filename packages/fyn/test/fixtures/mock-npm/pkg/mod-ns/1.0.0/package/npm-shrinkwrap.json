@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "name": "mod-ns",
+  "lockfileVersion": 1,
+  "dependencies": {
+    "mod-a": {
+      "version": "1.0.1"
+    },
+    "mod-d": {
+      "version": "3.0.1"
+    }
+  }
+}

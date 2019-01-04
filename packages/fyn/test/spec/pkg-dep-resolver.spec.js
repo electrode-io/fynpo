@@ -58,6 +58,19 @@ describe("pkg-dep-resolver", function() {
     return data;
   };
 
+  const cleanData = pkgs => {
+    for (const name in pkgs) {
+      const pkg = pkgs[name];
+      for (const ver in pkg) {
+        const verPkg = pkg[ver];
+        delete verPkg.extracted;
+        delete verPkg.str;
+        delete verPkg.dir;
+        delete verPkg.json;
+      }
+    }
+  };
+
   const checkResolvedData = (fyn, file) => {
     const expected = Yaml.safeLoad(Fs.readFileSync(file).toString());
     expect(sortRequests(fyn._data)).to.deep.equal(sortRequests(expected));
@@ -76,6 +89,8 @@ describe("pkg-dep-resolver", function() {
     const outFname = `fyn-data${deepResolve ? "-dr" : ""}.yaml`;
     const expectOutput = `../fixtures/pkg-a/${outFname}`;
     return fyn.resolveDependencies().then(() => {
+      cleanData(fyn._data.pkgs);
+      cleanData(fyn._data.badPkgs);
       // Fs.writeFileSync(Path.resolve(outFname), Yaml.safeDump(fyn._data));
       checkResolvedData(fyn, Path.join(__dirname, expectOutput));
     });

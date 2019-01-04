@@ -52,6 +52,13 @@ versions:
     dist:
       shasum: ''
       tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.2.tgz'
+  1.0.3:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.0.3
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.3.tgz'
   1.1.0:
     name: mod-a
     description: test fixture mod-a

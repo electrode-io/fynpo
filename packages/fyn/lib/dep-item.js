@@ -1,5 +1,7 @@
 "use strict";
 
+const Fs = require("./util/file-ops");
+const Path = require("path");
 const semverUtil = require("./util/semver");
 
 /* eslint-disable no-magic-numbers, no-constant-condition */
@@ -70,6 +72,11 @@ class DepItem {
       const pkg = meta.versions[version];
       this._shrinkwrap = pkg._shrinkwrap;
     }
+  }
+
+  async loadShrinkwrap(dir) {
+    const str = await Fs.readFile(Path.join(dir, "npm-shrinkwrap.json"), "utf8");
+    this._shrinkwrap = JSON.parse(str);
   }
 
   get id() {

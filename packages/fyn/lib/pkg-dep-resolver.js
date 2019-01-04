@@ -11,7 +11,6 @@ const Promise = require("bluebird");
 const chalk = require("chalk");
 const logger = require("./logger");
 const DepItem = require("./dep-item");
-// const DepData = require("./dep-data");
 const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const createDefer = require("./util/defer");
@@ -41,6 +40,9 @@ const {
  * - 4. Fetch package.json for the matched version
  * - 5. Add dependencies and optionalDependencies to list
  * - 6. Back to step 2 until all packages are processed in list
+ *
+ * Basically doing level order traversal on the dependency tree using an
+ * async queue.
  */
 
 class PkgDepResolver {
@@ -59,9 +61,13 @@ class PkgDepResolver {
       processItem: x => this.processItem(x)
     });
     this._defer = createDefer();
-    this._promiseQ.on("done", x => this.done(x));
+    this._promiseQ.on("done", x => {
+      return this.done(x);
+    });
     this._promiseQ.on("pause", x => this.onPause(x));
-    this._promiseQ.on("fail", data => this._defer.reject(data.error));
+    this._promiseQ.on("fail", data => {
+      return this._defer.reject(data.error);
+    });
     this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
     this._promiseQ.on("empty", () => this.checkOptResolver());
     this._lockOnly = this._fyn.lockOnly;
@@ -366,7 +372,7 @@ class PkgDepResolver {
 
   /* eslint-disable max-statements, complexity */
 
-  addPackageResolution(item, meta, resolved) {
+  async addPackageResolution(item, meta, resolved) {
     let firstKnown = true;
     item.resolve(resolved, meta);
 
@@ -387,7 +393,7 @@ class PkgDepResolver {
         // logger.log("circular dep detected", item.name, item.resolved);
         item.unref();
         item = undefined;
-        return;
+        return null;
       }
     }
 
@@ -410,15 +416,23 @@ class PkgDepResolver {
     // installed, but we should remember it in lock file so we won't try
     // to download its tarball again to test.
     //
+    // Optional checks may involve running a package's npm script.
+    // - that should occur without blocking the dep resolution process
+    // - but need to queue them up so when dep resolve queue is drained, need to
+    //   wait for them to complete, and then resolve the next dep tree level
+    //
     if (item.dsrc && item.dsrc.includes("opt") && !item.optChecked) {
       const sysCheck = platformCheck();
+
       if (sysCheck !== true) {
         logger.info(`optional dependencies ${sysCheck}`);
-        return;
+      } else {
+        logger.verbose("adding package", item.name, item.semver, item.resolved, "to opt check");
+
+        this._optResolver.add({ item, meta });
       }
-      logger.verbose("adding package", item.name, item.semver, item.resolved, "to opt check");
-      this._optResolver.add({ item, meta });
-      return;
+
+      return null;
     }
 
     const sysCheck = platformCheck();
@@ -484,6 +498,18 @@ class PkgDepResolver {
       if (item.optFailed) pkgV.optFailed = item.optFailed;
     }
 
+    // TODO: remove support for local sym linked packages
+    if (
+      !pkgV.extracted &&
+      pkgV.local !== "sym" &&
+      (this._fyn.alwaysFetchDist || (metaJson._hasShrinkwrap && !metaJson._shrinkwrap))
+    ) {
+      await this._fyn._distFetcher.putPkgInNodeModules(pkgV, true);
+      if (metaJson._hasShrinkwrap) {
+        await item.loadShrinkwrap(pkgV.extracted);
+      }
+    }
+
     if (!item.optFailed) {
       if (metaJson.deprecated) pkgV.deprecated = metaJson.deprecated;
       let deepRes = false;
@@ -502,6 +528,8 @@ class PkgDepResolver {
       item.addRequestToPkg(pkgV, firstSeenVersion);
       item.addResolutionToParent(this._data, firstKnown);
     }
+
+    return null;
   }
 
   addKnownRSemver(kpkg, item, resolved) {
@@ -593,6 +621,7 @@ class PkgDepResolver {
           logger.error(msg);
           throw new Error(msg);
         }
+
         meta[SORTED_VERSIONS] = Object.keys(meta.versions).sort(simpleSemverCompare);
       }
 
@@ -690,9 +719,9 @@ class PkgDepResolver {
       }
     }
 
-    this.addPackageResolution(item, meta, resolved);
+    // this.addPackageResolution(item, meta, resolved);
 
-    return true;
+    return { meta, resolved };
   }
 
   _resolveWithLockData(item) {
@@ -715,16 +744,17 @@ class PkgDepResolver {
       const localMeta = this._pkgSrcMgr.getAllLocalMetaOfPackage(item.name);
 
       if (localMeta) {
-        const localResolve = Object.keys(localMeta).find(v =>
-          this._resolveWithMeta(item, localMeta[v])
-        );
-        if (localResolve) {
-          return true;
+        for (const v in localMeta) {
+          const localResolve = this._resolveWithMeta(item, localMeta[v]);
+          if (localResolve) {
+            return localResolve;
+          }
         }
       }
     }
 
     const locked = this._fyn.depLocker.convert(item);
+
     if (locked) {
       const resolved = this._resolveWithMeta(item, locked, force, !this._fyn.preferLock);
       // if (!item.semverPath ) {
@@ -748,9 +778,16 @@ class PkgDepResolver {
   }
 
   processItem(name) {
+    if (name && name.promise) {
+      const p = name.promise;
+      name.promise = null;
+      return p;
+    }
+
     if (name && name.queueDepth) {
       return this.queueDepth(name.depth);
     }
+
     const depthData = this._depthResolving[this._depthResolving.current];
     // logger.info("resolving item", name, this._depthResolving.current, di);
     const items = depthData[name].items;
@@ -761,8 +798,8 @@ class PkgDepResolver {
   }
 
   resolveItem(item) {
-    const tryLocal = () =>
-      Promise.try(() => this._pkgSrcMgr.fetchLocalItem(item)).then(meta => {
+    const tryLocal = () => {
+      return Promise.try(() => this._pkgSrcMgr.fetchLocalItem(item)).then(meta => {
         if (meta) {
           if (!this._fyn.needFlatModule) {
             this._fyn.needFlatModule = meta.local === "sym";
@@ -772,6 +809,7 @@ class PkgDepResolver {
         }
         return false;
       });
+    };
 
     const tryLock = () => {
       return Promise.try(() => this._resolveWithLockData(item));
@@ -784,7 +822,9 @@ class PkgDepResolver {
 
     return promise
       .then(r => {
-        if (r || this._lockOnly || item.localType) return undefined;
+        if (r) return r;
+
+        if (this._lockOnly || item.localType) return undefined;
         // neither local nor lock was able to resolve for item
         // so try to fetch from registry for real meta to resolve
         // always fetch the item and let pkg src manager deal with caching
@@ -796,13 +836,20 @@ class PkgDepResolver {
           return this._resolveWithMeta(item, updated, true, true);
         });
       })
+      .then(async r => {
+        if (!r) return;
+
+        const { meta, resolved } = r;
+        await this.addPackageResolution(item, meta, resolved);
+      })
       .then(() => {
         const depthData = this._depthResolving[item.depth];
         const items = depthData[item.name].items;
+
         depthData[item.name].items = [];
-        return items;
-      })
-      .each(x => this.resolveItem(x));
+
+        return Promise.each(items, x => this.resolveItem(x));
+      });
   }
 }
 
