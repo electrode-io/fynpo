@@ -766,7 +766,9 @@ class PkgDepResolver {
       //   );
       // }
       // logger.debug(item.name, item.semver, "resolved from lock data", resolved);
-      return resolved;
+      if (locked.versions.hasOwnProperty(resolved)) {
+        return resolved;
+      }
     }
 
     if (force) {

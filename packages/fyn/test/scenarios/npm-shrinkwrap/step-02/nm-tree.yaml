@@ -1,0 +1,94 @@
+node_modules:
+  __fv_:
+    0.2.0:
+      mod-a:
+        package.json:
+          id: mod-a@0.2.0
+          res: {}
+    0.4.5:
+      mod-a:
+        package.json:
+          id: mod-a@0.4.5
+          res: {}
+    1.0.0:
+      mod-a:
+        package.json:
+          id: mod-a@1.0.0
+          res: {}
+    1.0.1:
+      mod-a:
+        package.json:
+          id: mod-a@1.0.1
+          res: {}
+    1.1.0:
+      mod-a:
+        package.json:
+          id: mod-a@1.1.0
+          res: {}
+  __fyn_resolutions__.json: file
+  mod-a:
+    package.json:
+      id: mod-a@1.1.2
+      res: {}
+  mod-b:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/0.2.0/mod-a"
+    package.json:
+      id: mod-b@1.0.0
+      res:
+        dep(mod-a@^0.2.0): 0.2.0
+        dep(mod-d@^3.0.0): 3.0.1
+        opt(mod-e@^2.0.0): 2.1.1
+  mod-c:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/1.1.0/mod-a"
+    package.json:
+      id: mod-c@3.0.0
+      res:
+        dep(mod-a@^1.0.0): 1.1.0
+  mod-d:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/1.0.1/mod-a"
+    package.json:
+      id: mod-d@3.0.1
+      res:
+        dep(mod-a@^1.0.1): 1.0.1
+        dep(mod-b@^1.0.0): 1.0.0
+  mod-e:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/0.4.5/mod-a"
+    package.json:
+      id: mod-e@2.1.1
+      res:
+        dep(mod-f@^2.0.0): 2.1.1
+        opt(mod-a@^0.4.0): 0.4.5
+  mod-f:
+    package.json:
+      id: mod-f@2.1.1
+      res: {}
+  mod-ns:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/1.0.1/mod-a"
+    npm-shrinkwrap.json: file
+    package.json:
+      id: mod-ns@1.0.0
+      res:
+        dep(mod-a@^1.0.0): 1.0.1
+        dep(mod-b@^1.0.0): 1.0.0
+        dep(mod-c@^3.0.0): 3.0.0
+        dep(mod-d@^3.0.0): 3.0.1
+  mod-ns2:
+    node_modules:
+      __fyn_ignore__: file
+      mod-a: "-> ../../__fv_/1.0.0/mod-a"
+    npm-shrinkwrap.json: file
+    package.json:
+      id: mod-ns2@1.0.0
+      res:
+        dep(mod-a@^1.0.0): 1.0.0
+        dep(mod-ns@^1.0.0): 1.0.0
