@@ -45,7 +45,12 @@ const node6 = Object.assign({}, base, {
       {
         test: /\.js$/,
         exclude: x => x.indexOf("node_modules") > 0,
-        use: "babel-loader"
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [["@babel/env", { targets: { node: "6" } }]]
+          }
+        }
       }
     ]
   },
@@ -56,4 +61,21 @@ const node6 = Object.assign({}, base, {
   }
 });
 
-module.exports = [base, node6];
+const node8 = Object.assign({}, base, {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: x => x.indexOf("node_modules") > 0,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [["@babel/env", { targets: { node: "8" } }]]
+          }
+        }
+      }
+    ]
+  }
+});
+
+module.exports = [node8, node6];
