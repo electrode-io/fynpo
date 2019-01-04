@@ -30,12 +30,29 @@ class DepItem {
     this.resolved = options.resolved;
     // parent dependency item that pulled this
     this.parent = parent;
-    this._shrinkwrap = options.shrinkwrap;
+    this._inheritShrinkwrap(options, parent);
     this._deepRes = options.deepResolve;
     this._nested = {};
     // was this item promoted out of __fv_?
     this.promoted = undefined;
     this.depth = (parent && parent.depth + 1) || options.depth || 0;
+  }
+
+  _inheritShrinkwrap(options, parent) {
+    let inheritSW;
+    if (parent && parent._shrinkwrap) {
+      inheritSW = parent._shrinkwrap.dependencies && parent._shrinkwrap.dependencies[this.name];
+    }
+
+    if (inheritSW) {
+      if (options.shrinkwrap) {
+        this._shrinkwrap = Object.assign({}, inheritSW, options.shrinkwrap);
+      } else {
+        this._shrinkwrap = inheritSW;
+      }
+    } else {
+      this._shrinkwrap = options.shrinkwrap;
+    }
   }
 
   get semver() {
@@ -70,7 +87,13 @@ class DepItem {
     this.resolved = version;
     if (meta && meta.versions) {
       const pkg = meta.versions[version];
-      this._shrinkwrap = pkg._shrinkwrap;
+      if (pkg._shrinkwrap) {
+        if (this._shrinkwrap) {
+          this._shrinkwrap = Object.assign({}, this._shrinkwrap, pkg._shrinkwrap);
+        } else {
+          this._shrinkwrap = pkg._shrinkwrap;
+        }
+      }
     }
   }
 
