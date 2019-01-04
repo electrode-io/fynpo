@@ -504,10 +504,9 @@ class PkgDepResolver {
       pkgV.local !== "sym" &&
       (this._fyn.alwaysFetchDist || (metaJson._hasShrinkwrap && !metaJson._shrinkwrap))
     ) {
+      if (metaJson._hasShrinkwrap) pkgV._hasShrinkwrap = metaJson._hasShrinkwrap;
       await this._fyn._distFetcher.putPkgInNodeModules(pkgV, true);
-      if (metaJson._hasShrinkwrap) {
-        await item.loadShrinkwrap(pkgV.extracted);
-      }
+      if (metaJson._hasShrinkwrap) await item.loadShrinkwrap(pkgV.extracted);
     }
 
     if (!item.optFailed) {
@@ -694,9 +693,15 @@ class PkgDepResolver {
   }
 
   _resolveWithMeta(item, meta, force, noLocal) {
-    const nr = item.nestedResolve(item.name, item.semver);
+    let resolved = item.nestedResolve(item.name, item.semver);
 
-    const resolved = nr || this.resolvePackage(item, meta, noLocal);
+    if (resolved) {
+      if (!meta.versions.hasOwnProperty(resolved)) {
+        resolved = false;
+      }
+    } else {
+      resolved = this.resolvePackage(item, meta, noLocal);
+    }
 
     if (!resolved) {
       if (!force) return false;
@@ -766,9 +771,8 @@ class PkgDepResolver {
       //   );
       // }
       // logger.debug(item.name, item.semver, "resolved from lock data", resolved);
-      if (locked.versions.hasOwnProperty(resolved)) {
-        return resolved;
-      }
+
+      return resolved;
     }
 
     if (force) {

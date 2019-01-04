@@ -121,6 +121,9 @@ class PkgDepLocker {
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
           if (json.os) meta.os = json.os;
           if (json.cpu) meta.cpu = json.cpu;
+          if (json._hasShrinkwrap) {
+            meta._hasShrinkwrap = 1;
+          }
 
           pkgLock[version] = meta;
         });
@@ -198,6 +201,9 @@ class PkgDepLocker {
           vpkg.fromLocked = true;
           vpkg.name = item.name;
           vpkg.version = version;
+          if (vpkg._hasShrinkwrap) {
+            vpkg._hasShrinkwrap = true;
+          }
           versions[version] = vpkg;
         } else {
           valid = false;
