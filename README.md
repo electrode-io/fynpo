@@ -3,9 +3,11 @@
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-# fyn - Large Scale NodeJS Development Made Easy
+# fyn - Node Package Manager with unique features
 
-`fyn` is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
+`fyn` is a super fast Node Package Manager with some unique features such as enhanced npm link and central storage.
+
+It is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
 
 This started out as small experiments for a single goal of better local package installing and linking, but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
 
@@ -15,16 +17,18 @@ See [features](#features) for its key benefits.
 
 # Table Of Contents
 
+- [fyn - Node Package Manager with unique features](#fyn---node-package-manager-with-unique-features)
+- [Table Of Contents](#table-of-contents)
 - [Features](#features)
   - [Unique](#unique)
   - [General](#general)
 - [Overview](#overview)
   - [Rationale](#rationale)
-    - [Flatten node_modules](#flatten-node_modules)
+    - [Flatten node_modules](#flatten-nodemodules)
     - [Handling Local Package](#handling-local-package)
     - [`fynlocal` mode](#fynlocal-mode)
     - [The `stat` command](#the-stat-command)
-    - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
+    - [Easier Debugging `node_modules`](#easier-debugging-nodemodules)
     - [Using with Lerna](#using-with-lerna)
   - [Package Resolution and Layout](#package-resolution-and-layout)
 - [Install](#install)

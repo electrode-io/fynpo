@@ -193,7 +193,7 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
-        "auto-deep-resolve": {}
+        // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
@@ -201,6 +201,8 @@ const debug = false;
         // "locked-change-major": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
+        "npm-shrinkwrap": {}
+        // "optional-check": {}
         // "platform-check": {}
         // "platform-check-good": {}
         // "remote-url-semver": {}

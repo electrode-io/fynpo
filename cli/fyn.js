@@ -92,8 +92,13 @@ const makeNodeOptions = () => {
 const options = {
   fynlocal: {
     type: "boolean",
-    desc: "fynlocal mode",
+    desc: "enable/disable fynlocal mode",
     default: true
+  },
+  "always-fetch-dist": {
+    type: "boolean",
+    desc: "fetch package dist tarball during dep resolving",
+    default: false
   },
   "central-store": {
     type: "boolean",
