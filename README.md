@@ -1,30 +1,29 @@
+# fyn
+
+**Fast and unique node package manager - for better workflow and productivity**
+
 [![NPM version][npm-image]][npm-url]
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
 [![Build Status][travis-image]][travis-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-# fyn - Node Package Manager with unique features
+`fyn` is a super fast node package manager with some unique features:
 
-`fyn` is a super fast Node Package Manager with some unique features such as enhanced npm link and central storage.
-
-It is the result of a long pursuit to make developing advanced, large, and complex software in NodeJS easier and manageable.
-
-This started out as small experiments for a single goal of better local package installing and linking, but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
-
-See [features](#features) for its key benefits.
+- enhanced [npm link] with [fynlocal mode](#fynlocal-mode)
+- efficient disk space usage with [central storage](#central-storage)
+- smaller `node_modules` with [guaranteed single copy of a package](#flatten-node_modules)
+- and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
 
 # Table Of Contents
 
-- [fyn - Node Package Manager with unique features](#fyn---node-package-manager-with-unique-features)
-- [Table Of Contents](#table-of-contents)
 - [Features](#features)
   - [Unique](#unique)
   - [General](#general)
 - [Overview](#overview)
   - [Rationale](#rationale)
-    - [Flatten node_modules](#flatten-nodemodules)
+    - [Flatten node_modules](#flatten-node_modules)
     - [Handling Local Package](#handling-local-package)
     - [`fynlocal` mode](#fynlocal-mode)
     - [The `stat` command](#the-stat-command)
@@ -46,11 +45,11 @@ See [features](#features) for its key benefits.
 
 ## Unique
 
-- Makes developing large NodeJS applications easier and more manageable.
+- Focus on improving workflow and productivity.
 - Very comprehensive and proper handling of `optionalDependencies`.
 - A new `devOptDependencies` allows optional `devDependencies`.
-- A flatten `node_modules` structure that has smaller size.
-- The best at installing and linking local packages.
+- [Guaranteed single copy of a package](#flatten-nodemodules) => smaller `node_modules`.
+- The best at installing and linking local packages - better [npm link].
 - Install local packages like they are published (`fynlocal` mode)
 - Works particularly well with [lerna] monorepos.
 - Shows detailed stats of your dependencies.
@@ -66,10 +65,14 @@ See [features](#features) for its key benefits.
 - A flat and simple dependency lock file that can be diffed and edited.
 - Always deterministic `node_modules` installation.
 - Keeping compatibility by internally using the same modules as [npm].
+- Keeps the same behaviors as [npm].
 
 # Overview
 
-`fyn`'s intend is to help make your NodeJS development workflow easier. To realize that, it ultimately ends up being a Node Package Manager.
+`fyn` is the result of a long pursuit to make developing and managing advanced, large, and complex software in NodeJS easier.
+To realize that, it ultimately ends up being a node package manager.
+
+It started out as small experiments for a single goal of better local package installing and linking, ie: better [npm link], but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
 
 While it has all the bells and whistles to make it an extremely fast and efficient package manager, it's not just another [npm].
 
@@ -77,13 +80,11 @@ It comes with two unique features that are very useful when you are working on a
 
 ## Rationale
 
-So why would you want to use this?
-
-Well, if you just want to try a different approach to installing your `node_modules`, then it's worth a look.
+So why would you want to use this? If you just want to try a different approach to installing your `node_modules`, then it's worth a look.
 
 `fyn`'s flatten `node_modules` is the smallest in size because there are no multiple copies of the exact same package installed.
 
-It also has a special `fynlocal` mode for handling local packages.
+It also has a special `fynlocal` mode that's a better [npm link] for handling local packages.
 
 If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, then fyn may be helpful to you. Please read further to learn more.
 
@@ -369,3 +370,4 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [npm]: https://www.npmjs.com/package/npm
 [lerna]: https://www.npmjs.com/package/lerna
 [fynpo]: https://www.npmjs.com/package/fynpo
+[npm link]: https://docs.npmjs.com/cli/link.html
