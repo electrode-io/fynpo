@@ -1,6 +1,6 @@
 # fyn
 
-**Fast and unique node package manager - for better workflow and productivity**
+**A fast node package manager for better productivity and efficiency**
 
 [![NPM version][npm-image]][npm-url]
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
@@ -69,7 +69,7 @@
 
 # Overview
 
-`fyn` is the result of a long pursuit to make developing and managing advanced, large, and complex software in NodeJS easier.
+`fyn` is the result of a long pursuit to make developing and managing large and complex software in NodeJS easier.
 To realize that, it ultimately ends up being a node package manager.
 
 It started out as small experiments for a single goal of better local package installing and linking, ie: better [npm link], but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
@@ -98,20 +98,16 @@ When necessary, packages have their own `node_modules` with symlinks/junctions i
 
 ### Handling Local Package
 
-`fyn` is designed to make advanced and complex software projects in NodeJS easier to maintain and develop.
+`fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It treats packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It would be very useful if you've ever done any of these:
 
-- It has a `fynlocal` mode, which treats your package repo on your local disk like it's published to the registry. This allows you to update all your packages and test them in your application directly without publishing. It would be very useful if you've ever done any of these:
-
-  - Debug your application by inspecting code inside `node_modules`.
-  - Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.
-  - Use [lerna] to maintain and develop multiple packages.
-  - Or just have to juggle a lot of packages as part of your development.
-
-In particular, when you have inter depending local packages, testing updates from one to the other can be hard to manage and track. With `fyn`, it makes developing complex NodeJS projects that involve many packages very managable. It works particularly well with a [lerna] repo.
+- Debug your application by inspecting code inside `node_modules`.
+- Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.
+- Use [lerna] to maintain and develop multiple packages. `fyn` works particularly well with a [lerna] repo.
+- Or just have to juggle a lot of packages as part of your development.
 
 ### `fynlocal` mode
 
-What is this? Think `npm link`, but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published.
+What is this? Think [npm link], but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published.
 
 To enable, use the path to your local modules as semver in your package.json, or you can use the `fyn add` command.
 
@@ -125,9 +121,13 @@ That will install `my-awesome-module` into your node_modules. You can continue t
 
 If you add/remove files/directories in your local package, then running `fyn` install would take only seconds to update.
 
+If you already have the dependency in your package.json, then `fyn` saves local ones under a new section named `fyn`. You can turn off `fynlocal` mode with the flag `--no-fynlocal` easily.
+
 ### The `stat` command
 
-- It has a `stat` command that's very fast and can let you know all copies of a package installed and all others that depend on it.
+If you have a lockfile, then `fyn` takes sub seconds to regenerate the entire dependency tree even on very large applications. This makes it very fast to probe what's installed.
+
+It has a `stat` command that's very fast and can let you know all copies of a package installed and all others that depend on it.
 
 For example:
 
