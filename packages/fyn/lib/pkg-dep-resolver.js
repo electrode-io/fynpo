@@ -89,7 +89,14 @@ class PkgDepResolver {
     this.addPkgDepItems(
       this.makePkgDepItems(
         pkg,
-        new DepItem({ name: "~package.json", semver: "-", src: "", dsrc: "pkg", resolved: "~" }),
+        new DepItem({
+          name: "~package.json",
+          semver: "-",
+          src: "",
+          dsrc: "pkg",
+          resolved: "~",
+          shrinkwrap: options.shrinkwrap
+        }),
         !this._fyn.production
       )
     );

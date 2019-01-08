@@ -295,7 +295,7 @@ class PkgDepLocker {
   }
 
   async read(filename) {
-    if (!this._enable) return;
+    if (!this._enable) return false;
     try {
       if (!Path.isAbsolute(filename)) filename = Path.resolve(filename);
       const data = (await Fs.readFile(filename)).toString();
@@ -304,6 +304,7 @@ class PkgDepLocker {
       const basedir = Path.dirname(filename);
       this._fullLocalPath(basedir);
       logger.info(chalk.green(`loaded lockfile ${basedir}`));
+      return true;
     } catch (err) {
       if (this._lockOnly) {
         logger.error(`failed to load lockfile ${filename} -`, err.message);
@@ -315,6 +316,8 @@ class PkgDepLocker {
       this._shaSum = Date.now();
       this._lockData = {};
     }
+
+    return false;
   }
 }
 
