@@ -16,6 +16,19 @@
 
 ![fyn demo][fyn-demo-gif]
 
+## Quick Start
+
+Interested in giving it a quick test? Just install and run it on your project:
+
+```bash
+$ npm i -g fyn
+$ cd <your-project>
+$ fyn
+```
+
+- It can read some settings from your `.npmrc`
+- It's able to use your project's `npm-shrinkwrap.json` or `package-lock.json` files.
+
 # Table Of Contents
 
 - [Features](#features)
@@ -64,8 +77,9 @@
 - 100% compatible with NodeJS and its ecosystem.
 - A flat and simple dependency lock file that can be diffed and edited.
 - Always deterministic `node_modules` installation.
-- Keeping compatibility by internally using the same modules as [npm].
-- Keeps the same behaviors as [npm].
+- Compatible with [npm] by internally using the same modules as [npm].
+- Maintains as much of [npm]'s behaviors as possible.
+- Able to use [npm]'s `npm-shrinkwrap.json` or `package-lock.json`.
 
 # Overview
 
@@ -321,7 +335,7 @@ And to work around the issues, `fyn` does the following:
 
   If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which should be avoided. The subtle difference is that with preserve symlink, each symlink path of the same module will be loaded as its own instance by Node's module system.
 
-- `fyn` can't handle npm's `npm-shrinkwrap.json` and `package-lock.json` files.
+- `fyn` will take [npm]'s `npm-shrinkwrap.json` or `package-lock.json` if its own `fyn-lock.yaml` file doesn't exist, but will save `fyn-lock.yaml` after.
 
 # Thank you `npm`
 

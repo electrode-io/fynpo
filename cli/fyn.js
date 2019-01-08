@@ -173,6 +173,10 @@ const options = {
     type: "string",
     desc: "Lock dependencies by time"
   },
+  "npm-lock": {
+    type: "boolean",
+    desc: "force on/off loading npm lock"
+  },
   "refresh-optionals": {
     type: "boolean",
     default: false,
