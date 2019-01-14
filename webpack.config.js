@@ -24,7 +24,8 @@ const base = {
       "iconv-lite": Path.resolve("stubs/iconv-lite.js"),
       "./iconv-loader": Path.resolve("stubs/iconv-loader.js"),
       debug: Path.resolve("stubs/debug.js"),
-      lodash: require.resolve("lodash/lodash.min.js")
+      lodash: require.resolve("lodash/lodash.min.js"),
+      "resolve-from": Path.resolve("stubs/resolve-from.js")
     }
   },
   output: {
