@@ -17,6 +17,7 @@ const logger = require("./logger");
 const logFormat = require("./util/log-format");
 const VisualExec = require("visual-exec");
 const fyntil = require("./util/fyntil");
+const requireAt = require("require-at");
 
 const npmConfigEnv = require("./util/npm-config-env");
 
@@ -70,9 +71,18 @@ class LifecycleScripts {
     // this._addNpmPackageConfig(this._pkg.config, env);
 
     const env = Object.assign({}, npmConfigEnv(this._pkg, this._fyn.allrc || {}), override);
+    const npmDir = Path.join(getGlobalNodeModules(), "npm");
 
-    const nodeGypBin = Path.join(getGlobalNodeModules(), "npm/bin/node-gyp-bin");
-    xsh.envPath.addToFront(nodeGypBin, env);
+    try {
+      const ra = requireAt(npmDir);
+      const npmLifecycleDir = Path.dirname(ra.resolve("npm-lifecycle/package.json"));
+      xsh.envPath.addToFront(Path.join(npmLifecycleDir, "node-gyp-bin"), env);
+      env.npm_config_node_gyp = ra.resolve("node-gyp/bin/node-gyp");
+    } catch (err) {
+      logger.debug("failed to resolve node-gyp dir from npm, using defaults.", err);
+      xsh.envPath.addToFront(Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin"), env);
+      env.npm_config_node_gyp = Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js");
+    }
 
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);
@@ -84,7 +94,6 @@ class LifecycleScripts {
     env.npm_node_execpath = env.NODE = env.NODE || process.execPath;
     env.npm_execpath = fynInstalledDir;
     env.INIT_CWD = this._fyn.cwd;
-    env.npm_config_node_gyp = Path.join(nodeGypBin, "node-gyp");
 
     return env;
   }

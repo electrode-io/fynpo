@@ -5469,6 +5469,11 @@ request:
 require-at:
  _:
   ^1.0.1: 1.0.2
+  ^1.0.4: 1.0.4
+ 1.0.4:
+  top: 1
+  $: sha512-6CL3iL+yh6Zq5Rakldl0EgtmMkqnEUOrUPTYtOmEbtaks/sR/E4Vgx6LEsRzJ9RbEy2oH3DpZmHYV/h0y3Oj4g==
+  _: 'https://registry.npmjs.org/require-at/-/require-at-1.0.4.tgz'
  1.0.2:
   $: sha512-jux4VpiRDDp3sQX//zyyYScM8stqZUfl/X+Kb6VEtqhIx/qzICEUY6UGrHjNGUX79QSioCULt1DvcOz0ZsBjeg==
   _: 'https://registry.npmjs.org/require-at/-/require-at-1.0.2.tgz'
