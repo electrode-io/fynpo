@@ -70,13 +70,14 @@ const myDir = Path.join(__dirname, "..");
 
 class FynCli {
   constructor(options) {
-    this._rc = options;
+    this._rc = options.opts;
+    this._rcData = options.rcData;
     if (options.noStartupInfo !== true) this.showStartupInfo();
     this._fyn = undefined;
   }
 
   get fyn() {
-    if (!this._fyn) this._fyn = new Fyn(this._rc);
+    if (!this._fyn) this._fyn = new Fyn(this._rc, this._rcData);
     return this._fyn;
   }
 
@@ -168,7 +169,7 @@ class FynCli {
 
     if (_.isEmpty(items)) {
       logger.error("No packages to add");
-      exit(1);
+      fyntil.exit(1);
     }
 
     logger.addItem({ name: FETCH_META, color: "green", spinner });
@@ -269,7 +270,7 @@ class FynCli {
   _remove(argv) {
     if (_.isEmpty(argv.packages)) {
       logger.error("No packages to remove");
-      exit(1);
+      fyntil.exit(1);
     }
 
     const sections = [

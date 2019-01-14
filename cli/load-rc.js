@@ -9,12 +9,15 @@ const _ = require("lodash");
 const logger = require("../lib/logger");
 const assert = require("assert");
 const defaultRc = require("./default-rc");
+const Promise = require("bluebird");
 
 function readRc(fname) {
   const rcFname = Path.basename(fname);
+
   try {
     const rcData = Fs.readFileSync(fname).toString();
     let rc;
+
     try {
       assert(rcFname === ".fynrc" && rcData.startsWith("---"));
       rc = Yaml.parse(rcData);
@@ -23,30 +26,55 @@ function readRc(fname) {
       rc = Ini.parse(rcData);
       logger.debug(`Loaded ${rcFname} ini RC`, fname, JSON.stringify(rc));
     }
+
     return rc;
   } catch (e) {
     if (e.code !== "ENOENT") {
       logger.error(`Failed to process ${rcFname} RC file`, fname, e.message);
     }
-    return undefined;
+    return {};
   }
 }
 
 function loadRc(cwd) {
-  let rcName, rcData;
+  const npmrcData = [];
+
+  if (cwd === false) {
+    return {
+      npmrc: {}
+    };
+  }
 
   const homeDir = os.homedir();
 
-  const rc = [
+  const files = [
+    process.env.NPM_CONFIG_GLOBALCONFIG,
+    Path.join(process.env.PREFIX || "", "/etc/npmrc"),
+    process.env.NPM_CONFIG_USERCONFIG,
     Path.join(homeDir, ".npmrc"),
     Path.join(homeDir, ".fynrc"),
     Path.join(cwd, ".npmrc"),
     Path.join(cwd, ".fynrc")
-  ].map(readRc);
+  ].filter(x => x);
 
-  const merged = _.merge.apply(_, [defaultRc].concat(rc));
+  const data = files.map(fp => {
+    const x = readRc(fp);
+    if (fp.endsWith("npmrc")) {
+      npmrcData.push(x);
+    }
+    return x;
+  });
 
-  return merged;
+  const all = _.merge.apply(_, [defaultRc].concat(data));
+  const npmrc = _.merge.apply(_, [{}].concat(npmrcData));
+
+  return {
+    all,
+    npmrc,
+    data,
+    npmrcData,
+    files
+  };
 }
 
 module.exports = loadRc;
