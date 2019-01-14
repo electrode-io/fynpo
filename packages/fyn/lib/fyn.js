@@ -21,8 +21,11 @@ const { FYN_IGNORE_FILE } = require("./constants");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
+const npmConfigEnv = require("./util/npm-config-env");
+
 class Fyn {
-  constructor(options) {
+  constructor(options, rcData) {
+    this._rcData = Object.assign({ all: {} }, rcData);
     options = this._options = fynConfig(options);
     this._cwd = options.cwd || process.cwd();
     logger.debug(`fyn options`, JSON.stringify(options));
@@ -97,6 +100,20 @@ class Fyn {
 
   savePkg() {
     Fs.writeFileSync(this._pkgFile, `${JSON.stringify(this._pkg, null, 2)}\n`);
+  }
+
+  get npmConfigEnv() {
+    if (!this._npmConfigEnv) {
+      this._rcData.all.cache = this._options.fynDir;
+      this._npmConfigEnv = npmConfigEnv(this._pkg, this._rcData.all);
+    }
+
+    return this._npmConfigEnv;
+  }
+
+  get allrc() {
+    this._rcData.all.cache = this._options.fynDir;
+    return this._rcData.all;
   }
 
   get copy() {

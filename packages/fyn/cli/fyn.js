@@ -13,6 +13,7 @@ const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
 const findFlatModule = require("./find-flat-module");
 const defaultRc = require("./default-rc");
+const fynTil = require("../lib/util/fyntil");
 
 const nixClap = new NixClap({
   Promise,
@@ -30,7 +31,7 @@ function setLogLevel(ll) {
       logger._logLevel = x;
     } else {
       logger.error(`Invalid log level "${ll}".  Supported levels are: ${levels.join(", ")}`);
-      exit(1);
+      fynTil.exit(1);
     }
   }
 }
@@ -46,7 +47,9 @@ const pickOptions = argv => {
     cwd = Path.join(process.cwd(), cwd);
   }
 
-  const rc = (argv.opts.rcfile && loadRc(cwd)) || defaultRc;
+  const rcData = loadRc(argv.opts.rcfile && cwd);
+
+  const rc = rcData.all || defaultRc;
 
   nixClap.applyConfig(rc, argv);
 
@@ -63,7 +66,7 @@ const pickOptions = argv => {
   setLogLevel(argv.opts.logLevel);
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
-  return argv.opts;
+  return { opts: argv.opts, rcData };
 };
 
 const makeNodeOptions = () => {
@@ -201,8 +204,8 @@ const options = {
     type: "boolean",
     alias: "prod",
     default: false,
-    desc: "Ignore devDependencies",
-    allowCmd: ["add", "remove", "install"]
+    desc: "Ignore devDependencies"
+    // allowCmd: ["add", "remove", "install"]
   },
   rcfile: {
     type: "boolean",
