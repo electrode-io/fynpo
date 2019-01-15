@@ -8,7 +8,7 @@ const base = {
   mode: "development",
   //devtool: "source-map",
   entry: {
-    "fyn.js": Path.resolve("cli/fyn.js")
+    "fyn.js": Path.resolve("cli/main.js")
   },
   plugins: [
     new webpack.BannerPlugin({

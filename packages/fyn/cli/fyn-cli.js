@@ -19,6 +19,8 @@ const showStat = require("./show-stat");
 const showSetupInfo = require("./show-setup-info");
 const logFormat = require("../lib/util/log-format");
 const runNpmScript = require("../lib/util/run-npm-script");
+const npmLifecycle = require("npm-lifecycle");
+const npmlog = require("npmlog");
 
 const {
   FETCH_META,
@@ -418,6 +420,62 @@ class FynCli {
 
   stat(argv) {
     return showStat(this.fyn, argv.args.packages, argv.opts.follow);
+  }
+
+  run(argv, parsed) {
+    if (argv.opts.list) {
+      return this.fyn
+        ._initialize({ noLock: true })
+        .then(() => {
+          console.log(Object.keys(_.get(this.fyn._pkg, "scripts", {})).join("\n"));
+        })
+        .finally(() => {
+          fyntil.exit(0);
+        });
+    }
+
+    let { script = argv.name } = argv.args;
+
+    const config = x => this.fyn.allrc[x];
+
+    const run = (pkg, xscr) => {
+      return npmLifecycle(pkg, xscr, this.fyn.cwd, {
+        config: this.fyn.allrc,
+        dir: this.fyn.cwd,
+        failOk: false,
+        force: config("force"),
+        group: config("group"),
+        log: npmlog,
+        ignorePrepublish: config("ignore-prepublish"),
+        ignoreScripts: config("ignore-scripts"),
+        nodeOptions: config("node-options"),
+        production: this.fyn.production,
+        scriptShell: config("script-shell"),
+        scriptsPrependNodePath: config("scripts-prepend-node-path"),
+        unsafePerm: config("unsafe-perm"),
+        user: config("user")
+      });
+    };
+
+    return this.fyn._initialize({ noLock: true }).then(() => {
+      if (!_.get(this.fyn._pkg, ["scripts", script])) {
+        logger.error(`missing script ${script}`);
+        fyntil.exit(1);
+      }
+
+      const pkg = Object.assign({}, this.fyn._pkg);
+
+      pkg._id = `${pkg.name}@${pkg.version}`;
+      let scripts;
+
+      if (!script.startsWith("pre") && !script.startsWith("post")) {
+        scripts = [`pre${script}`, script, `post${script}`];
+      } else {
+        scripts = [script];
+      }
+
+      return Promise.each(scripts, s => _.get(pkg, ["scripts", s]) && run(pkg, s));
+    });
   }
 }
 
