@@ -11,7 +11,7 @@
 
 - enhanced [npm link] with [fynlocal mode](#fynlocal-mode)
 - efficient disk space usage with [central storage](#central-storage)
-- smaller `node_modules` with [guaranteed single copy of a package](#flatten-node_modules)
+- smaller `node_modules` with [guaranteed single copy of a package](#smaller-node_modules)
 - and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
@@ -26,8 +26,8 @@ $ cd <your-project>
 $ fyn
 ```
 
-- It can read some settings from your `.npmrc`
-- It's able to use your project's `npm-shrinkwrap.json` or `package-lock.json` files.
+- It can read and use some settings from your `.npmrc`.
+- It can use `npm-shrinkwrap.json` or `package-lock.json` files.
 
 # Table Of Contents
 
@@ -36,22 +36,27 @@ $ fyn
   - [General](#general)
 - [Overview](#overview)
   - [Rationale](#rationale)
-    - [Flatten node_modules](#flatten-node_modules)
-    - [Handling Local Package](#handling-local-package)
+  - [Enhanced `npm link`](#enhanced-npm-link)
     - [`fynlocal` mode](#fynlocal-mode)
-    - [The `stat` command](#the-stat-command)
-    - [Easier Debugging `node_modules`](#easier-debugging-nodemodules)
-    - [Using with Lerna](#using-with-lerna)
-  - [Package Resolution and Layout](#package-resolution-and-layout)
-- [Install](#install)
+  - [Smaller `node_modules`](#smaller-node_modules)
+  - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
 - [Using fyn](#using-fyn)
+  - [Installing `fyn`](#installing-fyn)
+  - [Installing Your Dependencies](#installing-your-dependencies)
+  - [Running npm scripts](#running-npm-scripts)
+  - [The `stat` command](#the-stat-command)
+  - [Locking Dependencies by Time](#locking-dependencies-by-time)
+  - [Refreshing Optional Dependencies](#refreshing-optional-dependencies)
+  - [Using with Lerna](#using-with-lerna)
 - [Configuring fyn](#configuring-fyn)
   - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
   - [Other RC Options](#other-rc-options)
     - [Scope registry](#scope-registry)
   - [Central Storage](#central-storage)
-- [Compatibility](#compatibility)
-- [Thank you `npm`](#thank-you-npm)
+- [Other Info](#other-info)
+  - [Compatibility](#compatibility)
+  - [Package Resolution and Layout](#package-resolution-and-layout)
+  - [Thank you `npm`](#thank-you-npm)
 - [License](#license)
 
 # Features
@@ -102,15 +107,7 @@ It also has a special `fynlocal` mode that's a better [npm link] for handling lo
 
 If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, then fyn may be helpful to you. Please read further to learn more.
 
-### Flatten node_modules
-
-As a package manager, `fyn` employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
-
-At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
-
-When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies under `__fv_`.
-
-### Handling Local Package
+## Enhanced `npm link`
 
 `fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It treats packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It would be very useful if you've ever done any of these:
 
@@ -137,6 +134,54 @@ If you add/remove files/directories in your local package, then running `fyn` in
 
 If you already have the dependency in your package.json, then `fyn` saves local ones under a new section named `fyn`. You can turn off `fynlocal` mode with the flag `--no-fynlocal` easily.
 
+## Smaller `node_modules`
+
+As a package manager, `fyn` employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
+
+At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
+
+When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies under `__fv_`.
+
+This approach has the benefit of guaranteeing a single copy of a package installed and therefore slightly smaller size `node_modules`.
+
+## Easier Debugging `node_modules`
+
+With a guaranteed single copy of a package, it makes debugging easier when you have to reach into code under `node_modules`.
+
+`node_modules` installed by [npm] could potentially have multiple copies of an identical package. So even if you've identified the module under `node_modules` to investigate your issue, you may still need to figure which copy.
+
+With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint.
+
+# Using fyn
+
+### Installing `fyn`
+
+Please install `fyn` to your NodeJS setup globally.
+
+```bash
+npm install -g fyn
+```
+
+### Installing Your Dependencies
+
+Change into the directory for your project with the `package.json` file, and run:
+
+```bash
+fyn
+```
+
+- Which is a shorthand for `fyn install` since `install` is the default command.
+
+Depending on the size of your dependencies and your network speed, this could take anywhere from a few seconds to a few minutes.
+
+### Running npm scripts
+
+As a convenience, `fyn` implements `npm run` by utilizing the same modules from [npm]. You can run your [npm scripts] in `package.json`. An alias command `fun` is available also:
+
+- `test` - `fyn test` or `fun test`
+- any script - `fyn run <script-name>` or `fun <script-name>`
+- list scripts - `fyn run -l` or `fun -l`
+
 ### The `stat` command
 
 If you have a lockfile, then `fyn` takes sub seconds to regenerate the entire dependency tree even on very large applications. This makes it very fast to probe what's installed.
@@ -154,11 +199,29 @@ $ fyn stat chalk
 > chalk@1.1.3 has these dependents babel-code-frame@6.26.0, electrode-server@1.5.1
 ```
 
-### Easier Debugging `node_modules`
+### Locking Dependencies by Time
 
-`node_modules` installed by [npm] could potentially have multiple copies of an identical package. So even if you've identified the module under `node_modules` to investigate your issue, you may still need to figure which copy.
+Ever want to install your dependencies only consider packages published up to a certain date in the past? `fyn`'s got you covered with the `--lock-time` option.
 
-With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint.
+- First rename or remove `fyn-lock.yaml` file.
+- Then run install like this:
+
+```bash
+$ rm fyn-lock.yaml
+$ fyn install --lock-time "12/01/2018"
+```
+
+And `fyn` will not consider any packages published after Dec 01, 2018 when installing.
+
+### Refreshing Optional Dependencies
+
+If you have any optional dependencies, then they will not be re-evaluated if you have a lock file.
+
+You can re-evaluate optional dependencies with `--refresh-optionals` option:
+
+```bash
+fyn install --refresh-optionals
+```
 
 ### Using with Lerna
 
@@ -179,30 +242,6 @@ $ fynpo local
 $ cd packages/my-awesome-package
 $ fyn
 ```
-
-## Package Resolution and Layout
-
-As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
-
-`fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
-
-# Install
-
-Please install `fyn` to your NodeJS setup globally.
-
-```bash
-npm install -g fyn
-```
-
-# Using fyn
-
-Change into the directory for your project with the `package.json` file, and run:
-
-```bash
-fyn install
-```
-
-Depending on the size of your dependencies and your network speed, this could take anywhere from a few seconds to a few minutes.
 
 # Configuring fyn
 
@@ -321,7 +360,9 @@ And to work around the issues, `fyn` does the following:
 - issue 2: `fyn` has a `--copy` option that allows you to force any package to install with copying instead of hardlinking.
 - issue 3: `fyn` will not hard link packages from central store if they have `preinstall`, `install`, or `postinstall` npm scripts.
 
-# Compatibility
+# Other Info
+
+## Compatibility
 
 - `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules. No special updates or changes needed.
 
@@ -337,7 +378,13 @@ And to work around the issues, `fyn` does the following:
 
 - `fyn` will take [npm]'s `npm-shrinkwrap.json` or `package-lock.json` if its own `fyn-lock.yaml` file doesn't exist, but will save `fyn-lock.yaml` after.
 
-# Thank you `npm`
+## Package Resolution and Layout
+
+As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
+
+`fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
+
+## Thank you `npm`
 
 Node Package Manager is a very large and complex piece of software. Developing `fyn` was 10 times easier because of the generous open source software from the community, especially the individual packages that are part of `npm`.
 
