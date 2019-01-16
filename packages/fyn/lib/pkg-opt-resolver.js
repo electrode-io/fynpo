@@ -204,7 +204,7 @@ class PkgOptResolver {
 
       // package actually has preinstall script, first check if it's already
       // installed at top level in node_modules
-      const pkg = { name, version };
+      const pkg = Object.assign({}, pkgFromMeta, { name, version });
 
       return this._fyn._distFetcher.findPkgInNodeModules(pkg).then(find => {
         if (find.pkgJson) {
