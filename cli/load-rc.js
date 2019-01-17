@@ -10,6 +10,7 @@ const logger = require("../lib/logger");
 const assert = require("assert");
 const defaultRc = require("./default-rc");
 const Promise = require("bluebird");
+const npmConfig = require("./config/npm-config");
 
 function readRc(fname) {
   const rcFname = Path.basename(fname);
@@ -65,8 +66,8 @@ function loadRc(cwd) {
     return x;
   });
 
-  const all = _.merge.apply(_, [defaultRc].concat(data));
-  const npmrc = _.merge.apply(_, [{}].concat(npmrcData));
+  const all = _.merge.apply(_, [npmConfig.defaults, defaultRc].concat(data));
+  const npmrc = _.merge.apply(_, [{}, npmConfig.defaults].concat(npmrcData));
 
   return {
     all,

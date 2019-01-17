@@ -439,9 +439,9 @@ class FynCli {
     const config = x => this.fyn.allrc[x];
 
     const run = (pkg, xscr) => {
-      return npmLifecycle(pkg, xscr, this.fyn.cwd, {
+      const options = {
         config: this.fyn.allrc,
-        dir: this.fyn.cwd,
+        dir: Path.join(this.fyn.cwd, this.fyn.targetDir),
         failOk: false,
         force: config("force"),
         group: config("group"),
@@ -454,7 +454,9 @@ class FynCli {
         scriptsPrependNodePath: config("scripts-prepend-node-path"),
         unsafePerm: config("unsafe-perm"),
         user: config("user")
-      });
+      };
+
+      return npmLifecycle(pkg, xscr, this.fyn.cwd, options);
     };
 
     return this.fyn._initialize({ noLock: true }).then(() => {

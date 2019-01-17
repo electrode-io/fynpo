@@ -1797,6 +1797,13 @@ chrome-trace-event:
   _: 'https://registry.npmjs.org/chrome-trace-event/-/chrome-trace-event-1.0.0.tgz'
   dependencies:
    tslib: ^1.9.0
+ci-info:
+ _:
+  ^2.0.0: 2.0.0
+ 2.0.0:
+  top: 1
+  $: sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
+  _: 'https://registry.npmjs.org/ci-info/-/ci-info-2.0.0.tgz'
 cipher-base:
  _:
   '^1.0.0,^1.0.1,^1.0.3': 1.0.4
