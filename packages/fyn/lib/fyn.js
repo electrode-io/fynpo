@@ -212,6 +212,10 @@ class Fyn {
     return this._options.fynDir;
   }
 
+  get targetDir() {
+    return this._options.targetDir;
+  }
+
   get alwaysFetchDist() {
     return this._options.alwaysFetchDist;
   }
