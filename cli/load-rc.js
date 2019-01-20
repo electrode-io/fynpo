@@ -66,7 +66,7 @@ function loadRc(cwd) {
     return x;
   });
 
-  const all = _.merge.apply(_, [npmConfig.defaults, defaultRc].concat(data));
+  const all = _.merge.apply(_, [{}, npmConfig.defaults, defaultRc].concat(data));
   const npmrc = _.merge.apply(_, [{}, npmConfig.defaults].concat(npmrcData));
 
   return {
