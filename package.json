@@ -9,7 +9,8 @@
     "coverage": "clap -n -x create-tgz check",
     "ci": "clap -n -x bundle coverage",
     "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1",
-    "create-tgz": "node test/fixtures/mock-npm/create-tgz"
+    "create-tgz": "node test/fixtures/mock-npm/create-tgz",
+    "postinstall": "mkdir -p .tmp && cp node_modules/make-fetch-happen/index.js .tmp && patch -N .tmp/index.js < patch/mfh.patch && mv .tmp/index.js node_modules/make-fetch-happen || exit 0"
   },
   "bin": {
     "fyn": "./bin/fyn.js",
