@@ -244,6 +244,16 @@ class PkgSrcManager {
       }
     };
 
+    //
+    // where fetch will ultimately occur and cached
+    // make-fetch-happen/index.js:106 (cachingFetch)
+    // make-fetch-happen/index.js:143 (isStale check)
+    // make-fetch-happen/index.js:309 (remoteFetch)
+    // make-fetch-happen/index.js:352 (caching)
+    //
+    // make-fetch-happen/index.js:229 (conditionalFetch)
+    // make-fetch-happen/index.js:256 (304 Not Modified handling) (just returncachedRes?)
+    //
     const pacoteRequest = () => {
       return pacote
         .packument(
@@ -517,7 +527,7 @@ class PkgSrcManager {
     //   )
 
     const promise = cacache
-      .get(this._cacheDir, cacheKey)
+      .get(this._cacheDir, cacheKey, { memoize: true })
       .then(cached => {
         foundCache = true;
         const packument = JSON.parse(cached.data);
