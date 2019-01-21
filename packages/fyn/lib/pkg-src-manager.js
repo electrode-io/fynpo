@@ -247,12 +247,15 @@ class PkgSrcManager {
     //
     // where fetch will ultimately occur and cached
     // make-fetch-happen/index.js:106 (cachingFetch)
+    //   - missing cache ==> remoteFetch
+    //   - found cache   ==> conditionalFetch
     // make-fetch-happen/index.js:143 (isStale check)
+    //
+    // make-fetch-happen/index.js:229 (conditionalFetch) ==> remoteFetch
+    // make-fetch-happen/index.js:256 (304 Not Modified handling) (just returncachedRes?)
+    //
     // make-fetch-happen/index.js:309 (remoteFetch)
     // make-fetch-happen/index.js:352 (caching)
-    //
-    // make-fetch-happen/index.js:229 (conditionalFetch)
-    // make-fetch-happen/index.js:256 (304 Not Modified handling) (just returncachedRes?)
     //
     const pacoteRequest = () => {
       return pacote
@@ -260,7 +263,10 @@ class PkgSrcManager {
           pkgName,
           this.getPacoteOpts({
             "full-metadata": true,
-            "fetch-retries": 3
+            "fetch-retries": 3,
+            "cache-policy": "ignore",
+            "cache-key": qItem.cacheKey,
+            memoize: false
           })
         )
         .tap(x => {
@@ -466,6 +472,9 @@ class PkgSrcManager {
       return inflight;
     }
 
+    const packumentUrl = this.makePackumentUrl(pkgName);
+    const cacheKey = `make-fetch-happen:request-cache:full:${packumentUrl}`;
+
     const queueMetaFetchRequest = cached => {
       const offline = this._fyn.remoteMetaDisabled;
 
@@ -486,6 +495,7 @@ class PkgSrcManager {
 
       const netQItem = {
         type: "meta",
+        cacheKey,
         item,
         defer: createDefer()
       };
@@ -510,8 +520,6 @@ class PkgSrcManager {
     // "make-fetch-happen:request-cache:https://registry.npmjs.org/electrode-static-paths"
     // "make-fetch-happen:request-cache:https://registry.npmjs.org/@octokit%2frest"
     //
-    const packumentUrl = this.makePackumentUrl(pkgName);
-    const cacheKey = `make-fetch-happen:request-cache:${packumentUrl}`;
 
     //
     // Much slower way to get cache with pacote
