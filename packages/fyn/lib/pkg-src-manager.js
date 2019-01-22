@@ -478,7 +478,7 @@ class PkgSrcManager {
     const queueMetaFetchRequest = cached => {
       const offline = this._fyn.remoteMetaDisabled;
 
-      if (this._fyn.forceCache) {
+      if (cached && this._fyn.forceCache) {
         this._metaStat.wait--;
         return cached;
       }
@@ -543,7 +543,10 @@ class PkgSrcManager {
         return queueMetaFetchRequest(packument);
       })
       .catch(err => {
-        if (foundCache) throw err;
+        if (foundCache) {
+          // the .then above threw an error - not expectec
+          throw err;
+        }
         return queueMetaFetchRequest();
       })
       .then(meta => {
