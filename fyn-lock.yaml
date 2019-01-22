@@ -4550,11 +4550,11 @@ nise:
    text-encoding: ^0.6.4
 nix-clap:
  _:
-  '^1.0.8,^1.3.5': 1.3.5
- 1.3.5:
+  '^1.0.8,^1.3.5': 1.3.6
+ 1.3.6:
   top: 1
-  $: sha512-KYvKTC3NGMke3UrAhv7FdEJyQ6NE427ziB0AGyoi2tt7mCg+ABBQBmKTWjNnuLzJiKSyMf/hu664Mq4hcBfoAA==
-  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.5.tgz'
+  $: sha512-PeCh17C4yO4HoxjSWJza2q6/BFRBI2Fj0dRnitq7E5f/2Pj8RA0A6T7BLfE2JYSmbhQk1Dlr5zycoJQ43RVYVg==
+  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.6.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-fetch-npm:
