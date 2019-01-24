@@ -12,6 +12,7 @@
 - enhanced [npm link] with [fynlocal mode](#fynlocal-mode)
 - efficient disk space usage with [central storage](#central-storage)
 - smaller `node_modules` with [guaranteed single copy of a package](#smaller-node_modules)
+- flexible dependencies lock by using a [lock time stamp](#locking-dependencies-by-time)
 - and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
@@ -211,7 +212,13 @@ $ rm fyn-lock.yaml
 $ fyn install --lock-time "12/01/2018"
 ```
 
-And `fyn` will not consider any packages published after Dec 01, 2018 when installing.
+Or
+
+```bash
+$ fyn install --lock-time "dec 01, 2018"
+```
+
+And `fyn` will only consider packages published up to Dec 01, 2018 when installing.
 
 ### Refreshing Optional Dependencies
 
