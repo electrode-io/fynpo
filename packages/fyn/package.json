@@ -115,7 +115,8 @@
       "dist",
       "stubs",
       "*/pkg-bin-linker-win32.js",
-      "es6-promisify"
+      "es6-promisify",
+      "cli/config"
     ]
   },
   "engines": {
