@@ -45,7 +45,7 @@ const node6 = Object.assign({}, base, {
     rules: [
       {
         test: /\.js$/,
-        exclude: x => x.indexOf("node_modules") > 0,
+        exclude: x => x.indexOf("node_modules") > 0 && x.indexOf("node_modules/xaa") < 0,
         use: {
           loader: "babel-loader",
           options: {
