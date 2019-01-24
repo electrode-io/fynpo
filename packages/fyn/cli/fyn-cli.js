@@ -1,7 +1,7 @@
 "use strict";
 
 const Module = require("module");
-const Fs = require("fs");
+const Fs = require("../lib/util/file-ops");
 const Yaml = require("yamljs");
 const Path = require("path");
 const Promise = require("bluebird");
@@ -21,6 +21,7 @@ const logFormat = require("../lib/util/log-format");
 const runNpmScript = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
+const xaa = require("../lib/util/xaa");
 
 const {
   FETCH_META,
@@ -121,11 +122,20 @@ class FynCli {
     return this.fyn._initialize().then(() => this._add(argv));
   }
 
-  _add(argv) {
-    const addSec = (section, packages) => {
+  async _add(argv) {
+    const addSec = async (section, packages) => {
       if (_.isEmpty(packages)) return [];
 
-      const items = packages.map(x => {
+      const items = await xaa.map(packages, async x => {
+        const xfp = Path.resolve(x);
+        const stat = await Fs.stat(xfp);
+        if (stat && stat.isDirectory()) {
+          x = Path.relative(process.cwd(), xfp);
+          if (!x.startsWith(`..${Path.sep}`)) {
+            x = `.${Path.sep}${x}`;
+          }
+        }
+
         const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
 
         logger.info("found semverPath", semverPath);
@@ -165,9 +175,10 @@ class FynCli {
     };
 
     let items = [];
-    _.each(sections, (argKey, section) => {
-      items = items.concat(addSec(section, argv[argKey]));
-    });
+    for (const section in sections) {
+      const argKey = sections[section];
+      items = items.concat(await addSec(section, argv[argKey]));
+    }
 
     if (_.isEmpty(items)) {
       logger.error("No packages to add");
