@@ -6925,6 +6925,13 @@ ws:
   _: 'https://registry.npmjs.org/ws/-/ws-6.1.2.tgz'
   dependencies:
    async-limiter: ~1.0.0
+xaa:
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  top: 1
+  $: sha512-20Gh7kuSRoQo8UTlaiYjs7/eT39vJUNEYI7v6mcz9+m/wGCPUbwtkEBUCXklrBPQtc2cRjj3xs05IjDwhhlJKw==
+  _: 'https://registry.npmjs.org/xaa/-/xaa-1.0.0.tgz'
 xclap:
  _:
   ^0.2.0: 0.2.26
