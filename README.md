@@ -133,7 +133,7 @@ That will install `my-awesome-module` into your node_modules. You can continue t
 
 If you add/remove files/directories in your local package, then running `fyn` install would take only seconds to update.
 
-If you already have the dependency in your package.json, then `fyn` saves local ones under a new section named `fyn`. You can turn off `fynlocal` mode with the flag `--no-fynlocal` easily.
+`fyn` will also save a file `package-fyn.json` with local dependencies in a section called `fyn`. You should not commit this file and `.gitignore` it. `fyn` will automatically check this file when installing, but you can turn off `fynlocal` mode with with the flag `--no-fynlocal` easily.
 
 ## Smaller `node_modules`
 

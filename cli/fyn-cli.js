@@ -228,7 +228,7 @@ class FynCli {
     })
       .resume()
       .wait()
-      .then(() => {
+      .then(async () => {
         logger.removeItem(FETCH_META);
 
         if (results.length === 0) {
@@ -239,9 +239,13 @@ class FynCli {
         const added = _.mapValues(sections, () => []);
 
         const pkg = this.fyn._pkg;
+        const pkgFyn = this.fyn.loadPkgFyn() || {};
+
         results.forEach(item => {
           if (item.semverPath) {
-            _.set(pkg, ["fyn", item.section, item.name], item.found);
+            // set in package-fyn
+            _.set(pkgFyn, ["fyn", item.section, item.name], item.found);
+            // set in package if it's not there
             if (!_.get(pkg, [item.section, item.name])) {
               _.set(pkg, [item.section, item.name], item.found);
             }
@@ -254,12 +258,15 @@ class FynCli {
         Object.keys(sections).forEach(sec => {
           if (added[sec].length > 0 && pkg[sec]) {
             pkg[sec] = sortObjKeys(pkg[sec]);
-            if (_.get(pkg, ["fyn", sec])) pkg.fyn[sec] = sortObjKeys(pkg.fyn[sec]);
+            if (_.get(pkgFyn, ["fyn", sec])) {
+              pkgFyn.fyn[sec] = sortObjKeys(pkgFyn.fyn[sec]);
+            }
             logger.info(`Packages added to ${sec}:`, added[sec].join(", "));
           }
         });
 
-        this.fyn.savePkg();
+        await this.fyn.savePkg();
+        await this.fyn.savePkgFyn(pkgFyn);
         return true;
       });
   }
