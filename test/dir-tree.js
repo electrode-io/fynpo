@@ -11,12 +11,12 @@ function readJson(file) {
 
 function readPackage(file) {
   const pkg = readJson(file);
-  const deps = Object.assign({}, pkg.optionalDependencies, pkg.dependencies);
+  const deps = Object.assign({}, pkg.peerDependencies, pkg.optionalDependencies, pkg.dependencies);
   const res = {};
 
   Object.keys(pkg._depResolutions).forEach(depName => {
     const dr = pkg._depResolutions[depName];
-    const semv = deps[depName] || "undefined";
+    const semv = deps[depName] || `undefined`;
     const depKey = `${dr.type}(${depName}@${semv})`;
     res[depKey] = dr.resolved || "undefined";
     delete deps[depName];

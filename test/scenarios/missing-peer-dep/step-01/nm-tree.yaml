@@ -44,3 +44,5 @@ node_modules:
     package.json:
       id: mod-f@2.1.1
       res: {}
+      unres:
+        mod-a: "^0.3.0"

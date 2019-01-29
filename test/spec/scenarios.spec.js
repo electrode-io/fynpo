@@ -198,10 +198,10 @@ const debug = false;
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
-        // "locked-change-major": {}
+        "locked-change-major": { stopStep: "step-01" }
         // "missing-peer-dep": {}
         // "nested-dep": {}
-        "npm-shrinkwrap": {}
+        // "npm-shrinkwrap": {}
         // "optional-check": {}
         // "platform-check": {}
         // "platform-check-good": {}

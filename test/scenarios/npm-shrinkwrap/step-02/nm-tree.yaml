@@ -70,6 +70,8 @@ node_modules:
     package.json:
       id: mod-f@2.1.1
       res: {}
+      unres:
+        mod-a: "^0.3.0"
   mod-ns:
     node_modules:
       __fyn_ignore__: file
