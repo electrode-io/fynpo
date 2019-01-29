@@ -120,7 +120,8 @@ class PkgDepLinker {
     const depRes = (pkgJson._depResolutions = {});
 
     const resData = depInfo.res;
-    if (_.isEmpty(resData) || !resData.dep) return true;
+    // TODO: check existing node_modules and do clean-up as necessary
+    if (_.isEmpty(resData)) return true;
 
     const pkgs = this._fyn._data.getPkgsData();
     const fvDeps = [];
