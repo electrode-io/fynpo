@@ -128,7 +128,7 @@ class FynCli {
 
       const items = await xaa.map(packages, async x => {
         const xfp = Path.resolve(x);
-        const stat = await Fs.stat(xfp);
+        const stat = await xaa.try(() => Fs.stat(xfp));
         if (stat && stat.isDirectory()) {
           x = Path.relative(process.cwd(), xfp);
           if (!x.startsWith(`..${Path.sep}`)) {
