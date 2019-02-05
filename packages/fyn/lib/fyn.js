@@ -115,10 +115,10 @@ class Fyn {
         logger.error(err.message);
         fyntil.exit(err);
       }
-      const pkgFyn = this.loadPkgFyn(options);
+      const pkgFyn = await this.loadPkgFyn(options);
       if (pkgFyn) {
         logger.debug("found package-fyn.json", pkgFyn);
-        _.merge(this._pkgFile, pkgFyn);
+        _.merge(this._pkg, pkgFyn);
       }
     } else {
       this._pkg = options.pkgData;
