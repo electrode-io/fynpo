@@ -603,6 +603,13 @@ file-entry-cache:
   dependencies:
    flat-cache: ^1.2.1
    object-assign: ^4.0.1
+filter-scan-dir:
+ _:
+  ^1.0.10: 1.0.10
+ 1.0.10:
+  top: 1
+  $: sha512-tuDUZPwDmWULMdJ0CopxwRsHuBq2LAwf2zcNMu0LEXD6V414jwrexMaPRS68/ct0ma2m6EREln8n5jYClvggZQ==
+  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.0.10.tgz'
 flat-cache:
  _:
   ^1.2.1: 1.3.0
