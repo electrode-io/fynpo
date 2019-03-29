@@ -200,15 +200,21 @@ class DepItem {
   }
 
   isCircular() {
+    if (this._circular !== undefined) {
+      return this._circular;
+    }
+
     let parent = this.parent;
-    const id = this.id;
+    if (!parent) return false;
 
     while (parent.depth) {
-      if (parent.id === id) return true;
+      if (parent.id === this.id) {
+        return (this._circular = true);
+      }
       parent = parent.parent;
     }
 
-    return false;
+    return (this._circular = false);
   }
 }
 

@@ -542,7 +542,12 @@ class PkgDepResolver {
         if (deepRes) {
           logger.debug("Auto deep resolving", logFormat.pkgId(item));
         }
-        pkgDepth.depItems.push(this.makePkgDepItems(meta.versions[resolved], item, false, deepRes));
+        // Alice, do not go down the rabbit hole, it will never end.
+        if (!item.isCircular()) {
+          pkgDepth.depItems.push(
+            this.makePkgDepItems(meta.versions[resolved], item, false, deepRes)
+          );
+        }
       }
       item.addRequestToPkg(pkgV, firstSeenVersion);
       item.addResolutionToParent(this._data, firstKnown);
