@@ -5,6 +5,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
 [![Build Status][travis-image]][travis-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
 `fyn` is a super fast node package manager with some unique features:
@@ -424,6 +425,8 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [travis-url]: https://travis-ci.org/jchip/fyn
 [npm-image]: https://badge.fury.io/js/fyn.svg
 [npm-url]: https://npmjs.org/package/fyn
+[coveralls-image]: https://coveralls.io/repos/github/jchip/fyn/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/jchip/fyn?branch=master
 [daviddm-image]: https://david-dm.org/jchip/fyn/status.svg
 [daviddm-url]: https://david-dm.org/jchip/fyn
 [daviddm-dev-image]: https://david-dm.org/jchip/fyn/dev-status.svg
