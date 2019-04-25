@@ -7,7 +7,7 @@
   "scripts": {
     "test": "clap -n -x create-tgz electrode/test",
     "coverage": "clap -n -x create-tgz check",
-    "ci": "clap -n -x bundle coverage",
+    "ci": "clap -n -x bundle coverage && cat coverage/lcov.info | coveralls",
     "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1",
     "create-tgz": "node test/fixtures/mock-npm/create-tgz"
   },
@@ -86,6 +86,7 @@
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
     "babel-loader": "^8.0.4",
+    "coveralls": "^3.0.3",
     "electrode-archetype-njs-module-dev": "^3.0.0",
     "electrode-server": "^1.7.0",
     "mock-require": "^2.0.2",
