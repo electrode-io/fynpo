@@ -69,7 +69,7 @@ const debug = false;
     const cleanLock = lock => {
       _.each(lock, pkg => {
         _.each(pkg, (vpkg, ver) => {
-          if (ver === "_") return;
+          if (ver.startsWith("_")) return;
           vpkg.$ = "test";
           vpkg._ = vpkg._.replace(/:[0-9]+\//, "/");
         });

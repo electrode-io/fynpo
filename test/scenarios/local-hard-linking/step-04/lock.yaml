@@ -1,4 +1,5 @@
 e1:
+  _latest: 1.0.0-fynlocal_h
   _:
     ./e1: 1.0.0-fynlocal_h
   1.0.0-fynlocal_h:
@@ -8,6 +9,7 @@ e1:
     dependencies:
       mod-h: ^3.0.1
 mod-h:
+  _latest: 3.0.11
   _:
     ^1.0.0: 1.0.0
     ^3.0.1: 3.0.11
