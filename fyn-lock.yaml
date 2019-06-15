@@ -2071,6 +2071,21 @@ core-util-is:
  1.0.2:
   $: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
   _: 'https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz'
+coveralls:
+ _latest: 3.0.4
+ _:
+  ^3.0.3: 3.0.4
+ 3.0.4:
+  top: 1
+  $: sha512-eyqUWA/7RT0JagiL0tThVhjbIjoiEUyWCjtUJoOPcWoeofP5WK/jb2OJYoBFrR6DvplR+AxOyuBqk4JHkk5ykA==
+  _: 'https://registry.npmjs.org/coveralls/-/coveralls-3.0.4.tgz'
+  dependencies:
+   growl: '~> 1.10.0'
+   js-yaml: ^3.11.0
+   lcov-parse: ^0.0.10
+   log-driver: ^1.2.7
+   minimist: ^1.2.0
+   request: ^2.86.0
 create-ecdh:
  _:
   ^4.0.0: 4.0.3
@@ -2492,6 +2507,7 @@ es-to-primitive:
    is-date-object: ^1.0.1
    is-symbol: ^1.0.2
 es6-promisify:
+ _latest: 5.0.0-fynlocal_h
  _:
   './es6-promisify,^5.0.0': 5.0.0-fynlocal_h
  5.0.0-fynlocal_h:
@@ -3185,8 +3201,9 @@ graceful-fs:
   $: sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
   _: 'https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.15.tgz'
 growl:
+ _latest: 1.10.5
  _:
-  1.10.3: 1.10.3
+  '1.10.3,~> 1.10.0': 1.10.3
  1.10.3:
   $: sha512-hKlsbA5Vu3xsh1Cg3J7jSmX/WaW6A5oBeqzM88oNbCRQFz+zUaXm6yxS4RVytp1scBoJzSYl4YAEOQIt6O8V1Q==
   _: 'https://registry.npmjs.org/growl/-/growl-1.10.3.tgz'
@@ -3900,8 +3917,9 @@ js-tokens:
   $: sha1-mGbfOVECEw449/mWvOtlRDIJwls=
   _: 'https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.2.tgz'
 js-yaml:
+ _latest: 3.13.1
  _:
-  '^3.5.3,^3.9.1': 3.12.1
+  '^3.11.0,^3.5.3,^3.9.1': 3.12.1
  3.12.1:
   $: sha512-um46hB9wNOKlwkHgiuyEVAybXBjwFUV0Z/RaHJblRd9DXltue9FTYvzCr9ErQrK9Adz5MU4gHWVaNUfdmrC8qA==
   _: 'https://registry.npmjs.org/js-yaml/-/js-yaml-3.12.1.tgz'
@@ -4031,6 +4049,13 @@ lcid:
   _: 'https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz'
   dependencies:
    invert-kv: ^1.0.0
+lcov-parse:
+ _latest: 1.0.0
+ _:
+  ^0.0.10: 0.0.10
+ 0.0.10:
+  $: sha1-GwuP+ayceIklBYK3C3ExXZ2m2aM=
+  _: 'https://registry.npmjs.org/lcov-parse/-/lcov-parse-0.0.10.tgz'
 levn:
  _:
   '^0.3.0,~0.3.0': 0.3.0
@@ -4136,6 +4161,13 @@ lodash.upperfirst:
  4.3.1:
   $: sha1-E2Xt9DFIBIHvDRxolXpe2Z1J984=
   _: 'https://registry.npmjs.org/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz'
+log-driver:
+ _latest: 1.2.7
+ _:
+  ^1.2.7: 1.2.7
+ 1.2.7:
+  $: sha512-U7KCmLdqsGHBLeWqYlFA0V0Sl6P08EE1ZrmA9cxjUE0WVqT9qnyVDPz1kzpFEP0jdJuFnasWIfSd7fsaNXkpbg==
+  _: 'https://registry.npmjs.org/log-driver/-/log-driver-1.2.7.tgz'
 log-update:
  _:
   ^2.3.0: 2.3.0
@@ -4890,10 +4922,15 @@ opener:
   $: sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
   _: 'https://registry.npmjs.org/opener/-/opener-1.5.1.tgz'
 opfs:
+ _latest: 1.1.1
  _:
-  '^1.0.6,^1.1.0': 1.1.0
- 1.1.0:
+  ^1.0.6: 1.1.0
+  ^1.1.1: 1.1.1
+ 1.1.1:
   top: 1
+  $: sha512-1gVNS4XUqb6RikfaHrhiS7WPR7ht3WH1nn2//65AOeSmTkzo3qosxXJX+oRlurPrnabx+uKLoi4wWr3mfgSKbg==
+  _: 'https://registry.npmjs.org/opfs/-/opfs-1.1.1.tgz'
+ 1.1.0:
   $: sha512-EzvsGc6VZrzLOj5Ae/fiqgQTfOMIZA9Ga4NCQaEPtAdrDlz/V+ObWbLPDykVLW4+ifIKjS0NIl9ylYo9dHrxUQ==
   _: 'https://registry.npmjs.org/opfs/-/opfs-1.1.0.tgz'
 optional-require:
@@ -5548,8 +5585,9 @@ repeat-string:
   $: sha1-jcrkcOHIirwtYA//Sndihtp15jc=
   _: 'https://registry.npmjs.org/repeat-string/-/repeat-string-1.6.1.tgz'
 request:
+ _latest: 2.88.0
  _:
-  ^2.87.0: 2.88.0
+  '^2.86.0,^2.87.0': 2.88.0
  2.88.0:
   $: sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
   _: 'https://registry.npmjs.org/request/-/request-2.88.0.tgz'
