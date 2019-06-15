@@ -67,7 +67,7 @@
     "npm-packlist": "^1.1.11",
     "npm-registry-fetch": "jchip/npm-registry-fetch",
     "npmlog": "^4.1.2",
-    "opfs": "^1.1.0",
+    "opfs": "^1.1.1",
     "optional-require": "^1.0.0",
     "pacote": "jchip/pacote",
     "pkg-preper": "^0.1.0",
