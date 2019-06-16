@@ -3050,15 +3050,16 @@ fs.realpath:
   $: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
   _: 'https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz'
 fsevents:
+ _latest: 2.0.7
  _:
-  ^1.2.2: 1.2.7
- 1.2.7:
+  ^1.2.2: 1.2.9
+ 1.2.9:
   hasI: 1
-  $: sha512-Pxm6sI2MeBD7RdD12RYsqaP0nMiwx8eZBXCa6z2L+mRHm2DYrOYwihmhjpkdjUHwQhslWQjRpEgNq4XvBmaAuw==
-  _: 'https://registry.npmjs.org/fsevents/-/fsevents-1.2.7.tgz'
+  $: sha512-oeyj2H3EjjonWcFjD5NvZNE9Rqe4UW+nQBU2HNeKw0koVLEFIhtyETyAakeAM3de7Z/SW5kcA+fZUait9EApnw==
+  _: 'https://registry.npmjs.org/fsevents/-/fsevents-1.2.9.tgz'
   dependencies:
-   nan: ^2.9.2
-   node-pre-gyp: ^0.10.0
+   nan: ^2.12.1
+   node-pre-gyp: ^0.12.0
   bundleDependencies:
    - node-pre-gyp
   os:
@@ -4541,11 +4542,12 @@ mute-stream:
   $: sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
   _: 'https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.7.tgz'
 nan:
+ _latest: 2.14.0
  _:
-  ^2.9.2: 2.12.1
- 2.12.1:
-  $: sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
-  _: 'https://registry.npmjs.org/nan/-/nan-2.12.1.tgz'
+  ^2.12.1: 2.14.0
+ 2.14.0:
+  $: sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
+  _: 'https://registry.npmjs.org/nan/-/nan-2.14.0.tgz'
 nanomatch:
  _:
   ^1.2.9: 1.2.13
