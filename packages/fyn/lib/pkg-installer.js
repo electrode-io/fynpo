@@ -235,12 +235,16 @@ class PkgInstaller {
       // same pkg as depInfo, skip
       if (id === failedId) continue;
 
-      // lookup new dep info, make sure it's optional only, and remove it
-      const upDepInfo = this._fyn._data.getPkgById(id);
-      if (!this._isDepSrcOptionalOnly(upDepInfo)) {
-        throw new Error("failure chained from pkg that's more than optional");
+      if (id) {
+        // lookup new dep info, make sure it's optional only, and remove it
+        const upDepInfo = this._fyn._data.getPkgById(id);
+        if (!this._isDepSrcOptionalOnly(upDepInfo)) {
+          throw new Error("failure chained from pkg that's more than optional");
+        }
+        await this._removeFailedOptional(upDepInfo, causeId || failedId);
+      } else {
+        break; // no more up level packages that're optionals
       }
-      await this._removeFailedOptional(upDepInfo, causeId || failedId);
     }
     depInfo.optFailed = 2;
     // remove files
