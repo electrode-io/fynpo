@@ -431,7 +431,7 @@ const fun = () => {
 
   argv.splice(2, 0, "run");
 
-  run(argv, 2);
+  return run(argv, 2);
 };
 
 module.exports = {
