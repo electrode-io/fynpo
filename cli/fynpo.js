@@ -47,8 +47,9 @@ const execLocal = parsed => {
 };
 
 const execPrepare = parsed => {
-  const cwd = parsed.opts.cwd || process.cwd();
-  return new Prepare(cwd, makePkgDeps(readPackages(cwd), parsed.opts.ignore) || []).exec();
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore) || []).exec();
 };
 
 const nixClap = new NixClap({
@@ -77,6 +78,11 @@ const nixClap = new NixClap({
       type: "boolean",
       default: false,
       desc: "save logs to fynpo-debug.log"
+    },
+    tag: {
+      type: "boolean",
+      default: true,
+      desc: "no-tag to skip creating tags"
     }
   },
   {
