@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "Supplement tools for using fyn with lerna",
   "main": "index.js",
   "scripts": {},
