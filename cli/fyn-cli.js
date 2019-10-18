@@ -136,25 +136,26 @@ class FynCli {
           }
         }
 
-        const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(x);
+        const posixPath = x.replace(/\\/g, "/");
+        const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(posixPath);
 
         logger.info("found semverPath", semverPath);
         if (semverPath) {
           return {
-            $: x,
+            $: posixPath,
             name: "",
-            semver: x,
+            semver: posixPath,
             semverPath,
             localType: "hard",
             section,
             parent: {}
           };
         }
-        const atX = x.lastIndexOf("@");
+        const atX = posixPath.lastIndexOf("@");
         return {
-          $: x,
-          name: atX > 0 ? x.substr(0, atX) : x,
-          semver: atX > 0 ? x.substr(atX + 1) : "latest",
+          $: posixPath,
+          name: atX > 0 ? posixPath.substr(0, atX) : posixPath,
+          semver: atX > 0 ? posixPath.substr(atX + 1) : "latest",
           section,
           parent: {}
         };
