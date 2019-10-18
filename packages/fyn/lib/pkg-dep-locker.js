@@ -272,7 +272,7 @@ class PkgDepLocker {
             relPath = `.${Path.sep}${relPath}`;
           }
           pkg[version] = Object.assign({}, vpkg, {
-            _: relPath
+            _: relPath.replace(/\\/g, "/")
           });
         }
       });
