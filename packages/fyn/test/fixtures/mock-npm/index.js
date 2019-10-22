@@ -69,7 +69,7 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
     server.route({
       method: "GET",
       path: "/{pkgName}",
-      handler: (request, reply) => {
+      handler: (request, h) => {
         const pkgName = request.params.pkgName;
         logger.debug(
           chalk.blue("mock npm: ") + new Date().toLocaleString() + ":",
@@ -81,11 +81,12 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
         let etag = request.headers["if-none-match"];
         etag = etag && etag.split(`"`)[1];
         if (etag && pkgName !== "always-change") {
-          return reply()
+          return h
+            .response()
             .code(304)
             .header("ETag", etag);
         }
-        return reply(pkgMeta).header("ETag", `"${meta.etag}_${Date.now()}"`);
+        return h.response(pkgMeta).header("ETag", `"${meta.etag}_${Date.now()}"`);
       }
     });
 
@@ -93,16 +94,17 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
     server.route({
       method: "GET",
       path: "/{pkgName}/-/{tgzFile}",
-      handler: (request, reply) => {
+      handler: (request, h) => {
         const pkgName = request.params.pkgName;
         const tgzFile = request.params.tgzFile;
         if (pkgName.indexOf("-bad-") >= 0) {
           logger.error("mock-npm server: ERROR: trying to fetch tgz of", pkgName);
-          return reply("fetch bad tgz not allowed").code(500);
+          return h.response("fetch bad tgz not allowed").code(500);
         }
         logger.debug(new Date().toLocaleString() + ":", "fetching", pkgName, tgzFile);
         const pkg = Fs.readFileSync(Path.join(packagesDir, tgzFile));
-        return reply(pkg)
+        return h
+          .response(pkg)
           .header("Content-Disposition", "inline")
           .header("Content-type", "application/x-gzip");
       }
