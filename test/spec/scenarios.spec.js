@@ -40,9 +40,9 @@ const debug = false;
     });
   });
 
-  after(done => {
+  after(() => {
     fyntil.exit = saveExit;
-    server.stop(done);
+    return server.stop();
   });
 
   beforeEach(() => {

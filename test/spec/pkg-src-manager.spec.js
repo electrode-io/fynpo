@@ -20,8 +20,8 @@ describe("pkg-src-manager", function() {
     return mockNpm({ logLevel: "warn" }).then(s => (server = s));
   });
 
-  after(done => {
-    server.stop(done);
+  after(() => {
+    return server.stop();
   });
 
   beforeEach(() => {

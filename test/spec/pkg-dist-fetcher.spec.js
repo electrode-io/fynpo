@@ -22,9 +22,9 @@ describe("pkg-dist-fetcher", function() {
     return mockNpm({ logLevel: "warn" }).then(s => (server = s));
   });
 
-  after(done => {
+  after(() => {
     xsh.$.rm("-rf", fynDir);
-    server.stop(done);
+    return server.stop();
   });
 
   it("should fetch package tarballs for pkg-a fixture", () => {
