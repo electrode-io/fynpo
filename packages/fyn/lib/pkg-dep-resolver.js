@@ -930,13 +930,25 @@ ${item.depPath.join(" > ")}`
         // neither local nor lock was able to resolve for item
         // so try to fetch from registry for real meta to resolve
         // always fetch the item and let pkg src manager deal with caching
-        return this._pkgSrcMgr.fetchMeta(item).then(meta => {
-          if (!meta) {
-            throw new Error(`Unable to retrieve meta for package ${item.name}`);
-          }
-          const updated = this._fyn.depLocker.update(item, meta);
-          return this._resolveWithMeta({ item, meta: updated, force: true, noLocal: true });
-        });
+        return this._pkgSrcMgr
+          .fetchMeta(item)
+          .then(meta => {
+            if (!meta) {
+              throw new Error(`Unable to retrieve meta for package ${item.name}`);
+            }
+            const updated = this._fyn.depLocker.update(item, meta);
+            return this._resolveWithMeta({ item, meta: updated, force: true, noLocal: true });
+          })
+          .catch(err => {
+            // item is not optional => fail
+            if (item.dsrc !== "opt") {
+              throw err;
+            } else {
+              item.resolved = `metaFail_${item.semver}`;
+              // add to opt resolver directly as failed package with a dummy meta
+              this._optResolver.add({ item, err, meta: { versions: { [item.resolved]: {} } } });
+            }
+          });
       })
       .then(async r => {
         if (!r) return;

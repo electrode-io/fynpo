@@ -169,7 +169,6 @@ class PkgOptResolver {
       });
     };
 
-    const pkgFromMeta = data.meta.versions[version];
     const fvInstalledPath = this._fyn.getInstalledPkgDir(name, version, { promoted: false });
 
     const linkLocalPackage = async () => {
@@ -190,6 +189,12 @@ class PkgOptResolver {
 
     // is it under node_modules/<name> and has the right version?
     const promise = Promise.try(() => {
+      if (data.err) {
+        return "metaFail";
+      }
+
+      const pkgFromMeta = data.meta.versions[version];
+
       const scripts = pkgFromMeta.scripts;
 
       if (pkgFromMeta.fromLocked) {
@@ -237,6 +242,10 @@ class PkgOptResolver {
         }
         if (res === "fetchFail") {
           logFail("fetch tarball failed, your install likely will be bad.");
+          return { passed: false };
+        }
+        if (res === "metaFail") {
+          logFail("fetch meta failed");
           return { passed: false };
         }
         // run npm script `preinstall`
