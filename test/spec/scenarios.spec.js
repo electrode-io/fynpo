@@ -198,11 +198,11 @@ const debug = false;
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
-        "locked-change-major": { stopStep: "step-01" }
+        // "locked-change-major": { stopStep: "step-01" }
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
-        // "optional-check": {}
+        "optional-check": {}
         // "platform-check": {}
         // "platform-check-good": {}
         // "remote-url-semver": {}
