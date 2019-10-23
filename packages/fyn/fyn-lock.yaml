@@ -4088,12 +4088,13 @@ isstream:
   $: sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
   _: 'https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz'
 item-queue:
+ _latest: 1.0.4
  _:
-  ^1.0.3: 1.0.3
- 1.0.3:
+  ^1.0.4: 1.0.4
+ 1.0.4:
   top: 1
-  $: sha512-Up1Bh+ZL7P5+fV+YOcf9nveyMSI89DgWal8O78YZHCDNAL4fRCKeXg6ifabKUG2kGeF7Oir2VrH5Lnf4JxW74Q==
-  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.3.tgz'
+  $: sha512-JLGx41JDCccb4Jw9YpRjFTvRF5sQi9TSO+Azvn0GlHDc2PHXBpNnU/WIVzVOEiQ8IBWbPosVQjbelcff6awo/g==
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.0.4.tgz'
 jaro-winkler:
  _:
   ^0.2.8: 0.2.8
