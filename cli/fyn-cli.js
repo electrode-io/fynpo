@@ -235,9 +235,9 @@ class FynCli {
             }
           });
       },
-      watchTime: 5000,
-      itemQ: items
+      watchTime: 5000
     })
+      .addItems(items)
       .resume()
       .wait()
       .then(async () => {
