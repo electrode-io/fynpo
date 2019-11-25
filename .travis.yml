@@ -1,10 +1,9 @@
 language: node_js
 node_js:
   - v10
-script: npm run ci
 notifications:
   email:
     - joel123@gmail.com
-install: fyn --pg none install
-before_install:
-  - npm install -g fyn
+before_install: npm i -g fyn
+install: fyn --pg none
+script: fun ci
