@@ -519,7 +519,8 @@ class PkgDepResolver {
       pkgV.local !== "sym" &&
       (this._fyn.alwaysFetchDist ||
         (metaJson._hasShrinkwrap && !metaJson._shrinkwrap) ||
-        (metaJson.bundleDependencies || metaJson.bundledDependencies))
+        metaJson.bundleDependencies ||
+        metaJson.bundledDependencies)
     ) {
       if (metaJson._hasShrinkwrap) pkgV._hasShrinkwrap = metaJson._hasShrinkwrap;
       await this._fyn._distFetcher.putPkgInNodeModules(pkgV, true);
@@ -731,7 +732,8 @@ class PkgDepResolver {
         });
       };
 
-      let resolved = find(meta[LOCK_SORTED_VERSIONS], {});
+      // simply use latest if it satisfies, before searching through all versions
+      let resolved = (checkLatestSatisfy() && latest) || find(meta[LOCK_SORTED_VERSIONS], {});
       // if not able to resolve from locked data or it's newer than latest which
       // satisfies the semver, then must resolve again with latest info.
       // must resolve with original real meta
