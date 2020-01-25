@@ -40,28 +40,6 @@ const base = {
   }
 };
 
-const node6 = Object.assign({}, base, {
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: x => x.indexOf("node_modules") > 0 && x.indexOf("node_modules/xaa") < 0,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [["@babel/env", { targets: { node: "6" } }]]
-          }
-        }
-      }
-    ]
-  },
-  output: {
-    filename: `node6-[name]`,
-    path: Path.resolve("dist"),
-    libraryTarget: "commonjs2"
-  }
-});
-
 const node8 = Object.assign({}, base, {
   module: {
     rules: [
@@ -79,4 +57,4 @@ const node8 = Object.assign({}, base, {
   }
 });
 
-module.exports = [node8, node6];
+module.exports = [node8];
