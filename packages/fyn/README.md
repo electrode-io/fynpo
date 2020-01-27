@@ -22,16 +22,16 @@
 
 Interested in giving it a quick test? Just install and run it on your project:
 
-```bash
-$ npm i -g fyn
-$ cd <your-project>
-$ fyn
+```sh
+npm i -g fyn
+cd <your-project>
+fyn
 ```
 
 - It can read and use some settings from your `.npmrc`.
 - It can use `npm-shrinkwrap.json` or `package-lock.json` files.
 
-# Table Of Contents
+## Table Of Contents
 
 - [Features](#features)
   - [Unique](#unique)
@@ -61,9 +61,9 @@ $ fyn
   - [Thank you `npm`](#thank-you-npm)
 - [License](#license)
 
-# Features
+## Features
 
-## Unique
+### Unique
 
 - Focus on improving workflow and productivity.
 - Very comprehensive and proper handling of `optionalDependencies`.
@@ -77,27 +77,27 @@ $ fyn
 - Central storage mode is fast (and very fast on Linux) once cache is hot.
 - Install dependencies with a time stamp lock.
 
-## General
+### General
 
 - A super fast node package manager for installing modules.
 - Production quality with a lot of unit tests and verified on real applications.
-- 100% compatible with NodeJS and its ecosystem.
+- 100% compatible with Node.js and its ecosystem.
 - A flat and simple dependency lock file that can be diffed and edited.
 - Always deterministic `node_modules` installation.
 - Compatible with [npm] by internally using the same modules as [npm].
 - Maintains as much of [npm]'s behaviors as possible.
 - Able to use [npm]'s `npm-shrinkwrap.json` or `package-lock.json`.
 
-# Overview
+## Overview
 
-`fyn` is the result of a long pursuit to make developing and managing large and complex software in NodeJS easier.
+`fyn` is the result of a long pursuit to make developing and managing large and complex software in Node.js easier.
 To realize that, it ultimately ends up being a node package manager.
 
 It started out as small experiments for a single goal of better local package installing and linking, ie: better [npm link], but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
 
 While it has all the bells and whistles to make it an extremely fast and efficient package manager, it's not just another [npm].
 
-It comes with two unique features that are very useful when you are working on a large NodeJS application that consists of many packages.
+It comes with two unique features that are very useful when you are working on a large Node.js application that consists of many packages.
 
 ## Rationale
 
@@ -107,7 +107,7 @@ So why would you want to use this? If you just want to try a different approach 
 
 It also has a special `fynlocal` mode that's a better [npm link] for handling local packages.
 
-If your development in NodeJS are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your NodeJS project is large and complex, then fyn may be helpful to you. Please read further to learn more.
+If your development in Node.js are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your Node.js project is large and complex, then fyn may be helpful to you. Please read further to learn more.
 
 ## Enhanced `npm link`
 
@@ -126,7 +126,7 @@ To enable, use the path to your local modules as semver in your package.json, or
 
 For example:
 
-```bash
+```sh
 fyn add ../my-awesome-module
 ```
 
@@ -154,13 +154,13 @@ With a guaranteed single copy of a package, it makes debugging easier when you h
 
 With `fyn`'s flat `node_modules` design, there is only one copy of any version so it's easier for you to set your breakpoint.
 
-# Using fyn
+## Using fyn
 
 ### Installing `fyn`
 
-Please install `fyn` to your NodeJS setup globally.
+Please install `fyn` to your Node.js setup globally.
 
-```bash
+```sh
 npm install -g fyn
 ```
 
@@ -168,7 +168,7 @@ npm install -g fyn
 
 Change into the directory for your project with the `package.json` file, and run:
 
-```bash
+```sh
 fyn
 ```
 
@@ -192,7 +192,7 @@ It has a `stat` command that's very fast and can let you know all copies of a pa
 
 For example:
 
-```
+```sh
 $ fyn stat chalk
 > loaded lockfile ~/fyn
 > done resolving dependencies 0.113secs
@@ -201,22 +201,22 @@ $ fyn stat chalk
 > chalk@1.1.3 has these dependents babel-code-frame@6.26.0, electrode-server@1.5.1
 ```
 
-### Locking Dependencies by Time
+#### Locking Dependencies by Time
 
 Ever want to install your dependencies only consider packages published up to a certain date in the past? `fyn`'s got you covered with the `--lock-time` option.
 
 - First rename or remove `fyn-lock.yaml` file.
 - Then run install like this:
 
-```bash
-$ rm fyn-lock.yaml
-$ fyn install --lock-time "12/01/2018"
+```sh
+rm fyn-lock.yaml
+fyn install --lock-time "12/01/2018"
 ```
 
 Or
 
-```bash
-$ fyn install --lock-time "dec 01, 2018"
+```sh
+fyn install --lock-time "dec 01, 2018"
 ```
 
 And `fyn` will only consider packages published up to Dec 01, 2018 when installing.
@@ -227,11 +227,11 @@ If you have any optional dependencies, then they will not be re-evaluated if you
 
 You can re-evaluate optional dependencies with `--refresh-optionals` option:
 
-```bash
+```sh
 fyn install --refresh-optionals
 ```
 
-### Using with Lerna
+#### Using with Lerna
 
 [lerna] actually implements its own internal `npm link` like feature to support a monorepo with packages that depend on each other.
 
@@ -245,17 +245,17 @@ You can use [fynpo]'s `local` command to update and commit your monorepo's packa
 
 For example:
 
-```
-$ fynpo local
-$ cd packages/my-awesome-package
-$ fyn
+```sh
+fynpo local
+cd packages/my-awesome-package
+fyn
 ```
 
-# Configuring fyn
+## Configuring fyn
 
 fyn options can be listed in help:
 
-```bash
+```sh
 fyn --help
 ```
 
@@ -294,7 +294,7 @@ production=false
 centralStore=false
 ```
 
-## Command Line Option to RC Mapping
+### Command Line Option to RC Mapping
 
 > Any command line option can be converted to an option in the RC file by changing the name to camelCase form.
 
@@ -304,9 +304,9 @@ If there's no RC file or command line override, then these defaults are used:
 - `progress` - `normal`
 - `logLevel` - `info`
 
-## Other RC Options
+### Other RC Options
 
-### Scope registry
+#### Scope registry
 
 Scope registry can be specified in the RC files, the same as `.npmrc`.
 
@@ -323,7 +323,7 @@ In ini format:
 @scope:registry=https://registry.custom.com
 ```
 
-## Central Storage
+### Central Storage
 
 Inspired by [pnpm], `fyn` supports storing a single copy of all packages at a central location, and use hardlinks to install them into your `node_modules`.
 
@@ -368,15 +368,15 @@ And to work around the issues, `fyn` does the following:
 - issue 2: `fyn` has a `--copy` option that allows you to force any package to install with copying instead of hardlinking.
 - issue 3: `fyn` will not hard link packages from central store if they have `preinstall`, `install`, or `postinstall` npm scripts.
 
-# Other Info
+## Other Info
 
-## Compatibility
+### Compatibility
 
-- `fyn`'s top level `node_modules` is 100% compatible with NodeJS and 3rd party tools and modules. No special updates or changes needed.
+- `fyn`'s top level `node_modules` is 100% compatible with Node.js and 3rd party tools and modules. No special updates or changes needed.
 
 - `fyn` uses npm's [pacote] to do data retrieval. That means its package data handling is the same as npm and it can use npm's cache directly.
 
-- The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with NodeJS. The only caveat is NodeJS module loader always resolve a package's path to its real path.
+- The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with Node.js. The only caveat is Node.js module loader always resolve a package's path to its real path.
 
   For example, if `A` depends on `B@1.0.0` that's not at the top level, then `node_modules/A/node_modules/B` is a symlink to `node_modules/B/__fv_/1.0.0/B`.
 
@@ -386,13 +386,13 @@ And to work around the issues, `fyn` does the following:
 
 - `fyn` will take [npm]'s `npm-shrinkwrap.json` or `package-lock.json` if its own `fyn-lock.yaml` file doesn't exist, but will save `fyn-lock.yaml` after.
 
-## Package Resolution and Layout
+### Package Resolution and Layout
 
 As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
 
 `fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 
-## Thank you `npm`
+### Thank you `npm`
 
 Node Package Manager is a very large and complex piece of software. Developing `fyn` was 10 times easier because of the generous open source software from the community, especially the individual packages that are part of `npm`.
 
@@ -407,7 +407,7 @@ Other than benefiting from the massive package ecosystem and all the documents f
 - [npmlog] - for offering the `run` command as a convenience.
 - And all the other packages they depend on.
 
-# License
+## License
 
 Copyright (c) 2015-present, WalmartLabs
 
@@ -421,16 +421,16 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [ini]: https://www.npmjs.com/package/ini
 [node_preserve_symlinks]: https://nodejs.org/docs/latest-v8.x/api/cli.html#cli_node_preserve_symlinks_1
 [require-at]: https://www.npmjs.com/package/require-at
-[travis-image]: https://travis-ci.org/jchip/fyn.svg?branch=master
-[travis-url]: https://travis-ci.org/jchip/fyn
+[travis-image]: https://travis-ci.org/electrode-io/fyn.svg?branch=master
+[travis-url]: https://travis-ci.org/electrode-io/fyn
 [npm-image]: https://badge.fury.io/js/fyn.svg
 [npm-url]: https://npmjs.org/package/fyn
-[coveralls-image]: https://coveralls.io/repos/github/jchip/fyn/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/jchip/fyn?branch=master
-[daviddm-image]: https://david-dm.org/jchip/fyn/status.svg
-[daviddm-url]: https://david-dm.org/jchip/fyn
-[daviddm-dev-image]: https://david-dm.org/jchip/fyn/dev-status.svg
-[daviddm-dev-url]: https://david-dm.org/jchip/fyn?type=dev
+[coveralls-image]: https://coveralls.io/repos/github/electrode-io/fyn/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/electrode-io/fyn?branch=master
+[daviddm-image]: https://david-dm.org/electrode-io/fyn/status.svg
+[daviddm-url]: https://david-dm.org/electrode-io/fyn
+[daviddm-dev-image]: https://david-dm.org/electrode-io/fyn/dev-status.svg
+[daviddm-dev-url]: https://david-dm.org/electrode-io/fyn?type=dev
 [apache-2.0-blue-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [apache-2.0-url]: https://www.apache.org/licenses/LICENSE-2.0
 [npm scripts]: https://docs.npmjs.com/misc/scripts
