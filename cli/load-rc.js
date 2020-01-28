@@ -9,8 +9,8 @@ const _ = require("lodash");
 const logger = require("../lib/logger");
 const assert = require("assert");
 const defaultRc = require("./default-rc");
-const Promise = require("bluebird");
 const npmConfig = require("./config/npm-config");
+const fynTil = require("../lib/util/fyntil");
 
 function readRc(fname) {
   const rcFname = Path.basename(fname);
@@ -22,10 +22,10 @@ function readRc(fname) {
     try {
       assert(rcFname === ".fynrc" && rcData.startsWith("---"));
       rc = Yaml.parse(rcData);
-      logger.debug(`Loaded ${rcFname} YAML RC`, fname, JSON.stringify(rc));
+      logger.debug(`Loaded ${rcFname} YAML RC`, fname, JSON.stringify(fynTil.removeAuthInfo(rc)));
     } catch (e) {
       rc = Ini.parse(rcData);
-      logger.debug(`Loaded ${rcFname} ini RC`, fname, JSON.stringify(rc));
+      logger.debug(`Loaded ${rcFname} ini RC`, fname, JSON.stringify(fynTil.removeAuthInfo(rc)));
     }
 
     return rc;
