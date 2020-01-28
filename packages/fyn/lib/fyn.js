@@ -29,7 +29,7 @@ class Fyn {
     this._rcData = Object.assign({ all: {} }, rcData);
     options = this._options = fynConfig(options);
     this._cwd = options.cwd || process.cwd();
-    logger.debug(`fyn options`, JSON.stringify(options));
+    logger.debug(`fyn options`, JSON.stringify(fyntil.removeAuthInfo(options)));
     this.localPkgWithNestedDep = [];
     if (options.lockTime) {
       this._lockTime = new Date(options.lockTime);

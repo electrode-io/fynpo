@@ -62,7 +62,18 @@ module.exports = {
 
   retry,
 
-  exit: function exit(err) {
+  removeAuthInfo(rcObj) {
+    const rmObj = {};
+    for (const key in rcObj) {
+      if (key.toLowerCase().indexOf("authtoken") < 0) {
+        rmObj[key] = rcObj[key];
+      }
+    }
+
+    return rmObj;
+  },
+
+  exit(err) {
     process.exit(err ? 1 : 0);
   },
 
