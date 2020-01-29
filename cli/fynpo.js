@@ -49,7 +49,7 @@ const execLocal = parsed => {
 const execPrepare = parsed => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore) || []).exec();
+  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || []).exec());
 };
 
 const nixClap = new NixClap({
