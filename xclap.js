@@ -51,11 +51,13 @@ xclap.load("fyn", {
 
   release: {
     desc: "Release a new version to npm.  package.json must be updated.",
-    task: ["fyn/.prepare", "fyn/publish"],
+    task: ["create-tgz", "electrode/test", "fyn/.prepare", "fyn/publish"],
     finally: ["fyn/postpack"]
   },
 
   bundle: "webpack",
 
-  publish: "npm publish"
+  publish: "npm publish",
+
+  "create-tgz": "node test/fixtures/mock-npm/create-tgz"
 });

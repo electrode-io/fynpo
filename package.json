@@ -5,11 +5,10 @@
   "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
-    "test": "clap -n -x create-tgz electrode/test",
-    "coverage": "clap -n -x create-tgz check",
+    "test": "clap -x create-tgz electrode/test",
+    "coverage": "clap -x create-tgz check",
     "ci": "clap -n -x bundle coverage && cat coverage/lcov.info | coveralls",
-    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1",
-    "create-tgz": "node test/fixtures/mock-npm/create-tgz"
+    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1"
   },
   "bin": {
     "fyn": "./bin/fyn.js",
