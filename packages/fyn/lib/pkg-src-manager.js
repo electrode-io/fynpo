@@ -504,8 +504,6 @@ class PkgSrcManager {
       return netQItem.defer.promise;
     };
 
-    let foundCache;
-
     this._metaStat.wait++;
 
     //
@@ -537,17 +535,14 @@ class PkgSrcManager {
     const promise = cacache
       .get(this._cacheDir, cacheKey, { memoize: true })
       .then(cached => {
-        foundCache = true;
-        const packument = JSON.parse(cached.data);
-        logger.debug("found", pkgName, "packument cache");
-        return queueMetaFetchRequest(packument);
-      })
-      .catch(err => {
-        if (foundCache) {
-          // the .then above threw an error - not expectec
-          throw err;
+        try {
+          const packument = JSON.parse(cached.data);
+          logger.debug("found", pkgName, "packument cache");
+          return queueMetaFetchRequest(packument);
+        } catch (err) {
+          logger.debug("JSON.parse packument cache fail", err.message);
+          return queueMetaFetchRequest();
         }
-        return queueMetaFetchRequest();
       })
       .then(meta => {
         this._metaStat.done++;
