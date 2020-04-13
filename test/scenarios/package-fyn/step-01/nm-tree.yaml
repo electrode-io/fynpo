@@ -1,0 +1,32 @@
+node_modules:
+  .bin:
+    bin1: "-> ../mod-g/bin/bin1.js"
+    bin2: "-> ../mod-g/bin/bin2.js"
+  __fyn_resolutions__.json: file
+  mod-a:
+    package.json:
+      id: mod-a@1.1.2
+      res: {}
+  mod-e:
+    package.json:
+      id: mod-e@99.0.0-fynlocal_h
+      res: {}
+  mod-g:
+    bin:
+      bin1.js: file
+      bin2.js: file
+    package.json:
+      id: mod-g@2.0.1
+      res: {}
+  pkg-a:
+    package-fyn.json: file
+    package.json:
+      id: pkg-a@1.0.0-fynlocal_h
+      res:
+        dep(pkg-b@^1.0.0): 2.0.0-fynlocal_h
+  pkg-b:
+    package-fyn.json: file
+    package.json:
+      id: pkg-b@2.0.0-fynlocal_h
+      res:
+        dep(mod-e@^1.0.0): 99.0.0-fynlocal_h

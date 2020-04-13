@@ -1,0 +1,12 @@
+{
+  "name": "pkg-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "pkg-b": "^1.0.0"
+  },
+  "fyn": {
+    "dependencies": {
+      "pkg-b": "^3.0.0"
+    }
+  }
+}
