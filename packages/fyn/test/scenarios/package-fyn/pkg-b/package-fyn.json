@@ -1,0 +1,7 @@
+{
+  "fyn": {
+    "dependencies": {
+      "mod-e": "../mod-e"
+    }
+  }
+}
