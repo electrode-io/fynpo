@@ -134,7 +134,7 @@ const options = {
   progress: {
     type: "enum",
     alias: "pg",
-    requiresArg: true,
+    requireArg: true,
     default: "normal",
     enum: /^(normal|simple|none)$/,
     desc: "Log progress type: normal,simple,none"
@@ -244,7 +244,7 @@ const commands = {
   add: {
     alias: "a",
     args: "[packages..]",
-    usage: "$0 $1 [packages..]",
+    usage: "$0 $1 [packages..] [--dev <dev packages>]",
     desc: "add packages to package.json",
     exec: argv => {
       const options = pickOptions(argv);
