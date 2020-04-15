@@ -2,7 +2,6 @@
 
 const Module = require("module");
 const Fs = require("../lib/util/file-ops");
-const Yaml = require("yamljs");
 const Path = require("path");
 const Promise = require("bluebird");
 const Fyn = require("../lib/fyn");
@@ -251,7 +250,7 @@ class FynCli {
         const added = _.mapValues(sections, () => []);
 
         const pkg = this.fyn._pkg;
-        const pkgFyn = this.fyn.loadPkgFyn() || {};
+        const pkgFyn = argv.pkgFyn ? (await this.fyn.loadPkgFyn()) || {} : pkg;
 
         results.forEach(item => {
           if (item.semverPath) {
@@ -278,7 +277,9 @@ class FynCli {
         });
 
         await this.fyn.savePkg();
-        await this.fyn.savePkgFyn(pkgFyn);
+        if (argv.pkgFyn) {
+          await this.fyn.savePkgFyn(pkgFyn);
+        }
         return true;
       });
   }

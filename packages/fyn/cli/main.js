@@ -279,6 +279,11 @@ const commands = {
         type: "boolean",
         default: true,
         desc: "Run install after added"
+      },
+      "pkg-fyn": {
+        type: "boolean",
+        desc: "save fyn section to package-fyn.json",
+        default: false
       }
     }
   },
