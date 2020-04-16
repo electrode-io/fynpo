@@ -63,7 +63,7 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
     electrode: {
       logLevel
     }
-  }).tap(server => {
+  }).then(server => {
     PORT = server.info.port;
     PORT_STR = `:${PORT}`;
     server.route({
@@ -109,6 +109,8 @@ function mockNpm({ port = DEFAULT_PORT, logLevel = "info" }) {
           .header("Content-type", "application/x-gzip");
       }
     });
+
+    return server;
   });
 }
 

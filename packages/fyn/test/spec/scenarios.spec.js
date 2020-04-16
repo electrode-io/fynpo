@@ -202,8 +202,8 @@ const debug = false;
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
-        // "optional-check": {}
-        "package-fyn": {}
+        "optional-check": {}
+        // "package-fyn": {}
         // "platform-check": {}
         // "platform-check-good": {}
         // "remote-url-semver": {}

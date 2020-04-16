@@ -8,7 +8,7 @@ const chalk = require("chalk");
 
 describe("lifecycle-scripts", function() {
   logger.setItemType(false);
-  chalk.enabled = false;
+  chalk.level = 0;
 
   beforeEach(() => {
     logger._logLevel = 0;

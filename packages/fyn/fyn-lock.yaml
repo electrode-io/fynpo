@@ -733,12 +733,12 @@
    lodash: ^4.17.10
    to-fast-properties: ^2.0.0
 '@hapi/accept':
- _latest: 4.0.0
+ _latest: 5.0.1
  _:
-  3.x.x: 3.2.3
- 3.2.3:
-  $: sha512-qEzsOJkCAJZxwj3iF83bSG9Lxy8Bpbrt8mRLNdvSALT6vlU2cYh6ZEHKEZPy4h/Mo31Su3j0rJgFF91+W1RWDQ==
-  _: 'https://registry.npmjs.org/@hapi/accept/-/accept-3.2.3.tgz'
+  ^3.2.4: 3.2.4
+ 3.2.4:
+  $: sha512-soThGB+QMgfxlh0Vzhzlf3ZOEOPk5biEwcOXhkF0Eedqx8VnhGiggL9UYHrIsOb1rUg3Be3K8kp0iDL2wbVSOQ==
+  _: 'https://registry.npmjs.org/@hapi/accept/-/accept-3.2.4.tgz'
   dependencies:
    '@hapi/boom': 7.x.x
    '@hapi/hoek': 8.x.x
@@ -750,12 +750,12 @@
   $: sha512-O4QDrx+JoGKZc6aN64L04vqa7e41tIiLU+OvKdcYaEMP97UttL0f9GIi9/0A4WAMx0uBd6SidDIhktZhgOcN8Q==
   _: 'https://registry.npmjs.org/@hapi/address/-/address-2.1.2.tgz'
 '@hapi/ammo':
- _latest: 4.0.0
+ _latest: 5.0.1
  _:
-  3.x.x: 3.1.1
- 3.1.1:
-  $: sha512-NYFK27VSPGyQ/KmOQedpQH4PSjE7awLntepX68vrYtRvuJO21W1kX0bK2p3C+6ltUwtCQSvmNT8a4uMVAysC6Q==
-  _: 'https://registry.npmjs.org/@hapi/ammo/-/ammo-3.1.1.tgz'
+  ^3.1.2: 3.1.2
+ 3.1.2:
+  $: sha512-ej9OtFmiZv1qr45g1bxEZNGyaR4jRpyMxU6VhbxjaYThymvOwsyIsUKMZnP5Qw2tfYFuwqCJuIBHGpeIbdX9gQ==
+  _: 'https://registry.npmjs.org/@hapi/ammo/-/ammo-3.1.2.tgz'
   dependencies:
    '@hapi/hoek': 8.x.x
 '@hapi/b64':
@@ -794,12 +794,12 @@
   $: sha512-1dVNHT76Uu5N3eJNTYcvxee+jzX4Z9lfciqRRHCU27ihbUcYi+iSc2iml5Ke1LXe1SyJCLA0+14Jh4tXJgOppA==
   _: 'https://registry.npmjs.org/@hapi/bourne/-/bourne-1.3.2.tgz'
 '@hapi/call':
- _latest: 5.1.1
+ _latest: 8.0.0
  _:
-  5.x.x: 5.1.1
- 5.1.1:
-  $: sha512-M6fC+9+K/ZB4hIdVQ8i0kc/6J5PWlW3PEWYKAAZpw0sk+28LiRTSF8BjOWwmiIjZWWs42AnEIiFJA0YrvcDnlw==
-  _: 'https://registry.npmjs.org/@hapi/call/-/call-5.1.1.tgz'
+  ^5.1.3: 5.1.3
+ 5.1.3:
+  $: sha512-5DfWpMk7qZiYhvBhM5oUiT4GQ/O8a2rFR121/PdwA/eZ2C1EsuD547ZggMKAR5bZ+FtxOf0fdM20zzcXzq2mZA==
+  _: 'https://registry.npmjs.org/@hapi/call/-/call-5.1.3.tgz'
   dependencies:
    '@hapi/hoek': 8.x.x
    '@hapi/boom': 7.x.x
@@ -826,12 +826,12 @@
    '@hapi/boom': 7.x.x
    '@hapi/hoek': 8.x.x
 '@hapi/content':
- _latest: 4.1.0
+ _latest: 5.0.2
  _:
-  4.x.x: 4.1.0
- 4.1.0:
-  $: sha512-hv2Czsl49hnWDEfRZOFow/BmYbKyfEknmk3k83gOp6moFn5ceHB4xVcna8OwsGfy8dxO81lhpPy+JgQEaU4SWw==
-  _: 'https://registry.npmjs.org/@hapi/content/-/content-4.1.0.tgz'
+  ^4.1.1: 4.1.1
+ 4.1.1:
+  $: sha512-3TWvmwpVPxFSF3KBjKZ8yDqIKKZZIm7VurDSweYpXYENZrJH3C1hd1+qEQW9wQaUaI76pPBLGrXl6I3B7i3ipA==
+  _: 'https://registry.npmjs.org/@hapi/content/-/content-4.1.1.tgz'
   dependencies:
    '@hapi/boom': 7.x.x
 '@hapi/cryptiles':
@@ -858,18 +858,18 @@
   $: sha512-UFbtbGPjstz0eWHb+ga/GM3Z9EzqKXFWIbSOFURU0A/Gku0Bky4bCk9/h//K2Xr3IrCfjFNhMm4jyZ5dbCewGA==
   _: 'https://registry.npmjs.org/@hapi/formula/-/formula-1.2.0.tgz'
 '@hapi/hapi':
- _latest: 18.4.0
+ _latest: 19.1.1
  _:
-  ^18.3.2: 18.4.0
- 18.4.0:
-  $: sha512-uk9zqknRLcNVQKgrPURm85DqkdroWP8eDRekh/IPoKvC4VjdZSn6EH2eUriOwyud/CldeBS3HDIJ/PtRj3VxDQ==
-  _: 'https://registry.npmjs.org/@hapi/hapi/-/hapi-18.4.0.tgz'
+  18.4.1: 18.4.1
+ 18.4.1:
+  $: sha512-9HjVGa0Z4Qv9jk9AVoUdJMQLA+KuZ+liKWyEEkVBx3e3H1F0JM6aGbPkY9jRfwsITBWGBU2iXazn65SFKSi/tg==
+  _: 'https://registry.npmjs.org/@hapi/hapi/-/hapi-18.4.1.tgz'
   dependencies:
-   '@hapi/accept': 3.x.x
-   '@hapi/ammo': 3.x.x
+   '@hapi/accept': ^3.2.4
+   '@hapi/ammo': ^3.1.2
    '@hapi/boom': 7.x.x
    '@hapi/bounce': 1.x.x
-   '@hapi/call': 5.x.x
+   '@hapi/call': ^5.1.3
    '@hapi/catbox': 10.x.x
    '@hapi/catbox-memory': 4.x.x
    '@hapi/heavy': 6.x.x
@@ -880,7 +880,7 @@
    '@hapi/shot': 4.x.x
    '@hapi/somever': 2.x.x
    '@hapi/statehood': 6.x.x
-   '@hapi/subtext': 6.x.x
+   '@hapi/subtext': ^6.1.3
    '@hapi/teamwork': 3.x.x
    '@hapi/topo': 3.x.x
 '@hapi/heavy':
@@ -957,16 +957,16 @@
    '@hapi/hoek': 8.x.x
    '@hapi/vise': 3.x.x
 '@hapi/pez':
- _latest: 4.1.1
+ _latest: 5.0.2
  _:
-  4.x.x: 4.1.1
- 4.1.1:
-  $: sha512-TUa2C7Xk6J69HWrm+Ad+O6dFvdVAG0BiFUYaRsmkdWjFIfwHBCaOI1dWT/juNukSb39Lj6/mDVyjN+H4nKB3xg==
-  _: 'https://registry.npmjs.org/@hapi/pez/-/pez-4.1.1.tgz'
+  ^4.1.2: 4.1.2
+ 4.1.2:
+  $: sha512-8zSdJ8cZrJLFldTgwjU9Fb1JebID+aBCrCsycgqKYe0OZtM2r3Yv3aAwW5z97VsZWCROC1Vx6Mdn4rujh5Ktcg==
+  _: 'https://registry.npmjs.org/@hapi/pez/-/pez-4.1.2.tgz'
   dependencies:
    '@hapi/b64': 4.x.x
    '@hapi/boom': 7.x.x
-   '@hapi/content': 4.x.x
+   '@hapi/content': ^4.1.1
    '@hapi/hoek': 8.x.x
    '@hapi/nigel': 3.x.x
 '@hapi/pinpoint':
@@ -1022,19 +1022,19 @@
    '@hapi/iron': 5.x.x
    '@hapi/joi': 16.x.x
 '@hapi/subtext':
- _latest: 6.1.2
+ _latest: 7.0.3
  _:
-  6.x.x: 6.1.2
- 6.1.2:
-  $: sha512-G1kqD1E2QdxpvpL26WieIyo3z0qCa/sAGSa2TJI/PYPWCR9rL0rqFvhWY774xPZ4uK1PV3TIaJcx8AruAvxclg==
-  _: 'https://registry.npmjs.org/@hapi/subtext/-/subtext-6.1.2.tgz'
+  ^6.1.3: 6.1.3
+ 6.1.3:
+  $: sha512-qWN6NbiHNzohVcJMeAlpku/vzbyH4zIpnnMPMPioQMwIxbPFKeNViDCNI6fVBbMPBiw/xB4FjqiJkRG5P9eWWg==
+  _: 'https://registry.npmjs.org/@hapi/subtext/-/subtext-6.1.3.tgz'
   dependencies:
    '@hapi/boom': 7.x.x
    '@hapi/bourne': 1.x.x
-   '@hapi/content': 4.x.x
+   '@hapi/content': ^4.1.1
    '@hapi/file': 1.x.x
    '@hapi/hoek': 8.x.x
-   '@hapi/pez': 4.x.x
+   '@hapi/pez': ^4.1.2
    '@hapi/wreck': 15.x.x
 '@hapi/teamwork':
  _latest: 3.3.1
@@ -1788,7 +1788,7 @@ block-stream:
    inherits: ~2.0.0
 bluebird:
  _:
-  '>= 2.10.0 <= 3.x.x,^3.5.1,^3.5.3': 3.5.3
+  '^3.5.1,^3.5.3': 3.5.3
  3.5.3:
   top: 1
   $: sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw==
@@ -1986,7 +1986,7 @@ cacache:
   '^11.0.1,^11.0.2,^11.2.0,^11.3.2,jchip/cacache': 11.3.2
  11.3.2:
   top: 1
-  $: sha512-/1UsRUM1tszVMtNzEh27GIOLlkorZQNeWWms3Qw+FlhKoWV/x8DPlWy8CeA2/7ReX2UOZ4uQTsCqJ6uHu2bWjw==
+  $: sha512-aW4n5UiS7PxdqehEfwRe8gpTNg+xgOP1Tp7YA49Y5thYUkV0o6ARsD6kNT2yYpVneN6VlhwXeUip+tlRAj1jrg==
   _: '~url-spec~{"urlType":"github","semver":"jchip/cacache","_resolved":"github:jchip/cacache#94031d0128c82464666d3a431f30d44f54d32645"}'
   dependencies:
    bluebird: ^3.5.3
@@ -2079,16 +2079,16 @@ chai:
 chalk:
  _:
   ^1.1.3: 1.1.3
-  '^2.0.0,^2.0.1,^2.1.0,^2.3.0,^2.4.1,^2.4.2': 2.4.2
+  '^2.0.0,^2.1.0,^2.4.1,^2.4.2': 2.4.2
   ^4.0.0: 4.0.0
  4.0.0:
+  top: 1
   $: sha512-N9oWFcegS0sFr9oh1oz2d7Npos6vNoWW9HvtCg5N1KRFpUhaAhvTv5Y58g880fZaEYSNm3qDz8SU1UrGvp+n7A==
   _: 'https://registry.npmjs.org/chalk/-/chalk-4.0.0.tgz'
   dependencies:
    ansi-styles: ^4.1.0
    supports-color: ^7.1.0
  2.4.2:
-  top: 1
   $: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
   _: 'https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz'
   dependencies:
@@ -2104,6 +2104,15 @@ chalk:
    has-ansi: ^2.0.0
    strip-ansi: ^3.0.0
    supports-color: ^2.0.0
+chalker:
+ _latest: 1.2.0
+ _:
+  ^1.2.0: 1.2.0
+ 1.2.0:
+  $: sha512-Cag6asQV/lK6AQGBWGGDt5bu+FSzo4OlLHQVrd4Io1cJCGNXIvKcaxx6JH0+iL1azQ4Bs1i7qkvzlkH2Vwo2OQ==
+  _: 'https://registry.npmjs.org/chalker/-/chalker-1.2.0.tgz'
+  dependencies:
+   chalk: ^4.0.0
 chardet:
  _:
   ^0.4.0: 0.4.2
@@ -2144,6 +2153,7 @@ chokidar:
   optionalDependencies:
    fsevents: ^1.2.2
 chownr:
+ _latest: 2.0.0
  _:
   ^1.1.1: 1.1.1
   ^1.1.3: 1.1.4
@@ -2745,21 +2755,21 @@ electrode-confippet:
    js-yaml: ^3.5.3
    lodash: ^4.13.1
 electrode-server:
- _latest: 3.0.0
+ _latest: 2.3.1
  _:
-  ^3.0.0: 3.0.0
- 3.0.0:
+  ^3.0.3: 3.0.3
+ 3.0.3:
   top: 1
-  $: sha512-anbGABIu0zTQgggtbzJAVXJO27o4nFXRGBYLYmlhfmVAHDsFoj6vHbrBslTVIRccMFPmR2CLMGUNjSRUGSv3gQ==
-  _: 'https://registry.npmjs.org/electrode-server/-/electrode-server-3.0.0.tgz'
+  $: sha512-nmSjEMzlKrffOAMWc7kn674Cdz50yOVgAwPk0CtE3J0kLdL6H9Y9spde0rwveyt/lzZ3S2yZvSp0PWzEx7uITg==
+  _: 'https://registry.npmjs.org/electrode-server/-/electrode-server-3.0.3.tgz'
   dependencies:
-   '@hapi/hapi': ^18.3.2
+   '@hapi/hapi': 18.4.1
    async-eventemitter: ^0.2.2
-   bluebird: '>= 2.10.0 <= 3.x.x'
    chalk: ^2.4.2
    electrode-confippet: ^1.2.10
    lodash: ^4.17.11
    require-at: ^1.0.1
+   xaa: ^1.1.4
 electron-to-chromium:
  _:
   ^1.3.103: 1.3.103
@@ -3390,21 +3400,6 @@ fs.realpath:
  1.0.0:
   $: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
   _: 'https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz'
-fsevents:
- _latest: 2.0.7
- _:
-  ^1.2.2: 1.2.9
- 1.2.9:
-  hasI: 1
-  $: sha512-oeyj2H3EjjonWcFjD5NvZNE9Rqe4UW+nQBU2HNeKw0koVLEFIhtyETyAakeAM3de7Z/SW5kcA+fZUait9EApnw==
-  _: 'https://registry.npmjs.org/fsevents/-/fsevents-1.2.9.tgz'
-  dependencies:
-   nan: ^2.12.1
-   node-pre-gyp: ^0.12.0
-  bundleDependencies:
-   - node-pre-gyp
-  os:
-   - darwin
 fstream:
  _:
   '^1.0.0,^1.0.2': 1.0.11
@@ -3488,6 +3483,7 @@ getpass:
   dependencies:
    assert-plus: ^1.0.0
 glob:
+ _latest: 7.1.6
  _:
   7.1.2: 7.1.2
   '^7.0.0,^7.0.3,^7.0.5,^7.1.2,^7.1.3': 7.1.3
@@ -4691,6 +4687,7 @@ minimist:
   $: sha1-hX/Kv8M5fSYluCKCYuhqp6ARsF0=
   _: 'https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz'
 minipass:
+ _latest: 3.1.1
  _:
   '^2.2.1,^2.3.4,^2.3.5': 2.3.5
   ^3.0.0: 3.1.1
@@ -4817,13 +4814,6 @@ mute-stream:
  0.0.7:
   $: sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
   _: 'https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.7.tgz'
-nan:
- _latest: 2.14.0
- _:
-  ^2.12.1: 2.14.0
- 2.14.0:
-  $: sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
-  _: 'https://registry.npmjs.org/nan/-/nan-2.14.0.tgz'
 nanomatch:
  _:
   ^1.2.9: 1.2.13
@@ -4881,17 +4871,11 @@ nise:
 nix-clap:
  _latest: 1.3.11
  _:
-  ^1.0.8: 1.3.6
-  ^1.3.11: 1.3.11
+  '^1.3.10,^1.3.11': 1.3.11
  1.3.11:
   top: 1
   $: sha512-oNqfzquNa/Ibm/5JsM0zrF0+LdNezcsKUb4Z3kUf31HRFgwS+F4F5UQGlhx0ZiF8ld6NA1UbyEMMDssRrGavSA==
   _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.11.tgz'
-  dependencies:
-   strip-ansi: ^4.0.0
- 1.3.6:
-  $: sha512-PeCh17C4yO4HoxjSWJza2q6/BFRBI2Fj0dRnitq7E5f/2Pj8RA0A6T7BLfE2JYSmbhQk1Dlr5zycoJQ43RVYVg==
-  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.6.tgz'
   dependencies:
    strip-ansi: ^4.0.0
 node-fetch-npm:
@@ -6433,6 +6417,7 @@ sshpk:
    ecc-jsbn: ~0.1.1
    bcrypt-pbkdf: ^1.0.0
 ssri:
+ _latest: 8.0.0
  _:
   '^6.0.0,^6.0.1': 6.0.1
  6.0.1:
@@ -6931,6 +6916,15 @@ unset-value:
   dependencies:
    has-value: ^0.3.1
    isobject: ^3.0.0
+unwrap-npm-cmd:
+ _latest: 1.1.1
+ _:
+  ^1.1.1: 1.1.1
+ 1.1.1:
+  $: sha512-Y0PFhW+X6oahjV/e4yBxThgq0k9Ymh3RwUh6P/rMiGp55X5qa2mQghZAHKyJ9tDPinZntD0Z+5DHFzlx9/UNbg==
+  _: 'https://registry.npmjs.org/unwrap-npm-cmd/-/unwrap-npm-cmd-1.1.1.tgz'
+  dependencies:
+   which: ^1.3.1
 upath:
  _:
   ^1.0.5: 1.1.0
@@ -7047,25 +7041,24 @@ verror:
    core-util-is: 1.0.2
    extsprintf: ^1.2.0
 visual-exec:
- _latest: 0.1.5
+ _latest: 0.1.6
  _:
-  '^0.1.0,^0.1.5': 0.1.5
- 0.1.5:
+  '^0.1.0,^0.1.6': 0.1.6
+ 0.1.6:
   top: 1
-  $: sha512-2SEx3JXPEslUTh3oyXKwsNtVMvjPRVK06cpTsTFVHbG4ACLBb8RiLNBIvWQWzPo4Koz7C5YITMqQc5p796AUoA==
-  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.5.tgz'
+  $: sha512-VEMxqMPTitja9ODbaL5N0D0EVHWlzrm0wsRCs/fH6pvSke2/hkje2/J7m5TRk+0dP5EfijdkgqxBkvLizkP81g==
+  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.6.tgz'
   dependencies:
-   bluebird: ^3.5.1
-   chalk: ^2.4.1
+   chalk: ^4.0.0
    has-ansi: ^3.0.0
    is-ci: ^1.2.0
-   strip-ansi: ^4.0.0
-   visual-logger: ^0.1.8
+   strip-ansi: ^6.0.0
+   visual-logger: ^1.1.1
    xsh: ^0.4.4
 visual-logger:
  _latest: 1.1.1
  _:
-  '^0.1.8,^1.1.1': 1.1.1
+  ^1.1.1: 1.1.1
  1.1.1:
   top: 1
   $: sha512-fMqKlV5YqUVycfF5QxOpIlivBTvF1Fx/jwlNu3JSxFwyzVyi4P11i+R1+iVDNsU8AHHuUZqi1ONs1OpxAplMoA==
@@ -7256,27 +7249,30 @@ ws:
 xaa:
  _latest: 1.4.0
  _:
-  ^1.3.0: 1.4.0
+  '^1.1.4,^1.3.0': 1.4.0
  1.4.0:
   top: 1
   $: sha512-mX3ELNk7ZU5KtUwO7XsamqlVoE7xJ/0WRLHRpb6u//sgWfm6AHxsnrnu/pUyp3ppQ4lwV5bsA06j4K7U+WYEhA==
   _: 'https://registry.npmjs.org/xaa/-/xaa-1.4.0.tgz'
 xclap:
+ _latest: 0.2.48
  _:
-  ^0.2.0: 0.2.26
- 0.2.26:
-  $: sha512-8l9zEJeYgHB3gs7WJejCX0BvMNcLq2BSbkMzMie6D24EGrIQ5DMDjOObnOzUofwaktTB/mCCvfCllZct4mdDsA==
-  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.26.tgz'
+  ^0.2.0: 0.2.48
+ 0.2.48:
+  $: sha512-jc9/NjcaTDUszhNj0wOW83NNBx7wUcrzYzldotao6go7g/qMH+5QZYNiYyh98Y/8DhFQndDJihL39+oJIPNJFg==
+  _: 'https://registry.npmjs.org/xclap/-/xclap-0.2.48.tgz'
   dependencies:
-   chalk: ^2.0.1
+   chalk: ^4.0.0
+   chalker: ^1.2.0
    insync: ^2.1.1
    jaro-winkler: ^0.2.8
    lodash.foreach: ^4.5.0
-   nix-clap: ^1.0.8
+   nix-clap: ^1.3.10
    optional-require: ^1.0.0
    path-is-inside: ^1.0.2
    string-array: ^1.0.0
-   xsh: ^0.4.0
+   unwrap-npm-cmd: ^1.1.1
+   xsh: ^0.4.4
 xenv-config:
  _:
   ^1.3.0: 1.3.0
