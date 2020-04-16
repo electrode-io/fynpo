@@ -1,5 +1,28 @@
+"use strict";
+
+const dns = require("dns");
+const LOOKUP = Symbol("lookup");
+dns[LOOKUP] = dns.lookup;
 module.exports = {
-  title: "should fetch optional package to run preinstall script"
+  title: "should fetch optional package to run preinstall script",
+  before: () => {
+    dns.lookup = function(...args) {
+      if (
+        args[0] === "boieiroueorpqoweiracbad" ||
+        args[0] === "blahblah.qwerqreqwerqwerqwerqwer.com"
+      ) {
+        const err = new Error("addrnotfound");
+        err.code = "ENOTFOUND";
+        args[args.length - 1](err);
+      } else {
+        dns[LOOKUP](...args);
+      }
+    };
+  },
+  after: () => {
+    dns.lookup = dns[LOOKUP];
+    delete dns[LOOKUP];
+  }
 };
 
 /*
