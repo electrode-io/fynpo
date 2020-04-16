@@ -74,7 +74,7 @@
     "semver": "^7.3.0",
     "tar": "^6.0.0",
     "visual-exec": "^0.1.7",
-    "visual-logger": "^1.1.1",
+    "visual-logger": "^1.1.2",
     "xaa": "^1.3.0",
     "xenv-config": "^1.3.0",
     "xsh": "^0.4.0",
