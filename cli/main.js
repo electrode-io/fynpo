@@ -368,7 +368,7 @@ const commands = {
   },
   run: {
     desc: "Run a npm script",
-    args: "<script>",
+    args: "[script]",
     alias: ["rum", "r"],
     usage: "$0 $1 <command> [-- <args>...]",
     exec: (argv, parsed) => {

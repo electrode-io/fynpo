@@ -442,19 +442,20 @@ class FynCli {
     return showStat(this.fyn, argv.args.packages, argv.opts.follow);
   }
 
-  run(argv, parsed) {
-    if (argv.opts.list) {
-      return this.fyn
-        ._initialize({ noLock: true })
-        .then(() => {
-          console.log(Object.keys(_.get(this.fyn._pkg, "scripts", {})).join("\n"));
-        })
-        .finally(() => {
-          fyntil.exit(0);
-        });
+  async run(argv) {
+    if (argv.opts.list || !argv.args.script) {
+      try {
+        await this.fyn._initialize({ noLock: true });
+        if (!argv.opts.list) {
+          console.log(`Lifecycle scripts included in ${this.fyn._pkg.name}:\n`);
+        }
+        console.log(Object.keys(_.get(this.fyn._pkg, "scripts", {})).join("\n"));
+      } finally {
+        fyntil.exit(0);
+      }
     }
 
-    let { script = argv.name } = argv.args;
+    let { script } = argv.args;
 
     const config = x => this.fyn.allrc[x];
 
