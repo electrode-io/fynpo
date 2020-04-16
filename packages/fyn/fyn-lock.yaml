@@ -2173,15 +2173,11 @@ chrome-trace-event:
    tslib: ^1.9.0
 ci-info:
  _:
-  ^1.5.0: 1.6.0
   ^2.0.0: 2.0.0
  2.0.0:
   top: 1
   $: sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
   _: 'https://registry.npmjs.org/ci-info/-/ci-info-2.0.0.tgz'
- 1.6.0:
-  $: sha512-vsGdkwSCDpWmP80ncATX7iea5DWQemg1UgCW5J8tqjU3lYw4FBYuj89J0CTVomA7BEfvSZd84GmHko+MxFQU2A==
-  _: 'https://registry.npmjs.org/ci-info/-/ci-info-1.6.0.tgz'
 cipher-base:
  _:
   '^1.0.0,^1.0.1,^1.0.3': 1.0.4
@@ -3975,14 +3971,6 @@ is-callable:
  1.1.4:
   $: sha512-r5p9sxJjYnArLjObpjA4xu5EKI3CuKHkJXMhT7kwbpUyIFD1n5PMAsoPvWnvtZiNz7LjkYDRZhd7FlI0eMijEA==
   _: 'https://registry.npmjs.org/is-callable/-/is-callable-1.1.4.tgz'
-is-ci:
- _:
-  ^1.2.0: 1.2.1
- 1.2.1:
-  $: sha512-s6tfsaQaQi3JNciBH6shVqEDvhGut0SUXr31ag8Pd8BBbVVlcGfWhpPmEOoM6RJ5TFhbypvf5yyRw/VXW1IiWg==
-  _: 'https://registry.npmjs.org/is-ci/-/is-ci-1.2.1.tgz'
-  dependencies:
-   ci-info: ^1.5.0
 is-data-descriptor:
  _:
   ^0.1.4: 0.1.4
@@ -7041,17 +7029,17 @@ verror:
    core-util-is: 1.0.2
    extsprintf: ^1.2.0
 visual-exec:
- _latest: 0.1.6
+ _latest: 0.1.7
  _:
-  '^0.1.0,^0.1.6': 0.1.6
- 0.1.6:
+  '^0.1.0,^0.1.7': 0.1.7
+ 0.1.7:
   top: 1
-  $: sha512-VEMxqMPTitja9ODbaL5N0D0EVHWlzrm0wsRCs/fH6pvSke2/hkje2/J7m5TRk+0dP5EfijdkgqxBkvLizkP81g==
-  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.6.tgz'
+  $: sha512-0ir+RR9SRbrBCKp5yC+CHr+MGdvTN66N4MAfm/opgRCmigKgpujYL57jgDVGbzjxu9W2LtFBaO6aTT682q3mUQ==
+  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.7.tgz'
   dependencies:
    chalk: ^4.0.0
    has-ansi: ^3.0.0
-   is-ci: ^1.2.0
+   ci-info: ^2.0.0
    strip-ansi: ^6.0.0
    visual-logger: ^1.1.1
    xsh: ^0.4.4
