@@ -12,7 +12,10 @@ const Fs = require("fs");
 
 const makeBootstrap = parsed => {
   const cwd = parsed.opts.cwd || process.cwd();
-  return new Bootstrap(makePkgDeps(readPackages(cwd), parsed.opts.ignore || []));
+  return new Bootstrap(
+    makePkgDeps(readPackages(cwd), parsed.opts.ignore || [], parsed.opts.only || []),
+    parsed.opts
+  );
 };
 
 const execBootstrap = parsed => {
@@ -72,6 +75,17 @@ const nixClap = new NixClap({
       alias: "i",
       type: "string array",
       desc: "list of packages to ignore"
+    },
+    only: {
+      alias: "o",
+      type: "string array",
+      desc: "list of packages to handle only"
+    },
+    deps: {
+      alias: "d",
+      type: "number",
+      default: 10,
+      desc: "level of deps to include even if they were ignored"
     },
     "save-log": {
       alias: "sl",

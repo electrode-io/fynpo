@@ -37,7 +37,8 @@
     "xsh": "^0.4.2"
   },
   "devDependencies": {
-    "electrode-archetype-njs-module-dev": "^3.0.0"
+    "electrode-archetype-njs-module-dev": "^3.0.0",
+    "prettier": "1.19.1"
   },
   "nyc": {
     "all": true,
