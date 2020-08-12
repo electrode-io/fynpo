@@ -118,7 +118,19 @@ class PkgInstaller {
 
       depInfo.str = outputStr;
 
-      await Fs.writeFile(pkgJsonFp, `${outputStr}\n`);
+      try {
+        await Fs.writeFile(pkgJsonFp, `${outputStr}\n`);
+      } catch (err) {
+        //
+        // some package publish files with readonly set
+        //
+        if (err.code === "EPERM") {
+          const st = await Fs.stat(pkgJsonFp);
+          // ensure allow read/write on the package.json file
+          await Fs.chmod(pkgJsonFp, st.mode + 0o600);
+          await Fs.writeFile(pkgJsonFp, `${outputStr}\n`);
+        }
+      }
     }
   }
 
