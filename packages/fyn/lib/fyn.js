@@ -458,10 +458,11 @@ class Fyn {
       return json;
     }
 
-    assert(
-      json && json.name === pkg.name && semverUtil.equal(json.version, pkg.version),
-      `Pkg in ${fullOutDir} ${id} doesn't match ${pkg.name}@${pkg.version}`
-    );
+    // TODO: check npm:pkg-alias in semver
+    // assert(
+    //   json && json.name === pkg.name && semverUtil.equal(json.version, pkg.version),
+    //   `Pkg in ${fullOutDir} ${id} doesn't match ${pkg.name}@${pkg.version}`
+    // );
 
     pkg.dir = json[PACKAGE_RAW_INFO].dir;
     pkg.str = json[PACKAGE_RAW_INFO].str;
