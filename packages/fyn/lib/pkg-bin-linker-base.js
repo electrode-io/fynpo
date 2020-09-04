@@ -47,7 +47,11 @@ class PkgBinLinkerBase {
         await Fs.$.mkdirp(binDir);
       }
       const relTarget = Path.relative(binDir, target);
+      // get rid of scope
+      sym = _.last(sym.split("/"));
+
       const symlink = Path.join(binDir, sym);
+
       if (!(await this._ensureGoodLink(symlink, relTarget))) {
         try {
           await this._generateBinLink(relTarget, symlink);
@@ -84,8 +88,8 @@ class PkgBinLinkerBase {
       };
 
       if (_.isObject(json.bin)) {
-        for (const bin in json.bin) {
-          await handle(bin, json.bin[bin]);
+        for (const name in json.bin) {
+          await handle(name, json.bin[name]);
         }
       } else {
         await handle(json.name, json.bin);
@@ -113,6 +117,8 @@ class PkgBinLinkerBase {
       const target = Path.join(pkgDir, file);
       const relTarget = Path.relative(this._binDir, target);
 
+      // get rid of scope
+      sym = _.last(sym.split("/"));
       if (this._linked[sym]) {
         const same = relTarget === this._linked[sym].relTarget;
         logger.debug(
