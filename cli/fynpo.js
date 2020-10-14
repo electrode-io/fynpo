@@ -26,7 +26,8 @@ const execBootstrap = parsed => {
     .exec({
       build: parsed.opts.build,
       fynOpts: parsed.opts.fynOpts,
-      concurrency: parsed.opts.concurrency
+      concurrency: parsed.opts.concurrency,
+      skip: parsed.opts.skip
     })
     .then(() => {
       bootstrap.logErrors();
@@ -75,6 +76,10 @@ const nixClap = new NixClap({
       alias: "i",
       type: "string array",
       desc: "list of packages to ignore"
+    },
+    skip: {
+      type: "string array",
+      desc: "list of packages to skip running fyn install on, but won't ignore"
     },
     only: {
       alias: "o",
