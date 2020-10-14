@@ -62,6 +62,23 @@ class Fyn {
     }
   }
 
+  _initCentralStore() {
+    const options = this._options;
+    let centralDir;
+    // env wins
+    if (process.env.FYN_CENTRAL_DIR) {
+      centralDir = process.env.FYN_CENTRAL_DIR;
+      logger.debug(`Enabling central store using dir from env FYN_CENTRAL_DIR ${centralDir}`);
+    } else if (options.centralStore) {
+      centralDir = Path.join(this.fynDir, "_central-storage");
+      logger.debug(`Enabling central store for flag using dir ${centralDir}`);
+    } else {
+      return (this._central = false);
+    }
+
+    return (this._central = new FynCentral({ centralDir }));
+  }
+
   async _initialize({ noLock = false } = {}) {
     if (!this._pkg) {
       const options = this._options;
@@ -74,9 +91,7 @@ class Fyn {
 
       if (!noLock) await this._readLockFiles();
 
-      this._central =
-        options.centralStore &&
-        new FynCentral({ centralDir: Path.join(this.fynDir, "_central-storage") });
+      this._initCentralStore();
       this._distFetcher = new PkgDistFetcher({
         pkgSrcMgr: this._pkgSrcMgr,
         fyn: this
