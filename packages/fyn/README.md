@@ -33,33 +33,36 @@ fyn
 
 ## Table Of Contents
 
-- [Features](#features)
-  - [Unique](#unique)
-  - [General](#general)
-- [Overview](#overview)
+- [fyn](#fyn)
+  - [Quick Start](#quick-start)
+  - [Table Of Contents](#table-of-contents)
+  - [Features](#features)
+    - [Unique](#unique)
+    - [General](#general)
+  - [Overview](#overview)
   - [Rationale](#rationale)
   - [Enhanced `npm link`](#enhanced-npm-link)
     - [`fynlocal` mode](#fynlocal-mode)
   - [Smaller `node_modules`](#smaller-node_modules)
   - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
-- [Using fyn](#using-fyn)
-  - [Installing `fyn`](#installing-fyn)
-  - [Installing Your Dependencies](#installing-your-dependencies)
-  - [Running npm scripts](#running-npm-scripts)
-  - [The `stat` command](#the-stat-command)
-  - [Locking Dependencies by Time](#locking-dependencies-by-time)
-  - [Refreshing Optional Dependencies](#refreshing-optional-dependencies)
-  - [Using with Lerna](#using-with-lerna)
-- [Configuring fyn](#configuring-fyn)
-  - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
-  - [Other RC Options](#other-rc-options)
-    - [Scope registry](#scope-registry)
-  - [Central Storage](#central-storage)
-- [Other Info](#other-info)
-  - [Compatibility](#compatibility)
-  - [Package Resolution and Layout](#package-resolution-and-layout)
-  - [Thank you `npm`](#thank-you-npm)
-- [License](#license)
+  - [Using fyn](#using-fyn)
+    - [Installing `fyn`](#installing-fyn)
+    - [Installing Your Dependencies](#installing-your-dependencies)
+    - [Running npm scripts](#running-npm-scripts)
+    - [The `stat` command](#the-stat-command)
+      - [Locking Dependencies by Time](#locking-dependencies-by-time)
+    - [Refreshing Optional Dependencies](#refreshing-optional-dependencies)
+      - [Using with Lerna](#using-with-lerna)
+  - [Configuring fyn](#configuring-fyn)
+    - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
+    - [Other RC Options](#other-rc-options)
+      - [Scope registry](#scope-registry)
+    - [Central Storage](#central-storage)
+  - [Other Info](#other-info)
+    - [Compatibility](#compatibility)
+    - [Package Resolution and Layout](#package-resolution-and-layout)
+    - [Thank you `npm`](#thank-you-npm)
+  - [License](#license)
 
 ## Features
 
@@ -362,6 +365,9 @@ The recommendation is to add the following to `.fynrc` because then you don't ha
 ```ini
 centralStore=true
 ```
+
+You can also set the env variable `FYN_CENTRAL_DIR` to `1` to enable it.
+If you set it to point to a directory then it will be used as the central store directory.
 
 And to work around the issues, `fyn` does the following:
 
