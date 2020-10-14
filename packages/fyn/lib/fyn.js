@@ -18,7 +18,7 @@ const FynCentral = require("./fyn-central");
 const xaa = require("./util/xaa");
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
-const { FYN_IGNORE_FILE } = require("./constants");
+const { FYN_IGNORE_FILE, FYN_INSTALL_CONFIG_FILE } = require("./constants");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
@@ -62,11 +62,26 @@ class Fyn {
     }
   }
 
-  _initCentralStore() {
+  async _initCentralStore() {
     const options = this._options;
     let centralDir;
-    // env wins
-    if (process.env.FYN_CENTRAL_DIR) {
+
+    // check if there's existing installed node_modules with a fyn config file
+    // to get the central store config used.
+    let fynInstallConfig;
+    try {
+      fynInstallConfig = JSON.parse(
+        await Fs.readFile(Path.join(this.getOutputDir(), FYN_INSTALL_CONFIG_FILE))
+      );
+    } catch {
+      fynInstallConfig = {};
+    }
+
+    if (fynInstallConfig.centralDir) {
+      centralDir = fynInstallConfig.centralDir;
+      logger.debug(`Enabling central store using dir from install config ${centralDir}`);
+    } else if (process.env.FYN_CENTRAL_DIR) {
+      // env wins
       centralDir = process.env.FYN_CENTRAL_DIR;
       logger.debug(`Enabling central store using dir from env FYN_CENTRAL_DIR ${centralDir}`);
     } else if (options.centralStore) {
@@ -91,7 +106,7 @@ class Fyn {
 
       if (!noLock) await this._readLockFiles();
 
-      this._initCentralStore();
+      await this._initCentralStore();
       this._distFetcher = new PkgDistFetcher({
         pkgSrcMgr: this._pkgSrcMgr,
         fyn: this
