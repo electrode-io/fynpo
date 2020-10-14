@@ -33,15 +33,24 @@ class PkgInstaller {
   async _saveInstallConfig() {
     const outputDir = this._fyn.getOutputDir();
     const centralDir = _.get(this._fyn, "_central._centralDir", false);
-    try {
-      await Fs.writeFile(
-        Path.join(outputDir, FYN_INSTALL_CONFIG_FILE),
-        JSON.stringify({
-          centralDir
-        })
-      );
-    } catch (err) {
-      logger.debug(`saving install config file failed`, err);
+    const filename = Path.join(outputDir, FYN_INSTALL_CONFIG_FILE);
+    if (centralDir) {
+      try {
+        await Fs.writeFile(
+          filename,
+          JSON.stringify({
+            centralDir
+          })
+        );
+      } catch (err) {
+        logger.debug(`saving install config file failed`, err);
+      }
+    } else {
+      try {
+        await Fs.unlink(filename);
+      } catch (err) {
+        //
+      }
     }
   }
 
