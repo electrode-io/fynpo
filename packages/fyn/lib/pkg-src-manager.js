@@ -631,7 +631,9 @@ class PkgSrcManager {
     const copy = this._fyn.copy;
 
     // TODO: probably don't want to do central for github/url/file tarballs
-    if (central) {
+    // If a dep is pointing to a tgz file directly, then there is no integrity
+    // and best to avoid doing central storage for it.
+    if (integrity && central) {
       const verId = `${pkgInfo.name}@${pkgInfo.version}`;
       if (pkgInfo.hasPI) {
         logger.info(`copying pkg ${verId} in central store mode due to preinstall script`);
