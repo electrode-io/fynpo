@@ -29,18 +29,20 @@ const execBootstrap = parsed => {
       concurrency: parsed.opts.concurrency,
       skip: parsed.opts.skip
     })
-    .then(() => {
-      bootstrap.logErrors();
-      statusCode = bootstrap.failed;
-    })
-    .catch(err => {
-      logger.error(err);
-      logger.error("Please check the file fynpo-debug.log for more info.");
-      statusCode = 1;
-    })
+    .then(
+      () => {
+        bootstrap.logErrors();
+        statusCode = bootstrap.failed;
+      },
+      () => {
+        bootstrap.logErrors();
+        statusCode = 1;
+      }
+    )
     .finally(() => {
       if (statusCode !== 0 || parsed.opts.saveLog) {
         Fs.writeFileSync("fynpo-debug.log", logger.logData.join("\n") + "\n");
+        logger.error("Please check the file fynpo-debug.log for more info.");
       }
       process.exit(statusCode);
     });
