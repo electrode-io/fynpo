@@ -84,7 +84,8 @@ async function generatePackTree(path) {
     }
 
     let dmap = fmap;
-    dir.split(Path.sep).forEach(d => {
+    // npm pack list always generate file path with /
+    dir.split("/").forEach(d => {
       if (!dmap[d]) {
         dmap[d] = { [FILES]: [] };
       }
@@ -117,7 +118,9 @@ async function linkPackTree(tree, src, dest, sym1) {
   //
   const dirs = Object.keys(tree).sort();
   for (const dir of dirs) {
-    destFiles[dir] = true;
+    // in case the tree is generated without top level dir by itself
+    // tree is generated to always use / for path separator
+    destFiles[dir.split("/")[0]] = true;
     const srcFp = Path.join(src, dir);
     const destFp = Path.join(dest, dir);
     if (!sym1) {
