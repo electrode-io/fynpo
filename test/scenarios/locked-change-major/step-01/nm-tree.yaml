@@ -22,7 +22,6 @@ node_modules:
         dep(mod-g@^3.0.0): 3.0.11
   mod-b:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/0.2.0/mod-a"
     package.json:
       id: mod-b@1.0.0
@@ -32,7 +31,6 @@ node_modules:
         opt(mod-e@^2.0.0): 2.1.1
   mod-d:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.1.2/mod-a"
     package.json:
       id: mod-d@3.0.1
@@ -41,7 +39,6 @@ node_modules:
         dep(mod-b@^1.0.0): 1.0.0
   mod-e:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/0.4.5/mod-a"
     package.json:
       id: mod-e@2.1.1

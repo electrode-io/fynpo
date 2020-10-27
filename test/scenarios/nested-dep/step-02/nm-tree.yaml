@@ -11,7 +11,6 @@ node_modules:
       res: {}
   mod-c:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.1.2/mod-a"
     package.json:
       id: mod-c@3.0.0
@@ -19,7 +18,6 @@ node_modules:
         dep(mod-a@^1.0.0): 1.1.2
   mod-d:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/2.0.0/mod-a"
     package.json:
       id: mod-d@1.0.1
@@ -33,7 +31,6 @@ node_modules:
         dep(mod-d@^1.0.0): 1.0.1
   mod-f:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/2.0.0/mod-a"
     package.json:
       id: mod-f@1.0.0

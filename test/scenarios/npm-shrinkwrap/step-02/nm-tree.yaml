@@ -31,7 +31,6 @@ node_modules:
       res: {}
   mod-b:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/0.2.0/mod-a"
     package.json:
       id: mod-b@1.0.0
@@ -41,7 +40,6 @@ node_modules:
         opt(mod-e@^2.0.0): 2.1.1
   mod-c:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.1.0/mod-a"
     package.json:
       id: mod-c@3.0.0
@@ -49,7 +47,6 @@ node_modules:
         dep(mod-a@^1.0.0): 1.1.0
   mod-d:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.0.1/mod-a"
     package.json:
       id: mod-d@3.0.1
@@ -58,7 +55,6 @@ node_modules:
         dep(mod-b@^1.0.0): 1.0.0
   mod-e:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/0.4.5/mod-a"
     package.json:
       id: mod-e@2.1.1
@@ -73,7 +69,6 @@ node_modules:
         mod-a: "^0.3.0"
   mod-ns:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.0.1/mod-a"
     npm-shrinkwrap.json: file
     package.json:
@@ -85,7 +80,6 @@ node_modules:
         dep(mod-d@^3.0.0): 3.0.1
   mod-ns2:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.0.0/mod-a"
     npm-shrinkwrap.json: file
     package.json:

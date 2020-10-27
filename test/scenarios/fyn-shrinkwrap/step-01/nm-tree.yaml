@@ -11,7 +11,6 @@ node_modules:
       res: {}
   mod-h:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.0.1/mod-a"
     npm-shrinkwrap.json: file
     package.json:

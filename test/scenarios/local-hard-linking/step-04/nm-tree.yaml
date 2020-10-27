@@ -11,7 +11,6 @@ node_modules:
   e1:
     index.js: file
     node_modules:
-      __fyn_ignore__: file
       mod-h: "-> ../../__fv_/3.0.11/mod-h"
     package.json:
       id: e1@1.0.0-fynlocal_h
