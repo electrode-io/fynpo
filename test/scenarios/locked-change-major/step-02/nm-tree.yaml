@@ -4,20 +4,14 @@ node_modules:
       mod-a:
         package.json:
           id: mod-a@2.0.0
-          res: {}
   mod-a:
     package.json:
       id: mod-a@0.3.2
-      res:
-        dep(mod-g@^3.0.0): 3.0.11
   mod-b:
     node_modules:
       mod-a: "-> ../../__fv_/2.0.0/mod-a"
     package.json:
       id: mod-b@2.0.0
-      res:
-        dep(mod-a@^2.0.0): 2.0.0
   mod-g:
     package.json:
       id: mod-g@3.0.11
-      res: {}

@@ -7,16 +7,12 @@ node_modules:
       mod-h:
         package.json:
           id: mod-h@3.0.11
-          res: {}
   e1:
     index.js: file
     node_modules:
       mod-h: "-> ../../__fv_/3.0.11/mod-h"
     package.json:
       id: e1@1.0.0-fynlocal_h
-      res:
-        dep(mod-h@^3.0.1): 3.0.11
   mod-h:
     package.json:
       id: mod-h@1.0.0
-      res: {}

@@ -4,16 +4,12 @@ node_modules:
       mod-a:
         package.json:
           id: mod-a@1.0.1
-          res: {}
   mod-a:
     package.json:
       id: mod-a@1.1.2
-      res: {}
   mod-h:
     node_modules:
       mod-a: "-> ../../__fv_/1.0.1/mod-a"
     npm-shrinkwrap.json: file
     package.json:
       id: mod-h@2.0.0
-      res:
-        dep(mod-a@^1.0.0): 1.0.1

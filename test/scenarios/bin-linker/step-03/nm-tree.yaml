@@ -8,4 +8,3 @@ node_modules:
       x.js: file
     package.json:
       id: mod-g@4.0.0
-      res: {}

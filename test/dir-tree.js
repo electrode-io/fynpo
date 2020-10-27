@@ -1,6 +1,6 @@
 "use strict";
 
-const _ = require("lodash");
+// const _ = require("lodash");
 const Path = require("path");
 const Fs = require("fs");
 const Yaml = require("js-yaml");
@@ -11,25 +11,25 @@ function readJson(file) {
 
 function readPackage(file) {
   const pkg = readJson(file);
-  const deps = Object.assign({}, pkg.peerDependencies, pkg.optionalDependencies, pkg.dependencies);
-  const res = {};
+  // const deps = Object.assign({}, pkg.peerDependencies, pkg.optionalDependencies, pkg.dependencies);
+  // const res = {};
 
-  Object.keys(pkg._depResolutions).forEach(depName => {
-    const dr = pkg._depResolutions[depName];
-    const semv = deps[depName] || `undefined`;
-    const depKey = `${dr.type}(${depName}@${semv})`;
-    res[depKey] = dr.resolved || "undefined";
-    delete deps[depName];
-  });
+  // Object.keys(pkg._depResolutions).forEach(depName => {
+  //   const dr = pkg._depResolutions[depName];
+  //   const semv = deps[depName] || `undefined`;
+  //   const depKey = `${dr.type}(${depName}@${semv})`;
+  //   res[depKey] = dr.resolved || "undefined";
+  //   delete deps[depName];
+  // });
 
   const data = {
-    id: pkg._id || `[${pkg.name}@${pkg.version}]`,
-    res
+    id: pkg._id || `[${pkg.name}@${pkg.version}]`
+    // res
   };
 
-  if (!_.isEmpty(deps)) {
-    data.unres = deps;
-  }
+  // if (!_.isEmpty(deps)) {
+  //   data.unres = deps;
+  // }
 
   return data;
 }

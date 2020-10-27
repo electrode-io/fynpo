@@ -5,4 +5,3 @@ node_modules:
   mod-h:
     package.json:
       id: mod-h@1.0.0
-      res: {}

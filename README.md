@@ -419,8 +419,6 @@ Copyright (c) 2015-present, WalmartLabs
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-[flat-module]: https://github.com/jchip/node-flat-module
-[flat node_modules design]: https://github.com/jchip/node-flat-module
 [node_options]: https://nodejs.org/dist/latest-v8.x/docs/api/cli.html#cli_node_options_options
 [`-r` option]: https://nodejs.org/docs/latest-v6.x/api/cli.html#cli_r_require_module
 [fyn-demo-gif]: ./images/fyn-demo.gif
