@@ -1,6 +1,5 @@
 node_modules:
   __fv_: {}
-  __fyn_resolutions__.json: file
   mod-a:
     package.json:
       id: mod-a@2.0.0

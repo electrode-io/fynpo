@@ -20,7 +20,7 @@ const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");
 
 const { FYN_INSTALL_CONFIG_FILE } = require("./constants");
 
-/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template */
+/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len */
 
 class PkgInstaller {
   constructor(options) {
@@ -57,7 +57,7 @@ class PkgInstaller {
   async install() {
     const outputDir = this._fyn.getOutputDir();
     this._binLinker = new PkgBinLinker({ outputDir, fyn: this._fyn });
-    const fynRes = await this._depLinker.readAppFynRes(outputDir);
+    // /*deprecated*/ const fynRes = await this._depLinker.readAppFynRes(outputDir);
 
     this.preInstall = [];
     this.postInstall = [];
@@ -74,7 +74,7 @@ class PkgInstaller {
     }
 
     await this._saveInstallConfig();
-    await this._depLinker.linkAppFynRes(this._data.res, fynRes._fynFo, this._fyn.getOutputDir());
+    // /*deprecated*/ await this._depLinker.linkAppFynRes(this._data.res, fynRes._fynFo, this._fyn.getOutputDir());
 
     return this._doInstall().finally(() => {
       this.preInstall = undefined;
@@ -92,18 +92,14 @@ class PkgInstaller {
     if (depInfo.local === "hard") {
       await hardLinkDir.link(depInfo.dir, vdir, ["node_modules"]);
     } else {
-      await this._depLinker.symlinkLocalPackage(vdir, depInfo.dir);
-      await this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
+      // await this._depLinker.symlinkLocalPackage(vdir, depInfo.dir);
+      // await this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
+      throw new Error("only hard linking local mode supported now.  symlinking local deprecated");
     }
   }
 
   async _saveLocalFynSymlink() {
-    for (const depInfo of this.toLink) {
-      if (depInfo.local === "sym") {
-        // return so don't override locally linked module's package.json
-        await this._depLinker.saveLocalPackageFynLink(depInfo);
-      }
-    }
+    throw new Error("only hard linking local mode supported now.  symlinking local deprecated");
   }
 
   async _savePkgJson(log) {
@@ -308,136 +304,141 @@ class PkgInstaller {
       stepTime = tmp;
     };
 
-    return Promise.map(
-      this.preInstall,
-      depInfo => {
-        return runNpmScript({ appDir, fyn: this._fyn, scripts: ["preinstall"], depInfo }).then(
-          () => {
-            depInfo.json._fyn.preinstall = true;
-            if (depInfo.fynLinkData) {
-              depInfo.fynLinkData.preinstall = true;
-            }
-          }
-        );
-      },
-      { concurrency: 3 }
-    )
-      .tap(() => timeCheck("preInstall"))
-      .tap(() => {
-        logger.updateItem(INSTALL_PACKAGE, `linking packages...`);
-      })
-      .return(this.toLink)
-      .each(async depInfo => {
-        this._fyn._depResolver.resolvePeerDep(depInfo);
-        await this._depLinker.linkPackage(depInfo);
-        //
-        if (depInfo.deprecated && !depInfo.json._deprecated) {
-          depInfo.json._deprecated = depInfo.deprecated;
-          depInfo.showDepr = true;
-        }
-        if (depInfo.top) {
-          return this._binLinker.linkBin(depInfo);
-        }
-        return undefined;
-      })
-      .tap(() => timeCheck("linking packages"))
-      .tap(() => logger.debug("linking bin for non-top but promoted packages"))
-      .return(this.toLink) // Link bin for all none top but promoted pkg first
-      .each(x => !x.top && x.promoted && this._binLinker.linkBin(x))
-      .tap(() => timeCheck("linking bin promoted non-top"))
-      .tap(() => logger.debug("linking bin for __fv_ packages"))
-      .return(this.toLink) // Link bin for all pkg under __fv_
-      .each(x => !x.top && !x.promoted && this._binLinker.linkBin(x))
-      .tap(() => timeCheck("linking bin __fv_"))
-      .return(this.toLink) // link bin for package's dep that conflicts
-      .each(x => this._binLinker.linkDepBin(x))
-      .tap(() => timeCheck("linking dep bin"))
-      .then(() => {
-        // we are about to run install/postInstall scripts
-        // save pkg JSON to disk in case any updates were done
-        return this._savePkgJson();
-      })
-      .tap(() => timeCheck("first _savePkgJson"))
-      .then(() => this._initFvVersions())
-      .tap(() => timeCheck("_initFvVersions"))
-      .then(() => this._cleanUp())
-      .tap(() => timeCheck("_cleanUp"))
-      .then(() => this._cleanOrphanedFv())
-      .tap(() => timeCheck("_cleanOrphanedFv"))
-      .then(() => this._cleanBin())
-      .tap(() => timeCheck("_cleanBin"))
-      .return(this.postInstall)
-      .map(
+    return (
+      Promise.map(
+        this.preInstall,
         depInfo => {
-          let runningScript;
-          return Promise.each(depInfo.install, installScript => {
-            runningScript = installScript;
-            return runNpmScript({ appDir, fyn: this._fyn, scripts: [installScript], depInfo }).then(
-              () => {
+          return runNpmScript({ appDir, fyn: this._fyn, scripts: ["preinstall"], depInfo }).then(
+            () => {
+              depInfo.json._fyn.preinstall = true;
+              if (depInfo.fynLinkData) {
+                depInfo.fynLinkData.preinstall = true;
+              }
+            }
+          );
+        },
+        { concurrency: 3 }
+      )
+        .tap(() => timeCheck("preInstall"))
+        .tap(() => {
+          logger.updateItem(INSTALL_PACKAGE, `linking packages...`);
+        })
+        .return(this.toLink)
+        .each(async depInfo => {
+          this._fyn._depResolver.resolvePeerDep(depInfo);
+          await this._depLinker.linkPackage(depInfo);
+          //
+          if (depInfo.deprecated && !depInfo.json._deprecated) {
+            depInfo.json._deprecated = depInfo.deprecated;
+            depInfo.showDepr = true;
+          }
+          if (depInfo.top) {
+            return this._binLinker.linkBin(depInfo);
+          }
+          return undefined;
+        })
+        .tap(() => timeCheck("linking packages"))
+        .tap(() => logger.debug("linking bin for non-top but promoted packages"))
+        .return(this.toLink) // Link bin for all none top but promoted pkg first
+        .each(x => !x.top && x.promoted && this._binLinker.linkBin(x))
+        .tap(() => timeCheck("linking bin promoted non-top"))
+        .tap(() => logger.debug("linking bin for __fv_ packages"))
+        .return(this.toLink) // Link bin for all pkg under __fv_
+        .each(x => !x.top && !x.promoted && this._binLinker.linkBin(x))
+        .tap(() => timeCheck("linking bin __fv_"))
+        .return(this.toLink) // link bin for package's dep that conflicts
+        .each(x => this._binLinker.linkDepBin(x))
+        .tap(() => timeCheck("linking dep bin"))
+        .then(() => {
+          // we are about to run install/postInstall scripts
+          // save pkg JSON to disk in case any updates were done
+          return this._savePkgJson();
+        })
+        .tap(() => timeCheck("first _savePkgJson"))
+        .then(() => this._initFvVersions())
+        .tap(() => timeCheck("_initFvVersions"))
+        .then(() => this._cleanUp())
+        .tap(() => timeCheck("_cleanUp"))
+        .then(() => this._cleanOrphanedFv())
+        .tap(() => timeCheck("_cleanOrphanedFv"))
+        .then(() => this._cleanBin())
+        .tap(() => timeCheck("_cleanBin"))
+        .return(this.postInstall)
+        .map(
+          depInfo => {
+            let runningScript;
+            return Promise.each(depInfo.install, installScript => {
+              runningScript = installScript;
+              return runNpmScript({
+                appDir,
+                fyn: this._fyn,
+                scripts: [installScript],
+                depInfo
+              }).then(() => {
                 depInfo.json._fyn[installScript] = true;
                 if (depInfo.fynLinkData) {
                   depInfo.fynLinkData[installScript] = true;
                 }
+              });
+            }).catch(err => {
+              if (this._isDepSrcOptionalOnly(depInfo)) {
+                logger.info(
+                  "running package",
+                  logFormat.pkgId(depInfo),
+                  "script",
+                  chalk.magenta(runningScript),
+                  `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
+                  "optional, so ignoring and removing."
+                );
+                return this._removeFailedOptional(depInfo);
+              } else {
+                throw err;
               }
+            });
+          },
+          { concurrency: 3 }
+        )
+        .tap(() => timeCheck("postInstall"))
+        .then(() => {
+          // Go through save package.json again in case any changed
+          return this._savePkgJson(true);
+        })
+        .tap(() => timeCheck("second _savePkgJson"))
+        // .then(() => this._saveLocalFynSymlink())
+        .return(this.toLink)
+        .filter(di => {
+          if (di.deprecated && (di.showDepr || this._fyn.showDeprecated)) {
+            const id = logFormat.pkgId(di);
+            logger.warn(
+              `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
+              chalk.yellow(di.deprecated)
             );
-          }).catch(err => {
-            if (this._isDepSrcOptionalOnly(depInfo)) {
-              logger.info(
-                "running package",
-                logFormat.pkgId(depInfo),
-                "script",
-                chalk.magenta(runningScript),
-                `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
-                "optional, so ignoring and removing."
-              );
-              return this._removeFailedOptional(depInfo);
-            } else {
-              throw err;
+            const req = di.requests[di.firstReqIdx];
+            logger.verbose(
+              chalk.blue("  First seen through:"),
+              chalk.cyan((req.length > 1 ? req.slice(1) : req).reverse().join(chalk.magenta(" < ")))
+            );
+            if (di.requests.length > 1) {
+              logger.verbose(chalk.blue(`  Number of other dep paths:`), di.requests.length - 1);
             }
-          });
-        },
-        { concurrency: 3 }
-      )
-      .tap(() => timeCheck("postInstall"))
-      .then(() => {
-        // Go through save package.json again in case any changed
-        return this._savePkgJson(true);
-      })
-      .tap(() => timeCheck("second _savePkgJson"))
-      .then(() => this._saveLocalFynSymlink())
-      .return(this.toLink)
-      .filter(di => {
-        if (di.deprecated && (di.showDepr || this._fyn.showDeprecated)) {
-          const id = logFormat.pkgId(di);
-          logger.warn(
-            `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
-            chalk.yellow(di.deprecated)
-          );
-          const req = di.requests[di.firstReqIdx];
-          logger.verbose(
-            chalk.blue("  First seen through:"),
-            chalk.cyan((req.length > 1 ? req.slice(1) : req).reverse().join(chalk.magenta(" < ")))
-          );
-          if (di.requests.length > 1) {
-            logger.verbose(chalk.blue(`  Number of other dep paths:`), di.requests.length - 1);
+            return true;
           }
-          return true;
-        }
-        return false;
-      })
-      .tap(() => timeCheck("show deprecated"))
-      .then(warned => {
-        if (this._fyn.showDeprecated && _.isEmpty(warned)) {
-          logger.info(chalk.green("HOORAY!!! None of your dependencies are marked deprecated."));
-        }
-      })
-      .then(() => this._saveLockData())
-      .then(() => {
-        logger.info(`${chalk.green("done install")} ${logFormat.time(Date.now() - start)}`);
-      })
-      .finally(() => {
-        logger.removeItem(INSTALL_PACKAGE);
-      });
+          return false;
+        })
+        .tap(() => timeCheck("show deprecated"))
+        .then(warned => {
+          if (this._fyn.showDeprecated && _.isEmpty(warned)) {
+            logger.info(chalk.green("HOORAY!!! None of your dependencies are marked deprecated."));
+          }
+        })
+        .then(() => this._saveLockData())
+        .then(() => {
+          logger.info(`${chalk.green("done install")} ${logFormat.time(Date.now() - start)}`);
+        })
+        .finally(() => {
+          logger.removeItem(INSTALL_PACKAGE);
+        })
+    );
   }
 
   async _gatherPkg(depInfo) {

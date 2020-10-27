@@ -10,7 +10,6 @@ node_modules:
         package.json:
           id: mod-a@0.4.5
           res: {}
-  __fyn_resolutions__.json: file
   mod-a:
     package.json:
       id: mod-a@1.1.2
