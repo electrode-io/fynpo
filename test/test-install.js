@@ -3,23 +3,13 @@
 "use strict";
 
 const start = Date.now();
-const Module = require("module");
 
-const symbols = Object.getOwnPropertySymbols(Module)
-  .map(x => x.toString())
-  .filter(x => x.indexOf("node-flat-module") >= 0);
-
-if (symbols.length === 0) {
-  console.log("fyn require node-flat-module loaded before startup");
-  process.exit(1);
-}
-
-const Fs = require("fs");
-const Yaml = require("js-yaml");
+// const Fs = require("fs");
+// const Yaml = require("js-yaml");
 const Path = require("path");
 const Fyn = require("../lib/fyn");
 const PkgInstaller = require("../lib/pkg-installer");
-const DepData = require("../lib/dep-data");
+// const DepData = require("../lib/dep-data");
 const fyn = new Fyn({
   registry: "http://localhost:4873/",
   // registry: "https://npme.walmart.com/",

@@ -104,9 +104,9 @@ It comes with two unique features that are very useful when you are working on a
 
 ## Rationale
 
-So why would you want to use this? If you just want to try a different approach to installing your `node_modules`, then it's worth a look.
+So why would you want to use this?
 
-`fyn`'s flatten `node_modules` is the smallest in size because there are no multiple copies of the exact same package installed.
+`fyn`'s `node_modules` structure is the smallest possible in size because there are no multiple copies of the exact same package installed.
 
 It also has a special `fynlocal` mode that's a better [npm link] for handling local packages.
 
@@ -394,7 +394,7 @@ And to work around the issues, `fyn` does the following:
 
 ### Package Resolution and Layout
 
-As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_`, and linked through symlinks or [flat-module].
+As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_` and linked with symlink or dir junction on Windows.
 
 `fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 

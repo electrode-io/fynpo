@@ -11,7 +11,6 @@ const logger = require("../lib/logger");
 const NixClap = require("nix-clap");
 const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
-const findFlatModule = require("./find-flat-module");
 const defaultRc = require("./default-rc");
 const fynTil = require("../lib/util/fyntil");
 
@@ -67,29 +66,6 @@ const pickOptions = argv => {
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
   return { opts: argv.opts, rcData };
-};
-
-const makeNodeOptions = () => {
-  const file = findFlatModule();
-  let splits = [];
-
-  if (process.env.NODE_OPTIONS) {
-    splits = process.env.NODE_OPTIONS.split(" ").filter(x => x);
-  }
-
-  for (let i = 0; i < splits.length; i++) {
-    if (splits[i] === "-r" || splits[i] === "--require") {
-      const ex = splits[i + 1] || "";
-      if (ex.indexOf("flat-module") >= 0) {
-        if (ex === file) {
-          throw new Error(`Your NODE_OPTIONS is already setup for fyn's flat-module.`);
-        }
-        throw new Error(`Your NODE_OPTIONS already has require for flat module at ${ex}`);
-      }
-    }
-  }
-
-  return splits.concat(`-r ${file}`).join(" ");
 };
 
 const options = {
@@ -218,11 +194,6 @@ const options = {
     requireArg: true,
     desc: "Override registry url"
   },
-  "flat-meta": {
-    type: "boolean",
-    default: false,
-    desc: "create flat-module meta files"
-  },
   concurrency: {
     type: "number",
     alias: "cc",
@@ -311,36 +282,6 @@ const commands = {
         type: "boolean",
         default: true,
         desc: "Run install after removed"
-      }
-    }
-  },
-  fm: {
-    desc: "Show the full path to flat-module",
-    exec: () => {
-      console.log(findFlatModule());
-    }
-  },
-  bash: {
-    desc: "Setup flat-module env for bash",
-    exec: () => {
-      try {
-        console.log(`export NODE_OPTIONS="${makeNodeOptions()}"`);
-      } catch (e) {
-        console.log(`echo "${e.message}"`);
-      }
-    }
-  },
-  json: {
-    desc: "output flat-module env as JSON",
-    exec: () => {
-      try {
-        console.log(
-          JSON.stringify({
-            NODE_OPTIONS: makeNodeOptions()
-          })
-        );
-      } catch (e) {
-        console.log(JSON.stringify({ error: e.message }));
       }
     }
   },
