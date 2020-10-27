@@ -11,7 +11,6 @@ node_modules:
       res: {}
   mod-c:
     node_modules:
-      __fyn_ignore__: file
       mod-a: "-> ../../__fv_/1.1.2/mod-a"
     package.json:
       id: mod-c@3.0.0

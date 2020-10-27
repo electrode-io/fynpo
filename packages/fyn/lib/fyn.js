@@ -18,7 +18,7 @@ const FynCentral = require("./fyn-central");
 const xaa = require("./util/xaa");
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
-const { FYN_IGNORE_FILE, FYN_INSTALL_CONFIG_FILE } = require("./constants");
+const { FYN_INSTALL_CONFIG_FILE } = require("./constants");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
@@ -515,21 +515,21 @@ class Fyn {
 
   async createSubNodeModulesDir(dir) {
     const nmDir = Path.join(dir, "node_modules");
-    const fynIgnoreFile = Path.join(nmDir, FYN_IGNORE_FILE);
+    // const fynIgnoreFile = Path.join(nmDir, FYN_IGNORE_FILE);
 
-    let ignoreExist = false;
+    // let ignoreExist = false;
 
     if (!(await Fs.exists(nmDir))) {
       await Fs.$.mkdirp(nmDir);
     } else {
-      ignoreExist = await Fs.exists(fynIgnoreFile);
+      // ignoreExist = await Fs.exists(fynIgnoreFile);
     }
 
-    if (ignoreExist && !this.flatMeta) {
-      await Fs.unlink(fynIgnoreFile);
-    } else if (!ignoreExist && this.flatMeta) {
-      await Fs.writeFile(fynIgnoreFile, "");
-    }
+    // if (ignoreExist && !this.flatMeta) {
+    //   await Fs.unlink(fynIgnoreFile);
+    // } else if (!ignoreExist && this.flatMeta) {
+    //   await Fs.writeFile(fynIgnoreFile, "");
+    // }
 
     return nmDir;
   }

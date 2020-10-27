@@ -9,7 +9,6 @@ node_modules:
     node_modules:
       .bin:
         bin1: "-> ../../bin/bin1.js"
-      __fyn_ignore__: file
     package.json:
       id: mod-g@2.0.1
       res: {}
