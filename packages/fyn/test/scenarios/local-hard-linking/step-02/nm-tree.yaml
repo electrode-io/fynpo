@@ -11,7 +11,6 @@ node_modules:
         bin1: "-> ../../bin/bin1.js"
     package.json:
       id: mod-g@2.0.1
-      res: {}
   mod-h:
     bin:
       bin1.js: file
@@ -20,5 +19,3 @@ node_modules:
         bin1: "-> ../../../mod-g/bin/bin1.js"
     package.json:
       id: mod-h@1.0.0-fynlocal_h
-      res:
-        dep(mod-g@^2.0.0): 2.0.1

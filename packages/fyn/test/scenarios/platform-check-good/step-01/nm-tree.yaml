@@ -5,15 +5,12 @@ node_modules:
   mod-a:
     package.json:
       id: mod-a@1.1.2
-      res: {}
   mod-g:
     bin:
       bin1.js: file
       bin2.js: file
     package.json:
       id: mod-g@2.0.1
-      res: {}
   mod-os-cpu:
     package.json:
       id: mod-os-cpu@1.0.0
-      res: {}

@@ -8,4 +8,3 @@ node_modules:
       bin2.js: file
     package.json:
       id: mod-g@2.0.1
-      res: {}
