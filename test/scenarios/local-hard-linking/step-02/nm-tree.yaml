@@ -2,7 +2,6 @@ node_modules:
   .bin:
     bin1: "-> ../mod-h/bin/bin1.js"
     bin2: "-> ../mod-g/bin/bin2.js"
-  __fyn_resolutions__.json: file
   mod-g:
     bin:
       bin1.js: file

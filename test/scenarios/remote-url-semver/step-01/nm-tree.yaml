@@ -1,5 +1,4 @@
 node_modules:
-  __fyn_resolutions__.json: file
   test-from-gh:
     README.md: file
     hello: file
