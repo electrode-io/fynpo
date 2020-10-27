@@ -31,9 +31,6 @@ xclap.load("fyn", {
       delete pkg.devDependencies;
       rimraf.sync(dist);
       mkdirp.sync(dist);
-      const fmSrc = require.resolve("flat-module/flat-module.js");
-      const fmDist = Path.join(dist, "flat-module.js");
-      Fs.writeFileSync(fmDist, Fs.readFileSync(fmSrc));
 
       mkdirp.sync(Path.resolve(".tmp"));
       Fs.writeFileSync(Path.resolve(".tmp/package.json"), data);

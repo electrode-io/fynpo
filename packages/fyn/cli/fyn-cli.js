@@ -1,13 +1,13 @@
 "use strict";
 
-const Module = require("module");
+// const Module = require("module");
 const Fs = require("../lib/util/file-ops");
 const Path = require("path");
 const Promise = require("bluebird");
 const Fyn = require("../lib/fyn");
 const _ = require("lodash");
 const PkgInstaller = require("../lib/pkg-installer");
-const DepData = require("../lib/dep-data");
+// const DepData = require("../lib/dep-data");
 const semver = require("semver");
 const chalk = require("chalk");
 const logger = require("../lib/logger");
@@ -15,8 +15,8 @@ const PromiseQueue = require("../lib/util/promise-queue");
 const sortObjKeys = require("../lib/util/sort-obj-keys");
 const fyntil = require("../lib/util/fyntil");
 const showStat = require("./show-stat");
-const showSetupInfo = require("./show-setup-info");
-const logFormat = require("../lib/util/log-format");
+// const showSetupInfo = require("./show-setup-info");
+// const logFormat = require("../lib/util/log-format");
 const runNpmScript = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
@@ -29,43 +29,6 @@ const {
   INSTALL_PACKAGE,
   spinner
 } = require("../lib/log-items");
-
-const checkFlatModule = () => {
-  const symbols = Object.getOwnPropertySymbols(Module)
-    .map(x => x.toString())
-    .filter(x => x.indexOf("node-flat-module") >= 0);
-
-  return symbols.length > 0;
-};
-
-const warnFlatModule = pkgs => {
-  if (!checkFlatModule()) {
-    pkgs.forEach(depInfo => {
-      const pkgId = logFormat.pkgId(depInfo);
-      logger.warn(`locally linked module ${pkgId} require flat-module for nested dependencies`);
-    });
-    logger.fyi(
-      "local package linking requires",
-      chalk.green("node-flat-module"),
-      "loaded before startup"
-    );
-    if (!semver.gte(process.versions.node, "8.0.0")) {
-      logger.fyi(
-        "Your node version",
-        chalk.magenta(process.versions.node),
-        "doesn't support",
-        chalk.green("NODE_OPTIONS")
-      );
-      logger.fyi("You have to use the", chalk.magenta("-r"), "option explicitly");
-    } else {
-      showSetupInfo();
-    }
-
-    logger.fyi(
-      `See ${chalk.blue("https://github.com/electrode-io/fyn#setup-flat-module")} for more details.`
-    );
-  }
-};
 
 const myPkg = require("./mypkg");
 const myDir = Path.join(__dirname, "..");
@@ -422,13 +385,12 @@ class FynCli {
       .then(() => {
         logger.removeItem(INSTALL_PACKAGE);
         const end = Date.now();
-        if (this.fyn.needFlatModule) {
-          warnFlatModule(this.fyn.localPkgWithNestedDep);
-        }
+
         logger.info(
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
         );
+
         if (this._rc.saveLogs) {
           this.saveLogs(this._rc.saveLogs);
         }

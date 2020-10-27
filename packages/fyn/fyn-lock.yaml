@@ -3313,13 +3313,6 @@ flat-cache:
    graceful-fs: ^4.1.2
    rimraf: ~2.6.2
    write: ^0.2.1
-flat-module:
- _:
-  ^1.0.0: 1.2.1
- 1.2.1:
-  top: 1
-  $: sha512-HOL7VVYgVJpcP8PrT1auDP2yVEDpAuuitLQJjGaAQEkmo3XvDxEQnXtWbZgPTUBW0EjpdJgqwt6YjcAj8Vvnmw==
-  _: 'https://registry.npmjs.org/flat-module/-/flat-module-1.2.1.tgz'
 flush-write-stream:
  _:
   ^1.0.0: 1.0.3
