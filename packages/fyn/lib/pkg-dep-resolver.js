@@ -99,7 +99,9 @@ class PkgDepResolver {
           src: "",
           dsrc: "pkg",
           resolved: "~",
-          shrinkwrap: options.shrinkwrap
+          shrinkwrap: options.shrinkwrap,
+          // set to zero to que children to take their priorities from their position
+          priority: 0
         }),
         !this._fyn.production
       )
@@ -125,7 +127,7 @@ class PkgDepResolver {
 
   //
   // any package that only has a single version is promoted
-  // promote priority by src: dep, dev, opt
+  // promote priority by src: dep, opt, dev
   //
   // TODO: support options:
   // - Promote the latest version
@@ -142,12 +144,18 @@ class PkgDepResolver {
     names.forEach(name => {
       const pkg = pkgsData[name];
       const versions = Object.keys(pkg);
-      // there's only one version, auto protomote
+      // there's only one version, auto promote
       if (versions.length === 1) {
         version = versions[0];
       } else if (!(version = _.find(versions, v => pkg[v].top))) {
-        // promote the first seen version
+        // default to promote first seen version
         version = pkg[RESOLVE_ORDER][0];
+        // but promote the version with the highest priority
+        versions.forEach(x => {
+          if (pkg[x].priority > pkg[version].priority) {
+            version = x;
+          }
+        });
       }
       const pkgV = pkg[version];
       pkgV.promoted = true;
@@ -279,12 +287,28 @@ class PkgDepResolver {
   makePkgDepItems(pkg, parent, dev, noPrefetch, deepResolve) {
     const bundled = pkg.bundleDependencies;
 
+    const depPriorities = {
+      devopt: 100000000,
+      dev: 200000000,
+      opt: 800000000,
+      dep: 900000000
+    };
+
     const makeDepItems = (deps, dsrc) => {
       const items = [];
       const src = parent.src || dsrc;
-      for (const name in deps) {
+      const depNames = Object.keys(deps);
+      for (let idx = 0; idx < depNames.length; idx++) {
+        const name = depNames[idx];
         if (!bundled || bundled.indexOf(name) < 0) {
-          const opt = { name, semver: deps[name], src, dsrc, deepResolve };
+          const opt = {
+            name,
+            priority: parent.priority || depPriorities[dsrc] - idx,
+            semver: deps[name],
+            src,
+            dsrc,
+            deepResolve
+          };
           const newItem = new DepItem(opt, parent);
 
           if (noPrefetch !== true) this.prefetchMeta(newItem);
@@ -481,7 +505,8 @@ class PkgDepResolver {
         version: resolved,
         [SEMVER]: item.semver,
         [DEP_ITEM]: item,
-        res: {}
+        res: {},
+        priority: item.priority
       };
       if (meta[LOCK_RSEMVERS]) pkgV.fromLock = true;
       const scripts = metaJson.scripts || {};
