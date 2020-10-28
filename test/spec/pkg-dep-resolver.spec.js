@@ -100,7 +100,7 @@ describe("pkg-dep-resolver", function() {
     return testPkgAFixture(true);
   }).timeout(10000);
 
-  it("should resolve dependencies repeatly for pkg-a fixture @deepResolve true", () => {
+  it("should resolve dependencies repeatedly for pkg-a fixture @deepResolve true", () => {
     return testPkgAFixture(true)
       .then(() => testPkgAFixture(true))
       .then(() => {
@@ -117,7 +117,7 @@ describe("pkg-dep-resolver", function() {
     return testPkgAFixture(false);
   }).timeout(10000);
 
-  it("should resolve dependencies repeatly for pkg-a fixture @deepResolve false", () => {
+  it("should resolve dependencies repeatedly for pkg-a fixture @deepResolve false", () => {
     return testPkgAFixture(false)
       .then(() => testPkgAFixture(false))
       .then(() => {
