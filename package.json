@@ -70,7 +70,7 @@
     "pkg-preper": "^0.1.0",
     "require-at": "^1.0.4",
     "rimraf": "^2.6.2",
-    "semver": "^7.3.0",
+    "semver": "^7.3.2",
     "tar": "^6.0.0",
     "visual-exec": "^0.1.7",
     "visual-logger": "^1.1.2",
