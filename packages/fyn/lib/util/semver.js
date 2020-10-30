@@ -186,6 +186,27 @@ function checkUrl(semver) {
   return false;
 }
 
+/**
+ * fix some bad semver
+ * @param {*} semver semver to fix
+ * @returns {string} semver fixed
+ */
+function fixBadSv(semver) {
+  const parts = semver.split(".");
+  const removeLeadingZero = x => {
+    if (x && x.length > 1) {
+      return x.replace(/^0+/, "");
+    }
+    return x;
+  };
+
+  for (let ix = 0; ix < parts.length && ix < 3; ix++) {
+    parts[ix] = removeLeadingZero(parts[ix]);
+  }
+
+  return parts.join(".");
+}
+
 function analyze(semver) {
   const sv = { $: semver };
 
@@ -211,7 +232,12 @@ function analyze(semver) {
       sv.urlType = urlType;
     }
   } else {
-    setHardLocal(getAsFilepath(semver));
+    const fpSv = getAsFilepath(semver);
+    if (fpSv) {
+      setHardLocal(fpSv);
+    } else if (!Semver.coerce(semver)) {
+      sv.$ = fixBadSv(semver);
+    }
   }
 
   return sv;
