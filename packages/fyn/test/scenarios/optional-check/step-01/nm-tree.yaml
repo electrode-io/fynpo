@@ -1,4 +1,5 @@
 node_modules:
+  "._fyn_config_.json": "file"
   __fv_: {}
   mod-a:
     package.json:

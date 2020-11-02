@@ -13,7 +13,7 @@ const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
 const optionalRequire = require("optional-require")(require);
 
-const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
+const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile", "--no-build-local"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
 
 function readJson(path) {
@@ -193,12 +193,12 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
-        "auto-deep-resolve": {}
-        // "bin-linker": {}
+        // "auto-deep-resolve": {}
+        // "bin-linker": {},
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
-        // "locked-change-major": { stopStep: "step-01" }
+        "locked-change-major": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}

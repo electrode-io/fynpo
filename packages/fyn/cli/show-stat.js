@@ -23,6 +23,7 @@ const formatPkgId = pkg => {
 class ShowStat {
   constructor({ fyn }) {
     this._fyn = fyn;
+    this._fyn._options.buildLocal = false;
   }
 
   // returns array of packages match id

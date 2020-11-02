@@ -11,6 +11,7 @@ const Promise = require("bluebird");
 const chalk = require("chalk");
 const logger = require("./logger");
 const DepItem = require("./dep-item");
+const { LocalPkgBuilder } = require("./local-pkg-builder");
 const PromiseQueue = require("./util/promise-queue");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const createDefer = require("./util/defer");
@@ -232,10 +233,35 @@ class PkgDepResolver {
         }
       });
     }
+
     const depthInfo = this._depthResolving[depth];
     if (!depthInfo) return;
     this._depthResolving.current = depth;
-    Object.keys(depthInfo).forEach(x => this._promiseQ.addItem(x, true));
+
+    const depthPkgs = Object.keys(depthInfo);
+
+    if (this._fyn._options.buildLocal) {
+      // logger.info("adding depth pkgs", depthPkgs.join(", "));
+      const locals = depthPkgs.filter(x => {
+        const item = depthInfo[x].items[0];
+        return item.localType;
+      });
+
+      if (locals.length > 0) {
+        if (!this._localsByDepth) {
+          this._localsByDepth = [];
+        }
+        this._localsByDepth.push(locals.map(x => depthInfo[x].items[0]));
+      } else if (!this._buildLocal && this._localsByDepth) {
+        this._buildLocal = new LocalPkgBuilder({
+          fyn: this._fyn,
+          localsByDepth: this._localsByDepth
+        });
+        this._buildLocal.start();
+      }
+    }
+
+    depthPkgs.forEach(x => this._promiseQ.addItem(x, true));
     this._promiseQ.addItem(PromiseQueue.pauseItem, true);
     this._promiseQ.addItem({ queueDepth: true, depth: depth + 1 }, true);
     // depthInfo.names = {};
@@ -262,6 +288,9 @@ class PkgDepResolver {
       } else if (!depthData[name]) {
         depthData[name] = { items: [depItem] };
       } else {
+        //
+        // ??? When can a dep pkg can have more than one resolving data item?
+        //
         depthData[name].items.push(depItem);
       }
     });

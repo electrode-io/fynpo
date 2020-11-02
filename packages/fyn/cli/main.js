@@ -199,6 +199,11 @@ const options = {
     alias: "cc",
     desc: "Max network concurrency",
     default: 15
+  },
+  "build-local": {
+    type: "boolean",
+    default: true,
+    desc: "auto run fyn to install and build local dependency packages"
   }
 };
 
