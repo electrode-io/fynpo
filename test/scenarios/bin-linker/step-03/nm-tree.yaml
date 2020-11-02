@@ -1,4 +1,5 @@
 node_modules:
+  "._fyn_config_.json": "file"
   .bin:
     bin1: "-> ../mod-g/bin/bin1.js"
     binx: "-> ../mod-g/bin/x.js"
