@@ -29,30 +29,6 @@ class PkgInstaller {
     this._depLinker = new PkgDepLinker({ fyn: this._fyn });
   }
 
-  // save the config to outputDir
-  async _saveInstallConfig() {
-    const outputDir = this._fyn.getOutputDir();
-    const centralDir = _.get(this._fyn, "_central._centralDir", false);
-    const filename = Path.join(outputDir, FYN_INSTALL_CONFIG_FILE);
-
-    if (!(await Fs.exists(outputDir))) {
-      return;
-    }
-
-    try {
-      await Fs.writeFile(
-        filename,
-        JSON.stringify({
-          ...this._fyn._installConfig,
-          time: Date.now(),
-          centralDir
-        })
-      );
-    } catch (err) {
-      logger.debug(`saving install config file failed`, err);
-    }
-  }
-
   async install() {
     const outputDir = this._fyn.getOutputDir();
     this._binLinker = new PkgBinLinker({ outputDir, fyn: this._fyn });
@@ -74,13 +50,11 @@ class PkgInstaller {
 
     // /*deprecated*/ await this._depLinker.linkAppFynRes(this._data.res, fynRes._fynFo, this._fyn.getOutputDir());
 
-    return this._doInstall()
-      .then(() => this._saveInstallConfig())
-      .finally(() => {
-        this.preInstall = undefined;
-        this.postInstall = undefined;
-        this.toLink = undefined;
-      });
+    return this._doInstall().finally(() => {
+      this.preInstall = undefined;
+      this.postInstall = undefined;
+      this.toLink = undefined;
+    });
   }
 
   async _linkLocalPkg(depInfo) {

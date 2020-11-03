@@ -372,6 +372,8 @@ class FynCli {
       .then(() => {
         const pkg = this.fyn._pkg;
         const pkgScripts = pkg.scripts || {};
+        // https://docs.npmjs.com/cli/v6/using-npm/scripts#npm-install
+        // Intentionally skipping the deprecated prepublish
         const scripts = ["install", "postinstall", "prepare"]
           .concat(this.fyn._options.runNpm)
           .filter(x => x && Boolean(pkgScripts[x]));
@@ -396,6 +398,8 @@ class FynCli {
         if (this._rc.saveLogs) {
           this.saveLogs(this._rc.saveLogs);
         }
+
+        return this.fyn.saveInstallConfig();
       })
       .catch(err => {
         this.fail(chalk.red("install failed:"), err);

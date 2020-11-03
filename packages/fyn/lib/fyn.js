@@ -116,6 +116,30 @@ class Fyn {
     }
   }
 
+  // save the config to outputDir
+  async saveInstallConfig() {
+    const outputDir = this.getOutputDir();
+    const centralDir = _.get(this, "_central._centralDir", false);
+    const filename = Path.join(outputDir, FYN_INSTALL_CONFIG_FILE);
+
+    if (!(await Fs.exists(outputDir))) {
+      return;
+    }
+
+    try {
+      await Fs.writeFile(
+        filename,
+        JSON.stringify({
+          ...this._installConfig,
+          time: Date.now(),
+          centralDir
+        })
+      );
+    } catch (err) {
+      logger.debug(`saving install config file failed`, err);
+    }
+  }
+
   async loadPkgFyn() {
     this._pkgFyn = await xaa.try(() =>
       fyntil.readJson(Path.resolve(this._cwd, "package-fyn.json"))
