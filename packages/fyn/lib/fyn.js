@@ -108,6 +108,8 @@ class Fyn {
         logger.debug("failed loaded fynInstallConfig from", FYN_INSTALL_CONFIG_FILE, err);
       }
 
+      this._runNpm = [].concat(this._options.runNpm || this._installConfig.runNpm).filter(x => x);
+
       await this._initCentralStore();
       this._distFetcher = new PkgDistFetcher({
         pkgSrcMgr: this._pkgSrcMgr,
@@ -132,7 +134,8 @@ class Fyn {
         JSON.stringify({
           ...this._installConfig,
           time: Date.now(),
-          centralDir
+          centralDir,
+          runNpm: this._runNpm
         })
       );
     } catch (err) {

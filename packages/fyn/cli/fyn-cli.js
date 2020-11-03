@@ -375,7 +375,7 @@ class FynCli {
         // https://docs.npmjs.com/cli/v6/using-npm/scripts#npm-install
         // Intentionally skipping the deprecated prepublish
         const scripts = ["install", "postinstall", "prepare"]
-          .concat(this.fyn._options.runNpm)
+          .concat(this.fyn._runNpm)
           .filter(x => x && Boolean(pkgScripts[x]));
         if (scripts.length > 0) {
           return runNpmScript({
