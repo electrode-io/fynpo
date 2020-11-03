@@ -40,13 +40,13 @@ async function checkPkgNeedInstall(dir, checkCtime = 0) {
     const hasScript = scripts.find(s => installScripts.includes(s));
 
     if (!hasScript) {
-      return { install: false, hasScript, scripts };
+      return { install: false, hasScript, scripts, pkgJson };
     }
 
     const stats = await scanFileStats(dir);
     const ctime = stats[latestCtimeTag];
 
-    return { install: ctime > checkCtime, ctime, checkCtime };
+    return { install: ctime > checkCtime, ctime, checkCtime, pkgJson };
   } catch (error) {
     return { install: false, error };
   }
