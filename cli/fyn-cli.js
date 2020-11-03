@@ -21,6 +21,7 @@ const runNpmScript = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
 const xaa = require("../lib/util/xaa");
+const { scanFileStats, latestCtimeTag } = require("../lib/util/stat-dir");
 
 const {
   FETCH_META,
@@ -332,7 +333,14 @@ class FynCli {
   install() {
     const start = Date.now();
     return Promise.try(() => this.fyn._initialize())
-      .then(() => {
+      .then(async () => {
+        if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
+          const stats = await scanFileStats(this.fyn._cwd);
+          const ctime = stats[latestCtimeTag];
+          if (ctime < this.fyn._installConfig.time) {
+            throw new Error("No Change");
+          }
+        }
         const pkg = this.fyn._pkg;
         const preinstall = _.get(pkg, "scripts.preinstall");
         if (preinstall) {
@@ -402,7 +410,14 @@ class FynCli {
         return this.fyn.saveInstallConfig();
       })
       .catch(err => {
-        this.fail(chalk.red("install failed:"), err);
+        if (err.message === "No Change") {
+          logger.info(`
+No files changed since last fyn install - nothing to be done.
+To force install, run 'fyn install --force-install' or 'fyn install --fi'
+`);
+        } else {
+          this.fail(chalk.red("install failed:"), err);
+        }
       });
   }
 
