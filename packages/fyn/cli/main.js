@@ -220,6 +220,11 @@ const commands = {
       "run-npm": {
         desc: "additional npm scripts to run after install",
         type: "string array"
+      },
+      "force-install": {
+        alias: "fi",
+        desc: "force install even if no files changed since last install",
+        type: "boolean"
       }
     }
   },
