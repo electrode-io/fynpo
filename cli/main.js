@@ -215,7 +215,13 @@ const commands = {
       const cli = new FynCli(pickOptions(argv));
       return cli.install();
     },
-    default: true
+    default: true,
+    options: {
+      "run-npm": {
+        desc: "additional npm scripts to run after install",
+        type: "string array"
+      }
+    }
   },
   add: {
     alias: "a",
