@@ -372,7 +372,9 @@ class FynCli {
       .then(() => {
         const pkg = this.fyn._pkg;
         const pkgScripts = pkg.scripts || {};
-        const scripts = ["install", "postinstall", "prepare"].filter(x => Boolean(pkgScripts[x]));
+        const scripts = ["install", "postinstall", "prepare"]
+          .concat(this.fyn._options.runNpm)
+          .filter(x => x && Boolean(pkgScripts[x]));
         if (scripts.length > 0) {
           return runNpmScript({
             appDir: this.fyn._cwd,
