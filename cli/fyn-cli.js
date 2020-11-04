@@ -61,8 +61,8 @@ class FynCli {
     logger.verbose("Max network concurrency is", this._rc.concurrency);
   }
 
-  saveLogs(dbgLog) {
-    Fs.writeFileSync(Path.join(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
+  async saveLogs(dbgLog) {
+    return Fs.writeFile(Path.join(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
   }
 
   fail(msg, err) {
@@ -331,6 +331,7 @@ class FynCli {
    * 4. prepare
    */
   install() {
+    let failure;
     const start = Date.now();
     return Promise.try(() => this.fyn._initializePkg())
       .then(async () => {
@@ -407,20 +408,22 @@ class FynCli {
           chalk.green("complete in total"),
           chalk.magenta(`${(end - start) / 1000}`) + "secs"
         );
-
-        if (this._rc.saveLogs) {
-          this.saveLogs(this._rc.saveLogs);
-        }
-
-        return this.fyn.saveInstallConfig();
       })
       .catch(err => {
         if (err.message === "No Change") {
           logger.info(`No changes detected since last fyn install - nothing to be done.
   To force install, run 'fyn install --force-install' or 'fyn install --fi'`);
         } else {
+          failure = err;
           this.fail(chalk.red("install failed:"), err);
         }
+      })
+      .finally(async () => {
+        if (this._rc.saveLogs) {
+          await this.saveLogs(this._rc.saveLogs);
+        }
+
+        return failure || this.fyn.saveInstallConfig();
       });
   }
 
