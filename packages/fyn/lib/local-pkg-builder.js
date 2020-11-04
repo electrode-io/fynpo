@@ -32,6 +32,10 @@ class LocalPkgBuilder {
     const addItem = async item => {
       const checkPkg = await this._fyn.getLocalPkgInstall(item.fullPath);
 
+      // TODO: if one of its deps is a local and needed install, then it'd
+      // need to be installed also, even if its own files didn't change.
+      // Generally this is unnecessary, except if its build process may
+      // depend on that downstream local package.
       if (!checkPkg.install) {
         logger.debug(`local pkg at ${item.fullPath} doesn't need build`, checkPkg);
         return;
