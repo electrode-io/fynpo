@@ -4684,6 +4684,7 @@ minimatch:
  _:
   '^3.0.2,^3.0.4': 3.0.4
  3.0.4:
+  top: 1
   $: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
   _: 'https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz'
   dependencies:
