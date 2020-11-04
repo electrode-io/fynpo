@@ -332,7 +332,7 @@ class FynCli {
    */
   install() {
     const start = Date.now();
-    return Promise.try(() => this.fyn._initialize())
+    return Promise.try(() => this.fyn._initializePkg())
       .then(async () => {
         if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
           const stats = await scanFileStats(this.fyn._cwd);
@@ -344,6 +344,8 @@ class FynCli {
             throw new Error("No Change");
           }
         }
+        await this.fyn.readLockFiles();
+        await this.fyn._startInstall();
         const pkg = this.fyn._pkg;
         const preinstall = _.get(pkg, "scripts.preinstall");
         if (preinstall) {
@@ -414,10 +416,8 @@ class FynCli {
       })
       .catch(err => {
         if (err.message === "No Change") {
-          logger.info(`
-No files changed since last fyn install - nothing to be done.
-To force install, run 'fyn install --force-install' or 'fyn install --fi'
-`);
+          logger.info(`No changes detected since last fyn install - nothing to be done.
+  To force install, run 'fyn install --force-install' or 'fyn install --fi'`);
         } else {
           this.fail(chalk.red("install failed:"), err);
         }
