@@ -1,6 +1,6 @@
 "use strict";
 
-const { scanFileStats, latestCtimeTag } = require("./stat-dir");
+const { scanFileStats, latestMtimeTag } = require("./stat-dir");
 const Fs = require("./file-ops");
 const Path = require("path");
 
@@ -44,7 +44,7 @@ async function checkPkgNeedInstall(dir, checkCtime = 0) {
     }
 
     const stats = await scanFileStats(dir);
-    const ctime = stats[latestCtimeTag];
+    const ctime = stats[latestMtimeTag];
 
     return { install: ctime > checkCtime, ctime, checkCtime, pkgJson };
   } catch (error) {
