@@ -21,7 +21,7 @@ const runNpmScript = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
 const xaa = require("../lib/util/xaa");
-const { scanFileStats, latestCtimeTag } = require("../lib/util/stat-dir");
+const { scanFileStats, latestMtimeTag } = require("../lib/util/stat-dir");
 
 const {
   FETCH_META,
@@ -337,7 +337,8 @@ class FynCli {
       .then(async () => {
         if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
           const stats = await scanFileStats(this.fyn._cwd);
-          const ctime = stats[latestCtimeTag];
+          const ctime = stats[latestMtimeTag];
+          logger.debug("time check from install config:", this.fyn._installConfig.time, ctime);
           if (
             ctime < this.fyn._installConfig.time &&
             !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall())
