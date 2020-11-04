@@ -4888,11 +4888,17 @@ nise:
    path-to-regexp: ^1.7.0
    text-encoding: ^0.6.4
 nix-clap:
- _latest: 1.3.11
+ _latest: 1.3.12
  _:
-  '^1.3.10,^1.3.11': 1.3.11
- 1.3.11:
+  ^1.3.10: 1.3.11
+  ^1.3.12: 1.3.12
+ 1.3.12:
   top: 1
+  $: sha512-aNAjM41Cb95Csdn//aKQGfuunIAfgXdHkwtr9dpGfihLquyux2UYcWqj5wTC2cS3XQeQMLavc9kj67ptWbtQMw==
+  _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.12.tgz'
+  dependencies:
+   strip-ansi: ^4.0.0
+ 1.3.11:
   $: sha512-oNqfzquNa/Ibm/5JsM0zrF0+LdNezcsKUb4Z3kUf31HRFgwS+F4F5UQGlhx0ZiF8ld6NA1UbyEMMDssRrGavSA==
   _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.11.tgz'
   dependencies:
