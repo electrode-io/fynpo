@@ -257,6 +257,7 @@ class PkgDepResolver {
           fyn: this._fyn,
           localsByDepth: this._localsByDepth
         });
+        this._fyn.setLocalDeps(this._localsByDepth);
         this._buildLocal.start();
       }
     }

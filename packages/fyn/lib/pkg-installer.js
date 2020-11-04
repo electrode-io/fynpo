@@ -18,8 +18,6 @@ const xaa = require("./util/xaa");
 
 const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");
 
-const { FYN_INSTALL_CONFIG_FILE } = require("./constants");
-
 /* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len */
 
 class PkgInstaller {

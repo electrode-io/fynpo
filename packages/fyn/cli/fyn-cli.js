@@ -337,7 +337,10 @@ class FynCli {
         if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
           const stats = await scanFileStats(this.fyn._cwd);
           const ctime = stats[latestCtimeTag];
-          if (ctime < this.fyn._installConfig.time) {
+          if (
+            ctime < this.fyn._installConfig.time &&
+            !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall())
+          ) {
             throw new Error("No Change");
           }
         }
