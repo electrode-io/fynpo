@@ -1,10 +1,11 @@
 "use strict";
 
-const Fs = require("fs");
+const Fs = require("./lib/util/file-ops");
 const Path = require("path");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
 const xclap = require("xclap");
+const which = require("which");
 
 require("electrode-archetype-njs-module-dev")();
 
@@ -55,6 +56,19 @@ xclap.load("fyn", {
   bundle: "webpack",
 
   publish: "npm publish",
+
+  "replace-npm-g": {
+    desc: "Replace the version that was installed by 'npm i -g' with current",
+    task: [
+      "fyn/bundle",
+      async () => {
+        const fyn = await which("fyn");
+        const realPath = await Fs.realpath(fyn);
+        const dist = Path.join(realPath, "../../dist/fyn.js");
+        return xclap.exec(`cp dist/fyn.js ${dist}`);
+      }
+    ]
+  },
 
   "create-tgz": "node test/fixtures/mock-npm/create-tgz"
 });
