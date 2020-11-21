@@ -1,17 +1,25 @@
 node_modules:
-  "._fyn_config_.json": "file"
+  ._fyn_config_.json: file
   .bin:
-    bin1: "-> ../mod-g/bin/bin1.js"
-    bin2: "-> ../mod-g/bin/bin2.js"
-  mod-a:
-    package.json:
-      id: mod-a@1.1.2
-  mod-g:
-    bin:
-      bin1.js: file
-      bin2.js: file
-    package.json:
-      id: mod-g@2.0.1
-  mod-os-cpu:
-    package.json:
-      id: mod-os-cpu@1.0.0
+    bin1: '-> ../.f/_/mod-g/2.0.1/bin/bin1.js'
+    bin2: '-> ../.f/_/mod-g/2.0.1/bin/bin2.js'
+  .f:
+    _:
+      mod-a:
+        1.1.2:
+          package.json:
+            id: mod-a@1.1.2
+      mod-g:
+        2.0.1:
+          bin:
+            bin1.js: file
+            bin2.js: file
+          package.json:
+            id: mod-g@2.0.1
+      mod-os-cpu:
+        1.0.0:
+          package.json:
+            id: mod-os-cpu@1.0.0
+  mod-a: '-> .f/_/mod-a/1.1.2'
+  mod-g: '-> .f/_/mod-g/2.0.1'
+  mod-os-cpu: '-> .f/_/mod-os-cpu/1.0.0'

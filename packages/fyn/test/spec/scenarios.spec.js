@@ -176,7 +176,7 @@ const debug = false;
             }
             throw err;
           })
-          .then(() => stepAction.verify())
+          .then(() => stepAction.verify(cwd))
           .finally(() => stepAction.after());
       });
 

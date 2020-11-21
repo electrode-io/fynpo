@@ -1,9 +1,12 @@
+"use strict";
+
+const Path = require("path");
 const Fs = require("fs");
 
 module.exports = {
   title: "should link new bin and remove old ones when update dep",
-  verify: () => {
-    const modGPkg = JSON.parse(Fs.readFileSync(require.resolve("mod-g/package.json")));
-    expect(modGPkg.version).to.equal("3.0.0");
+  verify: cwd => {
+    const link = Fs.readlinkSync(Path.join(cwd, "node_modules/mod-g"));
+    expect(link).contains("3.0.0");
   }
 };

@@ -18,7 +18,7 @@ const xaa = require("./util/xaa");
 
 const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");
 
-/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len */
+/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len, max-depth */
 
 class PkgInstaller {
   constructor(options) {
@@ -525,6 +525,8 @@ class PkgInstaller {
   /**
    * Make links under node_modules for packages that exist in package.json and
    * flattened packages under node_modules/${FV_DIR}/node_modules
+   *
+   * @returns {*} none
    */
   async _linkTopPackages() {
     const { flattenTop } = this._fyn._options;

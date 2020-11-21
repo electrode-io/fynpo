@@ -2,14 +2,10 @@
 
 /* eslint-disable no-magic-numbers, max-statements */
 
-const Path = require("path");
 const Tar = require("tar");
-const _ = require("lodash");
 const logger = require("./logger");
 const PromiseQueue = require("./util/promise-queue");
-const Fs = require("./util/file-ops");
 const logFormat = require("./util/log-format");
-const xaa = require("./util/xaa");
 const { LOAD_PACKAGE } = require("./log-items");
 const { retry, missPipe } = require("./util/fyntil");
 
@@ -73,7 +69,7 @@ class PkgDistExtractor {
   //   await xaa.try(() => Fs.rmdir(this._fyn.getFvDir(pkg.version)));
   // }
 
-  async processItem(data, id, promoted) {
+  async processItem(data) {
     const pkg = data.pkg;
 
     // const promotedOpt = _.defaults({ promoted }, _.pick(pkg, "promoted"));
