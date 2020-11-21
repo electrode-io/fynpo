@@ -5,7 +5,6 @@ node_modules:
   .f:
     .fyn.json: file
     _:
-      mod-g: {}
       mod-h:
         1.0.0:
           package.json:

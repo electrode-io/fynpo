@@ -60,7 +60,7 @@ class PkgInstaller {
     if (depInfo.linkLocal) return;
     depInfo.linkLocal = true;
 
-    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
     if (depInfo.local === "hard") {
       await hardLinkDir.link(depInfo.dir, vdir, ["node_modules"]);
     } else {
@@ -100,7 +100,7 @@ class PkgInstaller {
       if (depInfo.local === "hard") {
         // do not override hard linked package.json, instead remove it and
         // write a new physical file.
-        const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
+        const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
         pkgJsonFp = Path.join(vdir, "package.json");
         await Fs.unlink(pkgJsonFp);
       } else {
@@ -187,7 +187,7 @@ class PkgInstaller {
 
         if (!_.isEmpty(rmSemVs.dep)) continue;
 
-        const dir = this._fyn.getInstalledPkgDir(pkgDepInfo.name, pkgDepInfo.version, pkgDepInfo);
+        const dir = this._fyn.getInstalledPkgDir(pkgDepInfo.name, pkgDepInfo.version);
         logger.debug(
           "removing pkg",
           logFormat.pkgId(pkgDepInfo),
@@ -257,7 +257,7 @@ class PkgInstaller {
       `and deps due to install failures` + (causeId ? ` of ${logFormat.pkgId(causeId)}` : "")
     );
     await this._removeDepsOf(depInfo, failedId);
-    await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo));
+    await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version));
   }
 
   _doInstall() {
@@ -425,7 +425,7 @@ class PkgInstaller {
     const json = depInfo.json || {};
 
     if (_.isEmpty(json) || json.fromLocked) {
-      const dir = this._fyn.getInstalledPkgDir(name, version, depInfo);
+      const dir = this._fyn.getInstalledPkgDir(name, version);
       const file = Path.join(dir, "package.json");
       const str = (await Fs.readFile(file)).toString();
       Object.assign(json, JSON.parse(str));
@@ -555,7 +555,7 @@ class PkgInstaller {
           continue; // no need to link
         }
         const linkName = Path.join(symLinkLocation, pkgName);
-        const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, version, {});
+        const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, version);
         logger.debug("linkTop", linkName, "=>", pkgInstalledPath);
         if (pkgName.startsWith("@")) {
           // scope dir
@@ -599,7 +599,7 @@ class PkgInstaller {
 
     try {
       // in case the directory has no versions left, it'd be an empty dir => remove it.
-      const pkgDir = this._fyn.getFvDir(pkgName);
+      const pkgDir = this._fyn.getInstalledPkgDir(pkgName);
       await Fs.rmdir(pkgDir);
 
       // a scoped package, remove the scope dir also

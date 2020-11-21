@@ -384,7 +384,7 @@ class Fyn {
     return await this._distFetcher.wait();
   }
 
-  getInstalledPkgDir(name, version) {
+  getInstalledPkgDir(name = "", version = "") {
     return Path.join(this.getOutputDir(), FV_DIR, "_", name, version);
   }
 
@@ -410,7 +410,7 @@ class Fyn {
    */
   async loadFvVersionsVN() {
     const fvVersions = {};
-    const fvDir = this.getInstalledPkgDir("", "");
+    const fvDir = this.getInstalledPkgDir();
     try {
       for (const version of await Fs.readdir(fvDir)) {
         if (version === "node_modules") {
@@ -445,7 +445,7 @@ class Fyn {
    */
   async loadFvVersions() {
     const fvVersions = {};
-    const fvDir = this.getInstalledPkgDir("", "");
+    const fvDir = this.getInstalledPkgDir();
     try {
       for (const pkgName of await Fs.readdir(fvDir)) {
         if (pkgName === "node_modules" || pkgName.startsWith(".")) {
@@ -549,7 +549,7 @@ class Fyn {
   // else returns undefined.
   //
   async ensureProperPkgDir(pkg, dir) {
-    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version);
 
     let ostat;
 
@@ -580,7 +580,7 @@ class Fyn {
   }
 
   async loadJsonForPkg(pkg, dir) {
-    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version);
     const json = await fyntil.readPkgJson(fullOutDir, true);
 
     const pkgId = `${pkg.name}@${pkg.version}`;

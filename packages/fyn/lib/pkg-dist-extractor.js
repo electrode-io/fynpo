@@ -74,7 +74,7 @@ class PkgDistExtractor {
 
     // const promotedOpt = _.defaults({ promoted }, _.pick(pkg, "promoted"));
 
-    const fullOutDir = this._fyn.getInstalledPkgDir(pkg.name, pkg.version, {});
+    const fullOutDir = this._fyn.getInstalledPkgDir(pkg.name, pkg.version);
 
     if (pkg.extracted && pkg.extracted === fullOutDir) {
       // do we have a copy of it in FV_DIR already?

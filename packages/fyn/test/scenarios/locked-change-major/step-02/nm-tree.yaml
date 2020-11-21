@@ -15,9 +15,6 @@ node_modules:
             mod-a: '-> ../../../mod-a/2.0.0'
           package.json:
             id: mod-b@2.0.0
-      mod-d: {}
-      mod-e: {}
-      mod-f: {}
       mod-g:
         3.0.11:
           package.json:

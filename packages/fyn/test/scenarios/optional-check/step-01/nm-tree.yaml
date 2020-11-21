@@ -14,7 +14,6 @@ node_modules:
         1.0.0:
           package.json:
             id: mod-e@1.0.0
-      mod-err: {}
       mod-f:
         1.0.0:
           package.json:
