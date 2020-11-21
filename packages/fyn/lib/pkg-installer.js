@@ -575,6 +575,8 @@ class PkgInstaller {
 
     if (!versions || versions.length < 1) return;
 
+    let removed = 0;
+
     for (const ver of versions) {
       if (!pkg || !pkg[ver]) {
         const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, ver);
@@ -587,31 +589,36 @@ class PkgInstaller {
 
           try {
             await Fs.unlink(pkgInstalledPath);
+            removed++;
           } catch (err) {
-            logger.error(`unlink symlink version ${pkgInstalledPath} failed`, err);
+            logger.error(`fail to unlink symlink version ${pkgInstalledPath}`, err);
           }
         } else if (stat.isDirectory()) {
           logger.verbose("removing extraneous version", ver, "of", pkgName, pkgInstalledPath);
           await Fs.$.rimraf(pkgInstalledPath);
+          removed++;
         }
       }
     }
 
-    try {
-      // in case the directory has no versions left, it'd be an empty dir => remove it.
-      const pkgDir = this._fyn.getInstalledPkgDir(pkgName);
-      await Fs.rmdir(pkgDir);
+    if (versions.length === removed) {
+      try {
+        // in case the directory has no versions left, it'd be an empty dir => remove it.
+        const pkgDir = this._fyn.getInstalledPkgDir(pkgName);
+        await Fs.rmdir(pkgDir);
 
-      // a scoped package, remove the scope dir also
-      if (pkgName.startsWith("@")) {
-        await Fs.rmdir(Path.dirname(pkgDir));
-      }
-    } catch (err) {
-      if (err.code !== "ENOTEMPTY") {
-        logger.error(`fail to remove dir for package ${pkgName}`, err);
+        // a scoped package, attempt to remove the scope dir also
+        if (pkgName.startsWith("@")) {
+          await Fs.rmdir(Path.dirname(pkgDir));
+        }
+      } catch (err) {
+        if (err.code !== "ENOTEMPTY") {
+          logger.error(`fail to remove dir for package ${pkgName}`, err);
+        }
       }
     }
 
+    // cleanup applied, no longer need the data for this package
     this._fvVersions[pkgName] = null;
   }
 
