@@ -19,7 +19,7 @@ const xaa = require("./util/xaa");
 const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
-const { FYN_INSTALL_CONFIG_FILE } = require("./constants");
+const { FYN_INSTALL_CONFIG_FILE, FV_DIR } = require("./constants");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
@@ -379,14 +379,12 @@ class Fyn {
     return await this._distFetcher.wait();
   }
 
-  getInstalledPkgDir(name, version, pkg) {
-    return pkg.promoted
-      ? Path.join(this.getOutputDir(), name)
-      : Path.join(this.getOutputDir(), `__fv_`, version, name);
+  getInstalledPkgDir(name, version) {
+    return Path.join(this.getOutputDir(), FV_DIR, "_", name, version);
   }
 
   getFvDir(x) {
-    return Path.join(this._cwd, this._options.targetDir, "__fv_", x || "");
+    return Path.join(this._cwd, this._options.targetDir, FV_DIR, x || "");
   }
 
   getOutputDir(x) {
@@ -401,11 +399,17 @@ class Fyn {
     return Fs.readdir(dir).each(f => Fs.$.rimraf(Path.join(dir, f)));
   }
 
-  async loadFvVersions() {
+  /**
+   * Scan FV_DIR for modules saved in the ${version}/${name} format
+   */
+  async loadFvVersionsVN() {
     const fvVersions = {};
-    const fvDir = this.getOutputDir("__fv_");
+    const fvDir = this.getInstalledPkgDir("", "");
     try {
       for (const version of await Fs.readdir(fvDir)) {
+        if (version === "node_modules") {
+          continue; //
+        }
         const verDir = Path.join(fvDir, version);
 
         const pkgNamesOfVersion = await Fs.readdir(verDir);
@@ -425,6 +429,45 @@ class Fyn {
         }
       }
     } catch (err) {}
+
+    return fvVersions;
+  }
+
+  /**
+   * Scan FV_DIR for modules saved in the ${name}/${version} format
+   */
+  async loadFvVersions() {
+    const fvVersions = {};
+    const fvDir = this.getInstalledPkgDir("", "");
+    try {
+      for (const pkgName of await Fs.readdir(fvDir)) {
+        if (pkgName === "node_modules" || pkgName.startsWith(".")) {
+          continue; //
+        }
+        const nameDir = Path.join(fvDir, pkgName);
+
+        const readVersionsOfPkg = async name => {
+          if (!fvVersions[name]) {
+            fvVersions[name] = [];
+          }
+
+          for (const version of await Fs.readdir(Path.join(fvDir, name))) {
+            fvVersions[name].push(version);
+          }
+        };
+
+        if (pkgName.startsWith("@")) {
+          for (const name2 of await Fs.readdir(nameDir)) {
+            const pkgName2 = `${pkgName}/${name2}`;
+            await readVersionsOfPkg(pkgName2);
+          }
+        } else {
+          await readVersionsOfPkg(pkgName);
+        }
+      }
+    } catch (err) {
+      logger.error("loadFvVersions failed", err);
+    }
 
     return fvVersions;
   }

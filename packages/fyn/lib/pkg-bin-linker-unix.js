@@ -7,7 +7,8 @@ const logger = require("./logger");
 const PkgBinLinkerBase = require("./pkg-bin-linker-base");
 
 //
-// Look at each promoted package and link their bin
+// Look at each promoted package and link their bin to node_modules/.bin
+// TODO: only do this for packages in package.json [*]dependencies
 //
 
 class PkgBinLinker extends PkgBinLinkerBase {

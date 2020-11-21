@@ -14,5 +14,6 @@ module.exports = {
   // used central store without specifying the flag again, we still
   // need to run install with central store pointing to the original dir.
   //
-  FYN_INSTALL_CONFIG_FILE: "._fyn_config_.json"
+  FYN_INSTALL_CONFIG_FILE: "._fyn_config_.json",
+  FV_DIR: ".f"
 };

@@ -204,6 +204,11 @@ const options = {
     type: "boolean",
     default: true,
     desc: "auto run fyn to install and build local dependency packages"
+  },
+  "flatten-top": {
+    type: "boolean",
+    default: true,
+    desc: "flattening hoists pkg to top level node_modules"
   }
 };
 

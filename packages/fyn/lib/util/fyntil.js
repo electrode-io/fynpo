@@ -110,8 +110,14 @@ module.exports = {
     return finalJson;
   },
 
-  symlinkDir: async (linkName, targetName) => {
-    await Fs.symlink(targetName, linkName, DIR_SYMLINK_TYPE);
+  symlinkDir: async (linkName, targetName, relative = false) => {
+    await Fs.symlink(
+      relative && Path.isAbsolute(targetName)
+        ? Path.relative(Path.dirname(linkName), targetName)
+        : targetName,
+      linkName,
+      DIR_SYMLINK_TYPE
+    );
   },
 
   symlinkFile: async (linkName, targetName) => {
@@ -131,34 +137,41 @@ module.exports = {
   // - if not, remove it, return false
   // - finally return true
   //
-  validateExistSymlink: async (symlinkDir, targetPath) => {
+  validateExistSymlink: async (linkName, targetPath, relative = false) => {
+    let actualTarget;
     let existTarget;
     //
     // Check if the dir already exist and try to read it as a symlink
     //
     try {
-      existTarget = await Fs.readlink(symlinkDir);
-      if (DIR_SYMLINK_TYPE === "junction" && !Path.isAbsolute(targetPath)) {
-        targetPath = Path.join(symlinkDir, "..", targetPath) + "\\";
+      existTarget = await Fs.readlink(linkName);
+      const absoluteTarget = Path.isAbsolute(targetPath);
+      if (DIR_SYMLINK_TYPE === "junction" && !absoluteTarget) {
+        actualTarget = targetPath = Path.join(linkName, "..", targetPath) + "\\";
+      } else {
+        actualTarget =
+          relative && absoluteTarget
+            ? Path.relative(Path.dirname(linkName), targetPath)
+            : targetPath;
       }
     } catch (e) {
       existTarget = e.code !== "ENOENT";
     }
 
     // If it exist but doesn't match targetDir
-    if (existTarget && existTarget !== targetPath) {
-      logger.debug("local link exist", existTarget, "not match new one", targetPath);
+    if (existTarget && existTarget !== actualTarget) {
+      logger.debug("local link exist", existTarget, "not match new one", actualTarget);
       // remove exist target so a new one can be created
       existTarget = false;
       try {
         // try to unlink it as a symlink/file first
-        await Fs.unlink(symlinkDir);
+        await Fs.unlink(linkName);
       } catch (e) {
         // else remove the directory
-        await Fs.$.rimraf(symlinkDir);
+        await Fs.$.rimraf(linkName);
       }
     } else {
-      logger.debug("local link existTarget", existTarget, "match new target", targetPath);
+      logger.debug("local link existTarget", existTarget, "match new target", actualTarget);
     }
 
     return existTarget;

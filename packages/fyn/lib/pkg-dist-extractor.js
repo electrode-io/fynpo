@@ -45,49 +45,50 @@ class PkgDistExtractor {
     return this._promiseQ.isPending;
   }
 
-  async movePromotedPkgFromFV(pkg, fullOutDir) {
-    logger.debug(
-      "moving promoted extracted package",
-      pkg.name,
-      pkg.version,
-      "to top level",
-      fullOutDir
-    );
+  // TODO: TASK_TOP_TO_FV - remove this, no longer use.
+  // async movePromotedPkgFromFV(pkg, fullOutDir) {
+  //   logger.debug(
+  //     "moving promoted extracted package",
+  //     pkg.name,
+  //     pkg.version,
+  //     "to top level",
+  //     fullOutDir
+  //   );
 
-    // first make sure top dir is clear of any other files
-    // then rename node_modules/__fv_/<version>/<pkg-name>/ to node_modules/<pkg-name>
+  //   // first make sure top dir is clear of any other files
+  //   // then rename node_modules/${FV_DIR}/<version>/<pkg-name>/ to node_modules/<pkg-name>
 
-    if (await xaa.try(() => Fs.lstat(fullOutDir))) {
-      await Fs.$.mkdirp(this._fyn.getExtraDir());
-      await Fs.rename(fullOutDir, this._fyn.getExtraDir(`${pkg.name}-${pkg.version}`));
-    }
+  //   if (await xaa.try(() => Fs.lstat(fullOutDir))) {
+  //     await Fs.$.mkdirp(this._fyn.getExtraDir());
+  //     await Fs.rename(fullOutDir, this._fyn.getExtraDir(`${pkg.name}-${pkg.version}`));
+  //   }
 
-    const hostingDir = Path.dirname(fullOutDir);
-    if (!(await xaa.try(() => Fs.stat(hostingDir)))) {
-      await Fs.$.mkdirp(hostingDir);
-    }
+  //   const hostingDir = Path.dirname(fullOutDir);
+  //   if (!(await xaa.try(() => Fs.stat(hostingDir)))) {
+  //     await Fs.$.mkdirp(hostingDir);
+  //   }
 
-    await Fs.rename(pkg.extracted, fullOutDir);
-    // clean empty node_modules/__fv_/<version> directory
-    await xaa.try(() => Fs.rmdir(this._fyn.getFvDir(pkg.version)));
-  }
+  //   await Fs.rename(pkg.extracted, fullOutDir);
+  //   // clean empty node_modules/${FV_DIR}/<version> directory
+  //   await xaa.try(() => Fs.rmdir(this._fyn.getFvDir(pkg.version)));
+  // }
 
   async processItem(data, id, promoted) {
     const pkg = data.pkg;
 
-    const promotedOpt = _.defaults({ promoted }, _.pick(pkg, "promoted"));
+    // const promotedOpt = _.defaults({ promoted }, _.pick(pkg, "promoted"));
 
-    const fullOutDir = this._fyn.getInstalledPkgDir(pkg.name, pkg.version, promotedOpt);
+    const fullOutDir = this._fyn.getInstalledPkgDir(pkg.name, pkg.version, {});
 
     if (pkg.extracted && pkg.extracted === fullOutDir) {
-      // do we have a copy of it in __fv_ already?
+      // do we have a copy of it in FV_DIR already?
       logger.debug(
         `package ${pkg.name} ${pkg.version} has already been extracted to ${pkg.extracted}`
       );
 
-      if (pkg.promoted && !promotedOpt.promoted) {
-        await this.movePromotedPkgFromFV(pkg, fullOutDir);
-      }
+      // if (pkg.promoted && !promotedOpt.promoted) {
+      //   await this.movePromotedPkgFromFV(pkg, fullOutDir);
+      // }
     } else {
       const json = await this._fyn.ensureProperPkgDir(pkg, fullOutDir);
 

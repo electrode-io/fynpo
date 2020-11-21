@@ -50,15 +50,25 @@ class LocalPkgBuilder {
 
       this._promiseQ.addItem(item);
 
-      if (!this._defer) {
+      if (!this._defer || !this._pending) {
         this._defer = xaa.makeDefer();
-        this._promiseQ.on("done", () => {
-          this._defer.resolve();
-        });
-        this._promiseQ.on("fail", data => {
+        const doneCb = () => {
+          if (!this._promiseQ.isPending) {
+            this._pending = false;
+            this._defer.resolve();
+          }
+        };
+        const failCb = data => {
+          this._pending = false;
           this._defer.reject(data.error);
-        });
+        };
+        this._promiseQ.removeListener("done", doneCb);
+        this._promiseQ.removeListener("fail", failCb);
+        this._promiseQ.on("done", doneCb);
+        this._promiseQ.on("fail", failCb);
       }
+
+      this._pending = true;
     };
 
     for (const locals of localsByDepth.reverse()) {

@@ -127,7 +127,7 @@ class PkgDepResolver {
   }
 
   //
-  // any package that only has a single version is promoted
+  // any package that only has a single version is promoted to top level for flattening
   // promote priority by src: dep, opt, dev
   //
   // TODO: support options:

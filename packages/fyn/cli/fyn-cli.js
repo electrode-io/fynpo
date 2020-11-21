@@ -65,7 +65,7 @@ class FynCli {
     return Fs.writeFile(Path.join(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
   }
 
-  fail(msg, err) {
+  async fail(msg, err) {
     const dbgLog = "fyn-debug.log";
     logger.freezeItems(true);
     logger.error(msg, `CWD ${this.fyn.cwd}`);
@@ -77,7 +77,7 @@ class FynCli {
     );
     logger.error(msg, err.message);
     logger.debug("STACK:", err.stack);
-    this.saveLogs(dbgLog);
+    await this.saveLogs(dbgLog);
     fyntil.exit(err);
   }
 
@@ -416,15 +416,17 @@ class FynCli {
   To force install, run 'fyn install --force-install' or 'fyn install --fi'`);
         } else {
           failure = err;
-          this.fail(chalk.red("install failed:"), err);
         }
       })
       .finally(async () => {
-        if (this._rc.saveLogs) {
+        if (failure) {
+          await this.fail(chalk.red("install failed:"), failure);
+          return failure;
+        } else if (this._rc.saveLogs) {
           await this.saveLogs(this._rc.saveLogs);
         }
 
-        return failure || this.fyn.saveInstallConfig();
+        return this.fyn.saveInstallConfig();
       });
   }
 
