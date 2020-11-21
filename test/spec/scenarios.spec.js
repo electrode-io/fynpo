@@ -106,11 +106,13 @@ const debug = false;
       _.defaults(stepAction, nulStepAction);
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
       let failError;
+      const debugLogFile = `fyn-debug-${step}.log`;
 
       const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
         if (debug && step === debugStep) {
           debugger; // eslint-disable-line
         }
+        rimraf.sync(Path.join(cwd, debugLogFile));
         return Promise.try(() => stepAction.before(cwd))
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
@@ -133,10 +135,12 @@ const debug = false;
             const args = [].concat(
               `--reg=${registry}`,
               BASE_ARGS,
+              `--sl`,
+              debugLogFile,
               getFynDirArg(fynDir),
               stepAction.extraArgs,
               (debug && ["-q", "debug"]) || [],
-              [`--cwd=${cwd}`, "install"]
+              [`--cwd=${cwd}`, "install", `--fi`]
             );
 
             return fynRun(args).catch(err => {
@@ -167,11 +171,20 @@ const debug = false;
             if (!debug) {
               const msg = `scenario test "${step}${stepTitle}" failed`;
               try {
-                const logs = Fs.readFileSync(Path.join(cwd, "fyn-debug.log")).toString();
-                console.log(`${msg}, fyn-debug.log follows:`);
+                const logs = Fs.readFileSync(Path.join(cwd, debugLogFile)).toString();
+                console.log(`
++===============================================
+| ${msg}
+| ${debugLogFile} follows:
++-----------------------------------------------`);
+
                 console.log(logs);
               } catch (err2) {
-                console.log(`${msg}, but no fyn-debug.log found:`, err2.message);
+                console.log(`
++===============================================
+| ${msg}, but no ${debugLogFile} found
+| Error: ${err2.message}
++-----------------------------------------------`);
               }
             }
             throw err;
