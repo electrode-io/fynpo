@@ -1,9 +1,13 @@
 node_modules:
-  "._fyn_config_.json": "file"
-  test-from-gh:
-    README.md: file
-    hello: file
-    package.json:
-      id: test-from-gh@1.0.0
-    src:
-      index.js: file
+  ._fyn_config_.json: file
+  .f:
+    _:
+      test-from-gh:
+        1.0.0:
+          README.md: file
+          hello: file
+          package.json:
+            id: test-from-gh@1.0.0
+          src:
+            index.js: file
+  test-from-gh: '-> .f/_/test-from-gh/1.0.0'

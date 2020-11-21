@@ -1,11 +1,15 @@
 node_modules:
-  "._fyn_config_.json": "file"
+  ._fyn_config_.json: file
   .bin:
-    bin2: "-> ../mod-g/bin/bin2.js"
-    binx: "-> ../mod-g/bin/binx.js"
-  mod-g:
-    bin:
-      bin2.js: file
-      binx.js: file
-    package.json:
-      id: mod-g@3.0.0
+    bin2: '-> ../.f/_/mod-g/3.0.0/bin/bin2.js'
+    binx: '-> ../.f/_/mod-g/3.0.0/bin/binx.js'
+  .f:
+    _:
+      mod-g:
+        3.0.0:
+          bin:
+            bin2.js: file
+            binx.js: file
+          package.json:
+            id: mod-g@3.0.0
+  mod-g: '-> .f/_/mod-g/3.0.0'
