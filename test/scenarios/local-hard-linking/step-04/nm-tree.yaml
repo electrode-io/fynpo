@@ -12,7 +12,6 @@ node_modules:
             mod-h: '-> ../../../mod-h/3.0.11'
           package.json:
             id: e1@1.0.0-fynlocal_h
-      mod-g: {}
       mod-h:
         1.0.0:
           package.json:
