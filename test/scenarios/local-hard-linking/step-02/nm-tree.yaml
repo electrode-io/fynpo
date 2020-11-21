@@ -1,9 +1,9 @@
 node_modules:
-  ._fyn_config_.json: file
   .bin:
     bin1: '-> ../.f/_/mod-h/1.0.0-fynlocal_h/bin/bin1.js'
     bin2: '-> ../.f/_/mod-g/2.0.1/bin/bin2.js'
   .f:
+    .fyn.json: file
     _:
       mod-g:
         2.0.1:

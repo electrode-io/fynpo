@@ -1,6 +1,6 @@
 node_modules:
-  ._fyn_config_.json: file
   .f:
+    .fyn.json: file
     _:
       mod-a:
         1.0.1:
