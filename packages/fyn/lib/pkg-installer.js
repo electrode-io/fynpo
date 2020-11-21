@@ -472,11 +472,10 @@ class PkgInstaller {
   }
 
   async _cleanOrphanedFv() {
-    const outDir = this._fyn.getOutputDir();
     for (const k in this._fvVersions) {
       const versions = this._fvVersions[k];
       if (versions !== null) {
-        await this._cleanUpVersions(outDir, k);
+        await this._cleanUpVersions(k);
       }
     }
   }
@@ -512,7 +511,7 @@ class PkgInstaller {
         await this._removeDir(Path.join(outDir, pkgName));
       }
 
-      await this._cleanUpVersions(outDir, pkgName);
+      await this._cleanUpVersions(pkgName);
     }
 
     // get rid of potentially empty scope dir
@@ -570,7 +569,7 @@ class PkgInstaller {
     }
   }
 
-  async _cleanUpVersions(outDir, pkgName) {
+  async _cleanUpVersions(pkgName) {
     const pkg = this._data.getPkgsData()[pkgName];
     const versions = this._fvVersions[pkgName];
 
@@ -607,7 +606,11 @@ class PkgInstaller {
       if (pkgName.startsWith("@")) {
         await Fs.rmdir(Path.dirname(pkgDir));
       }
-    } catch (e) {}
+    } catch (err) {
+      if (err.code !== "ENOTEMPTY") {
+        logger.error(`fail to remove dir for package ${pkgName}`, err);
+      }
+    }
 
     this._fvVersions[pkgName] = null;
   }
