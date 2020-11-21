@@ -1,6 +1,6 @@
 node_modules:
-  ._fyn_config_.json: file
   .f:
+    .fyn.json: file
     _:
       test-from-gh:
         1.0.0:
