@@ -1,0 +1,13 @@
+{
+  "name": "local-linking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "e1": "../../fixtures/e1",
+    "mod-h": "file:../../fixtures/mod-h"
+  }
+}

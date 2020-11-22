@@ -13,6 +13,7 @@ const logger = require("./logger");
 const PromiseQueue = require("./util/promise-queue");
 const VisualExec = require("visual-exec");
 const xaa = require("xaa");
+const Fs = require("./util/file-ops");
 
 class LocalPkgBuilder {
   constructor(options) {
@@ -27,6 +28,13 @@ class LocalPkgBuilder {
       stopOnError: false,
       processItem: x => this.processItem(x)
     });
+
+    const cliFynJs = Path.join(__dirname, "../cli/fyn.js");
+    if (await Fs.exists(cliFynJs)) {
+      this._fynJs = cliFynJs;
+    } else {
+      this._fynJs = Path.join(__dirname, "../bin/fyn.js");
+    }
 
     const { localsByDepth } = this._options;
 
@@ -94,11 +102,20 @@ class LocalPkgBuilder {
 
   processItem(item) {
     const dispPath = Path.relative(this._options.fyn._cwd, item.fullPath);
-    const exe = process.argv.slice(0, 2).join(" "); // eslint-disable-line
+
+    const command = [
+      process.argv[0],
+      this._fynJs,
+      this._fyn._options.registry && `--reg=${this._fyn._options.registry}`,
+      "-q=d --pg=simple --no-build-local"
+    ]
+      .filter(x => x)
+      .join(" ");
+
     const ve = new VisualExec({
       displayTitle: `building local pkg at ${dispPath}`,
       cwd: item.fullPath,
-      command: `${exe} -q d --pg simple --no-build-local`,
+      command,
       visualLogger: logger
     });
 

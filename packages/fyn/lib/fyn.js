@@ -188,7 +188,9 @@ class Fyn {
     try {
       const outputConfig = {
         ...this._installConfig,
-        time: Date.now(),
+        // add 5ms to ensure it's newer than fyn-lock.yaml, which was just saved
+        // immediately before this
+        time: Date.now() + 5,
         centralDir,
         runNpm: this._runNpm
       };
