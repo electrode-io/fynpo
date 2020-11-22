@@ -13,14 +13,14 @@ const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
 const optionalRequire = require("optional-require")(require);
 
-const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile", "--no-build-local"];
+const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
 
 function readJson(path) {
   try {
     return JSON.parse(Fs.readFileSync(path).toString());
   } catch (e) {
-    return {};
+    return false;
   }
 }
 
@@ -116,10 +116,11 @@ const debug = false;
         return Promise.try(() => stepAction.before(cwd))
           .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
-            _.merge(pkgJson, pkg);
-            deleteNullFields(pkgJson);
-            Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
-
+            if (pkg) {
+              _.merge(pkgJson, pkg);
+              deleteNullFields(pkgJson);
+              Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
+            }
             const fynDir = Path.join(cwd, ".fyn");
             if (stepAction.run) {
               return stepAction.run({
@@ -132,16 +133,20 @@ const debug = false;
               });
             }
 
-            const args = [].concat(
-              `--reg=${registry}`,
-              BASE_ARGS,
-              `--sl`,
-              debugLogFile,
-              getFynDirArg(fynDir),
-              stepAction.extraArgs,
-              (debug && ["-q", "debug"]) || [],
-              [`--cwd=${cwd}`, "install", `--fi`]
-            );
+            const args = []
+              .concat(
+                `--reg=${registry}`,
+                BASE_ARGS,
+                stepAction.buildLocal ? "--build-local" : "--no-build-local",
+                `--sl`,
+                debugLogFile,
+                getFynDirArg(fynDir),
+                stepAction.extraArgs,
+                (debug && ["-q", "debug"]) || [],
+                [`--cwd=${cwd}`, "install"],
+                stepAction.forceInstall === false ? "" : "--fi"
+              )
+              .filter(x => x);
 
             return fynRun(args).catch(err => {
               if (err.message !== "exit 0") failError = err;
@@ -209,10 +214,11 @@ const debug = false;
     ? {
         // "auto-deep-resolve": {}
         // "bin-linker": {},
+        "build-local": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
-        "locked-change-major": {}
+        // "locked-change-major": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
