@@ -19,7 +19,7 @@ const xaa = require("./util/xaa");
 const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
-const { FYN_INSTALL_CONFIG_FILE, FV_DIR } = require("./constants");
+const { FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = require("./constants");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
@@ -205,9 +205,7 @@ class Fyn {
   }
 
   async loadPkgFyn() {
-    this._pkgFyn = await xaa.try(() =>
-      fyntil.readJson(Path.resolve(this._cwd, "package-fyn.json"))
-    );
+    this._pkgFyn = await xaa.try(() => fyntil.readJson(Path.resolve(this._cwd, PACKAGE_FYN_JSON)));
     return this._pkgFyn;
   }
 
@@ -216,7 +214,7 @@ class Fyn {
     if (!_.isEmpty(pkg)) {
       await xaa.try(() =>
         Fs.writeFile(
-          Path.resolve(this._cwd, "package-fyn.json"),
+          Path.resolve(this._cwd, PACKAGE_FYN_JSON),
           `${JSON.stringify(pkg || this._pkgFyn, null, 2)}\n`
         )
       );
@@ -237,7 +235,7 @@ class Fyn {
       }
       const pkgFyn = await this.loadPkgFyn(options);
       if (pkgFyn) {
-        logger.debug("found package-fyn.json", pkgFyn);
+        logger.debug(`found ${PACKAGE_FYN_JSON}`, pkgFyn);
         _.merge(this._pkg, pkgFyn);
       }
     } else {
