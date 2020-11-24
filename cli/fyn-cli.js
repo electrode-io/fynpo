@@ -339,6 +339,7 @@ class FynCli {
           const stats = await scanFileStats(this.fyn._cwd);
           const ctime = stats[latestMtimeTag];
           logger.debug("time check from install config:", this.fyn._installConfig.time, ctime);
+          logger.debug("stats", JSON.stringify(stats, null, 2));
           if (
             ctime < this.fyn._installConfig.time &&
             !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall())

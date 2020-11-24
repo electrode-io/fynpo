@@ -4,21 +4,25 @@ node_modules:
     _:
       mod-a:
         2.0.0:
-          package.json:
-            id: mod-a@2.0.0
+          mod-a:
+            package.json:
+              id: mod-a@2.0.0
       mod-d:
         1.0.1:
-          package.json:
-            id: mod-d@1.0.1
+          mod-d:
+            package.json:
+              id: mod-d@1.0.1
       mod-e:
         1.0.0:
-          package.json:
-            id: mod-e@1.0.0
+          mod-e:
+            package.json:
+              id: mod-e@1.0.0
       mod-f:
         1.0.0:
-          package.json:
-            id: mod-f@1.0.0
-  mod-a: '-> .f/_/mod-a/2.0.0'
-  mod-d: '-> .f/_/mod-d/1.0.1'
-  mod-e: '-> .f/_/mod-e/1.0.0'
-  mod-f: '-> .f/_/mod-f/1.0.0'
+          mod-f:
+            package.json:
+              id: mod-f@1.0.0
+  mod-a: '-> .f/_/mod-a/2.0.0/mod-a'
+  mod-d: '-> .f/_/mod-d/1.0.1/mod-d'
+  mod-e: '-> .f/_/mod-e/1.0.0/mod-e'
+  mod-f: '-> .f/_/mod-f/1.0.0/mod-f'
