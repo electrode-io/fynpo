@@ -166,7 +166,7 @@ const debug = false;
             if (debug) {
               console.log(`directory node_modules tree:\n${Yaml.dump(nmTree, 2)}`);
             }
-            // Fs.writeFileSync(Path.join(stepDir, "nm-tree.yaml"), Yaml.dump(nmTree, { indent: 2 }));
+
             const expectNmTree = Yaml.safeLoad(
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
             );
@@ -213,7 +213,7 @@ const debug = false;
   const filter = debug
     ? {
         // "auto-deep-resolve": {}
-        // "bin-linker": {},
+        // "bin-linker": {}
         "build-local": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}

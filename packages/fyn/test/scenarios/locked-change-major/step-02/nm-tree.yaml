@@ -4,21 +4,25 @@ node_modules:
     _:
       mod-a:
         0.3.2:
-          package.json:
-            id: mod-a@0.3.2
+          mod-a:
+            package.json:
+              id: mod-a@0.3.2
         2.0.0:
-          package.json:
-            id: mod-a@2.0.0
+          mod-a:
+            package.json:
+              id: mod-a@2.0.0
       mod-b:
         2.0.0:
-          node_modules:
-            mod-a: '-> ../../../mod-a/2.0.0'
-          package.json:
-            id: mod-b@2.0.0
+          mod-b:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/2.0.0/mod-a'
+            package.json:
+              id: mod-b@2.0.0
       mod-g:
         3.0.11:
-          package.json:
-            id: mod-g@3.0.11
-  mod-a: '-> .f/_/mod-a/0.3.2'
-  mod-b: '-> .f/_/mod-b/2.0.0'
-  mod-g: '-> .f/_/mod-g/3.0.11'
+          mod-g:
+            package.json:
+              id: mod-g@3.0.11
+  mod-a: '-> .f/_/mod-a/0.3.2/mod-a'
+  mod-b: '-> .f/_/mod-b/2.0.0/mod-b'
+  mod-g: '-> .f/_/mod-g/3.0.11/mod-g'

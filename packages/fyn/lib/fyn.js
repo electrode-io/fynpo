@@ -39,6 +39,9 @@ class Fyn {
     // TODO: transfer argv options
     if (options.production) this._rcData.all.production = options.production;
     this._installConfig = { time: 0 };
+    // set this env for more learning and research on ensuring
+    // package dir name matches package name.
+    this._noPkgDirMatchName = Boolean(process.env.FYN_NO_PKG_DIR_MATCH_NAME);
   }
 
   async readLockFiles() {
@@ -384,8 +387,28 @@ class Fyn {
     return await this._distFetcher.wait();
   }
 
+  /**
+   * Get the directory where a package should be installed/extracted into
+   *
+   * @param {*} name - name of the package
+   * @param {*} version - version of the package
+   *
+   * @returns {string} dir for package
+   */
   getInstalledPkgDir(name = "", version = "") {
-    return Path.join(this.getOutputDir(), FV_DIR, "_", name, version);
+    // it's important that each package is directly extracted to a directory
+    // that has name exactly the same as the package because there are code
+    // and tools that depend on that.
+    // for example: webpack module de-duping seems to depend on that, otherwise
+    // the bundle bloats.
+    if (version) {
+      if (this._noPkgDirMatchName) {
+        return Path.join(this.getOutputDir(), FV_DIR, "_", name, version);
+      } else {
+        return Path.join(this.getOutputDir(), FV_DIR, "_", name, version, name);
+      }
+    }
+    return Path.join(this.getOutputDir(), FV_DIR, "_", name);
   }
 
   getFvDir(x) {
@@ -410,7 +433,7 @@ class Fyn {
    */
   async loadFvVersionsVN() {
     const fvVersions = {};
-    const fvDir = this.getInstalledPkgDir();
+    const fvDir = this.getFvDir();
     try {
       for (const version of await Fs.readdir(fvDir)) {
         if (version === "node_modules") {
@@ -445,26 +468,27 @@ class Fyn {
    */
   async loadFvVersions() {
     const fvVersions = {};
-    const fvDir = this.getInstalledPkgDir();
+    // get dir where all packages are extracted to
+    const pkgStoreDir = this.getFvDir("_");
     try {
-      for (const pkgName of await Fs.readdir(fvDir)) {
+      for (const pkgName of await Fs.readdir(pkgStoreDir)) {
         if (pkgName === "node_modules" || pkgName.startsWith(".")) {
           continue; //
         }
-        const nameDir = Path.join(fvDir, pkgName);
 
         const readVersionsOfPkg = async name => {
           if (!fvVersions[name]) {
             fvVersions[name] = [];
           }
 
-          for (const version of await Fs.readdir(Path.join(fvDir, name))) {
+          for (const version of await Fs.readdir(Path.join(pkgStoreDir, name))) {
             fvVersions[name].push(version);
           }
         };
 
         if (pkgName.startsWith("@")) {
-          for (const name2 of await Fs.readdir(nameDir)) {
+          // handle scoped package names
+          for (const name2 of await Fs.readdir(Path.join(pkgStoreDir, pkgName))) {
             const pkgName2 = `${pkgName}/${name2}`;
             await readVersionsOfPkg(pkgName2);
           }

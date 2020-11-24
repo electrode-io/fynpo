@@ -472,10 +472,10 @@ class PkgInstaller {
   }
 
   async _cleanOrphanedFv() {
-    for (const k in this._fvVersions) {
-      const versions = this._fvVersions[k];
+    for (const pkgName in this._fvVersions) {
+      const versions = this._fvVersions[pkgName];
       if (versions !== null) {
-        await this._cleanUpVersions(k);
+        await this._cleanUpVersions(pkgName);
       }
     }
   }
@@ -575,50 +575,54 @@ class PkgInstaller {
 
     if (!versions || versions.length < 1) return;
 
-    let removed = 0;
+    const removed = [];
 
     for (const ver of versions) {
       if (!pkg || !pkg[ver]) {
         const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, ver);
 
-        const stat = await Fs.lstat(pkgInstalledPath);
+        logger.verbose("removing extraneous version", ver, "of", pkgName, pkgInstalledPath);
+        await Fs.$.rimraf(pkgInstalledPath);
+        removed.push(pkgInstalledPath);
+      }
+    }
 
-        if (stat.isSymbolicLink()) {
-          logger.debug("removing symlink extraneous version", ver, "of", pkgName);
-          await Fs.$.rimraf(this._fyn.getFvDir(Path.join(ver, fynTil.makeFynLinkFName(pkgName))));
-
-          try {
-            await Fs.unlink(pkgInstalledPath);
-            removed++;
-          } catch (err) {
-            logger.error(`fail to unlink symlink version ${pkgInstalledPath}`, err);
-          }
-        } else if (stat.isDirectory()) {
-          logger.verbose("removing extraneous version", ver, "of", pkgName, pkgInstalledPath);
-          await Fs.$.rimraf(pkgInstalledPath);
-          removed++;
+    for (const pkgDir of removed) {
+      let dir = pkgDir;
+      try {
+        // first remove the scope dir
+        if (pkgName.startsWith("@")) {
+          dir = Path.dirname(dir);
+          await Fs.rmdir(dir);
+        }
+        // next remove the version dir
+        dir = Path.dirname(dir);
+        await Fs.rmdir(dir);
+      } catch (err) {
+        if (err.code !== "ENOTEMPTY") {
+          logger.error(`fail to remove dir for package ${pkgName}`, err, dir);
         }
       }
     }
 
-    if (versions.length === removed) {
+    // in case the package container directory has no versions left, it'd be an empty dir => remove it.
+    if (versions.length === removed.length) {
+      let dir = this._fyn.getInstalledPkgDir(pkgName);
       try {
-        // in case the directory has no versions left, it'd be an empty dir => remove it.
-        const pkgDir = this._fyn.getInstalledPkgDir(pkgName);
-        await Fs.rmdir(pkgDir);
-
-        // a scoped package, attempt to remove the scope dir also
+        await Fs.rmdir(dir);
         if (pkgName.startsWith("@")) {
-          await Fs.rmdir(Path.dirname(pkgDir));
+          dir = Path.dirname(dir);
+          await Fs.rmdir(dir);
         }
       } catch (err) {
         if (err.code !== "ENOTEMPTY") {
-          logger.error(`fail to remove dir for package ${pkgName}`, err);
+          logger.error(`fail to remove container dir for package ${pkgName}`, err, dir);
         }
       }
     }
 
     // cleanup applied, no longer need the data for this package
+
     this._fvVersions[pkgName] = null;
   }
 

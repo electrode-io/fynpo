@@ -79,10 +79,6 @@ module.exports = {
     process.exit(err ? 1 : 0);
   },
 
-  makeFynLinkFName: pkgName => {
-    return `__fyn_link_${pkgName}__.json`.replace(/[@\/]/g, "-");
-  },
-
   readJson(file) {
     return Fs.readFile(file, "utf8").then(JSON.parse);
   },

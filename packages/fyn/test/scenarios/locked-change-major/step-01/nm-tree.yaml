@@ -4,46 +4,55 @@ node_modules:
     _:
       mod-a:
         0.2.0:
-          package.json:
-            id: mod-a@0.2.0
+          mod-a:
+            package.json:
+              id: mod-a@0.2.0
         0.3.2:
-          package.json:
-            id: mod-a@0.3.2
+          mod-a:
+            package.json:
+              id: mod-a@0.3.2
         0.4.5:
-          package.json:
-            id: mod-a@0.4.5
+          mod-a:
+            package.json:
+              id: mod-a@0.4.5
         1.1.2:
-          package.json:
-            id: mod-a@1.1.2
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
       mod-b:
         1.0.0:
-          node_modules:
-            mod-a: '-> ../../../mod-a/0.2.0'
-          package.json:
-            id: mod-b@1.0.0
+          mod-b:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/0.2.0/mod-a'
+            package.json:
+              id: mod-b@1.0.0
       mod-d:
         3.0.1:
-          node_modules:
-            mod-a: '-> ../../../mod-a/1.1.2'
-          package.json:
-            id: mod-d@3.0.1
+          mod-d:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.1.2/mod-a'
+            package.json:
+              id: mod-d@3.0.1
       mod-e:
         2.1.1:
-          node_modules:
-            mod-a: '-> ../../../mod-a/0.4.5'
-          package.json:
-            id: mod-e@2.1.1
+          mod-e:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/0.4.5/mod-a'
+            package.json:
+              id: mod-e@2.1.1
       mod-f:
         2.1.1:
-          package.json:
-            id: mod-f@2.1.1
+          mod-f:
+            package.json:
+              id: mod-f@2.1.1
       mod-g:
         3.0.11:
-          package.json:
-            id: mod-g@3.0.11
-  mod-a: '-> .f/_/mod-a/0.3.2'
-  mod-b: '-> .f/_/mod-b/1.0.0'
-  mod-d: '-> .f/_/mod-d/3.0.1'
-  mod-e: '-> .f/_/mod-e/2.1.1'
-  mod-f: '-> .f/_/mod-f/2.1.1'
-  mod-g: '-> .f/_/mod-g/3.0.11'
+          mod-g:
+            package.json:
+              id: mod-g@3.0.11
+  mod-a: '-> .f/_/mod-a/0.3.2/mod-a'
+  mod-b: '-> .f/_/mod-b/1.0.0/mod-b'
+  mod-d: '-> .f/_/mod-d/3.0.1/mod-d'
+  mod-e: '-> .f/_/mod-e/2.1.1/mod-e'
+  mod-f: '-> .f/_/mod-f/2.1.1/mod-f'
+  mod-g: '-> .f/_/mod-g/3.0.11/mod-g'

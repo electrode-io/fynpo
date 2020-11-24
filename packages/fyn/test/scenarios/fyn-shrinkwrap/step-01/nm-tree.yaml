@@ -4,17 +4,20 @@ node_modules:
     _:
       mod-a:
         1.0.1:
-          package.json:
-            id: mod-a@1.0.1
+          mod-a:
+            package.json:
+              id: mod-a@1.0.1
         1.1.2:
-          package.json:
-            id: mod-a@1.1.2
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
       mod-h:
         2.0.0:
-          node_modules:
-            mod-a: '-> ../../../mod-a/1.0.1'
-          npm-shrinkwrap.json: file
-          package.json:
-            id: mod-h@2.0.0
-  mod-a: '-> .f/_/mod-a/1.1.2'
-  mod-h: '-> .f/_/mod-h/2.0.0'
+          mod-h:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.0.1/mod-a'
+            npm-shrinkwrap.json: file
+            package.json:
+              id: mod-h@2.0.0
+  mod-a: '-> .f/_/mod-a/1.1.2/mod-a'
+  mod-h: '-> .f/_/mod-h/2.0.0/mod-h'
