@@ -129,12 +129,27 @@ const debug = false;
                 cwd,
                 baseArgs: BASE_ARGS,
                 pkgJson,
-                pkgJsonFile
+                pkgJsonFile,
+                debug
               });
             }
 
-            const args = []
-              .concat(
+            let args;
+
+            if (stepAction.getArgs) {
+              args = stepAction.getArgs({
+                registry,
+                fynDir,
+                cwd,
+                baseArgs: []
+                  .concat(BASE_ARGS)
+                  .concat(`--sl`, debugLogFile, (debug && ["-q", "debug"]) || []),
+                pkgJson,
+                pkgJsonFile,
+                debug
+              });
+            } else {
+              args = [].concat(
                 `--reg=${registry}`,
                 BASE_ARGS,
                 stepAction.buildLocal ? "--build-local" : "--no-build-local",
@@ -145,10 +160,10 @@ const debug = false;
                 (debug && ["-q", "debug"]) || [],
                 [`--cwd=${cwd}`, "install"],
                 stepAction.forceInstall === false ? "" : "--fi"
-              )
-              .filter(x => x);
+              );
+            }
 
-            return fynRun(args).catch(err => {
+            return fynRun(args.filter(x => x)).catch(err => {
               if (err.message !== "exit 0") failError = err;
             });
           })
@@ -214,7 +229,7 @@ const debug = false;
     ? {
         // "auto-deep-resolve": {}
         // "bin-linker": {}
-        "build-local": {}
+        // "build-local": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
@@ -227,6 +242,7 @@ const debug = false;
         // "platform-check": {}
         // "platform-check-good": {}
         // "remote-url-semver": {}
+        "stat-pkg": {}
       }
     : {};
 

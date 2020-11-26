@@ -312,13 +312,6 @@ const commands = {
     args: "<string packages..>",
     exec: argv => {
       return new FynCli(pickOptions(argv)).stat(argv);
-    },
-    options: {
-      follow: {
-        desc: "automatically stat first [n] dependents up to top",
-        type: "number",
-        default: 0
-      }
     }
   },
   test: {
