@@ -432,7 +432,9 @@ class FynCli {
   }
 
   stat(argv) {
-    return showStat(this.fyn, argv.args.packages, argv.opts.follow);
+    return showStat(this.fyn, argv.args.packages).finally(() => {
+      return this._rc.saveLogs && this.saveLogs(this._rc.saveLogs);
+    });
   }
 
   async run(argv) {

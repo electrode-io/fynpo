@@ -16,8 +16,16 @@ const formatPkgId = pkg => {
   if (pkg.name === PACKAGE_JSON) {
     return chalk.cyan(pkg.name);
   }
-  const top = pkg.promoted ? "" : "(fv)";
+  const top = pkg.promoted ? "" : "⬇";
   return `${logFormat.pkgId(pkg)}${top}`;
+};
+
+const getPkgId = pkg => {
+  if (pkg.name === PACKAGE_JSON) {
+    return pkg.name;
+  }
+
+  return `${pkg.name}@${pkg.version}`;
 };
 
 class ShowStat {
@@ -43,7 +51,7 @@ class ShowStat {
       .value();
   }
 
-  async findDependents(pkgs, ask) {
+  findDependents(pkgs, ask) {
     const dependents = [];
     if (!this._fynRes) {
       const depLinker = new PkgDepLinker({ fyn: this._fyn });
@@ -76,64 +84,190 @@ class ShowStat {
     return dependents;
   }
 
-  async showPkgStat(pkgs, ask) {
-    const dependents = (await this.findDependents(pkgs, ask)).sort((a, b) => {
+  showPkgDependents(pkgs, ask) {
+    const dependents = this.findDependents(pkgs, ask).sort((a, b) => {
       if (a.name === b.name) {
         return semverUtil.simpleCompare(a.version, b.version);
       }
       return a.name > b.name ? 1 : -1;
     });
 
-    logger.info(
-      logFormat.pkgId(ask),
-      "has these dependents",
-      dependents.map(formatPkgId).join(", ")
-    );
+    if (dependents.length > 0) {
+      logger
+        .prefix("")
+        .info(
+          "=>",
+          logFormat.pkgId(ask),
+          "has these dependents",
+          dependents.map(formatPkgId).join(" ")
+        );
+    }
+
     return dependents;
   }
 
-  _show(pkgIds, follow) {
+  _show(pkgIds) {
     const data = this._fyn._data;
+    this._dependentsCache = {};
+    let groups = {};
+
     return Promise.each(pkgIds, pkgId => {
       const askPkgs = this.findPkgsById(data.pkgs, pkgId).sort((a, b) =>
         semverUtil.simpleCompare(a.version, b.version)
       );
 
       if (askPkgs.length === 0) {
-        logger.info(chalk.yellow(pkgId), "is not installed");
+        logger.prefix("").info(chalk.yellow(pkgId), "is not installed");
       } else {
-        logger.info(
-          chalk.green.bgRed(pkgId),
-          "matched these installed versions",
-          askPkgs.map(formatPkgId).join(", ")
-        );
+        logger
+          .prefix("")
+          .info(
+            chalk.green.bgRed(pkgId),
+            "matched these installed versions",
+            askPkgs.map(formatPkgId).join(" ")
+          );
 
-        return Promise.map(askPkgs, id => this.showPkgStat(data.pkgs, id), { concurrency: 1 }).then(
-          askDeps => {
-            if (follow > 0) {
-              return Promise.each(askDeps, deps => {
-                const followIds = deps
-                  .filter(x => x.name !== PACKAGE_JSON)
-                  .slice(0, follow)
-                  .map(x => x.name);
+        return Promise.each(askPkgs, ask => {
+          const specificId = getPkgId(ask);
+          const deps = this.showPkgDependents(data.pkgs, ask);
 
-                return this._show(followIds, follow);
-              });
+          this._allPaths = [];
+
+          return this._findDepPaths(deps.map(getPkgId), [specificId]).then(() => {
+            const newGroups = _.groupBy(this._allPaths, x => x[x.length - 1]);
+            groups = { ...groups, ...newGroups };
+            const paths = groups[specificId];
+            if (paths && paths.length > 0) {
+              this._displayPaths(specificId, paths);
             }
-          }
-        );
+          });
+        });
       }
+    }).then(() => {
+      logger.info(chalk.green(`stat completed for ${pkgIds.join(" ")}`));
     });
   }
 
-  showStat(pkgIds, follow) {
+  _findDepPaths(pkgIds, output = []) {
+    const data = this._fyn._data;
+
+    return Promise.each(pkgIds, pkgId => {
+      const askPkgs = this.findPkgsById(data.pkgs, pkgId).sort((a, b) =>
+        semverUtil.simpleCompare(a.version, b.version)
+      );
+
+      if (askPkgs.length < 1) {
+        this._allPaths.push((pkgId !== PACKAGE_JSON ? [pkgId] : []).concat(output));
+        return undefined;
+      }
+
+      return Promise.map(
+        askPkgs,
+        pkg => {
+          const pkgId = getPkgId(pkg);
+
+          if (output.indexOf(pkgId) >= 0) {
+            logger.error("stat detected circular dependency:", pkgId, output.join(" "));
+            return;
+          }
+
+          let dependents = this._dependentsCache[pkgId];
+          if (!dependents) {
+            this._dependentsCache[pkgId] = dependents = this.findDependents(data.pkgs, pkg).sort(
+              (a, b) => {
+                if (a.name === b.name) {
+                  return semverUtil.simpleCompare(a.version, b.version);
+                }
+                return a.name > b.name ? 1 : -1;
+              }
+            );
+          }
+
+          const followIds = dependents
+            .filter(x => x.name !== PACKAGE_JSON)
+            .map(x => `${x.name}@${x.version.replace("-fynlocal_h", "")}`);
+
+          if (dependents.length > 0) {
+            const newOutput = [pkgId].concat(output);
+            if (followIds.length > 0) {
+              return this._findDepPaths(followIds, newOutput);
+            } else if (output) {
+              this._allPaths.push(newOutput);
+            }
+          } else {
+            logger.prefix("").info("no dependents for", pkgId);
+          }
+        },
+        { concurrency: 1 }
+      );
+    });
+  }
+
+  _displayPaths(pkgId, paths) {
+    /**
+     * A > B > C > x
+     * A > B > D > x
+     * A > E > B > C > x
+     * // we actually don't want to show last path because B > C > x already occurred
+     */
+
+    const cmpDepPath = (a, b) => {
+      for (let ixA = 0; ixA < a.length; ixA++) {
+        if (b.length <= ixA) {
+          return 1;
+        }
+        const aId = a[ixA];
+        const bId = b[ixA];
+        if (aId !== bId) {
+          return aId > bId ? 1 : -1;
+        }
+      }
+      return 0;
+    };
+
+    paths = paths.sort((a, b) => a.length - b.length);
+    let minDetails = 5;
+
+    let briefPaths = paths;
+    while (briefPaths.length > 10 && minDetails > 0) {
+      const occurLevels = {};
+      briefPaths = paths.filter(dp => {
+        const last = dp.length - 1;
+        for (let ix = 0; ix < last; ix++) {
+          const pkgId = dp[ix];
+          const occur = occurLevels[pkgId];
+          if (occur && occur.level < ix && occur.leaf === dp[last] && dp.length - ix > minDetails) {
+            return false;
+          }
+          occurLevels[pkgId] = {
+            level: ix,
+            leaf: dp[last]
+          };
+        }
+        return true;
+      });
+
+      minDetails--;
+    }
+
+    briefPaths = briefPaths.sort(cmpDepPath);
+
+    const msg =
+      paths.length === briefPaths.length
+        ? `these dependency paths:`
+        : `${paths.length} dependency paths, showing the ${briefPaths.length} most significant ones below:`;
+    logger.prefix("").info(`=> ${pkgId} has ${msg}`);
+    logger.prefix("").info(briefPaths.map(x => `  > ` + x.join(" > ")).join("\n"));
+  }
+
+  showStat(pkgIds) {
     const spinner = CliLogger.spinners[1];
     logger.addItem({ name: FETCH_META, color: "green", spinner });
     logger.updateItem(FETCH_META, "resolving dependencies...");
     return Promise.resolve(this._fyn.resolveDependencies())
       .then(() => {
         logger.removeItem(FETCH_META);
-        return this._show(pkgIds, follow);
+        return this._show(pkgIds);
       })
       .catch(err => {
         logger.error(err);
@@ -144,6 +278,6 @@ class ShowStat {
   }
 }
 
-module.exports = (fyn, pkgIds, follow) => {
-  new ShowStat({ fyn }).showStat(pkgIds, follow);
+module.exports = (fyn, pkgIds) => {
+  return new ShowStat({ fyn }).showStat(pkgIds);
 };

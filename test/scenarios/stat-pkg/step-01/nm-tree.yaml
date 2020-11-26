@@ -1,0 +1,73 @@
+node_modules:
+  .f:
+    .fyn.json: file
+    _:
+      mod-a:
+        0.2.0:
+          mod-a:
+            package.json:
+              id: mod-a@0.2.0
+        0.4.5:
+          mod-a:
+            package.json:
+              id: mod-a@0.4.5
+        1.0.1:
+          mod-a:
+            package.json:
+              id: mod-a@1.0.1
+        1.1.0:
+          mod-a:
+            package.json:
+              id: mod-a@1.1.0
+        1.1.2:
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
+      mod-b:
+        1.0.0:
+          mod-b:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/0.2.0/mod-a'
+            package.json:
+              id: mod-b@1.0.0
+      mod-c:
+        3.0.0:
+          mod-c:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.1.0/mod-a'
+            package.json:
+              id: mod-c@3.0.0
+      mod-d:
+        3.0.1:
+          mod-d:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.0.1/mod-a'
+            package.json:
+              id: mod-d@3.0.1
+      mod-e:
+        2.1.1:
+          mod-e:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/0.4.5/mod-a'
+            package.json:
+              id: mod-e@2.1.1
+      mod-f:
+        2.1.1:
+          mod-f:
+            package.json:
+              id: mod-f@2.1.1
+      mod-ns:
+        1.0.0:
+          mod-ns:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.0.1/mod-a'
+            npm-shrinkwrap.json: file
+            package.json:
+              id: mod-ns@1.0.0
+  mod-a: '-> .f/_/mod-a/1.1.2/mod-a'
+  mod-b: '-> .f/_/mod-b/1.0.0/mod-b'
+  mod-c: '-> .f/_/mod-c/3.0.0/mod-c'
+  mod-d: '-> .f/_/mod-d/3.0.1/mod-d'
+  mod-e: '-> .f/_/mod-e/2.1.1/mod-e'
+  mod-f: '-> .f/_/mod-f/2.1.1/mod-f'
+  mod-ns: '-> .f/_/mod-ns/1.0.0/mod-ns'
