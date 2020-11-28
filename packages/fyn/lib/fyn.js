@@ -73,6 +73,38 @@ class Fyn {
     }
   }
 
+  /**
+   * Search from cwd and up for lerna.json:fynpo or fynpo.json
+   *
+   * @returns {*} fynpo config and dir it was found
+   */
+  async _searchForFynpo() {
+    let dir = this._cwd;
+    let prevDir = dir;
+    let fynpoConfig;
+    let count = 0;
+
+    do {
+      try {
+        fynpoConfig = JSON.parse(await Fs.readFile(Path.join(dir, "fynpo.json")));
+        break;
+      } catch (e) {}
+
+      try {
+        const lerna = JSON.parse(await Fs.readFile(Path.join(dir, "lerna.json")));
+        fynpoConfig = lerna.fynpo;
+        if (fynpoConfig) {
+          break;
+        }
+      } catch (e) {}
+
+      prevDir = dir;
+      dir = Path.dirname(dir);
+    } while (++count < 50 && dir !== prevDir);
+
+    return { fynpoConfig, dir };
+  }
+
   async _initCentralStore() {
     const options = this._options;
     let centralDir;
@@ -88,7 +120,16 @@ class Fyn {
       centralDir = Path.join(this.fynDir, "_central-storage");
       logger.debug(`Enabling central store for flag using dir ${centralDir}`);
     } else {
-      return (this._central = false);
+      const { fynpoConfig, dir } = await this._searchForFynpo();
+      if (!fynpoConfig) {
+        return (this._central = false);
+      } else {
+        centralDir = fynpoConfig.centralDir;
+        if (!this.centralDir) {
+          centralDir = Path.join(dir, ".fynpo", "_store");
+        }
+        logger.info(`Detected a fynpo mono-repo - enabling central dir ${centralDir}`);
+      }
     }
 
     return (this._central = new FynCentral({ centralDir }));
