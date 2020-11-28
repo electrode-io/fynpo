@@ -185,5 +185,7 @@ module.exports = {
     }
 
     return true;
-  }
+  },
+
+  posixify: Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/")
 };
