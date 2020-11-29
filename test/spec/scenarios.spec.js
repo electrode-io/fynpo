@@ -67,7 +67,8 @@ const debug = false;
     const files = Fs.readdirSync(cwd).filter(x => x.startsWith("step-"));
 
     const cleanLock = lock => {
-      _.each(lock, pkg => {
+      _.each(lock, (pkg, name) => {
+        if (name.startsWith("$")) return;
         _.each(pkg, (vpkg, ver) => {
           if (ver.startsWith("_")) return;
           vpkg.$ = "test";
@@ -234,6 +235,7 @@ const debug = false;
         // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
+        // "locked-change-indirect": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
@@ -242,7 +244,7 @@ const debug = false;
         // "platform-check": {}
         // "platform-check-good": {}
         // "remote-url-semver": {}
-        "stat-pkg": {}
+        // "stat-pkg": {}
       }
     : {};
 

@@ -1,3 +1,7 @@
+"$pkg":
+  "dep":
+    "e1": "./e1"
+    "mod-h": "^1.0.0"
 e1:
   _latest: 1.0.0-fynlocal_h
   _:

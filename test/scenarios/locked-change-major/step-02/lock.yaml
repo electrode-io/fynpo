@@ -1,31 +1,35 @@
+"$pkg":
+  "dep":
+    "mod-a": "^0.3.0"
+    "mod-b": "^2.0.0"
 mod-a:
- _latest: 2.0.0
- _:
-  ^0.3.0: 0.3.2
-  ^2.0.0: 2.0.0
- 2.0.0:
-  $: sha1-nHVYBin65fhw+wwca7MeEkklAfc=
-  _: 'http://localhost:62754/mod-a/-/mod-a-2.0.0.tgz'
- 0.3.2:
-  top: 1
-  $: sha1-Q930PUFp8TdbWK49tGxVd9u8uYs=
-  _: 'http://localhost:62754/mod-a/-/mod-a-0.3.2.tgz'
-  dependencies:
-   mod-g: ^3.0.0
+  _latest: 2.0.0
+  _:
+    ^0.3.0: 0.3.2
+    ^2.0.0: 2.0.0
+  2.0.0:
+    $: sha1-nHVYBin65fhw+wwca7MeEkklAfc=
+    _: "http://localhost:62754/mod-a/-/mod-a-2.0.0.tgz"
+  0.3.2:
+    top: 1
+    $: sha1-Q930PUFp8TdbWK49tGxVd9u8uYs=
+    _: "http://localhost:62754/mod-a/-/mod-a-0.3.2.tgz"
+    dependencies:
+      mod-g: ^3.0.0
 mod-b:
- _latest: 1.0.0
- _:
-  ^2.0.0: 2.0.0
- 2.0.0:
-  top: 1
-  $: sha1-Mj4Zoc/nmhG1VxLpjxpd7oIPQiY=
-  _: 'http://localhost:62754/mod-b/-/mod-b-2.0.0.tgz'
-  dependencies:
-   mod-a: ^2.0.0
+  _latest: 1.0.0
+  _:
+    ^2.0.0: 2.0.0
+  2.0.0:
+    top: 1
+    $: sha1-Mj4Zoc/nmhG1VxLpjxpd7oIPQiY=
+    _: "http://localhost:62754/mod-b/-/mod-b-2.0.0.tgz"
+    dependencies:
+      mod-a: ^2.0.0
 mod-g:
- _latest: 3.0.11
- _:
-  ^3.0.0: 3.0.11
- 3.0.11:
-  $: sha1-z5VvulYGMO/e58GbzDaYmKoVmbI=
-  _: 'http://localhost:62754/mod-g/-/mod-g-3.0.11.tgz'
+  _latest: 3.0.11
+  _:
+    ^3.0.0: 3.0.11
+  3.0.11:
+    $: sha1-z5VvulYGMO/e58GbzDaYmKoVmbI=
+    _: "http://localhost:62754/mod-g/-/mod-g-3.0.11.tgz"
