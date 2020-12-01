@@ -46,7 +46,7 @@ async function checkPkgNeedInstall(dir, checkCtime = 0) {
     const stats = await scanFileStats(dir);
     const ctime = stats[latestMtimeTag];
 
-    return { install: ctime > checkCtime, ctime, checkCtime, pkgJson };
+    return { install: ctime > checkCtime, ctime, checkCtime, pkgJson, stats };
   } catch (error) {
     return { install: false, error };
   }
