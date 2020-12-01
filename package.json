@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A fast node package manager for better productivity and efficiency",
   "preferGlobal": true,
   "main": "./bin/fyn.js",
