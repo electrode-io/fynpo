@@ -10,8 +10,8 @@ versions:
     dependencies:
       mod-a: ^3.0.0
     dist:
-      shasum: ""
-      tarball: "http://blahblah.qwerqreqwerqwerqwerqwer.com:9992/mod-drop-tgz/-/mod-drop-tgz-1.0.1.tgz"
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-drop-tgz/-/mod-drop-tgz-1.0.1.tgz'
 dist-tags:
   latest: 1.0.1
 _rev: 9-f5a60b1743717bf9
