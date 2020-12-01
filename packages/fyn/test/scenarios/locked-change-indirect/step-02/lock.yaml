@@ -16,7 +16,7 @@ mod-i:
     ^1.0.0: 1.0.0
   1.0.0:
     top: 1
-    $: sha1-iKlr2sUe2dJpVv6MG4KZD5huLUM=
+    $: sha512-yyR5B9PHiy+xmxLOWjOSkIKuakxWNlRROqGhrOWgEiIuZ6wHKlTVXrAkJV1w8URtmOVjh0r0w1jHgiPDgDEfwg==
     _: "http://localhost:50652/mod-i/-/mod-i-1.0.0.tgz"
     dependencies:
       mod-g: ^3.0.0
