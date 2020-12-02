@@ -66,9 +66,10 @@ class FynCli {
   }
 
   async fail(msg, err) {
-    const dbgLog = "fyn-debug.log";
+    const dbgLog = this._rc.saveLogs || `fyn-debug-${process.pid}-${Date.now()}.log`;
     logger.freezeItems(true);
     logger.error(msg, `CWD ${this.fyn.cwd}`);
+    logger.error("process.argv", process.argv);
     logger.error(msg, "Please check for any errors that occur above.");
     const lessCmd = chalk.magenta(`less -R ${dbgLog}`);
     logger.error(
@@ -332,11 +333,12 @@ class FynCli {
    */
   install() {
     let failure;
+    let installLocked;
     const start = Date.now();
     return Promise.try(() => this.fyn._initializePkg())
       .then(async () => {
         if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
-          const stats = await scanFileStats(this.fyn._cwd);
+          const stats = await scanFileStats(this.fyn.cwd);
           const ctime = stats[latestMtimeTag];
           logger.debug("time check from install config:", this.fyn._installConfig.time, ctime);
           logger.debug("stats", JSON.stringify(stats, null, 2));
@@ -347,6 +349,7 @@ class FynCli {
             throw new Error("No Change");
           }
         }
+        installLocked = await this.fyn.createInstallLock();
         await this.fyn.readLockFiles();
         await this.fyn._startInstall();
         const pkg = this.fyn._pkg;
@@ -354,10 +357,10 @@ class FynCli {
         if (preinstall) {
           logger.addItem({ name: INSTALL_PACKAGE, color: "green", spinner });
           return runNpmScript({
-            appDir: this.fyn._cwd,
+            appDir: this.fyn.cwd,
             scripts: ["preinstall"],
             fyn: this.fyn,
-            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn._cwd }
+            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn.cwd }
           }).then(() => {
             logger.removeItem(INSTALL_PACKAGE);
           });
@@ -395,14 +398,14 @@ class FynCli {
           .filter(x => x && Boolean(pkgScripts[x]));
         if (scripts.length > 0) {
           return runNpmScript({
-            appDir: this.fyn._cwd,
+            appDir: this.fyn.cwd,
             scripts,
             fyn: this.fyn,
-            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn._cwd }
+            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn.cwd }
           });
         }
       })
-      .then(() => {
+      .then(async () => {
         logger.removeItem(INSTALL_PACKAGE);
         const end = Date.now();
 
@@ -420,10 +423,16 @@ class FynCli {
         }
       })
       .finally(async () => {
+        if (installLocked === true) {
+          await this.fyn.removeInstallLock();
+        }
+
         if (failure) {
           await this.fail(chalk.red("install failed:"), failure);
           return failure;
-        } else if (this._rc.saveLogs) {
+        }
+
+        if (this._rc.saveLogs) {
           await this.saveLogs(this._rc.saveLogs);
         }
 

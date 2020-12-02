@@ -1,6 +1,7 @@
 "use strict";
 
 const Path = require("path");
+const util = require("util");
 const assert = require("assert");
 const semver = require("semver");
 const _ = require("lodash");
@@ -17,6 +18,9 @@ const fyntil = require("./util/fyntil");
 const FynCentral = require("./fyn-central");
 const xaa = require("./util/xaa");
 const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
+const lockfile = require("lockfile");
+const createLock = util.promisify(lockfile.lock);
+const unlock = util.promisify(lockfile.unlock);
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
 const { FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = require("./constants");
@@ -426,6 +430,39 @@ class Fyn {
     await this._initialize();
     this._distFetcher.start(data || this._data || this._depResolver._data);
     return await this._distFetcher.wait();
+  }
+
+  /**
+   * Create a lock in FV dir during install, to prevent multiple install
+   * being run at the same time.
+   *
+   * This would just cause second installs to fail instead of causing random
+   * weird issues.
+   *
+   * - Rare but could occur if fyn is used for mono-repo and user has script
+   *   that run concurrent installs
+   *
+   * @returns {boolean} if lock was acquired
+   */
+  async createInstallLock() {
+    await this.createDir(this.getFvDir());
+    const fname = this.getFvDir(".installing.lock");
+    await createLock(fname, {
+      wait: 3000,
+      // consider 30 minutes lockfile stale
+      stale: 30 * 60 * 1000
+    });
+    return true;
+  }
+
+  /**
+   * Remove lock during install
+   *
+   * @returns {*} none
+   */
+  async removeInstallLock() {
+    const fname = this.getFvDir(".installing.lock");
+    return await unlock(fname);
   }
 
   /**
