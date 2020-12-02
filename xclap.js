@@ -70,5 +70,23 @@ xclap.load("fyn", {
     ]
   },
 
+  "link-npm-g": {
+    desc: "Link 'npm i -g' version to source copy - for debugging",
+    task: async () => {
+      const fyn = await which("fyn");
+      const realPath = await Fs.realpath(fyn);
+      const bundlePath = Path.join(Path.dirname(realPath), "bundle.js");
+      const main = Path.join(__dirname, "cli/main.js");
+      await Fs.unlink(bundlePath);
+      await Fs.writeFile(
+        bundlePath,
+        `
+"use strict";
+module.exports = "${main}";
+`
+      );
+    }
+  },
+
   "create-tgz": "node test/fixtures/mock-npm/create-tgz"
 });
