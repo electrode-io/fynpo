@@ -344,7 +344,9 @@ class FynCli {
           logger.debug("stats", JSON.stringify(stats, null, 2));
           if (
             ctime < this.fyn._installConfig.time &&
-            !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall())
+            !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall()) &&
+            // if fyn-lock.yaml has been removed, then run install also
+            this.fyn.checkFynLockExist()
           ) {
             throw new Error("No Change");
           }
