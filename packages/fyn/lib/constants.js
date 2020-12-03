@@ -15,5 +15,6 @@ module.exports = {
   // need to run install with central store pointing to the original dir.
   //
   FYN_INSTALL_CONFIG_FILE: ".fyn.json",
-  FV_DIR: ".f"
+  FV_DIR: ".f",
+  FYN_LOCK_FILE: "fyn-lock.yaml"
 };

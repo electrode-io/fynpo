@@ -314,6 +314,10 @@ class PkgDepLocker {
     } else {
       this._$allPkgDiff = {};
     }
+
+    if (!_.isEmpty(this._$allPkgDiff)) {
+      logger.info("your dependencies changed for these packages:", this._$allPkgDiff);
+    }
   }
 
   /**
@@ -329,7 +333,10 @@ class PkgDepLocker {
     if (this._$allPkgDiff[item.name]) {
       // dep item changed in package.json
       // TODO: match semver instead of just deleting the whole item
-      delete this._lockData[item.name];
+      if (this._lockData[item.name]) {
+        delete this._lockData[item.name];
+        logger.info("removing version lock info for", item.name);
+      }
     }
   }
 
