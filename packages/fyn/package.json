@@ -1,14 +1,14 @@
 {
   "name": "fyn",
-  "version": "0.4.4-1",
+  "version": "0.4.4",
   "description": "A fast node package manager for better productivity and efficiency",
   "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
-    "test": "clap -x create-tgz electrode/test",
-    "coverage": "clap -x create-tgz check",
-    "ci": "clap -n -x bundle coverage && cat coverage/lcov.info | coveralls",
-    "prepublishOnly": "echo Do not run npm publish directly.  Run clap release. && exit 1"
+    "test": "xrun xarc/test-only",
+    "coverage": "xrun xarc/test-cov",
+    "ci": "xrun -x bundle coverage && cat coverage/lcov.info | coveralls",
+    "prepublishOnly": "echo Do not run npm publish directly.  Run 'xrun release'. && exit 1"
   },
   "bin": {
     "fyn": "./bin/fyn.js",
@@ -16,7 +16,8 @@
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    "lib"
   ],
   "keywords": [
     "node",
@@ -82,12 +83,21 @@
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/sinon": "^9.0.0",
+    "@types/sinon-chai": "^3.2.4",
+    "@xarc/module-dev": "^2.2.5",
     "babel-loader": "^8.0.4",
+    "chai": "^4.2.0",
     "coveralls": "^3.0.3",
-    "electrode-archetype-njs-module-dev": "^3.0.0",
     "electrode-server": "^3.0.3",
+    "mocha": "^7.1.0",
     "mock-require": "^2.0.2",
+    "nyc": "^15.0.0",
     "prettier": "^1.19.1",
+    "sinon": "^7.2.6",
+    "sinon-chai": "^3.3.0",
     "webpack": "^4.44.2",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^4.2.0",
@@ -102,21 +112,31 @@
       "text-summary"
     ],
     "exclude": [
-      "coverage",
+      "*/pkg-bin-linker-win32.js",
       "*clap.js",
-      "gulpfile.js",
+      "*clap.ts",
+      "bin",
+      "cli/config",
+      "coverage",
       "dist",
+      "docs",
+      "es6-promisify",
+      "gulpfile.js",
+      "stubs",
       "test",
-      "xout",
       "tmp",
       "webpack.config.js",
-      "bin",
-      "dist",
-      "stubs",
-      "*/pkg-bin-linker-win32.js",
-      "es6-promisify",
-      "cli/config"
-    ]
+      "xout",
+      "xrun*.js",
+      "xrun*.ts"
+    ],
+    "extends": [],
+    "check-coverage": true,
+    "statements": 76,
+    "branches": 68,
+    "functions": 79,
+    "lines": 77,
+    "cache": true
   },
   "engines": {
     "node": ">=8"
@@ -128,5 +148,16 @@
   },
   "prettier": {
     "printWidth": 100
+  },
+  "mocha": {
+    "require": [
+      "@xarc/module-dev/config/test/setup.js"
+    ],
+    "recursive": true
+  },
+  "@xarc/module-dev": {
+    "features": [
+      "mocha"
+    ]
   }
 }

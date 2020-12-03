@@ -4,10 +4,9 @@ const Fs = require("./lib/util/file-ops");
 const Path = require("path");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
-const xclap = require("xclap");
 const which = require("which");
 
-require("electrode-archetype-njs-module-dev")();
+const xrun = require("@xarc/module-dev")();
 
 const pkgFile = Path.resolve("package.json");
 let pkgData;
@@ -20,7 +19,7 @@ function readPkg() {
   return pkgData;
 }
 
-xclap.load("fyn", {
+xrun.load("fyn", {
   prepack: {
     task: () => {
       const dist = Path.resolve("dist");
@@ -65,7 +64,7 @@ xclap.load("fyn", {
         const fyn = await which("fyn");
         const realPath = await Fs.realpath(fyn);
         const dist = Path.join(realPath, "../../dist/fyn.js");
-        return xclap.exec(`cp dist/fyn.js ${dist}`);
+        return xrun.exec(`cp dist/fyn.js ${dist}`);
       }
     ]
   },
