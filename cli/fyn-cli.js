@@ -90,17 +90,17 @@ class FynCli {
     const addSec = async (section, packages) => {
       if (_.isEmpty(packages)) return [];
 
-      const items = await xaa.map(packages, async x => {
-        const xfp = Path.resolve(x);
+      const items = await xaa.map(packages, async pkgSemver => {
+        const xfp = Path.resolve(pkgSemver);
         const stat = await xaa.try(() => Fs.stat(xfp));
         if (stat && stat.isDirectory()) {
-          x = Path.relative(process.cwd(), xfp);
-          if (!x.startsWith(`..${Path.sep}`)) {
-            x = `.${Path.sep}${x}`;
+          pkgSemver = Path.relative(process.cwd(), xfp);
+          if (!pkgSemver.startsWith(`..${Path.sep}`)) {
+            pkgSemver = `.${Path.sep}${pkgSemver}`;
           }
         }
 
-        const posixPath = x.replace(/\\/g, "/");
+        const posixPath = pkgSemver.replace(/\\/g, "/");
         const semverPath = this.fyn.pkgSrcMgr.getSemverAsFilepath(posixPath);
 
         logger.info("found semverPath", semverPath);
@@ -173,6 +173,7 @@ class FynCli {
             if (meta.local) {
               logger.info("adding local package at", item.fullPath);
               item.name = meta.name;
+              item.version = _.get(meta, "json.version");
               found = Path.relative(this.fyn.cwd, item.fullPath).replace(/\\/g, "/");
               if (found !== item.fullPath && !found.startsWith(".")) {
                 found = `./${found}`;
@@ -223,7 +224,7 @@ class FynCli {
             _.set(pkgFyn, ["fyn", item.section, item.name], item.found);
             // set in package if it's not there
             if (!_.get(pkg, [item.section, item.name])) {
-              _.set(pkg, [item.section, item.name], item.found);
+              _.set(pkg, [item.section, item.name], item.version ? `^${item.version}` : item.found);
             }
           } else {
             _.set(pkg, [item.section, item.name], item.found);
