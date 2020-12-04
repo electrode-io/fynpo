@@ -174,7 +174,9 @@ class Fyn {
         logger.debug("failed loaded fynInstallConfig from", filename, err);
       }
 
-      this._runNpm = [].concat(this._options.runNpm || this._installConfig.runNpm).filter(x => x);
+      this._runNpm = [].concat(this._options.runNpm).filter(x => x);
+
+      // TODO: when detected a fynpo mono-repo, read runNpm scripts from fynpo config
 
       // await this.readLockFiles();
     }
@@ -246,8 +248,12 @@ class Fyn {
         // add 5ms to ensure it's newer than fyn-lock.yaml, which was just saved
         // immediately before this
         time: Date.now() + 5,
-        centralDir,
-        runNpm: this._runNpm
+        centralDir
+        // not a good idea to save --run-npm options to install config because
+        // future fyn install will automatically run them and would be unexpected.
+        // if fynpo bootstrap should run certain npm scripts, user should set those
+        // in fynpo config.  and fyn should look into those when detected a fynpo.
+        // runNpm: this._runNpm
       };
       await Fs.writeFile(
         filename,
