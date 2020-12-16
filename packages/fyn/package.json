@@ -88,10 +88,15 @@
     "@types/sinon": "^9.0.0",
     "@types/sinon-chai": "^3.2.4",
     "@xarc/module-dev": "^2.2.5",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.4",
     "chai": "^4.2.0",
     "coveralls": "^3.0.3",
     "electrode-server": "^3.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-walmart": "^2.2.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-jsdoc": "^21.0.0",
     "mocha": "^7.1.0",
     "mock-require": "^2.0.2",
     "nyc": "^15.0.0",
@@ -157,6 +162,7 @@
   },
   "@xarc/module-dev": {
     "features": [
+      "eslint",
       "mocha"
     ]
   }
