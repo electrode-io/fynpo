@@ -1,0 +1,31 @@
+{
+  "name": "fynpo-cli",
+  "version": "1.0.0",
+  "description": "npm install globally to provide the fynpo command",
+  "preferGlobal": true,
+  "main": "index.js",
+  "bin": {
+    "fynpo": "bin/fynpo.js"
+  },
+  "scripts": {},
+  "files": [
+    "bin"
+  ],
+  "keywords": [
+    "fyn",
+    "lerna",
+    "repo",
+    "mono",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electrode-io/fynpo.git"
+  },
+  "dependencies": {
+    "require-at": "^1.0.6"
+  },
+  "devDependencies": {}
+}
