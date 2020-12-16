@@ -48,7 +48,7 @@ xrun.load("fyn", {
 
   release: {
     desc: "Release a new version to npm.  package.json must be updated.",
-    task: ["create-tgz", "electrode/test", "fyn/.prepare", "fyn/publish"],
+    task: ["create-tgz", "xarc/check", "fyn/.prepare", "fyn/publish"],
     finally: ["fyn/postpack"]
   },
 
