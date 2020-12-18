@@ -14,6 +14,7 @@ const PromiseQueue = require("./util/promise-queue");
 const VisualExec = require("visual-exec");
 const xaa = require("xaa");
 const Fs = require("./util/file-ops");
+const _ = require("lodash");
 
 class LocalPkgBuilder {
   constructor(options) {
@@ -55,10 +56,23 @@ class LocalPkgBuilder {
       this._defer.reject(data.error);
     });
 
-    for (const locals of localsByDepth.reverse()) {
-      for (const item of locals) {
-        await this.addItem(item);
-      }
+    //
+    // localsByDepth is array of array: level 1 depths, level 2 packages
+    //
+    const flatLocals = [].concat(...localsByDepth);
+    //
+    // convert items into array of names and then use _.uniq to only keep
+    // the first occurrence of duplicate names, and reverse them so the
+    // ones that has no dependence on the ones before them are build first.
+    //
+    const localNames = _.uniq(flatLocals.map(x => x.name)).reverse();
+    const byName = flatLocals.reduce((a, x) => {
+      a[x.name] = x;
+      return a;
+    }, {});
+
+    for (const name of localNames) {
+      await this.addItem(byName[name]);
     }
   }
 

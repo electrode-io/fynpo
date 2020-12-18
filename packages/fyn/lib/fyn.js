@@ -21,7 +21,6 @@ const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
 const lockfile = require("lockfile");
 const createLock = util.promisify(lockfile.lock);
 const unlock = util.promisify(lockfile.unlock);
-const glob = require("glob");
 
 const { PACKAGE_RAW_INFO } = require("./symbols");
 const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = require("./constants");
