@@ -1,0 +1,13 @@
+{
+  "name": "fyn-central",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-a": "^1.0.0",
+    "mod-h": "^2.0.0"
+  }
+}
