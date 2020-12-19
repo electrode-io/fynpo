@@ -231,6 +231,7 @@ const debug = false;
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
+        "fyn-central": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}

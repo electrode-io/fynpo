@@ -18,6 +18,24 @@ const isWin32 = process.platform === "win32";
 
 const RENAME_RETRIES = isWin32 ? 10 : 0;
 
+/**
+ * convert a directory tree structure to a flatten one like:
+ * ```
+ * {
+ *  dirs: [
+ *    "/dir1"
+ *  ],
+ *  files: [
+ *    "/file1",
+ *    "/dir1/file1"
+ *  ]
+ * }
+ * ```
+ * @param {*} tree - the dir tree
+ * @param {*} output - output object
+ * @param {*} baseDir - base dir path
+ * @returns flatten dir list
+ */
 function flattenTree(tree, output, baseDir) {
   const dirs = Object.keys(tree);
 
@@ -36,6 +54,9 @@ function flattenTree(tree, output, baseDir) {
   return output;
 }
 
+/**
+ * create and maintain the fyn central storage
+ */
 class FynCentral {
   constructor({ centralDir = ".fyn/_central-storage" }) {
     this._centralDir = Path.resolve(centralDir);
@@ -177,7 +198,7 @@ class FynCentral {
   async _storeTarStream(info, stream) {
     const tmp = `${info.contentPath}.tmp`;
 
-    await Fs.$.rimraf(tmp); // in case there was any reminant left from an interrupted install
+    await Fs.$.rimraf(tmp); // in case there was any remnant left from an interrupted install
     const targetDir = Path.join(tmp, "package");
     await Fs.$.mkdirp(targetDir);
     if (typeof stream === "function") {
