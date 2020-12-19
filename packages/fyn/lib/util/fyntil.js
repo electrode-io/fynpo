@@ -104,10 +104,10 @@ module.exports = {
       const entries = await pGlob(Path.join(pattern, "package.json"), options);
 
       for (const entry of entries) {
-        // glob always uses '/', even on windows, so use posix path
-        // but all fs APIs can deal with '/' even on windows
-        const pkgDir = Path.posix.dirname(entry);
-        const pkgJson = readPkg ? JSON.parse(await Fs.readFile(entry)) : {};
+        // glob always uses '/', even on windows, so normalize it
+        const normalizePath = Path.normalize(entry);
+        const pkgDir = Path.dirname(normalizePath);
+        const pkgJson = readPkg ? JSON.parse(await Fs.readFile(normalizePath)) : {};
         packages[pkgDir] = pkgJson;
       }
     }
@@ -219,5 +219,8 @@ module.exports = {
     return true;
   },
 
+  /**
+   * If system path sep is not /, then convert a path to use /.
+   */
   posixify: Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/")
 };
