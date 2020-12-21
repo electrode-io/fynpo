@@ -8,4 +8,6 @@ notifications:
     - joel123@gmail.com
 before_install: npm i -g fyn
 install: fyn --pg none
-script: fun ci
+script: |
+  fun ci
+  fun coveralls
