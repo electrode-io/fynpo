@@ -1,7 +1,4 @@
-/*
- * Support looking at a _shrinkwrap field in package.json
- * Help with verifying fyn's dep resolve engine
- */
+"use strict";
 
 const Fs = require("fs");
 const Path = require("path");
