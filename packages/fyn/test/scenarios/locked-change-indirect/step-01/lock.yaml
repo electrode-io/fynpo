@@ -6,7 +6,6 @@ mod-g:
   _:
     ^3.0.0: 3.0.0
   3.0.0:
-    $: sha512-jILpyzmQJsjdE3YPMtJltOlC9JRofY72yhgt8K3qNwl6J5I386OwEhE8zt3kKty2DGd885ug1DtBL0WlMkarhA==
     _: "http://localhost:50549/mod-g/-/mod-g-3.0.0.tgz"
 mod-i:
   _latest: 1.0.0
@@ -14,7 +13,6 @@ mod-i:
     ^1.0.0: 1.0.0
   1.0.0:
     top: 1
-    $: sha512-yyR5B9PHiy+xmxLOWjOSkIKuakxWNlRROqGhrOWgEiIuZ6wHKlTVXrAkJV1w8URtmOVjh0r0w1jHgiPDgDEfwg==
     _: "http://localhost:50387/mod-i/-/mod-i-1.0.0.tgz"
     dependencies:
       mod-g: ^3.0.0
