@@ -6,7 +6,8 @@ const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
 const which = require("which");
 
-const xrun = require("@xarc/module-dev")();
+const { loadTasks, xrun } = require("@xarc/module-dev");
+loadTasks();
 
 const pkgFile = Path.resolve("package.json");
 let pkgData;
