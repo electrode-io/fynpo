@@ -2,6 +2,7 @@
 
 // const Module = require("module");
 const Fs = require("../lib/util/file-ops");
+const Os = require("os");
 const Path = require("path");
 const Promise = require("bluebird");
 const Fyn = require("../lib/fyn");
@@ -62,11 +63,12 @@ class FynCli {
   }
 
   async saveLogs(dbgLog) {
-    return Fs.writeFile(Path.join(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
+    return Fs.writeFile(Path.resolve(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
   }
 
   async fail(msg, err) {
-    const dbgLog = this._rc.saveLogs || `fyn-debug-${process.pid}-${Date.now()}.log`;
+    const dbgLog =
+      this._rc.saveLogs || Path.join(Os.tmpdir(), `fyn-debug-${process.pid}-${Date.now()}.log`);
     logger.freezeItems(true);
     logger.error(msg, `CWD ${this.fyn.cwd}`);
     logger.error("process.argv", process.argv);
