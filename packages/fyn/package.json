@@ -17,8 +17,7 @@
   },
   "files": [
     "bin",
-    "dist",
-    "lib"
+    "dist"
   ],
   "keywords": [
     "node",
@@ -85,26 +84,22 @@
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
-    "@types/chai": "^4.2.11",
-    "@types/mocha": "^7.0.2",
-    "@types/sinon": "^9.0.0",
-    "@types/sinon-chai": "^3.2.4",
-    "@xarc/module-dev": "^2.2.5",
+    "@xarc/module-dev": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.4",
     "chai": "^4.2.0",
     "coveralls": "^3.0.3",
     "electrode-server": "^3.0.3",
-    "eslint": "^6.8.0",
+    "eslint": "^7.16.0",
     "eslint-config-walmart": "^2.2.1",
     "eslint-plugin-filenames": "^1.1.0",
-    "eslint-plugin-jsdoc": "^21.0.0",
-    "mocha": "^7.1.0",
+    "eslint-plugin-jsdoc": "^30.7.9",
+    "mocha": "^8.2.1",
     "mock-require": "^2.0.2",
-    "nyc": "^15.0.0",
+    "nyc": "^15.1.0",
     "prettier": "^1.19.1",
-    "sinon": "^7.2.6",
-    "sinon-chai": "^3.3.0",
+    "sinon": "^9.2.2",
+    "sinon-chai": "^3.5.0",
     "webpack": "^4.44.2",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^4.2.0",
@@ -124,6 +119,7 @@
       "*clap.ts",
       "bin",
       "cli/config",
+      "cli/fun.js",
       "coverage",
       "dist",
       "docs",
@@ -135,7 +131,8 @@
       "webpack.config.js",
       "xout",
       "xrun*.js",
-      "xrun*.ts"
+      "xrun*.ts",
+      "**/.eslint*.*"
     ],
     "extends": [],
     "check-coverage": true,
@@ -156,16 +153,17 @@
   "prettier": {
     "printWidth": 100
   },
-  "mocha": {
-    "require": [
-      "@xarc/module-dev/config/test/setup.js"
-    ],
-    "recursive": true
-  },
   "@xarc/module-dev": {
     "features": [
       "eslint",
       "mocha"
     ]
+  },
+  "mocha": {
+    "require": [
+      "source-map-support/register",
+      "@xarc/module-dev/config/test/setup.js"
+    ],
+    "recursive": true
   }
 }
