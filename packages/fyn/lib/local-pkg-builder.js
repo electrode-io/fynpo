@@ -8,6 +8,7 @@
  * - TODO: impl timestamp check so if no files updated then don't run
  */
 
+const assert = require("assert");
 const Path = require("path");
 const logger = require("./logger");
 const PromiseQueue = require("./util/promise-queue");
@@ -24,6 +25,8 @@ class LocalPkgBuilder {
   }
 
   async start() {
+    this._started = xaa.makeDefer();
+
     this._promiseQ = new PromiseQueue({
       concurrency: 1,
       stopOnError: false,
@@ -60,12 +63,15 @@ class LocalPkgBuilder {
     // localsByDepth is array of array: level 1 depths, level 2 packages
     //
     const flatLocals = [].concat(...localsByDepth);
+    const allNames = flatLocals.map(x => x.name);
+
+    logger.debug("local pkgs for build", allNames);
     //
     // convert items into array of names and then use _.uniq to only keep
     // the first occurrence of duplicate names, and reverse them so the
     // ones that has no dependence on the ones before them are build first.
     //
-    const localNames = _.uniq(flatLocals.map(x => x.name)).reverse();
+    const localNames = _.uniq(allNames).reverse();
     const byName = flatLocals.reduce((a, x) => {
       a[x.name] = x;
       return a;
@@ -74,13 +80,17 @@ class LocalPkgBuilder {
     for (const name of localNames) {
       await this.addItem(byName[name]);
     }
+
+    this._started.resolve();
   }
 
   async addItem(item) {
-    if (this._waitItems[item.fullPath]) {
+    if (this._waitItems[item.fullPath] !== undefined) {
       logger.debug(`local pkg at ${item.fullPath} already being built`);
       return;
     }
+
+    this._waitItems[item.fullPath] = false;
 
     const checkPkg = await this._fyn.getLocalPkgInstall(item.fullPath);
 
@@ -114,9 +124,19 @@ class LocalPkgBuilder {
     this._waitItems[item.fullPath] = xaa.makeDefer();
   }
 
-  waitForItem(fullPath) {
+  async waitForItem(fullPath) {
+    if (this._waitItems[fullPath] === undefined) {
+      await this._started.promise;
+    }
     const x = this._waitItems[fullPath];
-    return x && x.promise;
+    assert(x !== undefined, `No local pkg build defer for pkg at ${fullPath}`);
+    if (x && x.promise) {
+      logger.debug("waiting for build local item", fullPath, x);
+      await x.promise;
+      logger.debug("build local item awaited", fullPath);
+    } else {
+      logger.debug("build local pkg status is false", fullPath, x);
+    }
   }
 
   waitForDone() {
