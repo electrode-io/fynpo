@@ -241,17 +241,15 @@ class PkgDepResolver {
     const depthPkgs = Object.keys(depthInfo);
 
     if (this._fyn._options.buildLocal) {
-      // logger.info("adding depth pkgs", depthPkgs.join(", "));
-      const locals = depthPkgs.filter(x => {
-        const item = depthInfo[x].items[0];
-        return item.localType;
-      });
+      const locals = depthPkgs.map(x => depthInfo[x].items.find(it => it.localType)).filter(x => x);
+
+      // logger.info("adding depth pkgs", depthPkgs.join(", "), locals);
 
       if (locals.length > 0) {
         if (!this._localsByDepth) {
           this._localsByDepth = [];
         }
-        this._localsByDepth.push(locals.map(x => depthInfo[x].items[0]));
+        this._localsByDepth.push(locals);
       } else if (!this._buildLocal && this._localsByDepth) {
         this._buildLocal = new LocalPkgBuilder({
           fyn: this._fyn,
