@@ -412,6 +412,8 @@ class PkgInstaller {
   async _buildLocalPkg(depInfo) {
     if (this._fyn._depResolver._buildLocal) {
       await this._fyn._depResolver._buildLocal.waitForItem(depInfo.dir);
+    } else {
+      logger.error("pkg-installer: there is no this._fyn._depResolver._buildLocal");
     }
   }
 
