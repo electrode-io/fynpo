@@ -458,6 +458,8 @@ class FynCli {
   }
 
   async run(argv) {
+    this._config._fynpo = false;
+
     if (argv.opts.list || !argv.args.script) {
       try {
         await this.fyn._initialize({ noLock: true });
