@@ -21,7 +21,7 @@ const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
 const lockfile = require("lockfile");
 const createLock = util.promisify(lockfile.lock);
 const unlock = util.promisify(lockfile.unlock);
-
+const ck = require("chalker");
 const { PACKAGE_RAW_INFO } = require("./symbols");
 const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = require("./constants");
 
@@ -172,7 +172,7 @@ class Fyn {
       } else if (this._cliSource.production === "default") {
         // user didn't specify any thing about production mode, assume no change
         logger.info(
-          `Setting production mode because existing node_modules is production mode.
+          ck`<orange>Setting production mode</> because existing node_modules is production mode.
   To force no production mode, pass --no-production flag.`
         );
         this._options.production = true;
