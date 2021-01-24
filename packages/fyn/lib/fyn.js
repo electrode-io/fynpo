@@ -30,7 +30,7 @@ const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = req
 const npmConfigEnv = require("./util/npm-config-env");
 
 class Fyn {
-  constructor({ opts = {}, _cliSource = {} }) {
+  constructor({ opts = {}, _cliSource = {}, _fynpo = true }) {
     this._cliSource = _cliSource;
     const options = (this._options = fynConfig(opts));
     this._cwd = options.cwd || process.cwd();
@@ -44,6 +44,9 @@ class Fyn {
     // set this env for more learning and research on ensuring
     // package dir name matches package name.
     this._noPkgDirMatchName = Boolean(process.env.FYN_NO_PKG_DIR_MATCH_NAME);
+    if (!_fynpo) {
+      this._fynpo = {};
+    }
   }
 
   checkFynLockExist() {
