@@ -36,15 +36,17 @@ const myPkg = require("./mypkg");
 const myDir = Path.join(__dirname, "..");
 
 class FynCli {
-  constructor(options) {
-    this._rc = options.opts;
-    this._rcData = options.rcData;
-    if (options.noStartupInfo !== true) this.showStartupInfo();
+  constructor(config) {
+    this._config = config;
+    this._opts = config.opts;
+    if (config.noStartupInfo !== true) this.showStartupInfo();
     this._fyn = undefined;
   }
 
   get fyn() {
-    if (!this._fyn) this._fyn = new Fyn(this._rc, this._rcData);
+    if (!this._fyn) {
+      this._fyn = new Fyn(this._config);
+    }
     return this._fyn;
   }
 
@@ -58,17 +60,17 @@ class FynCli {
       chalk.magenta(process.execPath)
     );
     logger.verbose("env NODE_OPTIONS is", chalk.magenta(process.env.NODE_OPTIONS));
-    logger.verbose("working dir is", chalk.magenta(this._rc.cwd));
-    logger.verbose("Max network concurrency is", this._rc.concurrency);
+    logger.verbose("working dir is", chalk.magenta(this._opts.cwd));
+    logger.verbose("Max network concurrency is", this._opts.concurrency);
   }
 
   async saveLogs(dbgLog) {
-    return Fs.writeFile(Path.resolve(this._rc.cwd, dbgLog), logger.logData.join("\n") + "\n");
+    return Fs.writeFile(Path.resolve(this._opts.cwd, dbgLog), logger.logData.join("\n") + "\n");
   }
 
   async fail(msg, err) {
     const dbgLog =
-      this._rc.saveLogs || Path.join(Os.tmpdir(), `fyn-debug-${process.pid}-${Date.now()}.log`);
+      this._opts.saveLogs || Path.join(Os.tmpdir(), `fyn-debug-${process.pid}-${Date.now()}.log`);
     logger.freezeItems(true);
     logger.error(msg, `CWD ${this.fyn.cwd}`);
     logger.error("process.argv", process.argv);
@@ -340,7 +342,11 @@ class FynCli {
     const start = Date.now();
     return Promise.try(() => this.fyn._initializePkg())
       .then(async () => {
-        if (!this.fyn._options.forceInstall && this.fyn._installConfig.time) {
+        if (
+          !this.fyn._changeProdMode &&
+          !this.fyn._options.forceInstall &&
+          this.fyn._installConfig.time
+        ) {
           const stats = await scanFileStats(this.fyn.cwd);
           const ctime = stats[latestMtimeTag];
           logger.debug("time check from install config:", this.fyn._installConfig.time, ctime);
@@ -437,8 +443,8 @@ class FynCli {
           return failure;
         }
 
-        if (this._rc.saveLogs) {
-          await this.saveLogs(this._rc.saveLogs);
+        if (this._opts.saveLogs) {
+          await this.saveLogs(this._opts.saveLogs);
         }
 
         return this.fyn.saveInstallConfig();
@@ -447,7 +453,7 @@ class FynCli {
 
   stat(argv) {
     return showStat(this.fyn, argv.args.packages).finally(() => {
-      return this._rc.saveLogs && this.saveLogs(this._rc.saveLogs);
+      return this._opts.saveLogs && this.saveLogs(this._opts.saveLogs);
     });
   }
 

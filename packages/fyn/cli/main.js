@@ -35,6 +35,21 @@ function setLogLevel(ll) {
   }
 }
 
+const pickEnvOptions = () => {
+  const mapping = {
+    NODE_ENV: { optKey: "production", checkValue: "production" }
+  };
+
+  return Object.keys(mapping).reduce((cfg, envKey) => {
+    if (process.env.hasOwnProperty(envKey)) {
+      const m = mapping[envKey];
+      const ev = process.env[envKey];
+      cfg[m.optKey] = ev === m.checkValue;
+      logger.info(`setting option ${m.optKey} to ${cfg[m.optKey]} by env ${envKey} value ${ev}`);
+    }
+  }, {});
+};
+
 const pickOptions = argv => {
   setLogLevel(argv.opts.logLevel);
 
@@ -50,7 +65,9 @@ const pickOptions = argv => {
 
   const rc = rcData.all || defaultRc;
 
-  nixClap.applyConfig(rc, argv);
+  // nixClap.applyConfig(rc, argv);
+  _.defaults(argv.opts, rc);
+  nixClap.applyConfig(pickEnvOptions(), argv);
 
   argv.opts.cwd = cwd;
 
@@ -65,7 +82,7 @@ const pickOptions = argv => {
   setLogLevel(argv.opts.logLevel);
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
-  return { opts: argv.opts, rcData };
+  return { opts: argv.opts, rcData, _cliSource: argv.source };
 };
 
 const options = {
@@ -239,17 +256,17 @@ const commands = {
     usage: "$0 $1 [packages..] [--dev <dev packages>]",
     desc: "add packages to package.json",
     exec: argv => {
-      const options = pickOptions(argv);
-      const lockFile = options.lockfile;
-      options.lockfile = false;
-      const cli = new FynCli(options);
+      const config = pickOptions(argv);
+      const lockFile = config.lockfile;
+      config.lockfile = false;
+      const cli = new FynCli(config);
       const opts = Object.assign({}, argv.opts, argv.args);
       return cli.add(opts).then(added => {
         if (!added || !argv.opts.install) return;
-        options.lockfile = lockFile;
-        options.noStartupInfo = true;
+        config.lockfile = lockFile;
+        config.noStartupInfo = true;
         logger.info("installing...");
-        return new FynCli(options).install();
+        return new FynCli(config).install();
       });
     },
     options: {

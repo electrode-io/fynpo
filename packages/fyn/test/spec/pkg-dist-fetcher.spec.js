@@ -31,12 +31,14 @@ describe("pkg-dist-fetcher", function() {
     const registry = `http://localhost:${server.info.port}`;
     const targetDir = `xout_${Date.now()}`;
     const fyn = new Fyn({
-      registry,
-      pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
-      cwd: fynDir,
-      targetDir,
-      fynDir,
-      ignoreDist: true
+      opts: {
+        registry,
+        pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
+        cwd: fynDir,
+        targetDir,
+        fynDir,
+        ignoreDist: true
+      }
     });
     // TODO: verify tarballs actually fetched
     return fyn.resolveDependencies().then(() => fyn.fetchPackages());

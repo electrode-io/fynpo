@@ -11,14 +11,16 @@ const Fyn = require("../lib/fyn");
 const PkgInstaller = require("../lib/pkg-installer");
 // const DepData = require("../lib/dep-data");
 const fyn = new Fyn({
-  registry: "http://localhost:4873/",
-  // registry: "https://npme.walmart.com/",
-  // registry: "https://registry.npmjs.org",
-  // pkgFile: Path.join(__dirname, "fixtures/pkg.json"),
-  pkgFile: Path.resolve("package.json"),
-  targetDir: "node_modules",
-  // regenOnly: true,
-  localOnly: true
+  opts: {
+    registry: "http://localhost:4873/",
+    // registry: "https://npme.walmart.com/",
+    // registry: "https://registry.npmjs.org",
+    // pkgFile: Path.join(__dirname, "fixtures/pkg.json"),
+    pkgFile: Path.resolve("package.json"),
+    targetDir: "node_modules",
+    // regenOnly: true,
+    localOnly: true
+  }
 });
 const logMemDiff = o => {
   const n = process.memoryUsage();

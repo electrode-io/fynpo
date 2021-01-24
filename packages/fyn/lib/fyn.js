@@ -30,9 +30,9 @@ const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = req
 const npmConfigEnv = require("./util/npm-config-env");
 
 class Fyn {
-  constructor(options, rcData) {
-    this._rcData = Object.assign({ all: {} }, rcData);
-    options = this._options = fynConfig(options);
+  constructor({ opts = {}, _cliSource = {} }) {
+    this._cliSource = _cliSource;
+    const options = (this._options = fynConfig(opts));
     this._cwd = options.cwd || process.cwd();
     logger.debug(`fyn options`, JSON.stringify(fyntil.removeAuthInfo(options)));
     this.localPkgWithNestedDep = [];
@@ -40,8 +40,6 @@ class Fyn {
       this._lockTime = new Date(options.lockTime);
       logger.info("dep lock time set to", this._lockTime.toString());
     }
-    // TODO: transfer argv options
-    if (options.production) this._rcData.all.production = options.production;
     this._installConfig = { time: 0 };
     // set this env for more learning and research on ensuring
     // package dir name matches package name.
@@ -159,6 +157,34 @@ class Fyn {
     await this._startInstall();
   }
 
+  /**
+   * Check user production mode option against saved install config in node_modules
+   * @remarks - this._installConfig must've been initialized
+   * @returns nothing
+   */
+  checkProductionMode() {
+    if (this._installConfig.production) {
+      if (this.production) {
+        // user still want production mode, do nothing
+      } else if (this._cliSource.production === "default") {
+        // user didn't specify any thing about production mode, assume no change
+        logger.info(
+          `Setting production mode because existing node_modules is production mode.
+  To force no production mode, pass --no-production flag.`
+        );
+        this._options.production = true;
+      } else {
+        logger.info(`Changing existing node_modules to NO production mode`);
+        this._changeProdMode = this._cliSource.production;
+      }
+    } else if (this.production) {
+      if (!this._installConfig.production) {
+        logger.info(`Changing existing node_modules to production mode`);
+        this._changeProdMode = this._cliSource.production;
+      }
+    }
+  }
+
   async _initializePkg() {
     if (!this._fynpo) {
       this._fynpo = await this._searchForFynpo();
@@ -182,6 +208,8 @@ class Fyn {
       } catch (err) {
         logger.debug("failed loaded fynInstallConfig from", filename, err);
       }
+
+      this.checkProductionMode();
 
       let fynpoNpmRun;
 
@@ -266,7 +294,8 @@ class Fyn {
         // add 5ms to ensure it's newer than fyn-lock.yaml, which was just saved
         // immediately before this
         time: Date.now() + 5,
-        centralDir
+        centralDir,
+        production: this.production
         // not a good idea to save --run-npm options to install config because
         // future fyn install will automatically run them and would be unexpected.
         // if fynpo bootstrap should run certain npm scripts, user should set those
@@ -328,16 +357,15 @@ class Fyn {
 
   get npmConfigEnv() {
     if (!this._npmConfigEnv) {
-      this._rcData.all.cache = this._options.fynDir;
-      this._npmConfigEnv = npmConfigEnv(this._pkg, this._rcData.all);
+      const options = { ...this._options, cache: this._options.fynDir };
+      this._npmConfigEnv = npmConfigEnv(this._pkg, options);
     }
 
     return this._npmConfigEnv;
   }
 
   get allrc() {
-    this._rcData.all.cache = this._options.fynDir;
-    return this._rcData.all;
+    return this._options;
   }
 
   get copy() {
