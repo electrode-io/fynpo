@@ -213,7 +213,7 @@ Object.defineProperty(exports, "defaults", {
       "prefer-online": false,
       prefix: globalPrefix,
       preid: "",
-      production: process.env.NODE_ENV === "production",
+      // production: process.env.NODE_ENV === "production",
       // progress: !process.env.TRAVIS && !process.env.CI,
       proxy: null,
       "https-proxy": null,
@@ -350,7 +350,7 @@ exports.types = {
   "prefer-online": Boolean,
   prefix: path,
   preid: String,
-  production: Boolean,
+  // production: Boolean,
   progress: Boolean,
   proxy: [null, false, url], // allow proxy to be disabled explicitly
   "read-only": Boolean,

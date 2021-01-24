@@ -3955,14 +3955,14 @@ fs.realpath:
   $: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
   _: 'https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz'
 fsevents:
- _latest: 2.2.1
+ _latest: 2.3.1
  _:
   ^1.2.7: 1.2.12
   ~2.1.2: 2.1.3
  2.1.3:
   $: sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==
   _: 'https://registry.npmjs.org/fsevents/-/fsevents-2.1.3.tgz'
-  deprecated: 'Please update to v 2.2.x'
+  deprecated: '"Please update to latest v2.3 or v2.2"'
   os:
    - darwin
  1.2.12:

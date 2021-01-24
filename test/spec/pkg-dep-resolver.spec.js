@@ -78,13 +78,15 @@ describe("pkg-dep-resolver", function() {
 
   const testPkgAFixture = deepResolve => {
     const fyn = new Fyn({
-      registry: `http://localhost:${server.info.port}`,
-      pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
-      targetDir: "xout",
-      cwd: fynDir,
-      fynDir,
-      ignoreDist: true,
-      deepResolve
+      opts: {
+        registry: `http://localhost:${server.info.port}`,
+        pkgFile: Path.join(__dirname, "../fixtures/pkg-a/package.json"),
+        targetDir: "xout",
+        cwd: fynDir,
+        fynDir,
+        ignoreDist: true,
+        deepResolve
+      }
     });
     const outFname = `fyn-data${deepResolve ? "-dr" : ""}.yaml`;
     const expectOutput = `../fixtures/pkg-a/${outFname}`;
@@ -132,17 +134,19 @@ describe("pkg-dep-resolver", function() {
 
   it("should fail when semver doesn't resolve", () => {
     const fyn = new Fyn({
-      registry: `http://localhost:${server.info.port}`,
-      pkgFile: false,
-      pkgData: {
-        name: "test",
-        version: "1.0.0",
-        dependencies: {
-          "mod-a": "^14.0.0"
-        }
-      },
-      fynDir,
-      cwd: fynDir
+      opts: {
+        registry: `http://localhost:${server.info.port}`,
+        pkgFile: false,
+        pkgData: {
+          name: "test",
+          version: "1.0.0",
+          dependencies: {
+            "mod-a": "^14.0.0"
+          }
+        },
+        fynDir,
+        cwd: fynDir
+      }
     });
     let error;
     return fyn
@@ -156,17 +160,19 @@ describe("pkg-dep-resolver", function() {
 
   it("should fail when tag doesn't resolve", () => {
     const fyn = new Fyn({
-      registry: `http://localhost:${server.info.port}`,
-      pkgFile: false,
-      pkgData: {
-        name: "test",
-        version: "1.0.0",
-        dependencies: {
-          "mod-a": "blah"
-        }
-      },
-      fynDir,
-      cwd: fynDir
+      opts: {
+        registry: `http://localhost:${server.info.port}`,
+        pkgFile: false,
+        pkgData: {
+          name: "test",
+          version: "1.0.0",
+          dependencies: {
+            "mod-a": "blah"
+          }
+        },
+        fynDir,
+        cwd: fynDir
+      }
     });
     let error;
     return fyn
