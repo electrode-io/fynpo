@@ -122,7 +122,7 @@ const nixClap = new NixClap({
           alias: "cc",
           type: "number",
           default: 3,
-          desc: "number of packages to bootstrap concurrenly"
+          desc: "number of packages to bootstrap concurrently"
         }
       }
     },
