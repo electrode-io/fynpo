@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Supplement tools for using fyn with lerna",
   "main": "index.js",
   "scripts": {},
@@ -14,6 +14,10 @@
     "repo",
     "mono",
     "monorepo"
+  ],
+  "files": [
+    "cli",
+    "lib"
   ],
   "author": "Joel Chen <joel123@gmail.com>",
   "license": "Apache-2.0",
