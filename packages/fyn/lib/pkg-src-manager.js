@@ -67,16 +67,31 @@ class PkgSrcManager {
       });
     });
 
-    const registry = _.pickBy(
+    const registryData = _.pickBy(
       this._options,
       (v, key) => key === "registry" || key.endsWith(":registry")
     );
 
-    logger.debug("pkg src manager registry", JSON.stringify(registry));
+    logger.debug("pkg src manager registry", JSON.stringify(registryData));
 
-    this._pacoteOpts = Object.assign({ cache: this._cacheDir }, registry);
+    const urlObj = new URL(registryData.registry);
+    const authInfo = {
+      _authToken: this._options[`//${urlObj.host}/:_authToken`],
+      alwaysAuth: this._options["always-auth"],
+      username: this._options.username,
+      password: this._options.password
+    };
 
-    this._regData = registry;
+    this._pacoteOpts = Object.assign(
+      {
+        cache: this._cacheDir,
+        email: this._options.email
+      },
+      authInfo,
+      registryData
+    );
+
+    this._regData = registryData;
     this.normalizeRegUrlSlash();
 
     this._metaStat = {
