@@ -1,9 +1,7 @@
-"use strict";
-
 /* eslint-disable prefer-template, no-magic-numbers */
 
-const Fs = require("fs");
-const Path = require("path");
+import Fs from "fs";
+import Path from "path";
 
 function readChangelogVersions(dir, packages, markers) {
   const tags = [];
@@ -39,4 +37,4 @@ function readChangelogVersions(dir, packages, markers) {
   return { tags, versions };
 }
 
-module.exports = readChangelogVersions;
+export = readChangelogVersions;

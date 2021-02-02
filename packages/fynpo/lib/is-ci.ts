@@ -1,6 +1,6 @@
 const env = process.env;
 
-exports.isCI = !!(
+export const isCI = !!(
   env.CI || // Travis CI, CircleCI, Cirrus CI, Gitlab CI, Appveyor, CodeShip, dsari
   env.CONTINUOUS_INTEGRATION || // Travis CI, Cirrus CI
   env.BUILD_NUMBER || // Jenkins, TeamCity

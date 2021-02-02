@@ -1,10 +1,8 @@
-"use strict";
-
-const Fs = require("fs");
-const Path = require("path");
-const _ = require("lodash");
-const logger = require("./logger");
-const scanDir = require("filter-scan-dir");
+import Fs from "fs";
+import Path from "path";
+import _ from "lodash";
+import logger from "./logger";
+import scanDir from "filter-scan-dir";
 
 function readPackages(dir) {
   const pkgPath = Path.join(dir, "packages");
@@ -20,7 +18,7 @@ function readPackages(dir) {
       try {
         const path = Path.dirname(pkgFile);
         const pkgStr = Fs.readFileSync(pkgFile);
-        const pkgJson = JSON.parse(pkgStr);
+        const pkgJson = JSON.parse(pkgStr.toString());
         acc[pkgJson.name] = Object.assign(
           _.pick(pkgJson, [
             "name",
@@ -49,4 +47,4 @@ function readPackages(dir) {
     }, {});
 }
 
-module.exports = readPackages;
+export = readPackages;

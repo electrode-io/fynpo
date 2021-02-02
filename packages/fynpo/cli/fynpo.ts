@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-"use strict";
 
-const Path = require("path");
-const NixClap = require("nix-clap");
-const Bootstrap = require("../lib/bootstrap");
-const Prepare = require("../lib/prepare");
-const makePkgDeps = require("../lib/make-pkg-deps");
-const readPackages = require("../lib/read-packages");
-const logger = require("../lib/logger");
-const Fs = require("fs");
+import Path from "path";
+import NixClap from "nix-clap";
+import Bootstrap from "../lib/bootstrap";
+import Prepare from "../lib/prepare";
+import makePkgDeps from "../lib/make-pkg-deps";
+import readPackages from "../lib/read-packages";
+import logger from "../lib/logger";
+import Fs from "fs";
 
 const makeBootstrap = parsed => {
   const cwd = parsed.opts.cwd || process.cwd();
@@ -55,7 +54,7 @@ const execLocal = parsed => {
 const execPrepare = parsed => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [])).exec();
+  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])).exec();
 };
 
 const nixClap = new NixClap({

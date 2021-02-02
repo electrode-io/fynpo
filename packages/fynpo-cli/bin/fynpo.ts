@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-"use strict";
 
-const requireAt = require("require-at");
+import requireAt from "require-at";
 
 try {
   requireAt(process.cwd(), "fynpo/cli/fynpo");

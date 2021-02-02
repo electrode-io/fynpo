@@ -1,21 +1,27 @@
-"use strict";
-
 /* eslint-disable max-statements, no-magic-numbers */
 
-const Fs = require("fs");
-const Path = require("path");
-const _ = require("lodash");
-const xsh = require("xsh");
-const logger = require("./logger");
-const readChangelogVersions = require("./read-changelog-versions");
-const Promise = require("bluebird");
-const Chalk = require("chalk");
-const assert = require("assert");
-const semver = require("semver");
-const utils = require("./utils");
+import Fs from "fs";
+import Path from "path";
+import _ from "lodash";
+import xsh from "xsh";
+import logger from "./logger";
+import readChangelogVersions from "./read-changelog-versions";
+import Promise from "bluebird";
+import Chalk from "chalk";
+import assert from "assert";
+import semver from "semver";
+import * as utils from "./utils";
 // prepare packages for publish
 
 class Prepare {
+  _cwd; 
+  _tag;
+  _fynpoRc;
+  _markers;
+  _data;
+  _versions;
+  _tags;
+  
   constructor({ cwd, tag }, data) {
     this._cwd = cwd;
     this._tag = tag;
@@ -174,4 +180,4 @@ that's not latest but none set in lerna.json`
   }
 }
 
-module.exports = Prepare;
+export = Prepare;

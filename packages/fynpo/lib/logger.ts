@@ -1,6 +1,4 @@
-"use strict";
-
-const VisualLogger = require("visual-logger");
+import VisualLogger from "visual-logger";
 
 const logger = new VisualLogger();
 
@@ -9,4 +7,4 @@ if (process.env.CI) {
   logger.setItemType("none");
 }
 
-module.exports = logger;
+export = logger;

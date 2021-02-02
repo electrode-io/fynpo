@@ -1,21 +1,24 @@
-"use strict";
-
 /* eslint-disable no-magic-numbers */
 
-const Promise = require("bluebird");
-const Fs = require("fs");
-const _ = require("lodash");
-const ItemQueue = require("item-queue");
-const VisualExec = require("visual-exec");
-const logger = require("./logger");
-const Path = require("path");
-const chalk = require("chalk");
-const { isCI } = require("./is-ci");
+import Promise from "bluebird";
+import Fs from "fs";
+import _ from "lodash";
+import ItemQueue from "item-queue";
+import VisualExec from "visual-exec";
+import logger from "./logger";
+import Path from "path";
+import chalk from "chalk";
+import { isCI } from "./is-ci";
 const isWin32 = process.platform.startsWith("win32");
 
 const { locateGlobalFyn, loadConfig } = require("./utils");
 
 class Bootstrap {
+  _opts;
+  _data;
+  _errors;
+  _pkgDirMap;
+  _fyn;
   constructor(data, opts) {
     this._opts = opts;
     this._data = data;
@@ -276,4 +279,4 @@ ${data.error.output.stderr}
   }
 }
 
-module.exports = Bootstrap;
+export = Bootstrap;

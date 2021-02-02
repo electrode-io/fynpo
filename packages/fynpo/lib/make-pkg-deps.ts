@@ -1,8 +1,6 @@
-"use strict";
-
 /* eslint-disable no-console */
 
-const _ = require("lodash");
+import _ from "lodash";
 
 function processDirectDeps(packages) {
   const add = (name, deps) => {
@@ -94,4 +92,4 @@ function makePkgDeps(packages, ignores, only) {
   };
 }
 
-module.exports = makePkgDeps;
+export = makePkgDeps;

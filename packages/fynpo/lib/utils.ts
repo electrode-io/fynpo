@@ -1,11 +1,9 @@
-"use strict";
-
-const Fs = require("fs");
+import Fs from "fs";
 const pFs = Fs.promises;
-const Path = require("path");
-const logger = require("./logger");
+import Path from "path";
+import logger from "./logger";
 
-exports.locateGlobalNodeModules = async () => {
+export const locateGlobalNodeModules = async () => {
   //
   const nodeBinDir = Path.dirname(process.argv[0]);
   const nm = "node_modules";
@@ -31,8 +29,8 @@ exports.locateGlobalNodeModules = async () => {
   return "";
 };
 
-exports.locateGlobalFyn = async (globalNmDir = null) => {
-  globalNmDir = globalNmDir || (await exports.locateGlobalNodeModules());
+export const locateGlobalFyn = async (globalNmDir = null) => {
+  globalNmDir = globalNmDir || (await locateGlobalNodeModules());
 
   if (!globalNmDir) {
     logger.error("Unable to locate your global node_modules from", process.argv[0]);
@@ -61,12 +59,12 @@ function _searchForFynpo(cwd = process.cwd()) {
 
   do {
     try {
-      config = JSON.parse(Fs.readFileSync(Path.join(dir, "fynpo.json")));
+      config = JSON.parse(Fs.readFileSync(Path.join(dir, "fynpo.json")).toString());
       break;
     } catch (e) {}
 
     try {
-      lerna = JSON.parse(Fs.readFileSync(Path.join(dir, "lerna.json")));
+      lerna = JSON.parse(Fs.readFileSync(Path.join(dir, "lerna.json")).toString());
       lernaDir = dir;
       if (lerna.fynpo) {
         config = lerna;
@@ -81,7 +79,7 @@ function _searchForFynpo(cwd = process.cwd()) {
   return { config, dir, lerna, lernaDir };
 }
 
-exports.loadConfig = (cwd = process.cwd()) => {
+export const loadConfig = (cwd = process.cwd()) => {
   let fynpoRc = {};
   let dir = cwd;
 
