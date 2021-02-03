@@ -33,6 +33,7 @@ xsh.Promise = Promise;
 // When running from original source, this is under lib/lifecycle-scripts.js
 // It's important to maintain same level so "../package.json" works.
 const fynInstalledDir = Path.dirname(optionalRequire.resolve("../package.json"));
+const fynCli = requireAt(fynInstalledDir).resolve("./bin/fyn.js");
 
 /*
  * ref: https://github.com/npm/npm/blob/75b462c19ea16ef0d7f943f94ff4d255695a5c0d/lib/utils/lifecycle.js
@@ -92,7 +93,7 @@ class LifecycleScripts {
     // env.npm_lifecycle_event = stage;  // TODO
 
     env.npm_node_execpath = env.NODE = env.NODE || process.execPath;
-    env.npm_execpath = fynInstalledDir;
+    env.npm_execpath = fynCli;
     env.INIT_CWD = this._fyn.cwd;
 
     return env;
