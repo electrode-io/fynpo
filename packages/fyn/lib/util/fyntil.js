@@ -61,6 +61,11 @@ const checkFiltering = (rules, userValue) => {
   return false;
 };
 
+/**
+ * If system path sep is not /, then convert a path to use /.
+ */
+const posixify = Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/");
+
 module.exports = {
   missPipe,
 
@@ -83,6 +88,14 @@ module.exports = {
 
   readJson(file) {
     return Fs.readFile(file, "utf8").then(JSON.parse);
+  },
+
+  relativePath(from, to, shouldPosixify = false) {
+    const rel = Path.relative(from, to);
+    if (!Path.isAbsolute(rel) && !rel.startsWith(".")) {
+      return `.${Path.sep}${rel}`;
+    }
+    return shouldPosixify ? posixify(rel) : rel;
   },
 
   /**
@@ -108,11 +121,28 @@ module.exports = {
         const normalizePath = Path.normalize(entry);
         const pkgDir = Path.dirname(normalizePath);
         const pkgJson = readPkg ? JSON.parse(await Fs.readFile(normalizePath)) : {};
-        packages[pkgDir] = pkgJson;
+        packages[pkgDir] = {
+          pkgDir,
+          normalizePath,
+          pkgJson
+        };
       }
     }
 
     return packages;
+  },
+
+  async makeFynpoPackagesByName(packages) {
+    const packagesByName = {};
+    for (const dir in packages) {
+      const pkg = packages[dir];
+      if (!pkg.pkgJson) {
+        pkg.pkgJson = JSON.parse(await Fs.readFile(pkg.normalizePath));
+      }
+      packagesByName[pkg.pkgJson.name] = pkg;
+    }
+
+    return packagesByName;
   },
 
   async readPkgJson(dirOrFile, keepRaw, packageFyn = false) {
@@ -219,8 +249,5 @@ module.exports = {
     return true;
   },
 
-  /**
-   * If system path sep is not /, then convert a path to use /.
-   */
-  posixify: Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/")
+  posixify
 };
