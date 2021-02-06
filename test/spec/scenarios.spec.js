@@ -1,5 +1,7 @@
 "use strict";
 
+/* eslint-disable complexity */
+
 const Fs = require("fs");
 const Path = require("path");
 const _ = require("lodash");
@@ -120,7 +122,7 @@ const debug = false;
             if (pkg) {
               _.merge(pkgJson, pkg);
               deleteNullFields(pkgJson);
-              Fs.writeFileSync(pkgJsonFile, JSON.stringify(pkgJson, null, 2));
+              Fs.writeFileSync(pkgJsonFile, `${JSON.stringify(pkgJson, null, 2)}\n`);
             }
             const fynDir = Path.join(cwd, ".fyn");
             if (stepAction.run) {
@@ -149,6 +151,9 @@ const debug = false;
                 pkgJsonFile,
                 debug
               });
+              if (!args.find(x => x.includes("--cwd"))) {
+                args = args.concat(`--cwd=${cwd}`);
+              }
             } else {
               args = [].concat(
                 `--reg=${registry}`,
@@ -161,6 +166,13 @@ const debug = false;
                 (debug && ["-q", "debug"]) || [],
                 [`--cwd=${cwd}`, "install"],
                 stepAction.forceInstall === false ? "" : "--fi"
+              );
+            }
+
+            if (debug) {
+              console.log(
+                "scenario running fyn with args",
+                args.filter(x => x)
               );
             }
 
@@ -228,10 +240,11 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
+        "add-remove-pkg": { stopStep: "step-02" }
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
-        "fyn-central": {}
+        // "fyn-central": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}

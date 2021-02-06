@@ -1,0 +1,21 @@
+{
+  "name": "add-pkg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "fyn": {
+    "devDependencies": {
+      "mod-g": "../../fixtures/mod-g"
+    }
+  },
+  "devDependencies": {
+    "mod-d": "^1.0.0",
+    "mod-g": "^2.1.0"
+  },
+  "dependencies": {
+    "mod-a": "^2.0.0"
+  }
+}

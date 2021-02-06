@@ -1,5 +1,6 @@
 "use strict";
 
+const { expect } = require("chai");
 const fyntil = require("../../../lib/util/fyntil");
 
 describe("fyntil", function() {
@@ -115,6 +116,38 @@ describe("fyntil", function() {
           expect(error).to.exist;
           expect(error.message).to.equal("test failure");
         });
+    });
+  });
+
+  describe("checkValueSatisfyRules", () => {
+    it("should return true for no rules", () => {
+      expect(fyntil.checkValueSatisfyRules(null, "a")).equal(true);
+      expect(fyntil.checkValueSatisfyRules("", "a")).equal(true);
+    });
+
+    it("should deny ! value", () => {
+      expect(fyntil.checkValueSatisfyRules(["!test"], "test")).equal(false);
+    });
+
+    it("should return true for no explicit accept values", () => {
+      expect(fyntil.checkValueSatisfyRules([], "blah")).equal(true);
+      expect(fyntil.checkValueSatisfyRules(["!foo"], "blah")).equal(true);
+    });
+
+    it("should deny value that's not listed", () => {
+      expect(fyntil.checkValueSatisfyRules(["foo"], "blah")).equal(false);
+    });
+  });
+
+  describe("relativePath", () => {
+    it("return dir with leading .", () => {
+      expect(fyntil.relativePath("/blah/foo/test/abc", "/blah/foo/test/abc/def")).equals("./def");
+    });
+
+    it("return relative dir", () => {
+      expect(fyntil.relativePath("/blah/foo/test/abc", "/blah/foo/test/xyz/123")).equals(
+        "../xyz/123"
+      );
     });
   });
 });

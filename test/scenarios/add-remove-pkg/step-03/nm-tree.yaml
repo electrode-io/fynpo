@@ -1,0 +1,21 @@
+node_modules:
+  .bin: {}
+  .f:
+    .fyn.json: file
+    _:
+      mod-b:
+        2.0.0:
+          mod-b:
+            LICENSE: file
+            README.md: file
+            package.json:
+              id: mod-b@2.0.0
+      mod-d:
+        1.0.0:
+          mod-d:
+            LICENSE: file
+            README.md: file
+            package.json:
+              id: mod-d@1.0.0
+  mod-b: "-> .f/_/mod-b/2.0.0/mod-b"
+  mod-d: "-> .f/_/mod-d/1.0.0/mod-d"
