@@ -225,7 +225,9 @@ class FynCli {
         results.forEach(item => {
           if (item.semverPath) {
             // set in package-fyn
-            _.set(pkgFyn, ["fyn", item.section, item.name], item.found);
+            if (!this._fyn.isFynpo || !this._fyn._fynpo.packagesByName[item.name]) {
+              _.set(pkgFyn, ["fyn", item.section, item.name], item.found);
+            }
             // set in package if it's not there
             if (!_.get(pkg, [item.section, item.name])) {
               _.set(pkg, [item.section, item.name], item.version ? `^${item.version}` : item.found);
