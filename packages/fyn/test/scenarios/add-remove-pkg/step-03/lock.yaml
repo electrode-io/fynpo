@@ -1,0 +1,20 @@
+$pkg:
+ dev:
+  mod-d: ^1.0.0
+mod-b:
+ _latest: 2.0.0
+ _:
+  ^2.0.0: 2.0.0
+ 2.0.0:
+  $: sha1-08ELWBWzFomlG3x9hDQYJTU6I4I=
+  _: 'https://registry.npmjs.org/mod-b/-/mod-b-2.0.0.tgz'
+mod-d:
+ _latest: 1.0.0
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  top: 1
+  $: sha1-VNntO9nFKWIr3Bh0ABEo6IiRRug=
+  _: 'https://registry.npmjs.org/mod-d/-/mod-d-1.0.0.tgz'
+  dependencies:
+   mod-b: ^2.0.0
