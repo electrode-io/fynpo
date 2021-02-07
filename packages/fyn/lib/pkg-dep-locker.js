@@ -81,13 +81,13 @@ class PkgDepLocker {
           },
           {}
         );
-        const pkgLock = (lockData[name] = {});
+        const pkgLock = lockData[name] || (lockData[name] = {});
 
         if (pkg[LATEST_TAG_VERSION]) {
           pkgLock._latest = pkg[LATEST_TAG_VERSION];
         }
 
-        pkgLock._ = sortObjKeys(_semvers);
+        pkgLock._ = sortObjKeys({ ...pkgLock._, ..._semvers });
 
         /* eslint-disable complexity, max-statements */
         _.each(versions, version => {
@@ -140,7 +140,9 @@ class PkgDepLocker {
       });
     };
 
+    // add lock info for installed packages
     genFrom(depData.getPkgsData());
+    // now add lock info for packages that didn't install due to failures (optionalDependencies)
     genFrom(depData.getPkgsData(true));
   }
 
