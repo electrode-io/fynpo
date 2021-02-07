@@ -3967,12 +3967,8 @@ fsevents:
    - darwin
  1.2.12:
   optFailed: 2
-  hasI: 1
   $: sha512-Ggd/Ktt7E7I8pxZRbGIs7vwqAPscSESMrCSkx2FtWeqmheJgCo2R74fTsZFCifr0VTPwqRpPv17+6b8Zp7th0Q==
   _: 'https://registry.npmjs.org/fsevents/-/fsevents-1.2.12.tgz'
-  deprecated: 'fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.'
-  os:
-   - darwin
 fstream:
  _:
   ^1.0.0: 1.0.11
