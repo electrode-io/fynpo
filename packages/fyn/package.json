@@ -51,7 +51,7 @@
     "bluebird": "^3.5.1",
     "cacache": "jchip/cacache",
     "chalk": "^4.0.0",
-    "check-pkg-new-version-engine": "^1.0.0",
+    "check-pkg-new-version-engine": "^1.0.1",
     "ci-info": "^2.0.0",
     "es6-promisify": "./es6-promisify",
     "glob": "^7.1.6",

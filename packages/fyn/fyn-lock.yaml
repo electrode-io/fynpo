@@ -3,7 +3,7 @@ $pkg:
   bluebird: ^3.5.1
   cacache: jchip/cacache
   chalk: ^4.0.0
-  check-pkg-new-version-engine: ^1.0.0
+  check-pkg-new-version-engine: ^1.0.1
   ci-info: ^2.0.0
   es6-promisify: ./es6-promisify
   glob: ^7.1.6
@@ -2828,13 +2828,13 @@ check-error:
   $: sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=
   _: 'https://registry.npmjs.org/check-error/-/check-error-1.0.2.tgz'
 check-pkg-new-version-engine:
- _latest: 1.0.0
+ _latest: 1.0.1
  _:
-  ^1.0.0: 1.0.0
- 1.0.0:
+  ^1.0.1: 1.0.1
+ 1.0.1:
   top: 1
-  $: sha512-Z4vJT2qjFMj8RlxyWkds7uGt74TLeegtJyLpliJNFzk9dyb/8uxNLJnK9B9PM3zPMeiCAviSycRfoay+CmiqOg==
-  _: 'https://registry.npmjs.org/check-pkg-new-version-engine/-/check-pkg-new-version-engine-1.0.0.tgz'
+  $: sha512-POiM2XHZmI9+JJA4NChM8PpNJ+YzublbnNt8eCI/b4oQZuBRCxdDlksIN3SVkegt2CSCxuUm/Ya7SZZblCOeQQ==
+  _: 'https://registry.npmjs.org/check-pkg-new-version-engine/-/check-pkg-new-version-engine-1.0.1.tgz'
   dependencies:
    ci-info: ^2.0.0
    is-installed-globally: ^0.4.0
