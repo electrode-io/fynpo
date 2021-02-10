@@ -23,6 +23,21 @@ const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
 const xaa = require("../lib/util/xaa");
 const { scanFileStats, latestMtimeTag } = require("../lib/util/stat-dir");
+const { checkPkgNewVersionEngine } = require("check-pkg-new-version-engine");
+const fetch = require("node-fetch-npm");
+const myPkg = require("./mypkg");
+
+function checkNewVersion(npmConfig) {
+  checkPkgNewVersionEngine({
+    pkg: _.pick(myPkg, ["name", "version"]),
+    npmConfig,
+    checkIsNewer: (pkg, distTags, tag) => semver.gt(distTags[tag], pkg.version),
+    fetchJSON: async (url, options) => {
+      const res = await fetch(url, options);
+      return await res.json();
+    }
+  });
+}
 
 const {
   FETCH_META,
@@ -32,7 +47,6 @@ const {
   spinner
 } = require("../lib/log-items");
 
-const myPkg = require("./mypkg");
 const myDir = Path.join(__dirname, "..");
 
 class FynCli {
@@ -344,6 +358,8 @@ class FynCli {
     const start = Date.now();
     return Promise.try(() => this.fyn._initializePkg())
       .then(async () => {
+        checkNewVersion(this.fyn._options);
+
         if (
           !this.fyn._changeProdMode &&
           !this.fyn._options.forceInstall &&
@@ -449,7 +465,9 @@ class FynCli {
           await this.saveLogs(this._opts.saveLogs);
         }
 
-        return this.fyn.saveInstallConfig();
+        await this.fyn.saveInstallConfig();
+
+        fyntil.exit(0);
       });
   }
 
