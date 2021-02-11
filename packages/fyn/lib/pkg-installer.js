@@ -252,9 +252,8 @@ class PkgInstaller {
     depInfo.optFailed = 2;
     // remove files
     logger.info(
-      "removing optional pkg",
-      logFormat.pkgId(depInfo),
-      `and deps due to install failures` + (causeId ? ` of ${logFormat.pkgId(causeId)}` : "")
+      `${logFormat.pkgId(depInfo)}: package failed to install - remove and continue because it's`,
+      causeId ? `only needed by optional package ${logFormat.pkgId(causeId)}}` : "optional"
     );
     await this._removeDepsOf(depInfo, failedId);
     await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version));
