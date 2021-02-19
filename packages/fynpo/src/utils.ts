@@ -34,11 +34,12 @@ export const locateGlobalFyn = async (globalNmDir = null) => {
 
   if (!globalNmDir) {
     logger.error("Unable to locate your global node_modules from", process.argv[0]);
-    return "";
+    return {};
   }
 
   try {
     const dir = Path.join(globalNmDir, "fyn");
+    /* eslint-disable @typescript-eslint/no-var-requires */
     const pkgJson = require(Path.join(dir, "package.json"));
     return {
       dir,
@@ -61,7 +62,9 @@ function _searchForFynpo(cwd = process.cwd()) {
     try {
       config = JSON.parse(Fs.readFileSync(Path.join(dir, "fynpo.json")).toString());
       break;
-    } catch (e) {}
+    } catch (e) {
+      // Error
+    }
 
     try {
       lerna = JSON.parse(Fs.readFileSync(Path.join(dir, "lerna.json")).toString());
@@ -70,7 +73,9 @@ function _searchForFynpo(cwd = process.cwd()) {
         config = lerna;
         break;
       }
-    } catch (e) {}
+    } catch (e) {
+      // Error
+    }
 
     prevDir = dir;
     dir = Path.dirname(dir);

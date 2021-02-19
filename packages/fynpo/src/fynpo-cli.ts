@@ -66,8 +66,11 @@ const nixClap = new NixClap({
     parsed: (data) => {
       try {
         const cwd = data.parsed.opts.cwd || process.cwd();
+        /* eslint-disable @typescript-eslint/no-var-requires */
         data.nixClap.applyConfig(require(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
-      } catch (e) {}
+      } catch (e) {
+        // Error
+      }
     },
   },
 }).init(

@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, consistent-return */
 
 import Promise from "bluebird";
 import Fs from "fs";
@@ -11,7 +11,7 @@ import chalk from "chalk";
 import { isCI } from "./is-ci";
 const isWin32 = process.platform.startsWith("win32");
 
-const { locateGlobalFyn, loadConfig } = require("./utils");
+import { locateGlobalFyn, loadConfig } from "./utils";
 
 class Bootstrap {
   _opts;
@@ -205,13 +205,15 @@ ${data.error.output.stderr}
 
     if (!this._fyn) {
       this._fyn = require.resolve("fyn");
+      /* eslint-disable @typescript-eslint/no-var-requires */
       const fynPkgJson = require("fyn/package.json");
 
       const globalFynInfo = await locateGlobalFyn();
       if (globalFynInfo.dir) {
         if (globalFynInfo.pkgJson.version !== fynPkgJson.version) {
           logger.warn(
-            `You have fyn installed globally but its version ${globalFynInfo.pkgJson.version} is different from fynpo's internal version ${fynPkgJson.version}`
+            `You have fyn installed globally but its version ${globalFynInfo.pkgJson.version} \
+is different from fynpo's internal version ${fynPkgJson.version}`
           );
         } else {
           this._fyn = Path.join(globalFynInfo.dir, globalFynInfo.pkgJson.main);
@@ -254,7 +256,8 @@ ${data.error.output.stderr}
           visualLogger: logger
         });
 
-        ve.logFinalOutput = function(err, output) {};
+        // eslint-disable-next-line
+        ve.logFinalOutput = function (err, output) {};
         return ve.execute();
       },
       handlers: {

@@ -14,14 +14,14 @@ import * as utils from "./utils";
 // prepare packages for publish
 
 class Prepare {
-  _cwd; 
+  _cwd;
   _tag;
   _fynpoRc;
   _markers;
   _data;
   _versions;
   _tags;
-  
+
   constructor({ cwd, tag }, data) {
     this._cwd = cwd;
     this._tag = tag;
