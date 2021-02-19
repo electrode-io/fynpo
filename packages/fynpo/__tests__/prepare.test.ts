@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
-import Prepare from "../lib/prepare";
+import Prepare from "../src/prepare";
 import path from "path";
 import fs from "fs";
 import shcmd from "shcmd";
@@ -102,8 +102,8 @@ describe("fynpo prepare", () => {
   });
 
   it("read changelog", () => {
-      prepare.readChangelog();
-      expect(prepare._tags).toStrictEqual([ 'pkg1@3.0.1', 'pkg2@2.0.0' ]);
-      expect(prepare._versions).toStrictEqual({ pkg1: '3.0.1', pkg2: '2.0.0' });
-  })
+    prepare.readChangelog();
+    expect(prepare._tags).toStrictEqual(["pkg1@3.0.1", "pkg2@2.0.0"]);
+    expect(prepare._versions).toStrictEqual({ pkg1: "3.0.1", pkg2: "2.0.0" });
+  });
 });

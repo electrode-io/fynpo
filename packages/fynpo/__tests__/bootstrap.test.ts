@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "@jest/globals";
-import Bootstrap from "../lib/bootstrap";
+import Bootstrap from "../src/bootstrap";
 import path from "path";
 
 describe("fynpo bootstrap", () => {
@@ -30,13 +30,13 @@ describe("fynpo bootstrap", () => {
         name: "pkg2",
         version: "1.0.0",
         path: path.join(dir, "packages/pkg2/package.json"),
-        localDeps: ['pkg1'],
+        localDeps: ["pkg1"],
       },
       pkg3: {
         name: "pkg3",
         version: "1.0.0",
         path: path.join(dir, "packages/pkg3/package.json"),
-        localDeps: ['pkg2'],
+        localDeps: ["pkg2"],
       },
       pkg4: {
         name: "pkg4",
@@ -46,7 +46,7 @@ describe("fynpo bootstrap", () => {
       },
     },
     circulars: [],
-    ignores: [ "pkg4" ],
+    ignores: ["pkg4"],
   };
 
   let bootstrap;
@@ -68,10 +68,10 @@ describe("fynpo bootstrap", () => {
           localDeps: [],
         },
         pkg2: {
-          localDeps: ['pkg3'],
+          localDeps: ["pkg3"],
         },
         pkg3: {
-          ignore: true
+          ignore: true,
         },
       },
     };
@@ -90,26 +90,26 @@ describe("fynpo bootstrap", () => {
       packages: {
         pkg1: {
           name: "pkg1",
-          localDeps: [ "pkg5" ],
+          localDeps: ["pkg5"],
         },
         pkg2: {
           name: "pkg2",
-          localDeps: ['pkg1'],
+          localDeps: ["pkg1"],
         },
         pkg3: {
           name: "pkg3",
           localDeps: [],
-          installed: "pending"
+          installed: "pending",
         },
         pkg4: {
           name: "pkg4",
           localDeps: [],
-          ignore: true
+          ignore: true,
         },
         pkg5: {
           name: "pkg5",
           localDeps: [],
-          installed: true
+          installed: true,
         },
       },
     };

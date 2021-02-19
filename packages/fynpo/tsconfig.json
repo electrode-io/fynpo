@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "lib": [
-      "es2018"
-    ],
+    "lib": ["es2018"],
     "module": "CommonJS",
     "esModuleInterop": true,
     "importHelpers": true,
@@ -11,17 +9,11 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "alwaysStrict": true,
     "strictFunctionTypes": true
   },
-  "include": [
-    "cli",
-    "lib"
-  ]
+  "include": ["src"]
 }

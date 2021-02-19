@@ -32,7 +32,7 @@
     "url": "https://github.com/jchip/fynpo.git"
   },
   "bin": {
-    "fynpo": "dist/cli/fynpo.js"
+    "fynpo": "dist/fynpo-cli.js"
   },
   "dependencies": {
     "bluebird": "^3.5.1",

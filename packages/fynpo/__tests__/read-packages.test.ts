@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import readPackages from "../lib/read-packages";
+import readPackages from "../src/read-packages";
 import path from "path";
 
 describe("read packages from repo", () => {

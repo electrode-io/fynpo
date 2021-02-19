@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll } from "@jest/globals";
-import { loadConfig } from "../lib/utils";
+import { loadConfig } from "../src/utils";
 import path from "path";
 import fs from "fs";
 import shcmd from "shcmd";

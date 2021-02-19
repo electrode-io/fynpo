@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import makePkgDeps from "../lib/make-pkg-deps";
+import makePkgDeps from "../src/make-pkg-deps";
 
 describe("make package dependencies", () => {
   const packages = {

@@ -2,14 +2,14 @@
 
 import Path from "path";
 import NixClap from "nix-clap";
-import Bootstrap from "../lib/bootstrap";
-import Prepare from "../lib/prepare";
-import makePkgDeps from "../lib/make-pkg-deps";
-import readPackages from "../lib/read-packages";
-import logger from "../lib/logger";
+import Bootstrap from "./bootstrap";
+import Prepare from "./prepare";
+import makePkgDeps from "./make-pkg-deps";
+import readPackages from "./read-packages";
+import logger from "./logger";
 import Fs from "fs";
 
-const makeBootstrap = parsed => {
+const makeBootstrap = (parsed) => {
   const cwd = parsed.opts.cwd || process.cwd();
   return new Bootstrap(
     makePkgDeps(readPackages(cwd), parsed.opts.ignore || [], parsed.opts.only || []),
@@ -17,7 +17,7 @@ const makeBootstrap = parsed => {
   );
 };
 
-const execBootstrap = parsed => {
+const execBootstrap = (parsed) => {
   const bootstrap = makeBootstrap(parsed);
   let statusCode = 0;
   logger.debug("CLI options", JSON.stringify(parsed));
@@ -26,7 +26,7 @@ const execBootstrap = parsed => {
       build: parsed.opts.build,
       fynOpts: parsed.opts.fynOpts,
       concurrency: parsed.opts.concurrency,
-      skip: parsed.opts.skip
+      skip: parsed.opts.skip,
     })
     .then(
       () => {
@@ -47,63 +47,66 @@ const execBootstrap = parsed => {
     });
 };
 
-const execLocal = parsed => {
+const execLocal = (parsed) => {
   return makeBootstrap(parsed).updateToLocal();
 };
 
-const execPrepare = parsed => {
+const execPrepare = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])).exec();
+  return new Prepare(
+    opts,
+    makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])
+  ).exec();
 };
 
 const nixClap = new NixClap({
   usage: "$0 [command] [options]",
   handlers: {
-    parsed: data => {
+    parsed: (data) => {
       try {
         const cwd = data.parsed.opts.cwd || process.cwd();
         data.nixClap.applyConfig(require(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
       } catch (e) {}
-    }
-  }
+    },
+  },
 }).init(
   {
     cwd: {
       type: "string",
-      desc: "set fynpo's working directory"
+      desc: "set fynpo's working directory",
     },
     ignore: {
       alias: "i",
       type: "string array",
-      desc: "list of packages to ignore"
+      desc: "list of packages to ignore",
     },
     skip: {
       type: "string array",
-      desc: "list of packages to skip running fyn install on, but won't ignore"
+      desc: "list of packages to skip running fyn install on, but won't ignore",
     },
     only: {
       alias: "o",
       type: "string array",
-      desc: "list of packages to handle only"
+      desc: "list of packages to handle only",
     },
     deps: {
       alias: "d",
       type: "number",
       default: 10,
-      desc: "level of deps to include even if they were ignored"
+      desc: "level of deps to include even if they were ignored",
     },
     "save-log": {
       alias: "sl",
       type: "boolean",
       default: false,
-      desc: "save logs to fynpo-debug.log"
+      desc: "save logs to fynpo-debug.log",
     },
     tag: {
       type: "boolean",
       default: true,
-      desc: "no-tag to skip creating tags"
-    }
+      desc: "no-tag to skip creating tags",
+    },
   },
   {
     bootstrap: {
@@ -115,26 +118,26 @@ const nixClap = new NixClap({
         build: {
           type: "boolean",
           default: true,
-          desc: "run npm script build if no prepare"
+          desc: "run npm script build if no prepare",
         },
         concurrency: {
           alias: "cc",
           type: "number",
           default: 3,
-          desc: "number of packages to bootstrap concurrently"
-        }
-      }
+          desc: "number of packages to bootstrap concurrently",
+        },
+      },
     },
     local: {
       alias: "l",
       desc: "update packages dependencies to point to local",
-      exec: execLocal
+      exec: execLocal,
     },
     prepare: {
       alias: "p",
       desc: "Prepare packages versions for publish",
-      exec: execPrepare
-    }
+      exec: execPrepare,
+    },
   }
 );
 
