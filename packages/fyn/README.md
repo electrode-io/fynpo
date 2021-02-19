@@ -1,6 +1,4 @@
-# fyn
-
-**A fast node package manager for better productivity and efficiency**
+# fyn <!-- omit in toc -->
 
 [![NPM version][npm-image]][npm-url]
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
@@ -8,17 +6,20 @@
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-`fyn` is a super fast node package manager with some unique features:
+**fyn** makes your disk a npm registry. Code, publish, and test all your packages using local copies directly.
+
+It is a super fast node package manager with some unique features to improve productivity and efficiency:
 
 - enhanced [npm link] with [fynlocal mode](#fynlocal-mode)
 - efficient disk space usage with [central storage](#central-storage)
 - smaller `node_modules` with [guaranteed single copy of a package](#smaller-node_modules)
 - flexible dependencies lock by using a [lock time stamp](#locking-dependencies-by-time)
+- built-in support for maintaining a mono-repo project
 - and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
 
-## Quick Start
+## Quick Start <!-- omit in toc -->
 
 Interested in giving it a quick test? Just install and run it on your project:
 
@@ -28,41 +29,51 @@ cd <your-project>
 fyn
 ```
 
+Want to add a package on your local disk as a dependency to your project? Do this:
+
+```sh
+fyn add ../another-package
+```
+
+To see detailed stats about any package, use the `stat` command:
+
+```sh
+fyn stat lodash
+```
+
 - It can read and use some settings from your `.npmrc`.
 - It can use `npm-shrinkwrap.json` or `package-lock.json` files.
 
-## Table Of Contents
+Want to find out more? Please read on below:
 
-- [fyn](#fyn)
-  - [Quick Start](#quick-start)
-  - [Table Of Contents](#table-of-contents)
-  - [Features](#features)
-    - [Unique](#unique)
-    - [General](#general)
-  - [Overview](#overview)
-  - [Rationale](#rationale)
-  - [Enhanced `npm link`](#enhanced-npm-link)
-    - [`fynlocal` mode](#fynlocal-mode)
-  - [Smaller `node_modules`](#smaller-node_modules)
-  - [Easier Debugging `node_modules`](#easier-debugging-node_modules)
-  - [Using fyn](#using-fyn)
-    - [Installing `fyn`](#installing-fyn)
-    - [Installing Your Dependencies](#installing-your-dependencies)
-    - [Running npm scripts](#running-npm-scripts)
-    - [The `stat` command](#the-stat-command)
-      - [Locking Dependencies by Time](#locking-dependencies-by-time)
-    - [Refreshing Optional Dependencies](#refreshing-optional-dependencies)
-      - [Using with Lerna](#using-with-lerna)
-  - [Configuring fyn](#configuring-fyn)
-    - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
-    - [Other RC Options](#other-rc-options)
-      - [Scope registry](#scope-registry)
-    - [Central Storage](#central-storage)
-  - [Other Info](#other-info)
-    - [Compatibility](#compatibility)
-    - [Package Resolution and Layout](#package-resolution-and-layout)
-    - [Thank you `npm`](#thank-you-npm)
-  - [License](#license)
+## Table Of Contents <!-- omit in toc -->
+
+- [Features](#features)
+  - [Unique](#unique)
+  - [General](#general)
+- [Overview](#overview)
+- [Rationale](#rationale)
+- [Enhanced `npm link`](#enhanced-npm-link)
+  - [`fynlocal` mode](#fynlocal-mode)
+- [Smaller `node_modules`](#smaller-node_modules)
+- [Easier Debugging `node_modules`](#easier-debugging-node_modules)
+- [Using fyn](#using-fyn)
+  - [Installing `fyn`](#installing-fyn)
+  - [Installing Your Dependencies](#installing-your-dependencies)
+  - [Running npm scripts](#running-npm-scripts)
+  - [The `stat` command](#the-stat-command)
+    - [Locking Dependencies by Time](#locking-dependencies-by-time)
+  - [Refreshing Optional Dependencies](#refreshing-optional-dependencies)
+    - [Using with Lerna](#using-with-lerna)
+- [Configuring fyn](#configuring-fyn)
+  - [Command Line Option to RC Mapping](#command-line-option-to-rc-mapping)
+  - [Other RC Options](#other-rc-options)
+    - [Scope registry](#scope-registry)
+  - [Central Storage](#central-storage)
+- [Other Info](#other-info)
+  - [Compatibility](#compatibility)
+  - [Thank you `npm`](#thank-you-npm)
+- [License](#license)
 
 ## Features
 
@@ -90,11 +101,11 @@ fyn
 - Compatible with [npm] by internally using the same modules as [npm].
 - Maintains as much of [npm]'s behaviors as possible.
 - Able to use [npm]'s `npm-shrinkwrap.json` or `package-lock.json`.
+- built-in support for maintaining a mono-repo workspace.
 
 ## Overview
 
-`fyn` is the result of a long pursuit to make developing and managing large and complex software in Node.js easier.
-To realize that, it ultimately ends up being a node package manager.
+`fyn` is the result of a long pursuit to make developing and managing large and complex software in Node.js easier. To realize that, it ultimately ends up being a node package manager.
 
 It started out as small experiments for a single goal of better local package installing and linking, ie: better [npm link], but has gradually grown to a fully functional node package manager for the [flat node_modules design]. It is fast, production quality, and maintains [100% compatibility](#compatibility).
 
@@ -110,11 +121,11 @@ So why would you want to use this?
 
 It also has a special `fynlocal` mode that's a better [npm link] for handling local packages.
 
-If your development in Node.js are typically simple and involves only a single module or small applications, then `fyn`'s advantage may not be apparent to you, but if your Node.js project is large and complex, then fyn may be helpful to you. Please read further to learn more.
+It's workspace aware and fits perfectly with the mono-repo concept.
 
 ## Enhanced `npm link`
 
-`fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It treats packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It would be very useful if you've ever done any of these:
+`fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It effectively makes your disk a npm registry by treating packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It fits perfectly with the mono-repo workspace concept. It would be very useful if you've ever done any of these:
 
 - Debug your application by inspecting code inside `node_modules`.
 - Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.
@@ -123,7 +134,7 @@ If your development in Node.js are typically simple and involves only a single m
 
 ### `fynlocal` mode
 
-What is this? Think [npm link], but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published.
+What is this? Think [npm link], but better. `fyn` subjects local packages to the same dependency resolution logic as those from the npm registry. Then you can test changes to any module locally as if they were published, which basically makes your disk a npm registry.
 
 To enable, use the path to your local modules as semver in your package.json, or you can use the `fyn add` command.
 
@@ -143,9 +154,7 @@ If you add/remove files/directories in your local package, then running `fyn` in
 
 As a package manager, `fyn` employs a different approach that installs only one copy of every required versions of a package in a flat node_modules structure. Hence the name `fyn`, which stands for Flatten Your Node_modules.
 
-At the top level, it installs a chosen version of each package. All other versions are installed under the directory `node_modules/__fv_/<version>/<package_name>`.
-
-When necessary, packages have their own `node_modules` with symlinks/junctions inside pointing to dependencies under `__fv_`.
+It installs a copy of each version under the directory `node_modules/.f/_/<package_name>/<version>`. And it uses symlink to hoist a single version to `node_modules` for visibility. A package may have their own `node_modules` to resolve version differences.
 
 This approach has the benefit of guaranteeing a single copy of a package installed and therefore slightly smaller size `node_modules`.
 
@@ -196,12 +205,30 @@ It has a `stat` command that's very fast and can let you know all copies of a pa
 For example:
 
 ```sh
-$ fyn stat chalk
-> loaded lockfile ~/fyn
-> done resolving dependencies 0.113secs
-> chalk matched these installed versions chalk@2.4.1, chalk@1.1.3(fv)
-> chalk@2.4.1 has these dependents eslint@4.19.1, inquirer@3.3.0, table@4.0.2, visual-exec@0.1.0, visual-logger@0.1.8, webpack-bundle-analyzer@2.13.1, xclap@0.2.24, ~package.json
-> chalk@1.1.3 has these dependents babel-code-frame@6.26.0, electrode-server@1.5.1
+> loaded lockfile
+> done resolving dependencies 0.157secs
+lodash matched these installed versions lodash@4.17.20
+=> lodash@4.17.20 has 15 dependents: @babel/core@7.12.13 @babel/helper-module-transforms@7.12.13 @babel/traverse@7.12.13 @babel/types@7.12.13 @eslint/eslintrc@0.3.0 @xarc/module-dev@3.2.1 async@2.6.3 electrode-confippet@1.6.0 electrode-server@3.3.0 eslint@7.19.0 eslint-plugin-jsdoc@30.7.13 table@6.0.7 webpack-bundle-analyzer@3.9.0 ~package.json
+=> lodash@4.17.20 has 258 dependency paths, showing the 18 most significant ones below:
+  > @babel/preset-env@7.12.13 > @babel/plugin-transform-modules-amd@7.12.13 > @babel/helper-module-transforms@7.12.13 > lodash@4.17.20
+  > @babel/preset-env@7.12.13 > @babel/plugin-transform-modules-commonjs@7.12.13 > @babel/helper-module-transforms@7.12.13 > lodash@4.17.20
+  > @babel/preset-env@7.12.13 > @babel/plugin-transform-modules-systemjs@7.12.13 > @babel/helper-module-transforms@7.12.13 > lodash@4.17.20
+  > @babel/preset-env@7.12.13 > @babel/plugin-transform-modules-umd@7.12.13 > @babel/helper-module-transforms@7.12.13 > lodash@4.17.20
+  > @babel/preset-env@7.12.13 > @babel/types@7.12.13 > lodash@4.17.20
+  > @xarc/module-dev@3.2.1 > lodash@4.17.20
+  > babel-eslint@10.1.0 > @babel/traverse@7.12.13 > lodash@4.17.20
+  > babel-eslint@10.1.0 > @babel/types@7.12.13 > lodash@4.17.20
+  > electrode-server@3.3.0 > async-eventemitter@0.2.4 > async@2.6.3 > lodash@4.17.20
+  > electrode-server@3.3.0 > electrode-confippet@1.6.0 > lodash@4.17.20
+  > electrode-server@3.3.0 > lodash@4.17.20
+  > eslint-plugin-jsdoc@30.7.13 > lodash@4.17.20
+  > eslint@7.19.0 > @eslint/eslintrc@0.3.0 > lodash@4.17.20
+  > eslint@7.19.0 > lodash@4.17.20
+  > eslint@7.19.0 > table@6.0.7 > lodash@4.17.20
+  > lodash@4.17.20
+  > nyc@15.1.0 > istanbul-lib-instrument@4.0.3 > @babel/core@7.12.13 > lodash@4.17.20
+  > webpack-bundle-analyzer@3.9.0 > lodash@4.17.20
+> stat completed for lodash
 ```
 
 #### Locking Dependencies by Time
@@ -382,21 +409,9 @@ And to work around the issues, `fyn` does the following:
 
 - `fyn` uses npm's [pacote] to do data retrieval. That means its package data handling is the same as npm and it can use npm's cache directly.
 
-- The way `fyn` uses symlinks to resolve nested dependencies is also fully compatible with Node.js. The only caveat is Node.js module loader always resolve a package's path to its real path.
+* `fyn` will take [npm]'s `npm-shrinkwrap.json` or `package-lock.json` if its own `fyn-lock.yaml` file doesn't exist, but will save `fyn-lock.yaml` after.
 
-  For example, if `A` depends on `B@1.0.0` that's not at the top level, then `node_modules/A/node_modules/B` is a symlink to `node_modules/B/__fv_/1.0.0/B`.
-
-  Without preserve symlinks, `B`'s path would be resolved to the real path `node_modules/B/__fv_/1.0.0/B`, instead of the symlink path `node_modules/A/node_modules/B`.
-
-  If you want to keep the symlink path, then set the environment variable [NODE_PRESERVE_SYMLINKS] to `1`. It doesn't affect normal operations either way unless you have code that explicitly depend on the path, which should be avoided. The subtle difference is that with preserve symlink, each symlink path of the same module will be loaded as its own instance by Node's module system.
-
-- `fyn` will take [npm]'s `npm-shrinkwrap.json` or `package-lock.json` if its own `fyn-lock.yaml` file doesn't exist, but will save `fyn-lock.yaml` after.
-
-### Package Resolution and Layout
-
-As a package manager, the top level `node_modules` installed by `fyn` is a flat list of all the modules your application needs. It's easier to view and smaller in size. Extra versions of a module will be installed under a directory `__fv_` and linked with symlink or dir junction on Windows.
-
-`fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
+* `fyn` has an asynchronous and concurrent dependency resolution engine that is 100% compatible with node's nesting design, and properly handles `optionalDependencies`.
 
 ### Thank you `npm`
 
