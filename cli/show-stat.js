@@ -167,7 +167,7 @@ class ShowStat {
           const pkgId = getPkgId(pkg);
 
           if (output.indexOf(pkgId) >= 0) {
-            logger.error("stat detected circular dependency:", pkgId, output.join(" "));
+            logger.debug("stat detected circular dependency:", pkgId, output.join(" "));
             return;
           }
 
