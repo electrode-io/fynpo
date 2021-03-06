@@ -4,6 +4,9 @@ import Path from "path";
 import NixClap from "nix-clap";
 import Bootstrap from "./bootstrap";
 import Prepare from "./prepare";
+import Changelog from "./update-changelog";
+import Publish from "./publish";
+import Run from "./run";
 import makePkgDeps from "./make-pkg-deps";
 import readPackages from "./read-packages";
 import logger from "./logger";
@@ -60,6 +63,27 @@ const execPrepare = (parsed) => {
   ).exec();
 };
 
+const execChangelog = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Changelog(
+    opts,
+    makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])
+  ).exec();
+};
+
+const execPublish = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Publish(opts, readPackages(opts.cwd)).exec();
+};
+
+const execRunScript = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Run(opts, parsed.args, readPackages(opts.cwd)).exec();
+};
+
 const nixClap = new NixClap({
   usage: "$0 [command] [options]",
   handlers: {
@@ -107,8 +131,8 @@ const nixClap = new NixClap({
     },
     tag: {
       type: "boolean",
-      default: true,
-      desc: "no-tag to skip creating tags",
+      default: false,
+      desc: "create tags for individual packages",
     },
   },
   {
@@ -140,6 +164,38 @@ const nixClap = new NixClap({
       alias: "p",
       desc: "Prepare packages versions for publish",
       exec: execPrepare,
+    },
+    changelog: {
+      alias: "c",
+      desc: "Update changelog",
+      exec: execChangelog,
+    },
+    run: {
+      alias: "r",
+      desc: "Run passed npm script in each package",
+      args: "<script>",
+      exec: execRunScript,
+    },
+    publish: {
+      alias: "pb",
+      desc: "Publish Packages",
+      exec: execPublish,
+      options: {
+        "dist-tag": {
+          type: "string",
+          desc: "set publish tag for all packages",
+        },
+        "dry-run": {
+          type: "boolean",
+          default: false,
+          desc: "publish dry run",
+        },
+        push: {
+          type: "boolean",
+          default: true,
+          desc: "no-push to skip pushing release tag to remote",
+        },
+      },
     },
   }
 );

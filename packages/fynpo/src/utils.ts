@@ -43,7 +43,7 @@ export const locateGlobalFyn = async (globalNmDir = null) => {
     const pkgJson = require(Path.join(dir, "package.json"));
     return {
       dir,
-      pkgJson
+      pkgJson,
     };
   } catch (e) {
     return {};
@@ -106,4 +106,9 @@ export const loadConfig = (cwd = process.cwd()) => {
   }
 
   return { fynpoRc, dir };
+};
+
+export const getRootScripts = (cwd = process.cwd()) => {
+  const config = JSON.parse(Fs.readFileSync(Path.join(cwd, "package.json")).toString());
+  return config.scripts || {};
 };

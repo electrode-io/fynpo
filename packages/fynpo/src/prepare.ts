@@ -143,23 +143,19 @@ that's not latest but none set in lerna.json`
     return this._sh(`git add ${packages.map(x => `"${x}"`).join(" ")}`)
       .then(output => {
         logger.info("git add", output);
-        return this._sh(`git commit -m Publish -m " - ${this._tags.join("\n - ")}"`);
+        return this._sh(`git commit -m [Publish] -m " - ${this._tags.join("\n - ")}"`);
       })
       .then(output => {
         logger.info("git commit", output);
-        return this._sh(`git log --format="%h" -n 1`);
-      })
-      .then(output => {
+
         if (this._tag === false) {
           return false;
         }
 
-        const commitIds = output.stdout.split("\n").filter(x => x.trim().length > 0);
-        const newTag = `gtp-publish-${commitIds[0]}`;
-
-        return Promise.try(() => {
-          return this._sh(`git tag -a ${newTag} -m "Publish Tag"`).then(tagOut => {
-            logger.info("tag", newTag, "output", tagOut);
+        return Promise.each(this._tags, tag => {
+          logger.info("tagging", tag);
+          return this._sh(`git tag ${tag}`).then(tagOut => {
+            logger.info("tag", tag, "output", tagOut);
           });
         });
       });
