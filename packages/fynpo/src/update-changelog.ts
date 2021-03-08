@@ -10,7 +10,7 @@
  *
  */
 
- /* eslint-disable complexity, consistent-return, max-depth */
+/* eslint-disable complexity, consistent-return, max-depth */
 
 import Fs from "fs";
 import xsh from "xsh";
@@ -24,13 +24,12 @@ import _ from "lodash";
 import * as utils from "./utils";
 import logger from "./logger";
 
-const changeLogFile = Path.resolve("CHANGELOG.md");
-const changeLog = Fs.readFileSync(changeLogFile).toString();
-
 export default class Changelog {
   _cwd;
   _fynpoRc;
   _data;
+  _changeLogFile;
+  _changeLog;
 
   constructor({ cwd }, data) {
     this._cwd = cwd;
@@ -38,6 +37,13 @@ export default class Changelog {
     this._cwd = dir || cwd;
     this._fynpoRc = fynpoRc || {};
     this._data = data;
+    try {
+      this._changeLogFile = Path.resolve("CHANGELOG.md");
+      this._changeLog = Fs.readFileSync(this._changeLogFile).toString();
+    } catch {
+      this._changeLogFile = Path.join(this._cwd, "CHANGELOG.md");
+      this._changeLog = "";
+    }
   }
 
   _sh(command) {
@@ -57,6 +63,17 @@ export default class Changelog {
       .catch(() => false);
   };
 
+  checkIfTagExists = () => {
+    return this._sh(`git tag --list fynpo-rel-*`).then((output) => {
+      const tagInfo = output.stdout.split("\n").filter((x) => x.trim().length > 0);
+      if (!tagInfo.length) {
+        logger.info("Can't find latest release tag. Assuming all packages changed.");
+        return;
+      }
+      return this.getLatestTag();
+    });
+  };
+
   getLatestTag = () => {
     return this._sh(`git describe --abbrev=0 --match fynpo-rel-*`).then((output) => {
       const tagInfo = output.stdout.split("\n").filter((x) => x.trim().length > 0);
@@ -67,43 +84,48 @@ export default class Changelog {
   };
 
   getUpdatedPackages = (latestTag) => {
-    return this._sh(`git diff --name-only HEAD ${latestTag}`).then((output) => {
-      const files = output.stdout.split("\n").filter((x) => x.trim().length > 0);
-      const pkgNames = [];
+    if (latestTag) {
+      return this._sh(`git diff --name-only HEAD ${latestTag}`).then((output) => {
+        const files = output.stdout.split("\n").filter((x) => x.trim().length > 0);
+        const pkgNames = [];
 
-      files.forEach((x) => {
-        const parts = x.split("/");
-        if (parts[0] === "packages") {
-          if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
-            /* eslint-disable @typescript-eslint/no-var-requires */
-            const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
-            pkgNames.push(Pkg.name);
-          }
-        }
-      });
-
-      if (pkgNames.length > 0) {
-        logger.info(`Since tag '${latestTag}', these packages changed: ${pkgNames.join(" ")}`);
-        pkgNames.forEach((name) => {
-          const pkgData = this._data.packages[name] || {};
-          if (pkgData.dependents && pkgData.dependents.length > 0) {
-            pkgNames.push(...pkgData.dependents);
+        files.forEach((x) => {
+          const parts = x.split("/");
+          if (parts[0] === "packages") {
+            if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
+              /* eslint-disable @typescript-eslint/no-var-requires */
+              const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
+              pkgNames.push(Pkg.name);
+            }
           }
         });
-      } else {
-        logger.warn(`no packages changed since tag '${latestTag}'`);
-        process.exit(1);
-      }
 
-      return { tag: latestTag, packages: _.uniq(pkgNames) };
-    });
+        if (pkgNames.length > 0) {
+          logger.info(`Since tag '${latestTag}', these packages changed: ${pkgNames.join(" ")}`);
+          pkgNames.forEach((name) => {
+            const pkgData = this._data.packages[name] || {};
+            if (pkgData.dependents && pkgData.dependents.length > 0) {
+              pkgNames.push(...pkgData.dependents);
+            }
+          });
+        } else {
+          logger.warn(`no packages changed since tag '${latestTag}'`);
+          process.exit(1);
+        }
 
-    // return { pkgNames };
-    //return { pkgNames, packages, pkgDirMap };
+        return { tag: latestTag, packages: _.uniq(pkgNames) };
+      });
+    } else {
+      return { tag: latestTag, packages: Object.keys(this._data.packages) };
+    }
   };
 
   listGitCommits = ({ tag, packages }) => {
-    return this._sh(`git log ${tag}...HEAD --pretty=format:'%H %s'`)
+    const logCmd = tag
+      ? `git log ${tag}...HEAD --pretty=format:'%H %s'`
+      : `git log --pretty=format:'%H %s'`;
+
+    return this._sh(logCmd)
       .then((output) => {
         const commits = output.stdout
           .split("\n")
@@ -120,7 +142,7 @@ export default class Changelog {
         );
       })
       .then((commits) => {
-        if (changeLog.indexOf(commits.ids[0]) >= 0) {
+        if (this._changeLog.indexOf(commits.ids[0]) >= 0) {
           logger.error("change log already contain a commit from new commits");
           process.exit(1);
         }
@@ -142,42 +164,44 @@ export default class Changelog {
     return Promise.map(
       commitIds,
       (id) => {
-        return this._sh(`git diff-tree --no-commit-id --name-only -r ${id}`).then((output) => {
-          // determine packages changed
-          const files = output.stdout.split("\n").filter((x) => x.trim().length > 0);
-          const handled = { packages: {}, others: {}, files: {} };
-          files.reduce((a, x) => {
-            const parts = x.split("/");
-            const add = (group, key) => {
-              if (handled[group][key]) return;
-              a[group][key] ??= {};
-              if (!a[group][key].msgs) {
-                a[group][key].msgs = [];
-              }
-              a[group][key].msgs.push({ m: commits[id], id });
-              handled[group][key] = true;
-            };
-
-            if (parts[0] === "packages") {
-              if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
-                /* eslint-disable @typescript-eslint/no-var-requires */
-                const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
-                if (collated.realPackages.indexOf(Pkg.name) < 0) {
-                  collated.realPackages.push(Pkg.name);
-                  a.packages[Pkg.name] = { dirName: parts[1] };
+        return this._sh(`git diff-tree --no-commit-id --name-only --root -r ${id}`).then(
+          (output) => {
+            // determine packages changed
+            const files = output.stdout.split("\n").filter((x) => x.trim().length > 0);
+            const handled = { packages: {}, others: {}, files: {} };
+            files.reduce((a, x) => {
+              const parts = x.split("/");
+              const add = (group, key) => {
+                if (handled[group][key]) return;
+                a[group][key] ??= {};
+                if (!a[group][key].msgs) {
+                  a[group][key].msgs = [];
                 }
-                add(parts[0], Pkg.name);
-              }
-            } else if (parts.length > 1) {
-              add("others", parts[0]);
-            } else {
-              add("files", parts[0]);
-            }
+                a[group][key].msgs.push({ m: commits[id], id });
+                handled[group][key] = true;
+              };
 
-            return a;
-          }, collated);
-          return "";
-        });
+              if (parts[0] === "packages") {
+                if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
+                  /* eslint-disable @typescript-eslint/no-var-requires */
+                  const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
+                  if (collated.realPackages.indexOf(Pkg.name) < 0) {
+                    collated.realPackages.push(Pkg.name);
+                    a.packages[Pkg.name] = { dirName: parts[1] };
+                  }
+                  add(parts[0], Pkg.name);
+                }
+              } else if (parts.length > 1) {
+                add("others", parts[0]);
+              } else {
+                add("files", parts[0]);
+              }
+
+              return a;
+            }, collated);
+            return "";
+          }
+        );
       },
       { concurrency: 1 }
     ).then(() => {
@@ -345,7 +369,7 @@ export default class Changelog {
     outputCommitMsgs(filesItems, "");
 
     const updateText = output.join("");
-    Fs.writeFileSync(changeLogFile, `${updateText}${changeLog}`);
+    Fs.writeFileSync(this._changeLogFile, `${updateText}${this._changeLog}`);
   };
 
   commitChangeLogFile = (gitClean) => {
@@ -354,7 +378,7 @@ export default class Changelog {
       logger.warn("Your git branch is not clean, skip committing changelog file");
       return;
     }
-    return this._sh(`git add ${changeLogFile} && git commit -m "Update changelog"`)
+    return this._sh(`git add ${this._changeLogFile} && git commit -m "Update changelog"`)
       .then(() => {
         logger.info("Changelog committed");
       })
@@ -364,7 +388,7 @@ export default class Changelog {
   };
 
   async exec() {
-    return this.getLatestTag()
+    return this.checkIfTagExists()
       .then(this.getUpdatedPackages)
       .then(this.listGitCommits)
       .then(this.collateCommitsPackages)
