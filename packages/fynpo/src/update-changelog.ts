@@ -30,6 +30,8 @@ export default class Changelog {
   _data;
   _changeLogFile;
   _changeLog;
+  _lockAll;
+  _versionLockMap;
 
   constructor({ cwd }, data) {
     this._cwd = cwd;
@@ -37,6 +39,19 @@ export default class Changelog {
     this._cwd = dir || cwd;
     this._fynpoRc = fynpoRc || {};
     this._data = data;
+    this._versionLockMap = {};
+
+    const versionLocks = _.get(this._fynpoRc, "versionLocks", []);
+
+    if (versionLocks[0] && versionLocks[0] === "*") {
+      this._lockAll = true;
+    } else {
+      versionLocks.reduce((mapping, locks) => {
+        locks.forEach((name) => (mapping[name] = locks));
+        return mapping;
+      }, this._versionLockMap);
+    }
+
     try {
       this._changeLogFile = Path.resolve("CHANGELOG.md");
       this._changeLog = Fs.readFileSync(this._changeLogFile).toString();
@@ -83,44 +98,7 @@ export default class Changelog {
     });
   };
 
-  getUpdatedPackages = (latestTag) => {
-    if (latestTag) {
-      return this._sh(`git diff --name-only HEAD ${latestTag}`).then((output) => {
-        const files = output.stdout.split("\n").filter((x) => x.trim().length > 0);
-        const pkgNames = [];
-
-        files.forEach((x) => {
-          const parts = x.split("/");
-          if (parts[0] === "packages") {
-            if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
-              /* eslint-disable @typescript-eslint/no-var-requires */
-              const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
-              pkgNames.push(Pkg.name);
-            }
-          }
-        });
-
-        if (pkgNames.length > 0) {
-          logger.info(`Since tag '${latestTag}', these packages changed: ${pkgNames.join(" ")}`);
-          pkgNames.forEach((name) => {
-            const pkgData = this._data.packages[name] || {};
-            if (pkgData.dependents && pkgData.dependents.length > 0) {
-              pkgNames.push(...pkgData.dependents);
-            }
-          });
-        } else {
-          logger.warn(`no packages changed since tag '${latestTag}'`);
-          process.exit(1);
-        }
-
-        return { tag: latestTag, packages: _.uniq(pkgNames) };
-      });
-    } else {
-      return { tag: latestTag, packages: Object.keys(this._data.packages) };
-    }
-  };
-
-  listGitCommits = ({ tag, packages }) => {
+  listGitCommits = (tag) => {
     const logCmd = tag
       ? `git log ${tag}...HEAD --pretty=format:'%H %s'`
       : `git log --pretty=format:'%H %s'`;
@@ -129,7 +107,10 @@ export default class Changelog {
       .then((output) => {
         const commits = output.stdout
           .split("\n")
-          .filter((x) => x.length > 0 && !x.startsWith("Merge pull request #"));
+          .filter(
+            (x) =>
+              x.length > 0 && !x.startsWith("Merge pull request #") && !x.includes("[no-changelog]")
+          );
         return commits.reduce(
           (a, x) => {
             const idx = x.indexOf(" ");
@@ -138,7 +119,7 @@ export default class Changelog {
             a[id] = x.substr(idx + 1);
             return a;
           },
-          { packages, ids: [] }
+          { ids: [] }
         );
       })
       .then((commits) => {
@@ -204,17 +185,29 @@ export default class Changelog {
         );
       },
       { concurrency: 1 }
-    ).then(() => {
-      collated.forcePackages = commits.packages.filter((r) => collated.realPackages.indexOf(r) < 0);
-      return collated;
-    });
+    ).then(() => collated);
   };
 
   determinePackageVersions = (collated) => {
     const types = ["patch", "minor", "major"];
 
-    const findVersion = (name) => {
+    const findVersion = (name, updateType) => {
       const Pkg = _.get(this._data.packages, [name, "pkgJson"], {});
+      collated.packages[name] = collated.packages[name] || {};
+
+      collated.packages[name].version = Pkg.version;
+      const x = semver.parse(Pkg.version);
+      collated.packages[name].versionOnly = `${x.major}.${x.minor}.${x.patch}`;
+      collated.packages[name].semver = x;
+      collated.packages[name].newVersion = semver.inc(
+        collated.packages[name].versionOnly,
+        types[updateType]
+      );
+      collated.packages[name].updateType = updateType;
+      collated.packages[name].originalPkg = Pkg;
+    };
+
+    const findUpdateType = (name, minBumpType = 0) => {
       collated.packages[name] = collated.packages[name] || {};
       const msgs = collated.packages[name].msgs || [];
 
@@ -229,23 +222,125 @@ export default class Changelog {
           }
         }
         return a;
-      }, 0);
-      collated.packages[name].version = Pkg.version;
-      const x = semver.parse(Pkg.version);
-      collated.packages[name].versionOnly = `${x.major}.${x.minor}.${x.patch}`;
-      collated.packages[name].semver = x;
-      collated.packages[name].newVersion = semver.inc(
-        collated.packages[name].versionOnly,
-        types[updateType]
-      );
-      collated.packages[name].originalPkg = Pkg;
+      }, minBumpType);
+
+      collated.packages[name].updateType = updateType;
     };
 
-    return Promise.map(collated.realPackages, (name) => findVersion(name))
-      .then(() => {
-        return Promise.map(collated.forcePackages, (name) => findVersion(name));
-      })
-      .then(() => collated);
+    // find bump type for packages that have direct changes
+    collated.realPackages.forEach((name) => findUpdateType(name));
+
+    // If all packages are version locked, bump all the packages to the highest type
+    if (this._lockAll) {
+      const updateTypes = collated.realPackages
+        .map((name) => collated.packages[name])
+        .map((x) => x.updateType);
+      const minBumpType = _.max(updateTypes);
+
+      for (const name of Object.keys(this._data.packages)) {
+        if (!collated.realPackages.includes(name)) {
+          collated.realPackages.push(name);
+        }
+        findVersion(name, minBumpType);
+      }
+
+      const directBumps = collated.realPackages.filter(
+        (name) => collated.packages[name] && collated.packages[name].newVersion
+      );
+      collated.directBumps = directBumps;
+      collated.indirectBumps = [];
+      return Promise.resolve(collated);
+    }
+
+    // check for version locking of direct bump packages
+    collated.realPackages.forEach((name) => {
+      const verLocks = this._versionLockMap[name];
+      if (verLocks) {
+        console.log("verLocks", name, verLocks);
+        for (const lockPkgName of _.without(verLocks, name)) {
+          if (!collated.realPackages.includes(lockPkgName)) {
+            collated.realPackages.push(lockPkgName);
+            findUpdateType(lockPkgName, collated.packages[name].updateType);
+          } else {
+            const pkgType = _.get(collated.packages, [lockPkgName, "updateType"], 0);
+            const updateType = _.max([collated.packages[name].updateType, pkgType]);
+            collated.packages[lockPkgName].updateType = updateType;
+          }
+        }
+      }
+    });
+
+    // update any package that depend on a directly bumped packages or its version locks
+
+    // generate the map { pkgName: [] } where value is the names of dependencies that changed
+    const forceUpdatesMap = {};
+    collated.realPackages.reduce((updates, name) => {
+      const dependents = _.get(this._data.packages, [name, "dependents"], {});
+      dependents.forEach((dep) => {
+        if (!collated.forcePackages.includes(dep)) {
+          collated.forcePackages.push(dep);
+        }
+        updates[dep] ??= [];
+        updates[dep].push(name);
+      });
+      return updates;
+    }, forceUpdatesMap);
+
+    let count = 0;
+    do {
+      count = 0;
+      for (const name of collated.forcePackages) {
+        const pkgType = _.get(collated.packages, [name, "updateType"], 0);
+        const deps = forceUpdatesMap[name];
+        const updateTypes = deps
+          .map((depName) => collated.packages[depName])
+          .map((x) => x.updateType);
+        const minBumpType = _.max([pkgType, ...updateTypes]);
+
+        if (collated.realPackages.includes(name)) {
+          if (minBumpType !== pkgType) {
+            collated.packages[name].updateType = minBumpType;
+            count++;
+          }
+        } else {
+          findUpdateType(name, minBumpType);
+        }
+      }
+    } while (count > 0);
+
+    // check for version locking of indirect bump packages
+    collated.forcePackages.forEach((name) => {
+      const verLocks = this._versionLockMap[name];
+      if (verLocks) {
+        console.log("verLocks", name, verLocks);
+        for (const lockPkgName of _.without(verLocks, name)) {
+          if (!collated.forcePackages.includes(lockPkgName)) {
+            collated.forcePackages.push(lockPkgName);
+            findUpdateType(lockPkgName, collated.packages[name].updateType);
+          }
+        }
+      }
+    });
+
+    // find version from updateType for both direct and indirect bumps
+    for (const [name, pkg] of Object.entries(collated.packages)) {
+      findVersion(name, (pkg as any).updateType);
+    }
+
+    const directBumps = collated.realPackages.filter(
+      (name) => collated.packages[name] && collated.packages[name].newVersion
+    );
+
+    const indirectBumps = collated.forcePackages.filter(
+      (name) =>
+        !collated.realPackages.includes(name) &&
+        collated.packages[name] &&
+        collated.packages[name].newVersion
+    );
+
+    collated.directBumps = directBumps;
+    collated.indirectBumps = indirectBumps;
+    return Promise.resolve(collated);
   };
 
   getTaggedVersion = (pkg, fynpoRc) => {
@@ -288,7 +383,8 @@ export default class Changelog {
   updateChangelog = (collated) => {
     const d = new Date();
     const output = [];
-    const forceUpdated = collated.forcePackages.length > 0;
+
+    const forceUpdated = collated.indirectBumps.length > 0;
 
     let rootPkg;
     try {
@@ -309,11 +405,11 @@ export default class Changelog {
       /* eslint-disable no-useless-concat */
       output.push(`-   \`${p}@${newVer}\` ` + "`" + `(${pkg.version} => ${newVer})` + "`\n");
     };
-    collated.realPackages.sort().forEach((p) => emitPackageMsg(p, collated.packages));
+    collated.directBumps.sort().forEach((p) => emitPackageMsg(p, collated.packages));
 
     if (forceUpdated) {
       output.push(`\n### Fynpo Updated\n\n`);
-      collated.forcePackages.sort().forEach((p) => emitPackageMsg(p, collated.packages));
+      collated.indirectBumps.sort().forEach((p) => emitPackageMsg(p, collated.packages));
     }
     output.push(`\n## Commits\n\n`);
 
@@ -389,7 +485,6 @@ export default class Changelog {
 
   async exec() {
     return this.checkIfTagExists()
-      .then(this.getUpdatedPackages)
       .then(this.listGitCommits)
       .then(this.collateCommitsPackages)
       .then(this.determinePackageVersions)
