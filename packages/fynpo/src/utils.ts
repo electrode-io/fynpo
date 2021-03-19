@@ -50,7 +50,7 @@ export const locateGlobalFyn = async (globalNmDir = null) => {
   }
 };
 
-function _searchForFynpo(cwd = process.cwd()) {
+export const _searchForFynpo = (cwd = process.cwd()) => {
   let dir = cwd;
   let prevDir = dir;
   let config;
@@ -82,7 +82,7 @@ function _searchForFynpo(cwd = process.cwd()) {
   } while (++count < 50 && dir !== prevDir);
 
   return { config, dir, lerna, lernaDir };
-}
+};
 
 export const loadConfig = (cwd = process.cwd()) => {
   let fynpoRc = {};
@@ -111,4 +111,22 @@ export const loadConfig = (cwd = process.cwd()) => {
 export const getRootScripts = (cwd = process.cwd()) => {
   const config = JSON.parse(Fs.readFileSync(Path.join(cwd, "package.json")).toString());
   return config.scripts || {};
+};
+
+export const getGlobalFynpo = async (globalNmDir = null) => {
+  globalNmDir = globalNmDir || (await locateGlobalNodeModules());
+
+  if (!globalNmDir) {
+    logger.error("Unable to locate your global node_modules from", process.argv[0]);
+    return {};
+  }
+
+  try {
+    const dir = Path.join(globalNmDir, "fynpo");
+    /* eslint-disable @typescript-eslint/no-var-requires */
+    const pkgJson = require(Path.join(dir, "package.json"));
+    return pkgJson;
+  } catch (e) {
+    return {};
+  }
 };

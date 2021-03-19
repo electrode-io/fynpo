@@ -7,6 +7,7 @@ import Prepare from "./prepare";
 import Changelog from "./update-changelog";
 import Publish from "./publish";
 import Run from "./run";
+import Init from "./init";
 import makePkgDeps from "./make-pkg-deps";
 import readPackages from "./read-packages";
 import logger from "./logger";
@@ -82,6 +83,12 @@ const execRunScript = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
   return new Run(opts, parsed.args, readPackages(opts.cwd)).exec();
+};
+
+const execInit = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Init(opts).exec();
 };
 
 const nixClap = new NixClap({
@@ -194,6 +201,18 @@ const nixClap = new NixClap({
           type: "boolean",
           default: true,
           desc: "no-push to skip pushing release tag to remote",
+        },
+      },
+    },
+    init: {
+      alias: "i",
+      desc: "Create a new fynpo repo",
+      exec: execInit,
+      options: {
+        exact: {
+          type: "boolean",
+          default: false,
+          desc: "Specify exact fynpo dependency version in package.json",
         },
       },
     },
