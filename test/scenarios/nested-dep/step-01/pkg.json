@@ -8,7 +8,7 @@
   "repository": "test",
   "dependencies": {
     "mod-a": "^2.0.0",
-    "mod-e": "^1.0.0",
-    "mod-c": "^3.0.0"
+    "mod-c": "^3.0.0",
+    "mod-e": "^1.0.0"
   }
 }
