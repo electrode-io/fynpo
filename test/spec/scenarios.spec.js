@@ -118,6 +118,13 @@ const debug = false;
         rimraf.sync(Path.join(cwd, debugLogFile));
         return Promise.try(() => stepAction.before(cwd))
           .then(() => {
+            const stepLockFile = Path.join(stepDir, "lock.yaml");
+            if (stepAction.copyLock && Fs.existsSync(stepLockFile)) {
+              const lockData = Fs.readFileSync(stepLockFile);
+              Fs.writeFileSync(Path.join(cwd, "fyn-lock.yaml"), lockData);
+            }
+          })
+          .then(() => {
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
             if (pkg) {
               _.merge(pkgJson, pkg);
@@ -240,7 +247,7 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
-        "add-remove-pkg": { stopStep: "step-02" }
+        // "add-remove-pkg": { stopStep: "step-02" }
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
@@ -249,7 +256,7 @@ const debug = false;
         // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
-        // "locked-change-indirect": {}
+        "locked-change-indirect": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
