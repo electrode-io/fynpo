@@ -256,7 +256,8 @@ const debug = false;
         // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
-        "locked-change-indirect": {}
+        "locked-change-dedupe": {}
+        // "locked-change-indirect": {}
         // "missing-peer-dep": {}
         // "nested-dep": {}
         // "npm-shrinkwrap": {}
