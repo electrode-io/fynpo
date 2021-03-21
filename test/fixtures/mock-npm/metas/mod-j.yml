@@ -1,0 +1,18 @@
+etag: mod-j-1
+name: mod-j
+versions:
+  1.0.0:
+    name: mod-j
+    description: test fixture mod-j
+    version: 1.0.0
+    dependencies:
+      mod-g: ^3.0.11
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-j/-/mod-j-1.0.0.tgz'
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-j
+_attachments: {}

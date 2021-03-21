@@ -268,9 +268,10 @@ const debug = false;
         // "local-sym-linking": {}
         // "locked-change-major": {}
         // "locked-change-dedupe": { debugStep: "step-02" }
+        "locked-change-dedupe-2": { debugStep: "step-02" }
         // "locked-change-indirect": {}
         // "missing-peer-dep": {}
-        "nested-dep": {}
+        // "nested-dep": {}
         // "npm-shrinkwrap": {}
         // "optional-check": {}
         // "package-fyn": {}
