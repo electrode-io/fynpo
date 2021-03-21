@@ -8,8 +8,6 @@ node_modules:
       mod-a:
         0.5.0:
           mod-a:
-            node_modules:
-              mod-g: "-> ../../../../mod-g/3.0.11/mod-g"
             package.json:
               id: mod-a@0.5.0
       mod-g:
@@ -27,8 +25,10 @@ node_modules:
       mod-i:
         1.0.0:
           mod-i:
+            node_modules:
+              mod-g: "-> ../../../../mod-g/3.0.0/mod-g"
             package.json:
               id: mod-i@1.0.0
   mod-a: "-> .f/_/mod-a/0.5.0/mod-a"
-  mod-g: "-> .f/_/mod-g/3.0.0/mod-g"
+  mod-g: "-> .f/_/mod-g/3.0.11/mod-g"
   mod-i: "-> .f/_/mod-i/1.0.0/mod-i"

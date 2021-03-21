@@ -7,7 +7,7 @@
   "license": "ISC",
   "repository": "test",
   "dependencies": {
-    "mod-i": "^1.0.0",
-    "mod-a": "^0.5.0"
+    "mod-a": "^0.5.0",
+    "mod-i": "^1.0.0"
   }
 }

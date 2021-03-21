@@ -14,6 +14,7 @@ const fyntil = require("../../lib/util/fyntil");
 const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
 const optionalRequire = require("optional-require")(require);
+const sortObjKeys = require("../../lib/util/sort-obj-keys");
 
 const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
@@ -128,6 +129,16 @@ const debug = false;
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
             if (pkg) {
               _.merge(pkgJson, pkg);
+              [
+                "dependencies",
+                "devDependencies",
+                "optionalDependencies",
+                "peerDependencies"
+              ].forEach(k => {
+                if (pkgJson[k]) {
+                  pkgJson[k] = sortObjKeys(pkgJson[k]);
+                }
+              });
               deleteNullFields(pkgJson);
               Fs.writeFileSync(pkgJsonFile, `${JSON.stringify(pkgJson, null, 2)}\n`);
             }
@@ -247,7 +258,7 @@ const debug = false;
   const cleanUp = !debug;
   const filter = debug
     ? {
-        // "add-remove-pkg": { stopStep: "step-02" }
+        // "add-remove-pkg": { stopStep: "step-02", debugStep: "step-02" }
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
@@ -256,10 +267,10 @@ const debug = false;
         // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
-        "locked-change-dedupe": {}
+        // "locked-change-dedupe": { debugStep: "step-02" }
         // "locked-change-indirect": {}
         // "missing-peer-dep": {}
-        // "nested-dep": {}
+        "nested-dep": {}
         // "npm-shrinkwrap": {}
         // "optional-check": {}
         // "package-fyn": {}
