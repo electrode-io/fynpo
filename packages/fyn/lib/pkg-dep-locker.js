@@ -263,7 +263,11 @@ class PkgDepLocker {
    *
    * @returns {*} none
    */
-  setPkgDepItems(pkgDepItems) {
+  setPkgDepItems(pkgDepItems, reset = false) {
+    if (this._$pkg && !reset) {
+      return;
+    }
+
     const { dep, dev, opt } = pkgDepItems;
     const items = {};
     const makeDep = (acc, di) => {
