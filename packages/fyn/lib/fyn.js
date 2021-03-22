@@ -532,6 +532,7 @@ class Fyn {
     await doResolve(this._npmLockData);
 
     if ((this._npmLockData || this._depLocker.pkgDepChanged) && this.deDupeLocks()) {
+      logger.info("changed dependencies and duplicate versions detected => de-duping");
       await doResolve(null);
     }
   }
