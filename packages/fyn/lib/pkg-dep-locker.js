@@ -322,6 +322,10 @@ class PkgDepLocker {
     }
   }
 
+  get pkgDepChanged() {
+    return !_.isEmpty(this._$allPkgDiff);
+  }
+
   /**
    * Remove the lock data for a specific dep item
    *
@@ -329,15 +333,15 @@ class PkgDepLocker {
    *
    * @returns {*} none
    */
-  remove(item) {
+  remove(item, force = false) {
     if (!this._enable) return;
 
-    if (this._$allPkgDiff[item.name]) {
+    if (this._$allPkgDiff[item.name] || force) {
       // dep item changed in package.json
       // TODO: match semver instead of just deleting the whole item
       if (this._lockData[item.name]) {
         delete this._lockData[item.name];
-        logger.info("removing version lock info for", item.name);
+        logger.debug("removing version lock info for", item.name);
       }
     }
   }

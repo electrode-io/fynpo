@@ -5,14 +5,10 @@ $pkg:
 mod-g:
   _latest: 3.0.11
   _:
-    ^3.0.0: 3.0.0
-    ^3.0.11: 3.0.11
+    "^3.0.0,^3.0.11": 3.0.11
   3.0.11:
-    $: sha1-JP7XKtn67n43va5K+0/C9kPs3tY=
-    _: "http://localhost:50384/mod-g/-/mod-g-3.0.11.tgz"
-  3.0.0:
-    $: 0
-    _: "http://localhost:50549/mod-g/-/mod-g-3.0.0.tgz"
+    $: sha1-unYPh4siki2HKK5qe4jHTZgcxUI=
+    _: "http://localhost:64549/mod-g/-/mod-g-3.0.11.tgz"
 mod-i:
   _latest: 1.0.0
   _:
@@ -29,7 +25,7 @@ mod-j:
     ^1.0.0: 1.0.0
   1.0.0:
     top: 1
-    $: sha1-MtWqEc5DFAbN4Ud8ljNFKx9YmSA=
-    _: "http://localhost:50384/mod-j/-/mod-j-1.0.0.tgz"
+    $: sha1-vlkRZcmQbJGsRvz18HUBoQJMvDw=
+    _: "http://localhost:64549/mod-j/-/mod-j-1.0.0.tgz"
     dependencies:
       mod-g: ^3.0.11
