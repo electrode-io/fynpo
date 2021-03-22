@@ -518,21 +518,21 @@ class Fyn {
   async resolveDependencies() {
     await this._initialize();
 
-    const doResolve = async () => {
+    const doResolve = async shrinkwrap => {
       this._data = this._options.data || new DepData();
       this._depResolver = new PkgDepResolver(this._pkg, {
         fyn: this,
         data: this._data,
-        shrinkwrap: this._npmLockData
+        shrinkwrap
       });
       this._depResolver.start();
       await this._depResolver.wait();
     };
 
-    await doResolve();
+    await doResolve(this._npmLockData);
 
-    if (this._depLocker.pkgDepChanged && this.deDupeLocks()) {
-      await doResolve();
+    if ((this._npmLockData || this._depLocker.pkgDepChanged) && this.deDupeLocks()) {
+      await doResolve(null);
     }
   }
 
