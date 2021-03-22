@@ -8,21 +8,17 @@ mod-a:
     ^0.5.0: 0.5.0
   0.5.0:
     top: 1
-    $: sha1-Yw72g73XA0UcVb6gHiItdiVZfsw=
-    _: "http://localhost:49738/mod-a/-/mod-a-0.5.0.tgz"
+    $: sha1-FaSOf8CE8w8hsTkOCl3SnvMXkPs=
+    _: "http://localhost:64493/mod-a/-/mod-a-0.5.0.tgz"
     dependencies:
       mod-g: ^3.0.11
 mod-g:
   _latest: 3.0.11
   _:
-    ^3.0.0: 3.0.0
-    ^3.0.11: 3.0.11
+    "^3.0.0,^3.0.11": 3.0.11
   3.0.11:
-    $: sha1-JP7XKtn67n43va5K+0/C9kPs3tY=
-    _: "http://localhost:49738/mod-g/-/mod-g-3.0.11.tgz"
-  3.0.0:
-    $: sha1-GddHh/5IqaqK1DdavgEN/Srbm9I=
-    _: "http://localhost:49738/mod-g/-/mod-g-3.0.0.tgz"
+    $: sha1-unYPh4siki2HKK5qe4jHTZgcxUI=
+    _: "http://localhost:64493/mod-g/-/mod-g-3.0.11.tgz"
 mod-i:
   _latest: 1.0.0
   _:
