@@ -1,0 +1,22 @@
+node_modules:
+  .f:
+    .fyn.json: file
+    _:
+      mod-g:
+        3.0.11:
+          mod-g:
+            package.json:
+              id: mod-g@3.0.11
+      mod-i:
+        1.0.0:
+          mod-i:
+            package.json:
+              id: mod-i@1.0.0
+      mod-j:
+        1.0.0:
+          mod-j:
+            package.json:
+              id: mod-j@1.0.0
+  mod-g: "-> .f/_/mod-g/3.0.11/mod-g"
+  mod-i: "-> .f/_/mod-i/1.0.0/mod-i"
+  mod-j: "-> .f/_/mod-j/1.0.0/mod-j"
