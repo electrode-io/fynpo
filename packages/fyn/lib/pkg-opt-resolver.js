@@ -153,6 +153,7 @@ class PkgOptResolver {
     // already check in progress
     const inflight = this._inflights.get(pkgId);
     if (inflight) {
+      logger.debug("opt check reusing existing inflight for", pkgId);
       return processCheckResult(inflight);
     }
 

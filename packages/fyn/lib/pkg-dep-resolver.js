@@ -73,7 +73,9 @@ class PkgDepResolver {
     this._promiseQ.on("fail", data => {
       return this._defer.reject(data.error);
     });
-    this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
+    // this._optResolver = new PkgOptResolver({ fyn: this._fyn, depResolver: this });
+    this._optResolver = options.optResolver;
+    this._optResolver._depResolver = this;
     this._promiseQ.on("empty", () => this.checkOptResolver());
     this._lockOnly = this._fyn.lockOnly;
     //

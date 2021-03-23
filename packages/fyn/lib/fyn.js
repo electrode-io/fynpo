@@ -29,6 +29,7 @@ const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = req
 
 const npmConfigEnv = require("./util/npm-config-env");
 const { pkgId } = require("./util/log-format");
+const PkgOptResolver = require("./pkg-opt-resolver");
 
 class Fyn {
   constructor({ opts = {}, _cliSource = {}, _fynpo = true }) {
@@ -490,7 +491,18 @@ class Fyn {
     for (const pkgName in this._data.pkgs) {
       const pkg = this._data.pkgs[pkgName];
       const versions = Object.keys(pkg);
-      const byMaj = _.groupBy(versions, x => x.split(".")[0]);
+      const byMaj = _.groupBy(versions, x => {
+        const pts = x.split(".");
+        // when major is 0, minor becomes major, ie: 0.x.y => x major
+        if (pts[0] === "0") {
+          if (pts[1] === "0") {
+            return `${pts[0]}.${pts[1]}.${pts[2]}`;
+          }
+          return `${pts[0]}.${pts[1]}`;
+        } else {
+          return pts[0];
+        }
+      });
       const majVersions = Object.keys(byMaj);
 
       // if all major versions different, then no need to de-dupe anything
@@ -518,12 +530,15 @@ class Fyn {
   async resolveDependencies() {
     await this._initialize();
 
+    this._optResolver = new PkgOptResolver({ fyn: this });
+
     const doResolve = async shrinkwrap => {
       this._data = this._options.data || new DepData();
       this._depResolver = new PkgDepResolver(this._pkg, {
         fyn: this,
         data: this._data,
-        shrinkwrap
+        shrinkwrap,
+        optResolver: this._optResolver
       });
       this._depResolver.start();
       await this._depResolver.wait();

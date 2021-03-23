@@ -1,9 +1,60 @@
 {
-  "name": "locked-npm-dedupe",
+  "name": "locked-change-indirect",
   "version": "1.0.0",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
+    "mod-a": {
+      "version": "2.0.0",
+      "resolved": "http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz",
+      "integrity": "sha1-Iw9ypfd1o+L+Up9QTYzpRlzaKF0=",
+      "optional": true
+    },
+    "mod-d": {
+      "version": "1.0.1",
+      "resolved": "http://localhost:4873/mod-d/-/mod-d-1.0.1.tgz",
+      "integrity": "sha1-THjRQjjS55GrE0QQ3vcnM8bZ2YU=",
+      "optional": true,
+      "requires": {
+        "mod-a": "^2.0.0",
+        "mod-f": "^1.0.0"
+      }
+    },
+    "mod-e": {
+      "version": "1.0.0",
+      "resolved": "http://localhost:4873/mod-e/-/mod-e-1.0.0.tgz",
+      "integrity": "sha1-mM7uY0B/E6D0xdYx02VtQzpXTsY=",
+      "optional": true,
+      "requires": {
+        "mod-d": "^1.0.0"
+      }
+    },
+    "mod-err": {
+      "version": "4.5.1",
+      "resolved": "http://localhost:4873/mod-err/-/mod-err-4.5.1.tgz",
+      "integrity": "sha1-Dk8PJQ1sEA463oTrH/xOimEyFEA=",
+      "optional": true,
+      "requires": {
+        "mod-a": "^3.0.0"
+      },
+      "dependencies": {
+        "mod-a": {
+          "version": "3.1.0",
+          "resolved": "http://localhost:4873/mod-a/-/mod-a-3.1.0.tgz",
+          "integrity": "sha1-JEwC9cl/fFY1k7skf0JQB0jjzqs=",
+          "optional": true
+        }
+      }
+    },
+    "mod-f": {
+      "version": "1.0.0",
+      "resolved": "http://localhost:4873/mod-f/-/mod-f-1.0.0.tgz",
+      "integrity": "sha1-n4Pg179TzhUZ9QeVNEn0dnwU2pg=",
+      "optional": true,
+      "requires": {
+        "mod-a": "^1.0.0 || ^2.0.0"
+      }
+    },
     "mod-g": {
       "version": "3.0.0",
       "resolved": "http://localhost:4873/mod-g/-/mod-g-3.0.0.tgz",
