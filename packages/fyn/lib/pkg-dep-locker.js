@@ -121,19 +121,21 @@ class PkgDepLocker {
           if (!meta.optFailed) {
             if (_.isEmpty(json)) {
               meta._missingJson = true;
-            }
-            if (!_.isEmpty(json.dependencies)) {
-              meta.dependencies = json.dependencies;
-            }
-            if (!_.isEmpty(json.optionalDependencies)) {
-              meta.optionalDependencies = json.optionalDependencies;
-            }
-            if (!_.isEmpty(json.peerDependencies)) {
-              meta.peerDependencies = json.peerDependencies;
-            }
-            const bd = json.bundleDependencies || json.bundledDependencies;
-            if (!_.isEmpty(bd)) {
-              meta.bundleDependencies = bd;
+            } else {
+              // save dependencies from package.json to meta in lockfile
+              if (!_.isEmpty(json.dependencies)) {
+                meta.dependencies = json.dependencies;
+              }
+              if (!_.isEmpty(json.optionalDependencies)) {
+                meta.optionalDependencies = json.optionalDependencies;
+              }
+              if (!_.isEmpty(json.peerDependencies)) {
+                meta.peerDependencies = json.peerDependencies;
+              }
+              const bd = json.bundleDependencies || json.bundledDependencies;
+              if (!_.isEmpty(bd)) {
+                meta.bundleDependencies = bd;
+              }
             }
           }
 
@@ -352,11 +354,20 @@ class PkgDepLocker {
     if (!this._enable) return;
 
     if (this._$allPkgDiff[item.name] || force) {
-      // dep item changed in package.json
-      // TODO: match semver instead of just deleting the whole item
       if (this._lockData[item.name]) {
-        delete this._lockData[item.name];
-        logger.debug("removing version lock info for", item.name);
+        const lockData = this._lockData[item.name]._;
+        Object.keys(lockData).forEach(k => {
+          const lockedVers = [].concat(lockData[k]);
+          if (lockedVers.includes(item.resolved)) {
+            logger.debug("removing version lock info for", item.name, item.semver, k);
+            const newLocked = lockedVers.filter(x => x !== item.resolved);
+            if (newLocked.length > 0) {
+              lockData[k] = newLocked;
+            } else {
+              delete lockData[k];
+            }
+          }
+        });
       }
     }
   }
