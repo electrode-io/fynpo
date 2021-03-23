@@ -14,3 +14,4 @@ node_modules
 .fyn
 package-fyn.*
 fyn-debug*.log
+package-lock.*
