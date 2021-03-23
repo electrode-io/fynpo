@@ -28,7 +28,6 @@ const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = req
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity */
 
 const npmConfigEnv = require("./util/npm-config-env");
-const { pkgId } = require("./util/log-format");
 const PkgOptResolver = require("./pkg-opt-resolver");
 
 class Fyn {
@@ -512,14 +511,19 @@ class Fyn {
 
       majVersions.forEach(maj => {
         if (byMaj[maj].length > 1) {
-          byMaj[maj].forEach(ver => {
+          const removed = byMaj[maj].filter(ver => {
             const item = pkg[ver][DEP_ITEM];
             if (item._resolveByLock || this._npmLockData) {
               deDupe = true;
-              logger.debug("removing dep item to de-dupe locks", pkgId(item));
               this._depLocker.remove(item, true);
+              return true;
             }
+            return false;
           });
+          if (removed.length > 0) {
+            logger.debug("de-dupe locks by removing versions of", pkgName, removed);
+          }
+          // TODO: keep newest locked and update all removed ones to it
         }
       });
     }
