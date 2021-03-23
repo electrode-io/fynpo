@@ -119,13 +119,22 @@ class PkgDepLocker {
           }
 
           if (!meta.optFailed) {
-            if (!_.isEmpty(json.dependencies)) meta.dependencies = json.dependencies;
+            if (_.isEmpty(json)) {
+              meta._missingJson = true;
+            }
+            if (!_.isEmpty(json.dependencies)) {
+              meta.dependencies = json.dependencies;
+            }
             if (!_.isEmpty(json.optionalDependencies)) {
               meta.optionalDependencies = json.optionalDependencies;
             }
-            if (!_.isEmpty(json.peerDependencies)) meta.peerDependencies = json.peerDependencies;
+            if (!_.isEmpty(json.peerDependencies)) {
+              meta.peerDependencies = json.peerDependencies;
+            }
             const bd = json.bundleDependencies || json.bundledDependencies;
-            if (!_.isEmpty(bd)) meta.bundleDependencies = bd;
+            if (!_.isEmpty(bd)) {
+              meta.bundleDependencies = bd;
+            }
           }
 
           if (vpkg.deprecated) meta.deprecated = vpkg.deprecated;
@@ -152,7 +161,9 @@ class PkgDepLocker {
   update(item, meta) {
     if (!this._enable || meta.local) return meta;
     let locked = this._lockData[item.name];
-    if (!locked) return meta;
+    if (!locked) {
+      return meta;
+    }
 
     //
     // Add versions from <meta>
