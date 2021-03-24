@@ -11,7 +11,6 @@ const Promise = require("bluebird");
 const chalk = require("chalk");
 const logger = require("./logger");
 const DepItem = require("./dep-item");
-const { LocalPkgBuilder } = require("./local-pkg-builder");
 const PromiseQueue = require("./util/promise-queue");
 const createDefer = require("./util/defer");
 const simpleSemverCompare = semverUtil.simpleCompare;
@@ -243,7 +242,8 @@ class PkgDepResolver {
 
     const depthPkgs = Object.keys(depthInfo);
 
-    if (this._fyn._options.buildLocal) {
+    // TODO: create test scenario for build-local
+    if (this._options.buildLocal) {
       const locals = depthPkgs.map(x => depthInfo[x].items.find(it => it.localType)).filter(x => x);
 
       // logger.info("adding depth pkgs", depthPkgs.join(", "), locals);
@@ -254,11 +254,7 @@ class PkgDepResolver {
         }
         this._localsByDepth.push(locals);
       } else if (!this._buildLocal && this._localsByDepth) {
-        this._buildLocal = new LocalPkgBuilder({
-          fyn: this._fyn,
-          localsByDepth: this._localsByDepth
-        });
-        this._fyn.setLocalDeps(this._localsByDepth);
+        this._buildLocal = this._fyn.createLocalPkgBuilder(this._localsByDepth);
         this._buildLocal.start();
       }
     }
@@ -397,7 +393,7 @@ class PkgDepResolver {
             fynDeps[name] = relativePath(rawInfo.dir, packagesByName[name].pkgDir, true);
           }
         }
-        if (locals.length > 0) {
+        if (locals.length > 0 && !this._options.deDuping) {
           logger.info(
             `These packages in ${
               pkg.name
@@ -422,7 +418,9 @@ class PkgDepResolver {
         try {
           Fs.statSync(Path.join(rawInfo.dir, fynDeps[name]));
           deps[name] = fynDeps[name];
-          logger.info(`${dispSec} ${dispName} of ${ownerName} will use`, dispSemver);
+          if (!this._options.deDuping) {
+            logger.info(`${dispSec} ${dispName} of ${ownerName} will use`, dispSemver);
+          }
         } catch (err) {
           logger.warn(
             `${dispSec} ${dispName} of ${ownerName} not found`,
