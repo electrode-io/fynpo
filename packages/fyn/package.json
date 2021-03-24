@@ -6,8 +6,8 @@
   "main": "./bin/fyn.js",
   "scripts": {
     "test": "xrun xarc/test-only",
-    "coverage": "xrun xarc/test-cov",
-    "ci": "xrun -x fyn/create-tgz bundle coverage",
+    "coverage": "xrun xarc/check",
+    "ci": "xrun -x xarc/lint fyn/create-tgz bundle coverage",
     "coveralls": "cat coverage/lcov.info | coveralls",
     "prepublishOnly": "echo Do not run npm publish directly.  Run 'xrun release'. && exit 1"
   },

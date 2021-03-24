@@ -487,8 +487,7 @@ class Fyn {
   deDupeLocks() {
     let deDupe = false;
 
-    for (const pkgName in this._data.pkgs) {
-      const pkg = this._data.pkgs[pkgName];
+    _.each(this._data.pkgs, (pkg, pkgName) => {
       const versions = Object.keys(pkg);
       const byMaj = _.groupBy(versions, x => {
         const pts = x.split(".");
@@ -506,7 +505,7 @@ class Fyn {
 
       // if all major versions different, then no need to de-dupe anything
       if (majVersions.length === versions.length) {
-        continue;
+        return;
       }
 
       majVersions.forEach(maj => {
@@ -526,7 +525,7 @@ class Fyn {
           // TODO: keep newest locked and update all removed ones to it
         }
       });
-    }
+    });
 
     return deDupe;
   }
