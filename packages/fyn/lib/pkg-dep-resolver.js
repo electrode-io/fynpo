@@ -236,6 +236,11 @@ class PkgDepResolver {
 
     const depthInfo = this._depthResolving[depth];
     if (!depthInfo) {
+      // all dependencies resolved, start local package build if there are any
+      if (!this._buildLocal && this._options.buildLocal && !_.isEmpty(this._localsByDepth)) {
+        this._buildLocal = this._fyn.createLocalPkgBuilder(this._localsByDepth);
+        this._buildLocal.start();
+      }
       return;
     }
     this._depthResolving.current = depth;
@@ -253,9 +258,6 @@ class PkgDepResolver {
           this._localsByDepth = [];
         }
         this._localsByDepth.push(locals);
-      } else if (!this._buildLocal && this._localsByDepth) {
-        this._buildLocal = this._fyn.createLocalPkgBuilder(this._localsByDepth);
-        this._buildLocal.start();
       }
     }
 
@@ -379,22 +381,24 @@ class PkgDepResolver {
       const deps = Object.assign({}, pkg[sec]);
 
       const fynDeps = _.get(pkg, ["fyn", sec], {});
-      const rawInfo = pkg[PACKAGE_RAW_INFO] || {};
+      let fromDir = pkg[PACKAGE_RAW_INFO] && pkg[PACKAGE_RAW_INFO].dir;
 
       // if in fynpo mode, gather deps that are actually local packages in the mono-repo
       if (this._fyn.isFynpo) {
         const locals = [];
         const fynpo = this._fyn._fynpo;
         const { packagesByName } = fynpo;
+        if (!fromDir) {
+          // this case means an downstream pkg has a dep on a mono-repo package
+          // TODO: should make sure mono-repo local copy's version satisfies
+          // downstream pkg's semver
+          fromDir = this._fyn.cwd;
+        }
         for (const name in deps) {
           // is pkg 'name' a fynpo package?
           if (packagesByName[name] && !fynDeps.hasOwnProperty(name)) {
             locals.push(name);
-            fynDeps[name] = relativePath(
-              rawInfo.dir || this._fyn.cwd,
-              packagesByName[name].pkgDir,
-              true
-            );
+            fynDeps[name] = relativePath(fromDir, packagesByName[name].pkgDir, true);
           }
         }
         if (locals.length > 0 && !this._options.deDuping) {
@@ -410,7 +414,7 @@ class PkgDepResolver {
         if (!deps[name]) {
           logger.warn(`You ONLY defined ${name} in fyn.${sec}!`);
         }
-        if (!rawInfo.dir) continue;
+        if (!fromDir) continue;
         const ownerName = chalk.magenta(parent.name);
         const dispName = chalk.green(name);
         if (fynDeps[name] === false) {
@@ -420,7 +424,7 @@ class PkgDepResolver {
         const dispSec = chalk.cyan(`fyn.${sec}`);
         const dispSemver = chalk.blue(fynDeps[name]);
         try {
-          Fs.statSync(Path.join(rawInfo.dir, fynDeps[name]));
+          Fs.statSync(Path.join(fromDir, fynDeps[name]));
           deps[name] = fynDeps[name];
           if (!this._options.deDuping) {
             logger.info(`${dispSec} ${dispName} of ${ownerName} will use`, dispSemver);
@@ -430,7 +434,7 @@ class PkgDepResolver {
             `${dispSec} ${dispName} of ${ownerName} not found`,
             chalk.red(err.message),
             "pkg local dir",
-            chalk.blue(rawInfo.dir),
+            chalk.blue(fromDir),
             "dep name",
             dispSemver
           );
