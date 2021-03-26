@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import _ from "lodash";
+import logger from "./logger";
 
 function processDirectDeps(packages) {
   const add = (name, deps) => {
@@ -51,20 +52,54 @@ function processIndirectDeps(packages, circulars) {
   }
 }
 
-function makePkgDeps(packages, ignores, only) {
+function includeDeps(packages, level) {
+  const localDeps = _.uniq(
+    Object.keys(packages).reduce((acc, p) => {
+      if (packages[p] && !packages[p].ignore) {
+        return acc.concat(
+          packages[p].localDeps.filter(x => packages[x] && packages[x].ignore)
+        );
+      }
+      return acc;
+    }, [])
+  );
+  if (localDeps.length > 0) {
+    localDeps.forEach(p => {
+      if (packages[p]) {
+        packages[p].ignore = false;
+      }
+    });
+    level--;
+    if (level > 0) {
+      includeDeps(packages, level);
+    }
+  }
+}
+
+function makePkgDeps(packages, opts) {
   let circulars = [];
+  let ignores = opts.ignore || [];
 
   processDirectDeps(packages);
   processIndirectDeps(packages, circulars);
 
-  if (only && only.length > 0) {
-    only.forEach(x => {
+  if (opts.scope && opts.scope.length > 0) {
+    Object.keys(packages).forEach((p) => {
+      const scope = p[0] === "@" ? p.slice(0, p.indexOf("/")) : undefined;
+      if ((!scope || !opts.scope.includes(scope)) && !ignores[p]) {
+        ignores.push(p);
+      }
+    });
+  }
+
+  if (opts.only && opts.only.length > 0) {
+    opts.only.forEach(x => {
       if (!packages[x]) {
         console.log(`warn: package ${x} of your '--only' option does not exist`);
       }
     });
     Object.keys(packages).forEach(p => {
-      if (!only.includes(p) && !ignores[p]) {
+      if (!opts.only.includes(p) && !ignores[p]) {
         ignores.push(p);
       }
     });
@@ -84,11 +119,22 @@ function makePkgDeps(packages, ignores, only) {
     }).filter(x => x)
   );
 
+  ignores.forEach(x => {
+    if (packages[x]) {
+      packages[x].ignore = true;
+    } else {
+      logger.warn("Ignore package", x, "does not exist");
+    }
+  });
+
+  if (opts.deps > 0) {
+    includeDeps(packages, opts.deps);
+  }
+
   return {
     packages,
     depMap,
-    circulars,
-    ignores
+    circulars
   };
 }
 

@@ -22,16 +22,7 @@ class Bootstrap {
   constructor(data, opts) {
     this._opts = opts;
     this._data = data;
-    data.ignores.forEach(x => {
-      if (data.packages[x]) {
-        data.packages[x].ignore = true;
-      } else {
-        logger.warn("Ignore package", x, "does not exist");
-      }
-    });
-    if (opts.deps > 0) {
-      this.includeDeps(data, opts.deps);
-    }
+
     this._errors = [];
     this._pkgDirMap = {};
     _.each(data.packages, pkg => {
@@ -41,30 +32,6 @@ class Bootstrap {
     loadConfig();
 
     this._fyn = null;
-  }
-
-  includeDeps(data, level) {
-    const localDeps = _.uniq(
-      Object.keys(data.packages).reduce((acc, p) => {
-        if (data.packages[p] && !data.packages[p].ignore) {
-          return acc.concat(
-            data.packages[p].localDeps.filter(x => data.packages[x] && data.packages[x].ignore)
-          );
-        }
-        return acc;
-      }, [])
-    );
-    if (localDeps.length > 0) {
-      localDeps.forEach(p => {
-        if (data.packages[p]) {
-          data.packages[p].ignore = false;
-        }
-      });
-      level--;
-      if (level > 0) {
-        this.includeDeps(data, level);
-      }
-    }
   }
 
   get failed() {

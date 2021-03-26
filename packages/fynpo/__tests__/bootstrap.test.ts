@@ -46,7 +46,6 @@ describe("fynpo bootstrap", () => {
       },
     },
     circulars: [],
-    ignores: ["pkg4"],
   };
 
   let bootstrap;
@@ -57,27 +56,7 @@ describe("fynpo bootstrap", () => {
   it("should initialize bootstrap class", () => {
     expect(bootstrap._data).toStrictEqual(pkgDeps);
     expect(bootstrap._opts).toStrictEqual(parsed.opts);
-    expect(bootstrap._data.packages.pkg4.ignore).toEqual(true);
     expect(bootstrap.failed).toEqual(0);
-  });
-
-  it("should set ignore false if included as local dependency", () => {
-    const data = {
-      packages: {
-        pkg1: {
-          localDeps: [],
-        },
-        pkg2: {
-          localDeps: ["pkg3"],
-        },
-        pkg3: {
-          ignore: true,
-        },
-      },
-    };
-
-    bootstrap.includeDeps(data, 1);
-    expect(data.packages.pkg3.ignore).toStrictEqual(false);
   });
 
   it("should descope package name", () => {

@@ -16,7 +16,10 @@ import Fs from "fs";
 const makeBootstrap = (parsed) => {
   const cwd = parsed.opts.cwd || process.cwd();
   return new Bootstrap(
-    makePkgDeps(readPackages(cwd), parsed.opts.ignore || [], parsed.opts.only || []),
+    makePkgDeps(
+      readPackages(cwd),
+      parsed.opts
+    ),
     parsed.opts
   );
 };
@@ -60,7 +63,7 @@ const execPrepare = (parsed) => {
 
   return new Prepare(
     opts,
-    makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])
+    makePkgDeps(readPackages(opts.cwd), parsed.opts)
   ).exec();
 };
 
@@ -69,7 +72,7 @@ const execChangelog = (parsed) => {
 
   return new Changelog(
     opts,
-    makePkgDeps(readPackages(opts.cwd), parsed.opts.ignore || [], [])
+    makePkgDeps(readPackages(opts.cwd), parsed.opts)
   ).exec();
 };
 
@@ -82,7 +85,14 @@ const execPublish = (parsed) => {
 const execRunScript = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Run(opts, parsed.args, readPackages(opts.cwd)).exec();
+  return new Run(
+    opts,
+    parsed.args,
+    makePkgDeps(
+      readPackages(opts.cwd),
+      parsed.opts
+    )
+  ).exec();
 };
 
 const execInit = (parsed) => {
@@ -114,32 +124,32 @@ const nixClap = new NixClap({
       alias: "i",
       type: "string array",
       desc: "list of packages to ignore",
-    },
-    skip: {
-      type: "string array",
-      desc: "list of packages to skip running fyn install on, but won't ignore",
+      allowCmd: ["bootstrap", "local", "run"],
     },
     only: {
       alias: "o",
       type: "string array",
       desc: "list of packages to handle only",
+      allowCmd: ["bootstrap", "local", "run"],
+    },
+    scope: {
+      alias: "s",
+      type: "string array",
+      desc: "include only packages with names matching the given scopes",
+      allowCmd: ["bootstrap", "local", "run"],
     },
     deps: {
       alias: "d",
       type: "number",
       default: 10,
       desc: "level of deps to include even if they were ignored",
+      allowCmd: ["bootstrap", "local", "run"],
     },
     "save-log": {
       alias: "sl",
       type: "boolean",
       default: false,
       desc: "save logs to fynpo-debug.log",
-    },
-    tag: {
-      type: "boolean",
-      default: false,
-      desc: "create tags for individual packages",
     },
   },
   {
@@ -160,6 +170,10 @@ const nixClap = new NixClap({
           default: 3,
           desc: "number of packages to bootstrap concurrently",
         },
+        skip: {
+          type: "string array",
+          desc: "list of packages to skip running fyn install on, but won't ignore",
+        },
       },
     },
     local: {
@@ -171,6 +185,13 @@ const nixClap = new NixClap({
       alias: "p",
       desc: "Prepare packages versions for publish",
       exec: execPrepare,
+      options: {
+        tag: {
+          type: "boolean",
+          default: false,
+          desc: "create tags for individual packages",
+        },
+      },
     },
     changelog: {
       alias: "c",
