@@ -98,7 +98,7 @@ class ShowStat {
         .info(
           "=>",
           logFormat.pkgId(ask),
-          `has ${dependents.length + 1} dependents:`,
+          `has ${dependents.length} dependents:`,
           dependents.map(formatPkgId).join(" ")
         );
     }

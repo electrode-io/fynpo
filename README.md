@@ -6,7 +6,7 @@
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-**fyn** makes your disk a npm registry. Code, publish, and test all your packages using local copies directly.
+**fyn** makes your disk a npm registry. You can develop, publish, and test all your packages using local copies directly.
 
 It is a super fast node package manager with some unique features to improve productivity and efficiency:
 

@@ -26,13 +26,13 @@ module.exports = {
     const debugLog = (await Fs.readFile(Path.join(cwd, "fyn-debug-step-02.log"))).toString();
 
     const text = `mod-e matched these installed versions mod-e@2.1.1
-=> mod-e@2.1.1 has 2 dependents: mod-b@1.0.0
+=> mod-e@2.1.1 has 1 dependents: mod-b@1.0.0
 > stat detected circular dependency: mod-b@1.0.0 mod-d@3.0.1 mod-b@1.0.0 mod-e@2.1.1
 => mod-e@2.1.1 has these dependency paths:
   > mod-ns@1.0.0 > mod-b@1.0.0 > mod-e@2.1.1
   > mod-ns@1.0.0 > mod-d@3.0.1 > mod-b@1.0.0 > mod-e@2.1.1
 mod-d matched these installed versions mod-d@3.0.1
-=> mod-d@3.0.1 has 3 dependents: mod-b@1.0.0 mod-ns@1.0.0
+=> mod-d@3.0.1 has 2 dependents: mod-b@1.0.0 mod-ns@1.0.0
 > stat detected circular dependency: mod-d@3.0.1 mod-b@1.0.0 mod-d@3.0.1
 => mod-d@3.0.1 has these dependency paths:
   > mod-ns@1.0.0 > mod-b@1.0.0 > mod-d@3.0.1
