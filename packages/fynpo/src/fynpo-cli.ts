@@ -203,6 +203,39 @@ const nixClap = new NixClap({
       desc: "Run passed npm script in each package",
       args: "<script>",
       exec: execRunScript,
+      options: {
+        stream: {
+          type: "boolean",
+          default: false,
+          desc: "stream output from child processes, prefixed with the originating package name",
+        },
+        parallel: {
+          type: "boolean",
+          default: false,
+          desc: "run a given command or script immediately in all matching packages with prefixed streaming output",
+        },
+        prefix: {
+          type: "boolean",
+          default: true,
+          desc: "no-prefix to disable package name prefixing for stream output",
+        },
+        bail: {
+          type: "boolean",
+          default: true,
+          desc: "no-bail to disable exit on error and run script in all packages regardless of exit code",
+        },
+        concurrency: {
+          alias: "cc",
+          type: "number",
+          default: 3,
+          desc: "number of packages to bootstrap concurrently",
+        },
+        sort: {
+          type: "boolean",
+          default: true,
+          desc: "no-sort to disable topological sorting",
+        },
+      },
     },
     publish: {
       alias: "pb",

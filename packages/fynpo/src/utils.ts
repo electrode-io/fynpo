@@ -130,3 +130,8 @@ export const getGlobalFynpo = async (globalNmDir = null) => {
     return {};
   }
 };
+
+export const timer = () => {
+  const startTime = Date.now();
+  return () => Date.now() - startTime;
+};
