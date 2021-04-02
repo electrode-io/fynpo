@@ -242,6 +242,7 @@ const debug = false;
             throw err;
           })
           .then(() => stepAction.verify(cwd))
+          .delay(10)
           .finally(() => stepAction.after());
       });
 
