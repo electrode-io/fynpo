@@ -19,15 +19,22 @@ class Bootstrap {
   _errors;
   _pkgDirMap;
   _fyn;
+  _circularMap;
   constructor(data, opts) {
     this._opts = opts;
     this._data = data;
 
     this._errors = [];
     this._pkgDirMap = {};
+    this._circularMap = {};
     _.each(data.packages, pkg => {
       this._pkgDirMap[pkg.name] = pkg.path;
     });
+
+    data.circulars.reduce((mapping, locks) => {
+      locks.forEach((name) => (mapping[name] = locks));
+      return mapping;
+    }, this._circularMap);
 
     loadConfig();
 
@@ -79,7 +86,8 @@ ${data.error.output.stderr}
     let pending = 0;
 
     _.each(pkg.localDeps, depName => {
-      if (!this.install(this._data.packages[depName], queue)) pending++;
+      const circulars = this._circularMap[depName] || [];
+      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue)) pending++;
     });
 
     if (pending === 0 && !pkg.installed) {
