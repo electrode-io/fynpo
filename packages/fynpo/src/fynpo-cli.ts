@@ -8,6 +8,7 @@ import Changelog from "./update-changelog";
 import Publish from "./publish";
 import Run from "./run";
 import Init from "./init";
+import Updated from "./updated";
 import makePkgDeps from "./make-pkg-deps";
 import readPackages from "./read-packages";
 import logger from "./logger";
@@ -15,13 +16,7 @@ import Fs from "fs";
 
 const makeBootstrap = (parsed) => {
   const cwd = parsed.opts.cwd || process.cwd();
-  return new Bootstrap(
-    makePkgDeps(
-      readPackages(cwd),
-      parsed.opts
-    ),
-    parsed.opts
-  );
+  return new Bootstrap(makePkgDeps(readPackages(cwd), parsed.opts), parsed.opts);
 };
 
 const execBootstrap = (parsed) => {
@@ -61,19 +56,19 @@ const execLocal = (parsed) => {
 const execPrepare = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Prepare(
-    opts,
-    makePkgDeps(readPackages(opts.cwd), parsed.opts)
-  ).exec();
+  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
 };
 
 const execChangelog = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Changelog(
-    opts,
-    makePkgDeps(readPackages(opts.cwd), parsed.opts)
-  ).exec();
+  return new Changelog(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+};
+
+const execUpdated = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Updated(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
 };
 
 const execPublish = (parsed) => {
@@ -85,14 +80,7 @@ const execPublish = (parsed) => {
 const execRunScript = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Run(
-    opts,
-    parsed.args,
-    makePkgDeps(
-      readPackages(opts.cwd),
-      parsed.opts
-    )
-  ).exec();
+  return new Run(opts, parsed.args, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
 };
 
 const execInit = (parsed) => {
@@ -145,6 +133,18 @@ const nixClap = new NixClap({
       desc: "level of deps to include even if they were ignored",
       allowCmd: ["bootstrap", "local", "run"],
     },
+    "force-publish": {
+      alias: "fp",
+      type: "string array",
+      desc: "force publish packages",
+      allowCmd: ["updated", "changelog"],
+    },
+    "ignore-changes": {
+      alias: "ic",
+      type: "string array",
+      desc: "ignore patterns",
+      allowCmd: ["updated", "changelog"],
+    },
     "save-log": {
       alias: "sl",
       type: "boolean",
@@ -192,6 +192,11 @@ const nixClap = new NixClap({
           desc: "create tags for individual packages",
         },
       },
+    },
+    updated: {
+      alias: "u",
+      desc: "list changed packages",
+      exec: execUpdated,
     },
     changelog: {
       alias: "c",

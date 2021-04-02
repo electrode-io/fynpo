@@ -96,7 +96,7 @@ const getChildProcessCount = () => {
  * @param {string[]} args
  * @param {import("execa").SyncOptions} [opts]
  */
-const execSync = (command, args, opts) => {
+export const execSync = (command, args, opts) => {
   return execa.sync(command, args, opts).stdout;
 };
 
