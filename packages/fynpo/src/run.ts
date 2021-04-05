@@ -64,8 +64,14 @@ export default class Run {
     let pending = 0;
 
     _.each(pkg.localDeps, (depName) => {
+      const depPkg = this._packages[depName] || {};
+      const scriptToRun = _.get(depPkg, ["pkgJson", "scripts", this._script]);
       const circulars = this._circularMap[depName] || [];
-      if (!circulars.includes(pkg.name) && !this.excuteScript(this._packages[depName], pkgQueue)) {
+      if (
+        scriptToRun &&
+        !circulars.includes(pkg.name) &&
+        !this.excuteScript(depPkg, pkgQueue)
+      ) {
         pending++;
       }
     });
