@@ -39,6 +39,7 @@
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
     "filter-scan-dir": "^1.0.10",
+    "fs-extra": "^9.1.0",
     "fyn": "^0.4.17",
     "item-queue": "^1.0.4",
     "lodash": "^4.17.20",
