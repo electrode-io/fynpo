@@ -9,6 +9,7 @@ const Promise = require("bluebird");
 const logFormat = require("../lib/util/log-format");
 const PkgDepLinker = require("../lib/pkg-dep-linker");
 const { FETCH_META } = require("../lib/log-items");
+const { SEMVER } = require("../lib/symbols");
 
 const PACKAGE_JSON = "~package.json";
 
@@ -133,7 +134,7 @@ class ShowStat {
 
           this._allPaths = [];
 
-          return this._findDepPaths(deps.map(getPkgId), [specificId]).then(() => {
+          return this._findDepPaths(deps.map(getPkgId), [specificId], ask.name).then(() => {
             const newGroups = _.groupBy(this._allPaths, x => x[x.length - 1]);
             groups = { ...groups, ...newGroups };
             const paths = groups[specificId];
@@ -148,7 +149,7 @@ class ShowStat {
     });
   }
 
-  _findDepPaths(pkgIds, output = []) {
+  _findDepPaths(pkgIds, output = [], askName = "") {
     const data = this._fyn._data;
 
     return Promise.each(pkgIds, pkgId => {
@@ -157,7 +158,21 @@ class ShowStat {
       );
 
       if (askPkgs.length < 1) {
-        this._allPaths.push((pkgId !== PACKAGE_JSON ? [pkgId] : []).concat(output));
+        if (pkgId === PACKAGE_JSON) {
+          const newOutput = [].concat(output);
+          ["dependencies", "optionalDependencies", "peerDependencies", "devDependencies"].find(
+            s => {
+              const semver = _.get(this._fyn, ["_pkg", s, askName]);
+              if (semver) {
+                newOutput[SEMVER] = semver;
+              }
+              return semver;
+            }
+          );
+          this._allPaths.push(newOutput);
+        } else {
+          this._allPaths.push([pkgId]);
+        }
         return undefined;
       }
 
@@ -189,8 +204,20 @@ class ShowStat {
 
           if (dependents.length > 0) {
             const newOutput = [pkgId].concat(output);
+            if (output.length === 1) {
+              ["dep", "opt", "per", "dev"].find(s => {
+                const sv = _.get(pkg, ["res", s, askName]);
+                if (sv) {
+                  newOutput[SEMVER] = sv.semver;
+                }
+                return sv;
+              });
+            } else {
+              newOutput[SEMVER] = output[SEMVER];
+            }
+
             if (followIds.length > 0) {
-              return this._findDepPaths(followIds, newOutput);
+              return this._findDepPaths(followIds, newOutput, askName);
             } else if (output) {
               this._allPaths.push(newOutput);
             }
@@ -257,7 +284,14 @@ class ShowStat {
         ? `these dependency paths:`
         : `${paths.length} dependency paths, showing the ${briefPaths.length} most significant ones below:`;
     logger.prefix("").info(`=> ${pkgId} has ${msg}`);
-    logger.prefix("").info(briefPaths.map(x => `  > ` + x.join(" > ")).join("\n"));
+    logger.prefix("").info(
+      briefPaths
+        .map(x => {
+          const semver = x[SEMVER];
+          return `  > ` + x.join(" > ") + (semver ? ` (${semver})` : "");
+        })
+        .join("\n")
+    );
   }
 
   showStat(pkgIds) {
