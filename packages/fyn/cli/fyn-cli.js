@@ -31,7 +31,10 @@ function checkNewVersion(npmConfig) {
   checkPkgNewVersionEngine({
     pkg: _.pick(myPkg, ["name", "version"]),
     npmConfig,
-    checkIsNewer: (pkg, distTags, tag) => semver.gt(distTags[tag], pkg.version),
+    checkIsNewer: (pkg, distTags, tag) => {
+      const isNewer = semver.gt(distTags[tag], pkg.version);
+      return { isNewer, version: distTags[tag] };
+    },
     fetchJSON: async (url, options) => {
       const res = await fetch(url, options);
       return await res.json();
