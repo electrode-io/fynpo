@@ -6,15 +6,15 @@
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
-**fyn** makes your disk a npm registry. You can develop, publish, and test all your packages using local copies directly.
+**fyn** is a npm compatible node package manager that makes your disk a direct registry. It enables you to develop, publish, and test all your packages using local copies directly.
 
-It is a super fast node package manager with some unique features to improve productivity and efficiency:
+Additionally, it has more unique features to improve productivity and efficiency:
 
-- enhanced [npm link] with [fynlocal mode](#fynlocal-mode)
+- enhanced [npm link] with [fynlocal mode](#fynlocal-mode) to make your disk a registry.
 - efficient disk space usage with [central storage](#central-storage)
 - smaller `node_modules` with [guaranteed single copy of a package](#smaller-node_modules)
 - flexible dependencies lock by using a [lock time stamp](#locking-dependencies-by-time)
-- built-in support for maintaining a mono-repo project
+- built-in support for a mono-repo workspace
 - and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
