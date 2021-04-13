@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "node.js monorepo",
   "main": "index.js",
+  "private": true,
   "scripts": {},
   "repository": {
     "type": "git",

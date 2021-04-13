@@ -32,7 +32,7 @@ class Bootstrap {
     });
 
     data.circulars.reduce((mapping, locks) => {
-      locks.forEach((name) => (mapping[name] = locks));
+      locks.forEach(name => (mapping[name] = locks));
       return mapping;
     }, this._circularMap);
 
@@ -87,7 +87,8 @@ ${data.error.output.stderr}
 
     _.each(pkg.localDeps, depName => {
       const circulars = this._circularMap[depName] || [];
-      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue)) pending++;
+      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue))
+        pending++;
     });
 
     if (pending === 0 && !pkg.installed) {
@@ -174,10 +175,6 @@ ${data.error.output.stderr}
   }
 
   async exec({ build = true, fynOpts = [], concurrency = 3, skip = [] }) {
-    _.each(this._data.packages, pkg => {
-      this.updatePkgToLocal(pkg);
-    });
-
     if (!this._fyn) {
       this._fyn = require.resolve("fyn");
       /* eslint-disable @typescript-eslint/no-var-requires */
@@ -232,7 +229,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
         });
 
         // eslint-disable-next-line
-        ve.logFinalOutput = function (err, output) {};
+        ve.logFinalOutput = function(err, output) {};
         return ve.execute();
       },
       handlers: {
