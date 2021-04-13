@@ -189,6 +189,9 @@ export default class Changelog {
   };
 
   determinePackageVersions = (collated) => {
+    const lintConfig = this._fynpoRc.commitlint;
+    const parserOpts = _.get(lintConfig, "parserPreset.parserOpts", {});
+
     const types = ["patch", "minor", "major"];
 
     const findVersion = (name, updateType) => {
@@ -212,11 +215,12 @@ export default class Changelog {
       const msgs = collated.packages[name].msgs || [];
 
       const updateType = msgs.reduce((a, x) => {
-        if (x.m.indexOf("[maj") >= 0) {
+        const parsed: any = utils.lintParser(x.m, parserOpts);
+        if ((parsed.type && parsed.type === "major") || x.m.indexOf("[maj") >= 0) {
           if (a < 2) {
             a = 2;
           }
-        } else if (x.m.indexOf("[min") >= 0) {
+        } else if ((parsed.type && parsed.type === "minor") || x.m.indexOf("[min") >= 0) {
           if (a < 1) {
             a = 1;
           }

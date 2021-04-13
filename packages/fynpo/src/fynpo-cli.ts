@@ -9,6 +9,7 @@ import Publish from "./publish";
 import Run from "./run";
 import Init from "./init";
 import Updated from "./updated";
+import Commitlint from "./commitlint";
 import makePkgDeps from "./make-pkg-deps";
 import readPackages from "./read-packages";
 import logger from "./logger";
@@ -87,6 +88,12 @@ const execInit = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
   return new Init(opts).exec();
+};
+
+const execLinting = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Commitlint(opts).exec();
 };
 
 const nixClap = new NixClap({
@@ -217,7 +224,8 @@ const nixClap = new NixClap({
         parallel: {
           type: "boolean",
           default: false,
-          desc: "run a given command or script immediately in all matching packages with prefixed streaming output",
+          desc:
+            "run a given command or script immediately in all matching packages with prefixed streaming output",
         },
         prefix: {
           type: "boolean",
@@ -227,7 +235,8 @@ const nixClap = new NixClap({
         bail: {
           type: "boolean",
           default: true,
-          desc: "no-bail to disable exit on error and run script in all packages regardless of exit code",
+          desc:
+            "no-bail to disable exit on error and run script in all packages regardless of exit code",
         },
         concurrency: {
           alias: "cc",
@@ -272,6 +281,39 @@ const nixClap = new NixClap({
           type: "boolean",
           default: false,
           desc: "Specify exact fynpo dependency version in package.json",
+        },
+        commitlint: {
+          type: "boolean",
+          default: true,
+          desc: "no-commitlint to skip commitlint configuration",
+        },
+      },
+    },
+    commitlint: {
+      alias: "cl",
+      desc: "Commit lint",
+      exec: execLinting,
+      options: {
+        config: {
+          type: "string",
+          description: "path to the config file",
+        },
+        color: {
+          alias: "c",
+          default: true,
+          description: "toggle colored output",
+          type: "boolean",
+        },
+        edit: {
+          alias: "e",
+          description:
+            "read last commit message from the specified file or fallbacks to ./.git/COMMIT_EDITMSG",
+          type: "string",
+        },
+        verbose: {
+          alias: "V",
+          type: "boolean",
+          description: "enable verbose output for reports without problems",
         },
       },
     },
