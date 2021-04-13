@@ -79,20 +79,34 @@ class Prepare {
     if (fynpoTags) {
       Object.keys(fynpoTags).find(tag => {
         const tagInfo = fynpoTags[tag];
+        if (tagInfo.enabled === false) {
+          return undefined;
+        }
+
+        let enabled = _.get(tagInfo, ["packages", pkgJson.name]);
+
+        if (enabled === undefined && tagInfo.regex) {
+          enabled = Boolean(tagInfo.regex.find(r => new RegExp(r).exec(pkgJson.name)));
+        }
+
         const tagPkgs = _.get(tagInfo, "packages");
         if (tagInfo.enabled === false || !tagPkgs.hasOwnProperty(pkgJson.name)) {
           return undefined;
         }
 
-        if (tagPkgs[pkgJson.name]) {
-          pkgJson.publishConfig = Object.assign({}, pkgJson.publishConfig, { tag });
-          return (updated = tag);
-        } else if (pkgJson.hasOwnProperty("publishConfig")) {
-          delete pkgJson.publishConfig;
+        if (!enabled) {
+          // npm tag not enabled for package
+          if (pkgJson.publishConfig) {
+            // remove tag from package.json if it exist
+            delete pkgJson.publishConfig.tag;
+          }
+          // default to latest tag
           return (updated = "latest");
         }
 
-        return undefined;
+        // enabled, update tag in package.json
+        pkgJson.publishConfig = Object.assign({}, pkgJson.publishConfig, { tag });
+        return (updated = tag);
       });
     }
 
