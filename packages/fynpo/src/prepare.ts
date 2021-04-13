@@ -38,10 +38,22 @@ class Prepare {
   }
 
   updateDep(pkg, name, ver) {
-    ["dependencies", "optionalDependencies"].forEach(sec => {
+    ["dependencies", "optionalDependencies", "peerDependencies", "devDependencies"].forEach(sec => {
       const deps = pkg[sec];
-      if (_.isEmpty(deps) || !deps.hasOwnProperty(name)) return;
-      deps[name] = `^${ver}`;
+      if (_.isEmpty(deps) || !deps.hasOwnProperty(name)) {
+        return;
+      }
+
+      let semType = "";
+      const sem = deps[name][0];
+
+      if (sem.match(/[\^~]/)) {
+        semType = sem;
+      } else if (!sem.match(/[0-9]/)) {
+        return;
+      }
+
+      deps[name] = `${semType}${ver}`;
     });
   }
 
