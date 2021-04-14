@@ -18,19 +18,11 @@ export default class Init {
 
   constructor(opts) {
     this.name = "init";
-    this._cwd = opts.cwd;
 
-    const loaded = utils.loadFynpoConfig(this._cwd);
-    if (loaded && !loaded.isEmpty) {
-      this._cwd = loaded.filepath ? Path.dirname(loaded.filepath) : opts.cwd;
-      this._config = loaded.config || {};
-      this._configFile = Path.basename(loaded.filepath);
-    } else {
-      const { config, dir } = utils._searchForFynpo(opts.cwd);
-      this._cwd = (config && dir) || opts.cwd;
-      this._config = config || {};
-      this._configFile = "fynpo.json";
-    }
+    const { fynpoRc, dir, fileName } = utils.loadConfig(this._cwd, opts.commitlint);
+    this._cwd = dir || opts.cwd;
+    this._config = fynpoRc || {};
+    this._configFile = fileName;
 
     const commandConfig = (this._config as any).command || {};
     const overrides = commandConfig[this.name] || {};
@@ -90,20 +82,25 @@ export default class Init {
       this.addDependency(rootPkg, "@commitlint/cli", "12.0.1");
       this.addDependency(rootPkg, "@commitlint/config-conventional", "12.0.1");
       this.addDependency(rootPkg, "husky", "5.1.3");
+
+      const scripts = rootPkg.scripts || {};
+      rootPkg.scripts = scripts;
+      const prepareScript = scripts.prepare || "";
+
+      if (!prepareScript.includes("husky install")) {
+        const prepare = (prepareScript.length > 0 && prepareScript.concat(" && ")) || "";
+        rootPkg.scripts = {
+          ...scripts,
+          prepare: prepare.concat("husky install"),
+        };
+      }
     }
 
     fs.writeFileSync(Path.join(this._cwd, "package.json"), `${JSON.stringify(rootPkg, null, 2)}\n`);
     logger.info(`${pkgMsg} package.json at ${this._cwd}.`);
   };
 
-  addFynpoConfig = () => {
-    let configMsg;
-    if (_.isEmpty(this._config)) {
-      configMsg = "Created";
-    } else {
-      configMsg = "Updated";
-    }
-
+  updateFynpoConfig = () => {
     const functions = [];
     const regExps = [];
 
@@ -126,29 +123,30 @@ export default class Init {
       return regExps[id];
     };
 
-    const finalConfig = utils.generateFynpoConfig(this._config, this._options);
+    if (
+      this._configFile.endsWith(".json") &&
+      this._options.commitlint &&
+      !this._config.commitlint
+    ) {
+      logger.info(
+        "Creating fynpo.config.js for you as some of the commitlint config requires javascript."
+      );
 
-    let output;
-    if (this._configFile === "fynpo.config.js" || this._options.commitlint) {
-      this._configFile = "fynpo.config.js";
+      const lintConfig = utils.generateLintConfig();
+      const finalConfig = Object.assign({}, this._config, { commitlint: lintConfig });
+
       const obj = JSON.stringify(finalConfig, jsonReplacer)
         .replace(/"\{fynpo_func_(\d+)\}"/g, funcReplacer)
         .replace(/"\{fynpo_regexp_(\d+)\}"/g, regexReplacer);
-      output = prettier.format(
+      const output = prettier.format(
         `"use strict";\n
           module.exports = ${obj}`,
         { semi: true, parser: "flow" }
       );
-    } else {
-      output = prettier.format(`${JSON.stringify(finalConfig, null, 2)}\n`, {
-        semi: true,
-        parser: "json",
-      });
+      fs.writeFileSync(Path.join(this._cwd, "fynpo.config.js"), output);
+      logger.info(`Created fynpo.config.js at ${this._cwd}.`);
+      logger.info(`Please delete ${this._configFile}.`);
     }
-
-    fs.writeFileSync(Path.join(this._cwd, this._configFile), output);
-
-    logger.info(`${configMsg} ${this._configFile} at ${this._cwd}.`);
   };
 
   addPackagesDirs = () => {
@@ -166,13 +164,12 @@ export default class Init {
       })
       .then(this.getFynpoVersion)
       .then(this.updatePackageJson)
-      .then(this.addFynpoConfig)
+      .then(this.updateFynpoConfig)
       .then(this.addPackagesDirs)
       .then(() => {
         const commitHookMsg = this._options.commitlint
           ? `\nTo add commit hooks, please run:
         <cyan>
-        npx husky install
         npx husky add .husky/commit-msg 'npx --no-install fynpo commitlint --edit $1'</>
         `
           : "";

@@ -44,7 +44,7 @@ describe("fynpo prepare", () => {
       },
     };
     prepare.updateDep(pkg, "test", "1.0.2");
-    expect(pkg.dependencies.test).toEqual("^1.0.2");
+    expect(pkg.dependencies.test).toEqual("1.0.2");
   });
 
   it("should set tag in publish config", () => {

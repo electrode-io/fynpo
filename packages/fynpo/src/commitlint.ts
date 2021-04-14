@@ -31,9 +31,9 @@ export default class Commitlint {
     this._cwd = dir || opts.cwd;
     this._config = fynpoRc || {};
 
-    const commandConfig = (fynpoRc as any).command || {};
+    const commandConfig = (this._config as any).command || {};
     const overrides = commandConfig[this.name] || {};
-    this._options = _.defaults(opts, overrides, fynpoRc);
+    this._options = _.defaults(opts, overrides, this._config);
   }
 
   pickLintFields(config = {}) {

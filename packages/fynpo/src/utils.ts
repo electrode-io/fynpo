@@ -4,6 +4,9 @@ import Path from "path";
 import logger from "./logger";
 import _ from "lodash";
 import { cosmiconfigSync } from "cosmiconfig";
+import shcmd from "shcmd";
+import _optionalRequire from "optional-require";
+const optionalRequire = _optionalRequire(require);
 
 export const locateGlobalNodeModules = async () => {
   //
@@ -52,42 +55,10 @@ export const locateGlobalFyn = async (globalNmDir = null) => {
   }
 };
 
-export const _searchForFynpo = (cwd = process.cwd()) => {
-  let dir = cwd;
-  let prevDir = dir;
-  let config;
-  let lerna;
-  let lernaDir;
-  let count = 0;
-
-  do {
-    try {
-      config = JSON.parse(Fs.readFileSync(Path.join(dir, "fynpo.json")).toString());
-      break;
-    } catch (e) {
-      // Error
-    }
-
-    try {
-      lerna = JSON.parse(Fs.readFileSync(Path.join(dir, "lerna.json")).toString());
-      lernaDir = dir;
-      if (lerna.fynpo) {
-        config = lerna;
-        break;
-      }
-    } catch (e) {
-      // Error
-    }
-
-    prevDir = dir;
-    dir = Path.dirname(dir);
-  } while (++count < 50 && dir !== prevDir);
-
-  return { config, dir, lerna, lernaDir };
-};
-
 export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string) => {
-  const explorer = cosmiconfigSync("fynpo");
+  const explorer = cosmiconfigSync("fynpo", {
+    searchPlaces: ["fynpo.config.js", "fynpo.json", "lerna.json"],
+  });
   const explicitPath = configPath ? Path.resolve(cwd, configPath) : undefined;
   const explore = explicitPath ? explorer.load : explorer.search;
   const searchPath = explicitPath ? explicitPath : cwd;
@@ -95,35 +66,38 @@ export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string
   return config ? config : null;
 };
 
-export const loadConfig = (cwd = process.cwd()) => {
+export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
   let fynpoRc = {};
   let dir = cwd;
+  let fileName = "fynpo.config.js";
 
-  const loaded = loadFynpoConfig(cwd);
-  if (loaded && !loaded.isEmpty) {
-    fynpoRc = loaded.config;
-    dir = loaded.filepath ? Path.dirname(loaded.filepath) : cwd;
-    return { fynpoRc, dir };
-  }
+  const data = loadFynpoConfig(cwd);
 
-  const data = _searchForFynpo(cwd);
-
-  if (!data.config) {
-    if (data.lerna) {
-      logger.info("found lerna.json at", data.lernaDir, "adding fynpo signature");
-      fynpoRc = { ...data.lerna, fynpo: true };
-      Fs.writeFileSync(Path.join(data.lernaDir, "lerna.json"), JSON.stringify(fynpoRc) + "\n");
+  if (data && !data.isEmpty) {
+    fileName = data.filepath ? Path.basename(data.filepath) : "";
+    dir = data.filepath ? Path.dirname(data.filepath) : cwd;
+    if (fileName === "lerna.json") {
+      logger.info("found lerna.json at", dir, "adding fynpo signature");
+      fynpoRc = { ...data.config, fynpo: true };
+      Fs.writeFileSync(Path.join(dir, "lerna.json"), JSON.stringify(fynpoRc, null, 2) + "\n");
     } else {
-      logger.info("creating fynpo.json at", cwd);
-      Fs.writeFileSync(Path.join(cwd, "fynpo.json"), "{}\n");
-      dir = cwd;
+      fynpoRc = data.config;
     }
   } else {
-    fynpoRc = data.config;
-    dir = data.dir;
+    const srcTmplDir = Path.join(__dirname, "../templates");
+    const configFile = commitlint ? "fynpolint.config.js" : "fynpo.config.js";
+    const src = Path.join(srcTmplDir, configFile);
+    const dest = Path.join(cwd, "fynpo.config.js");
+    if (Fs.existsSync(src)) {
+      logger.info("creating fynpo.config.js at", cwd);
+      shcmd.cp(src, dest);
+
+      dir = cwd;
+      fynpoRc = optionalRequire(src) || {};
+    }
   }
 
-  return { fynpoRc, dir };
+  return { fynpoRc, dir, fileName };
 };
 
 export const getRootScripts = (cwd = process.cwd()) => {
@@ -149,7 +123,7 @@ export const getGlobalFynpo = async (globalNmDir = null) => {
   }
 };
 
-export const generateLintConfig = (override) => {
+export const generateLintConfig = () => {
   const config = {
     /*
      * Resolve and load @commitlint/config-conventional from node_modules.
@@ -185,27 +159,7 @@ export const generateLintConfig = (override) => {
     helpUrl: "https://github.com/conventional-changelog/commitlint/#what-is-commitlint",
   };
 
-  return Object.assign({}, config, override);
-};
-
-export const generateFynpoConfig = (override: any = {}, opts) => {
-  const config = {
-    changeLogMarkers: ["## Packages", "## Commits"],
-    command: {
-      publish: {
-        tags: {},
-        versionTagging: {},
-      },
-    },
-  };
-
-  const finalConfig = Object.assign({}, config, override);
-
-  if (opts.commitlint) {
-    finalConfig.commitlint = generateLintConfig(override.commitlint);
-  }
-
-  return finalConfig;
+  return { ...config };
 };
 
 export const timer = () => {

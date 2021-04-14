@@ -87,8 +87,9 @@ ${data.error.output.stderr}
 
     _.each(pkg.localDeps, depName => {
       const circulars = this._circularMap[depName] || [];
-      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue))
+      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue)) {
         pending++;
+      }
     });
 
     if (pending === 0 && !pkg.installed) {
