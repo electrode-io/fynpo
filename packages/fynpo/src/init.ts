@@ -62,7 +62,9 @@ export default class Init {
       target = rootPkg.devDependencies;
     }
 
-    target[depName] = this._options.exact ? version : `^${version}`;
+    if (version) {
+      target[depName] = this._options.exact ? version : `^${version}`;
+    }
   };
 
   updatePackageJson = (fynpoVersion) => {
@@ -79,7 +81,6 @@ export default class Init {
     this.addDependency(rootPkg, "fynpo", fynpoVersion);
 
     if (this._options.commitlint) {
-      this.addDependency(rootPkg, "@commitlint/cli", "12.0.1");
       this.addDependency(rootPkg, "@commitlint/config-conventional", "12.0.1");
       this.addDependency(rootPkg, "husky", "5.1.3");
 

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@commitlint/execute-rule": "^12.1.1",
+    "@commitlint/format": "^12.1.1",
     "@commitlint/lint": "^12.1.1",
     "@commitlint/read": "^12.1.1",
     "@commitlint/resolve-extends": "^12.1.1",
