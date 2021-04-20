@@ -10,6 +10,7 @@ import Run from "./run";
 import Init from "./init";
 import Updated from "./updated";
 import Commitlint from "./commitlint";
+import Version from "./version";
 import makePkgDeps from "./make-pkg-deps";
 import readPackages from "./read-packages";
 import logger from "./logger";
@@ -78,6 +79,12 @@ const execPublish = (parsed) => {
   return new Publish(opts, readPackages(opts.cwd)).exec();
 };
 
+const execVersion = (parsed) => {
+  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+
+  return new Version(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+};
+
 const execRunScript = (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
@@ -140,17 +147,23 @@ const nixClap = new NixClap({
       desc: "level of deps to include even if they were ignored",
       allowCmd: ["bootstrap", "local", "run"],
     },
+    commit: {
+      type: "boolean",
+      default: true,
+      desc: "no-commit to disable committing the changes to changelog and package.json",
+      allowCmd: ["changelog", "version", "prepare"],
+    },
     "force-publish": {
       alias: "fp",
       type: "string array",
       desc: "force publish packages",
-      allowCmd: ["updated", "changelog"],
+      allowCmd: ["updated", "changelog", "version"],
     },
     "ignore-changes": {
       alias: "ic",
       type: "string array",
       desc: "ignore patterns",
-      allowCmd: ["updated", "changelog"],
+      allowCmd: ["updated", "changelog", "version"],
     },
     "save-log": {
       alias: "sl",
@@ -209,6 +222,13 @@ const nixClap = new NixClap({
       alias: "c",
       desc: "Update changelog",
       exec: execChangelog,
+      options: {
+        publish: {
+          type: "boolean",
+          default: false,
+          desc: "enable to trigger publish with changelog commit",
+        }
+      }
     },
     run: {
       alias: "r",
@@ -248,6 +268,18 @@ const nixClap = new NixClap({
           type: "boolean",
           default: true,
           desc: "no-sort to disable topological sorting",
+        },
+      },
+    },
+    version: {
+      alias: "v",
+      desc: "Update changelog and bump version",
+      exec: execVersion,
+      options: {
+        tag: {
+          type: "boolean",
+          default: false,
+          desc: "create tags for individual packages",
         },
       },
     },

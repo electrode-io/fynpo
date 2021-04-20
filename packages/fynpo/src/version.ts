@@ -15,39 +15,38 @@
 import Fs from "fs";
 import xsh from "xsh";
 import Path from "path";
-import assert from "assert";
 import Promise from "bluebird";
-import semver from "semver";
 xsh.Promise = Promise;
 xsh.envPath.addToFront(Path.join(__dirname, "../node_modules/.bin"));
 import _ from "lodash";
 import * as utils from "./utils";
 import logger from "./logger";
 import getUpdatedPackages from "./utils/get-updated-packages";
+import { determinePackageVersions } from "./utils/get-package-version";
+import { updateChangelog } from "./utils/update-changelog-file";
+import { updatePackageVersions } from "./utils/update-package-versions";
+import { getCurrentBranch } from "./utils/get-current-branch";
 import {
   isAnythingCommitted,
   getNewCommits,
   collateCommitsPackages,
 } from "./utils/git-list-commits";
-import { determinePackageVersions } from "./utils/get-package-version";
-import { updateChangelog } from "./utils/update-changelog-file";
-import { updatePackageVersions } from "./utils/update-package-versions";
-import { getCurrentBranch } from "./utils/get-current-branch";
 
-export default class Changelog {
+export default class Version {
   name;
   _cwd;
   _fynpoRc;
   _options;
-  _data;
-  _changeLogFile;
   _changeLog;
+  _changeLogFile;
   _lockAll;
   _versionLockMap;
+  _data;
+  _gitClean;
 
   constructor(opts, data) {
-    this.name = "changelog";
-    const { fynpoRc, dir } = utils.loadConfig(opts.cwd);
+    this.name = "version";
+    const { dir, fynpoRc } = utils.loadConfig(opts.cwd);
     this._cwd = dir || opts.cwd;
     this._fynpoRc = fynpoRc || {};
     this._data = data;
@@ -77,7 +76,7 @@ export default class Changelog {
   }
 
   get relatedCommands() {
-    return ["updated"];
+    return ["changelog", "updated", "prepare"];
   }
 
   _sh(command) {
@@ -92,32 +91,9 @@ export default class Changelog {
   }
 
   checkGitClean = () => {
-    return this._sh(`git diff --quiet -- . ':(exclude)CHANGELOG.md'`)
-      .then(() => true)
-      .catch(() => false);
-  };
-
-  commitChangeLogFile = () => {
-    logger.info("Change log updated.");
-
-    if (!this._options.commit) {
-      logger.warn("commit option disabled, skip committing changelog file.");
-      return;
-    }
-
-    return this.checkGitClean().then((gitClean) => {
-      if (!gitClean) {
-        logger.warn("Your git branch is not clean, skip committing changelog file.");
-        return;
-      }
-      return this._sh(`git add ${this._changeLogFile} && git commit -m "Update changelog"`)
-        .then(() => {
-          logger.info("Changelog committed");
-        })
-        .catch((e) => {
-          logger.error("Commit changelog failed", e);
-        });
-    });
+    return this._sh(`git diff --quiet`)
+      .then(() => (this._gitClean = true))
+      .catch(() => (this._gitClean = false));
   };
 
   commitAndTagUpdates = ({ packages, tags }) => {
@@ -125,35 +101,31 @@ export default class Changelog {
       logger.warn("commit option disabled, skip committing updates.");
       return;
     }
-    return this.checkGitClean().then((gitClean) => {
-      if (!gitClean) {
-        logger.warn("Your git branch is not clean, skip committing updates.");
-        return;
-      }
-      return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
-        .then((output) => {
-          logger.info("git add", output);
-          return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
-        })
-        .then((output) => {
-          logger.info("git commit", output);
 
-          if (this._options.tag === false) {
-            return false;
-          }
+    if (!this._gitClean) {
+      logger.warn("Your git branch is not clean, skip committing updates.");
+      return;
+    }
 
-          return Promise.each(tags, (tag) => {
-            logger.info("tagging", tag);
-            return this._sh(`git tag ${tag}`).then((tagOut) => {
-              logger.info("tag", tag, "output", tagOut);
-            });
+    return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
+      .then((output) => {
+        logger.info("git add", output);
+        return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
+      })
+      .then((output) => {
+        logger.info("git commit", output);
+
+        if (this._options.tag === false) {
+          return false;
+        }
+
+        return Promise.each(tags, (tag) => {
+          logger.info("tagging", tag);
+          return this._sh(`git tag ${tag}`).then((tagOut) => {
+            logger.info("tag", tag, "output", tagOut);
           });
         });
-    });
-  };
-
-  preparePackages = (output) => {
-    return updatePackageVersions(output).then(this.commitAndTagUpdates);
+      });
   };
 
   async exec() {
@@ -161,9 +133,7 @@ export default class Changelog {
       cwd: this._cwd,
     };
     if (!isAnythingCommitted(execOpts)) {
-      logger.error(
-        "No commits in this repository. Please commit something before using changelog."
-      );
+      logger.error("No commits in this repository. Please commit something before using version.");
       return;
     }
 
@@ -186,19 +156,20 @@ export default class Changelog {
     const changed = getUpdatedPackages(this._data, opts);
 
     if (!changed.pkgs.length) {
-      logger.info(`No changed packages to update changelog.`);
+      logger.info(`No changed packages to version`);
       return;
     }
 
     const messages = changed.pkgs.map((name) => ` - ${name}`);
     logger.info(`Changed packages: \n${messages.join("\n")}`);
 
+    await this.checkGitClean();
+
     return getNewCommits(opts, changed)
       .then(collateCommitsPackages)
       .then(determinePackageVersions)
       .then(updateChangelog)
-      .then((output) => {
-        return opts.publish ? this.preparePackages(output) : this.commitChangeLogFile();
-      });
+      .then(updatePackageVersions)
+      .then(this.commitAndTagUpdates);
   }
 }
