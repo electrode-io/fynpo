@@ -1,6 +1,6 @@
 {
   "name": "fynpo-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "npm install globally to provide the fynpo command",
   "preferGlobal": true,
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "xrun [[build, docs], xarc/check]",
+    "prepublishOnly": "xrun --serial [build, xarc/check]",
     "docs": "xrun xarc/docs"
   },
   "files": [
