@@ -3,7 +3,7 @@
 import requireAt from "require-at";
 
 try {
-  requireAt(process.cwd(), "fynpo/cli/fynpo");
+  requireAt(process.cwd(), "fynpo/dist/fynpo-cli");
 } catch (err) {
   if (err.code === "MODULE_NOT_FOUND") {
     console.error(`ERROR: Unable to find the fynpo module from dir ${process.cwd()}

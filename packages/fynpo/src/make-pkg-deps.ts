@@ -3,6 +3,8 @@
 import _ from "lodash";
 import logger from "./logger";
 
+const globalCmnds = ["bootstrap", "local", "run"];
+
 function processDirectDeps(packages) {
   const add = (name, deps) => {
     const depPkg = packages[name];
@@ -76,12 +78,25 @@ function includeDeps(packages, level) {
   }
 }
 
-function makePkgDeps(packages, opts) {
+function makePkgDeps(packages, opts, cmdName = "") {
+  const cwd = opts.cwd || process.cwd();
   let circulars = [];
   let ignores = opts.ignore || [];
 
   processDirectDeps(packages);
   processIndirectDeps(packages, circulars);
+
+  for (const p in packages) {
+    const pkg = packages[p];
+    if (cwd === pkg.path) {
+      if (!globalCmnds.includes(cmdName)) {
+        logger.error(`${cmdName} command is only supported at project root level.`);
+        process.exit(1);
+      }
+      opts.only = [p];
+      break;
+    }
+  }
 
   if (opts.scope && opts.scope.length > 0) {
     Object.keys(packages).forEach((p) => {

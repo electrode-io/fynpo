@@ -19,8 +19,7 @@ export default class Run {
 
   constructor(opts, args, data) {
     this._script = args.script;
-    const { dir } = utils.loadConfig(this._cwd);
-    this._cwd = dir || opts.cwd;
+    this._cwd = opts.dir || opts.cwd;
     this._packages = data.packages;
     this._options = opts;
     this._args = this._options["--"] || [];

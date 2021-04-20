@@ -8,7 +8,6 @@ describe("loadConfig", () => {
   const dir = path.join(__dirname, "sample");
 
   afterAll(() => {
-    shcmd.rm(path.join(dir, "lerna.json"));
     shcmd.rm(path.join(dir, "fynpo.json"));
   });
 

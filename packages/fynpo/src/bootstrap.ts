@@ -11,7 +11,7 @@ import chalk from "chalk";
 import { isCI } from "./is-ci";
 const isWin32 = process.platform.startsWith("win32");
 
-import { locateGlobalFyn, loadConfig } from "./utils";
+import { locateGlobalFyn } from "./utils";
 
 class Bootstrap {
   _opts;
@@ -35,8 +35,6 @@ class Bootstrap {
       locks.forEach(name => (mapping[name] = locks));
       return mapping;
     }, this._circularMap);
-
-    loadConfig();
 
     this._fyn = null;
   }
