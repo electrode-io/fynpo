@@ -1,6 +1,6 @@
 {
   "name": "create-fynpo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a new fynpo monorepo",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,11 @@
   },
   "keywords": [],
   "author": "GTP.js",
-  "license": "ISC",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electrode-io/fynpo.git"
+  },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/node": "^14.14.16",
@@ -28,17 +32,22 @@
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-tsdoc": "^0.2.11",
-    "mkdirp": "^1.0.4",
-    "opfs": "^1.1.1",
-    "prettier": "^2.2.1",
-    "prompts": "^2.4.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typedoc": "^0.20.13",
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "tslib": "^2.1.0"
+    "chalker": "^1.2.0",
+    "lodash": "^4.17.21",
+    "mkdirp": "^1.0.4",
+    "nix-clap": "^1.3.12",
+    "opfs": "^1.1.1",
+    "prettier": "^2.2.1",
+    "prompts": "^2.4.1",
+    "shcmd": "^0.8.4",
+    "tslib": "^2.1.0",
+    "xsh": "^0.4.5"
   },
   "files": [
     "bin",
