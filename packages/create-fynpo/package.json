@@ -1,6 +1,6 @@
 {
   "name": "create-fynpo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create a new fynpo monorepo",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "author": "GTP.js",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/electrode-io/fynpo.git"
