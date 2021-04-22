@@ -50,7 +50,7 @@ export async function copyTemplate(srcTmplDir, destDir, filesList) {
     }
 
     if (file.dir) {
-      shcmd.cp("-R", fullSrc, destDir);
+      Fs.$.mkdirpSync(destFile(file.destName || name));
     } else if (file.processor) {
       const content = Fs.readFileSync(fullSrc, "utf-8");
       Fs.writeFileSync(destFile(file.destName || name), file.processor(content));

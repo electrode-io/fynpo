@@ -28,14 +28,16 @@
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-tsdoc": "^0.2.11",
+    "mkdirp": "^1.0.4",
+    "opfs": "^1.1.1",
     "prettier": "^2.2.1",
+    "prompts": "^2.4.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typedoc": "^0.20.13",
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "opfs": "^1.1.1",
     "tslib": "^2.1.0"
   },
   "files": [

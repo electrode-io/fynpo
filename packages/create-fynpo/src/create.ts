@@ -34,7 +34,7 @@ export async function createFynpo(targetDir, opts) {
   };
 
   const files = {
-    packages: { dir: true },
+    packages: { dir: true, fromTemplate: false },
     _gitignore: { destName: ".gitignore" },
     _npmrc: { destName: ".npmrc" },
     [configFile]: {
