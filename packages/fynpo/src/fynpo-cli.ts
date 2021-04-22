@@ -309,18 +309,13 @@ const nixClap = new NixClap({
     },
     init: {
       alias: "i",
-      desc: "Create a new fynpo repo",
+      desc: "Initialize a new fynpo repo",
       exec: execInit,
       options: {
-        exact: {
-          type: "boolean",
-          default: false,
-          desc: "Specify exact fynpo dependency version in package.json",
-        },
         commitlint: {
           type: "boolean",
-          default: true,
-          desc: "no-commitlint to skip commitlint configuration",
+          default: false,
+          desc: "To add commitlint configuration",
         },
       },
     },

@@ -69,7 +69,7 @@ export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string
 export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
   let fynpoRc = {};
   let dir = cwd;
-  let fileName = "fynpo.config.js";
+  let fileName = "";
 
   const data = loadFynpoConfig(cwd);
 
@@ -84,16 +84,25 @@ export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
       fynpoRc = data.config;
     }
   } else {
-    const srcTmplDir = Path.join(__dirname, "../templates");
-    const configFile = commitlint ? "fynpolint.config.js" : "fynpo.config.js";
-    const src = Path.join(srcTmplDir, configFile);
-    const dest = Path.join(cwd, "fynpo.config.js");
-    if (Fs.existsSync(src)) {
-      logger.info("creating fynpo.config.js at", cwd);
-      shcmd.cp(src, dest);
+    fileName = commitlint ? "fynpo.config.js" : "fynpo.json";
+    dir = cwd;
 
-      dir = cwd;
-      fynpoRc = optionalRequire(src) || {};
+    logger.info(`creating ${fileName} at ${cwd}.`);
+    const dest = Path.join(cwd, fileName);
+
+    if (commitlint) {
+      const srcTmplDir = Path.join(__dirname, "../templates");
+      const src = Path.join(srcTmplDir, fileName);
+      if (Fs.existsSync(src)) {
+        shcmd.cp(src, dest);
+        fynpoRc = optionalRequire(src) || {};
+      }
+    } else {
+      fynpoRc = {
+        changeLogMarkers: ["## Packages", "## Commits"],
+        command: { publish: { tags: {}, versionTagging: {} } },
+      };
+      Fs.writeFileSync(dest, `${JSON.stringify(fynpoRc, null, 2)}\n`);
     }
   }
 
@@ -103,24 +112,6 @@ export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
 export const getRootScripts = (cwd = process.cwd()) => {
   const config = JSON.parse(Fs.readFileSync(Path.join(cwd, "package.json")).toString());
   return config.scripts || {};
-};
-
-export const getGlobalFynpo = async (globalNmDir = null) => {
-  globalNmDir = globalNmDir || (await locateGlobalNodeModules());
-
-  if (!globalNmDir) {
-    logger.error("Unable to locate your global node_modules from", process.argv[0]);
-    return {};
-  }
-
-  try {
-    const dir = Path.join(globalNmDir, "fynpo");
-    /* eslint-disable @typescript-eslint/no-var-requires */
-    const pkgJson = require(Path.join(dir, "package.json"));
-    return pkgJson;
-  } catch (e) {
-    return {};
-  }
 };
 
 export const generateLintConfig = () => {

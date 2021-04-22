@@ -46,12 +46,6 @@ export default class Init {
       .catch(() => false);
   };
 
-  getFynpoVersion = () => {
-    return utils.getGlobalFynpo().then((globalFynpo) => {
-      return globalFynpo.version;
-    });
-  };
-
   addDependency = (rootPkg, depName, version) => {
     let target;
     const dep = _.get(rootPkg, ["dependencies", depName]);
@@ -63,22 +57,19 @@ export default class Init {
     }
 
     if (version) {
-      target[depName] = this._options.exact ? version : `^${version}`;
+      target[depName] = `^${version}`;
     }
   };
 
-  updatePackageJson = (fynpoVersion) => {
+  updatePackageJson = () => {
     let rootPkg;
-    let pkgMsg;
     try {
       rootPkg = JSON.parse(fs.readFileSync(Path.join(this._cwd, "package.json")).toString());
-      pkgMsg = "Updated";
     } catch {
-      pkgMsg = "Created";
-      rootPkg = { name: "root", private: true };
+      logger.error(`Could not load package.json from the directory ${this._cwd}.`);
+      logger.info(`Please use "npx create-fynpo my-app" to create a new fynpo monorepo`);
+      process.exit(1);
     }
-
-    this.addDependency(rootPkg, "fynpo", fynpoVersion);
 
     if (this._options.commitlint) {
       this.addDependency(rootPkg, "@commitlint/config-conventional", "12.0.1");
@@ -95,10 +86,13 @@ export default class Init {
           prepare: prepare.concat("husky install"),
         };
       }
-    }
 
-    fs.writeFileSync(Path.join(this._cwd, "package.json"), `${JSON.stringify(rootPkg, null, 2)}\n`);
-    logger.info(`${pkgMsg} package.json at ${this._cwd}.`);
+      fs.writeFileSync(
+        Path.join(this._cwd, "package.json"),
+        `${JSON.stringify(rootPkg, null, 2)}\n`
+      );
+      logger.info(`Updated package.json at ${this._cwd}. Please commit it.`);
+    }
   };
 
   updateFynpoConfig = () => {
@@ -163,7 +157,6 @@ export default class Init {
           return this._sh("git init");
         }
       })
-      .then(this.getFynpoVersion)
       .then(this.updatePackageJson)
       .then(this.updateFynpoConfig)
       .then(this.addPackagesDirs)
@@ -176,7 +169,7 @@ export default class Init {
           : "";
 
         console.log(ck`
-Successfully initialized fynpo repo. Please run:
+Successfully updated fynpo repo. Please run:
 <cyan>
 fyn</>
 ${commitHookMsg}
