@@ -1,8 +1,9 @@
 import VisualLogger from "visual-logger";
+import { isCI } from "./is-ci";
 
 const logger = new VisualLogger();
 
-if (process.env.CI) {
+if (isCI) {
   logger.info("CI env detected");
   logger.setItemType("none");
 }

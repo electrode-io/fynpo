@@ -27,12 +27,12 @@ class Bootstrap {
     this._errors = [];
     this._pkgDirMap = {};
     this._circularMap = {};
-    _.each(data.packages, pkg => {
+    _.each(data.packages, (pkg) => {
       this._pkgDirMap[pkg.name] = pkg.path;
     });
 
     data.circulars.reduce((mapping, locks) => {
-      locks.forEach(name => (mapping[name] = locks));
+      locks.forEach((name) => (mapping[name] = locks));
       return mapping;
     }, this._circularMap);
 
@@ -45,7 +45,7 @@ class Bootstrap {
 
   logErrors() {
     if (this._errors.length > 0) {
-      _.each(this._errors, data => {
+      _.each(this._errors, (data) => {
         const item = data.item || {};
         logger.error(`=== Error: fynpo failed bootstrapping ${item.name} at ${item.path}`);
         if (isCI) {
@@ -83,7 +83,7 @@ ${data.error.output.stderr}
 
     let pending = 0;
 
-    _.each(pkg.localDeps, depName => {
+    _.each(pkg.localDeps, (depName) => {
       const circulars = this._circularMap[depName] || [];
       if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue)) {
         pending++;
@@ -113,12 +113,12 @@ ${data.error.output.stderr}
     const json = pkg.pkgJson;
     if (!json) return false;
     let count = 0;
-    ["dependencies", "devDependencies", "optionalDependencies"].forEach(sec => {
+    ["dependencies", "devDependencies", "optionalDependencies"].forEach((sec) => {
       const deps = json[sec];
       if (!deps) return;
       if (!json.fyn) json.fyn = {};
       const fynDeps = json.fyn[sec] || {};
-      _.each(pkg.localDeps, depName => {
+      _.each(pkg.localDeps, (depName) => {
         if (!this._data.packages[depName].ignore && deps.hasOwnProperty(depName)) {
           const depDir = this._pkgDirMap[depName];
           let relPath = Path.relative(pkg.path, depDir);
@@ -158,7 +158,7 @@ ${data.error.output.stderr}
   getMoreInstall() {
     const queue = [];
 
-    _.each(this._data.packages, pkg => {
+    _.each(this._data.packages, (pkg) => {
       this.install(pkg, queue);
     });
 
@@ -166,7 +166,7 @@ ${data.error.output.stderr}
   }
 
   updateToLocal() {
-    _.each(this._data.packages, pkg => {
+    _.each(this._data.packages, (pkg) => {
       if (this.updatePkgToLocal(pkg)) {
         logger.info("Update package", pkg.name, "dependencies to local");
       }
@@ -202,7 +202,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       Promise,
       concurrency,
       stopOnError: true,
-      processItem: item => {
+      processItem: (item) => {
         const name = chalk.magenta(item.name);
         if (skip && skip.includes(item.name)) {
           logger.info("bootstrap skipping", name);
@@ -215,24 +215,24 @@ is different from fynpo's internal version ${fynPkgJson.version}`
 
         const fynOptArgs = [process.env.CI ? "--pg simple" : ""]
           .concat(fynOpts, logLevelOpts, `install`, `--no-build-local`)
-          .filter(x => x);
+          .filter((x) => x);
 
         const command = [process.argv[0], this._fyn].concat(fynOptArgs).join(" ");
         const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
-        logger.debug("bootstrap", name, dispCmd, chalk.blue(item.path));
+        logger[isCI ? "info" : "debug"]("bootstrap", name, dispCmd, chalk.blue(item.path));
         const ve = new VisualExec({
           displayTitle: `bootstrap ${name} ${dispCmd}`,
           cwd: item.path,
           command,
-          visualLogger: logger
+          visualLogger: logger,
         });
 
         // eslint-disable-next-line
-        ve.logFinalOutput = function(err, output) {};
+        ve.logFinalOutput = function (err, output) {};
         return ve.execute();
       },
       handlers: {
-        doneItem: data => {
+        doneItem: (data) => {
           if (data.item) data.item.installed = true;
           const items = this.getMoreInstall();
           itemQ.addItems(items, true);
@@ -242,11 +242,11 @@ is different from fynpo's internal version ${fynPkgJson.version}`
           logger.info(`bootstrap completed in ${ts}secs`);
           // return this.restorePkgJson();
         },
-        failItem: data => {
+        failItem: (data) => {
           this._errors.push(data);
           // this.restorePkgJson();
-        }
-      }
+        },
+      },
     });
 
     return itemQ.addItems(this.getMoreInstall()).wait();
