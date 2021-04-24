@@ -15,9 +15,7 @@
 import Fs from "fs";
 import xsh from "xsh";
 import Path from "path";
-import assert from "assert";
 import Promise from "bluebird";
-import semver from "semver";
 xsh.Promise = Promise;
 xsh.envPath.addToFront(Path.join(__dirname, "../node_modules/.bin"));
 import _ from "lodash";
@@ -44,6 +42,7 @@ export default class Changelog {
   _changeLog;
   _lockAll;
   _versionLockMap;
+  _gitClean;
 
   constructor(opts, data) {
     this.name = "changelog";
@@ -92,9 +91,9 @@ export default class Changelog {
   }
 
   checkGitClean = () => {
-    return this._sh(`git diff --quiet -- . ':(exclude)CHANGELOG.md'`)
-      .then(() => true)
-      .catch(() => false);
+    return this._sh(`git diff --quiet`)
+      .then(() => (this._gitClean = true))
+      .catch(() => (this._gitClean = false));
   };
 
   commitChangeLogFile = () => {
@@ -105,19 +104,18 @@ export default class Changelog {
       return;
     }
 
-    return this.checkGitClean().then((gitClean) => {
-      if (!gitClean) {
-        logger.warn("Your git branch is not clean, skip committing changelog file.");
-        return;
-      }
-      return this._sh(`git add ${this._changeLogFile} && git commit -m "Update changelog"`)
-        .then(() => {
-          logger.info("Changelog committed");
-        })
-        .catch((e) => {
-          logger.error("Commit changelog failed", e);
-        });
-    });
+    if (!this._gitClean) {
+      logger.warn("Your git branch is not clean, skip committing updates.");
+      return;
+    }
+
+    return this._sh(`git add ${this._changeLogFile} && git commit -m "Update changelog"`)
+      .then(() => {
+        logger.info("Changelog committed");
+      })
+      .catch((e) => {
+        logger.error("Commit changelog failed", e);
+      });
   };
 
   commitAndTagUpdates = ({ packages, tags }) => {
@@ -125,31 +123,31 @@ export default class Changelog {
       logger.warn("commit option disabled, skip committing updates.");
       return;
     }
-    return this.checkGitClean().then((gitClean) => {
-      if (!gitClean) {
-        logger.warn("Your git branch is not clean, skip committing updates.");
-        return;
-      }
-      return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
-        .then((output) => {
-          logger.info("git add", output);
-          return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
-        })
-        .then((output) => {
-          logger.info("git commit", output);
 
-          if (this._options.tag === false) {
-            return false;
-          }
+    if (!this._gitClean) {
+      logger.warn("Your git branch is not clean, skip committing updates.");
+      return;
+    }
 
-          return Promise.each(tags, (tag) => {
-            logger.info("tagging", tag);
-            return this._sh(`git tag ${tag}`).then((tagOut) => {
-              logger.info("tag", tag, "output", tagOut);
-            });
+    return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
+      .then((output) => {
+        logger.info("git add", output);
+        return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
+      })
+      .then((output) => {
+        logger.info("git commit", output);
+
+        if (this._options.tag === false) {
+          return false;
+        }
+
+        return Promise.each(tags, (tag) => {
+          logger.info("tagging", tag);
+          return this._sh(`git tag ${tag}`).then((tagOut) => {
+            logger.info("tag", tag, "output", tagOut);
           });
         });
-    });
+      });
   };
 
   preparePackages = (output) => {
@@ -192,6 +190,8 @@ export default class Changelog {
 
     const messages = changed.pkgs.map((name) => ` - ${name}`);
     logger.info(`Changed packages: \n${messages.join("\n")}`);
+
+    await this.checkGitClean();
 
     return getNewCommits(opts, changed)
       .then(collateCommitsPackages)

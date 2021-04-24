@@ -8,8 +8,6 @@ import { execSync } from "../child-process";
 export const isAnythingCommitted = (opts) => {
   const anyCommits = execSync("git", ["rev-list", "--count", "--all", "--max-count=1"], opts);
 
-  logger.info("isAnythingCommitted", anyCommits);
-
   return Boolean(parseInt(anyCommits, 10));
 };
 

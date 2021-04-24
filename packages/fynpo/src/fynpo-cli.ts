@@ -230,7 +230,12 @@ const nixClap = new NixClap({
           type: "boolean",
           default: false,
           desc: "enable to trigger publish with changelog commit",
-        }
+        },
+        tag: {
+          type: "boolean",
+          default: false,
+          desc: "create tags for individual packages",
+        },
       }
     },
     run: {

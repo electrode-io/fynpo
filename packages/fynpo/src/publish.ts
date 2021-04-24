@@ -87,22 +87,24 @@ export default class Publish {
     return Promise.map(
       this._packagesToPublish,
       (pkg) => {
-        logger.info(`===== Running publish for package ${pkg.name} =====`);
-        return this._sh("npm pack --dry-run", pkg.path).then((output) => {
-          logger.info("List of files npm publish will include:");
-          logger.info(output.stderr);
+        const publishCmd = `npm publish${distTagCmd}${dryRunCmd}`;
+        logger.info(`===== Running publish for package ${pkg.name} with '${publishCmd}' =====`);
 
-          return this._sh(`npm publish${distTagCmd}${dryRunCmd}`, pkg.path).then(() => {
-            logger.info(`Published package ${pkg.name}@${pkg.version}`);
-            logger.info("-------------------------------------------------");
-          });
+        return this._sh(publishCmd, pkg.path).then(() => {
+          logger.info(`Published package ${pkg.name}@${pkg.version}`);
+          logger.info("-------------------------------------------------");
         });
       },
       { concurrency: 1 }
-    ).then(() => {
-      logger.info(`Successfully published:\n${this._messages.join("\n")}`);
-      return;
-    });
+    )
+      .then(() => {
+        logger.info(`Successfully published:\n${this._messages.join("\n")}`);
+        return;
+      })
+      .catch((err) => {
+        logger.error(`Publish failed: ${err}`);
+        process.exit(1);
+      });
   };
 
   addReleaseTag = () => {
