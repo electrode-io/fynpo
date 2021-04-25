@@ -66,24 +66,69 @@ class LifecycleScripts {
     this._options = Object.assign({}, options);
   }
 
+  _getNpm6NodeGyp({ version, npmDir, xrequire }) {
+    try {
+      const npmLifecycleDir = Path.dirname(xrequire.resolve("npm-lifecycle/package.json"));
+      return {
+        envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
+        envPath: Path.join(npmLifecycleDir, "node-gyp-bin")
+      };
+    } catch (err) {
+      logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
+      return {
+        envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
+        envPath: Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin")
+      };
+    }
+  }
+
+  _getNpm7NodeGyp({ version, npmDir, xrequire }) {
+    try {
+      // npm 7 has node-gyp as dep directly
+      // node-gyp-bin is under npm/bin
+      return {
+        envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
+        envPath: Path.join(npmDir, "bin")
+      };
+    } catch (err) {
+      logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
+      return {
+        envFile: Path.join(npmDir, "node_modules", "node-gyp", "bin", "node-gyp.js"),
+        envPath: Path.join(npmDir, "bin")
+      };
+    }
+  }
+
+  _findNodeGypFromNpm(env) {
+    const npmDir = Path.join(getGlobalNodeModules(), "npm");
+    const xrequire = requireAt(npmDir);
+    const npmPkg = xrequire("./package.json");
+    const version = parseInt(npmPkg.version.split(".")[0]);
+    if (version > 7) {
+      logger.error(`Unknown npm version ${version} - can't provide node-gyp binary`);
+      return;
+    }
+    const { envFile, envPath } =
+      version <= 6
+        ? this._getNpm6NodeGyp({ version: npmPkg.version, npmDir, xrequire })
+        : this._getNpm7NodeGyp({ version: npmPkg.version, npmDir, xrequire });
+
+    env.npm_config_node_gyp = envFile;
+    xsh.envPath.addToFront(envPath, env);
+
+    logger.debug(
+      `env npm_config_node_gyp set to ${env.npm_config_node_gyp}, path ${envPath} added`
+    );
+  }
+
   makeEnv(override) {
     // let env = Object.assign({}, process.env, override);
     // this._addNpmPackageConfig(this._appPkg.config, env);
     // this._addNpmPackageConfig(this._pkg.config, env);
 
     const env = Object.assign({}, npmConfigEnv(this._pkg, this._fyn.allrc || {}), override);
-    const npmDir = Path.join(getGlobalNodeModules(), "npm");
 
-    try {
-      const ra = requireAt(npmDir);
-      const npmLifecycleDir = Path.dirname(ra.resolve("npm-lifecycle/package.json"));
-      xsh.envPath.addToFront(Path.join(npmLifecycleDir, "node-gyp-bin"), env);
-      env.npm_config_node_gyp = ra.resolve("node-gyp/bin/node-gyp");
-    } catch (err) {
-      logger.debug("failed to resolve node-gyp dir from npm, using defaults.", err);
-      xsh.envPath.addToFront(Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin"), env);
-      env.npm_config_node_gyp = Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js");
-    }
+    this._findNodeGypFromNpm(env);
 
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);
