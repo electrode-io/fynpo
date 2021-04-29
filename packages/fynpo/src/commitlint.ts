@@ -1,3 +1,4 @@
+/* reuses some of the awesome work from https://github.com/conventional-changelog/commitlint */
 /* eslint-disable consistent-return, no-shadow, @typescript-eslint/no-var-requires */
 
 import stdin from "get-stdin";

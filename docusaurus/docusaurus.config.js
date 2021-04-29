@@ -33,7 +33,7 @@ module.exports = {
     },
     footer: {
       style: 'dark',
-      copyright: `Copyright © ${new Date().getFullYear()} Walmart`,
+      copyright: `Copyright © 2017-Present Walmart`,
     },
   },
   presets: [

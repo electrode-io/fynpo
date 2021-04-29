@@ -7,15 +7,15 @@ const FeatureList = [
     title: 'Easy to Use',
     description: (
       <>
-        Code, publish, and test all in your packages using local sources without skipping a beat.
+        Code, publish, and test all in your packages using local sources without skipping a beat
       </>
     ),
   },
   {
-    title: 'Npm Compatible workflow',
+    title: 'npm Compatible workflow',
     description: (
       <>
-        Designed from the ground up to enable a mono-repo that 100% retains the standard npm workflow.
+        Designed from the ground up to enable a mono-repo that 100% retains the standard npm workflow
       </>
     ),
   },
@@ -23,7 +23,7 @@ const FeatureList = [
     title: 'Efficient Storage',
     description: (
       <>
-        Uses a central storage for all of a mono-repo's dependencies.
+        Uses a central storage for all of a mono-repo's dependencies
       </>
     ),
   },
@@ -31,7 +31,7 @@ const FeatureList = [
     title: 'Hybrid Publish Mode',
     description: (
       <>
-        Allows selected packages to lock versions or be independent.
+        Allows selected packages to lock versions or be independent
       </>
     ),
   },
@@ -39,7 +39,7 @@ const FeatureList = [
     title: 'Local Package Resolution',
     description: (
       <>
-        Local package resolution logic fully integrated with the normal NPM package.json install process.
+        Local package resolution logic fully integrated with the normal npm package.json install process
       </>
     ),
   },

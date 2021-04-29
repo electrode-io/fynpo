@@ -1,3 +1,4 @@
+/* reuses some of the awesome work from https://github.com/lerna/lerna/blob/main/commands/run/index.js */
 /* eslint-disable consistent-return */
 
 import xsh from "xsh";

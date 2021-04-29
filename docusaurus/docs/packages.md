@@ -17,7 +17,7 @@ fyn  # Install dependencies
 Adds `fynpo` as a dev dependency in the monorepo and also add necessary configurations.
 
 ### [fynpo](https://github.com/electrode-io/fynpo/tree/master/packages/fynpo)
-The main mono-repo management tool that the user's mono-repo installs. It supports the below listed commands.
+Lerna based mono-repo management tool that the user's mono-repo installs. It supports the below listed commands.
 
 - `fynpo init` - Initialize a new fynpo monorepo. Supports `commitlint` option to add commitlint config to an existing repo.
 

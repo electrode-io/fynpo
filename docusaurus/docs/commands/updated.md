@@ -15,6 +15,8 @@ fynpo updated
 
 Return the list the packages that have been changed since last release. The returned list will be the subjects of the next `fynpo changelog` execution.
 
+Similar to [lerna changed](https://github.com/lerna/lerna/tree/main/commands/changed#readme) command.
+
 ## Options
 
 **`--force-publish`**

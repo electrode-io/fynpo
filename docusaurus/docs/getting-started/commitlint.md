@@ -1,6 +1,6 @@
 ---
 id: commitlint
-title: Commitlint Setup
+title: Versioning
 ---
 
 The versioning of modules in fynpo mono repo are all automatically controlled by the commit messages. The default commitlint configuration supports commmit message in `[<semver>][feat|bug|chore] <message>` format, where:

@@ -17,6 +17,8 @@ fynpo run test
 
 Run given npm script in all the packages that contain that script. A double-dash (--) is necessary to pass dashed arguments to the script execution.
 
+Similar to [lerna run](https://github.com/lerna/lerna/tree/main/commands/run#readme) command.
+
 ## Options
 
 **`--ignore`**
