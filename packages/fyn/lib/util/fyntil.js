@@ -89,7 +89,8 @@ module.exports = {
   removeAuthInfo(rcObj) {
     const rmObj = {};
     for (const key in rcObj) {
-      if (key.toLowerCase().indexOf("authtoken") < 0) {
+      const lower = key.toLowerCase();
+      if (!lower.includes("auth") && !lower.includes("password") && !lower.includes("otp")) {
         rmObj[key] = rcObj[key];
       }
     }
