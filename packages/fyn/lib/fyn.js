@@ -281,7 +281,7 @@ class Fyn {
     for (const locals of localsByDepth.reverse()) {
       for (const relPath of locals) {
         const fullPath = Path.join(this._cwd, relPath);
-        if ((await this.getLocalPkgInstall(fullPath)).install) {
+        if ((await this.getLocalPkgInstall(fullPath)).changed) {
           return true;
         }
       }

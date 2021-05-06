@@ -3,6 +3,7 @@
 const { scanFileStats } = require("./stat-dir");
 const Fs = require("./file-ops");
 const Path = require("path");
+const logger = require("../logger");
 
 /**
  * Go into a local dep pkg's dir and see if it has one of these npm scripts:
@@ -57,8 +58,17 @@ async function checkPkgNeedInstall(dir, checkCtime = 0) {
 
     const stats = await scanFileStats(dir);
     const ctime = stats.latestMtimeMs;
+    const changed = ctime > checkCtime;
 
-    return { install: ctime > checkCtime, ctime, checkCtime, pkgJson, stats, scripts, hasScript };
+    return {
+      changed,
+      localBuild: changed && hasScript,
+      checkCtime,
+      pkgJson,
+      stats,
+      scripts,
+      hasScript
+    };
   } catch (error) {
     return { install: false, error };
   }

@@ -14,6 +14,7 @@ const Fs = require("./file-ops");
 const xaa = require("./xaa");
 const npmPacklist = require("npm-packlist");
 const fynTil = require("./fyntil");
+const logger = require("../logger");
 
 async function linkFile(srcFp, destFp, srcStat) {
   try {
@@ -73,6 +74,18 @@ async function generatePackTree(path) {
   const files = await npmPacklist({
     path
   });
+
+  logger.debug(
+    `local package linking - pack tree returned ${files.length} files to link`,
+    JSON.stringify(files, null, 2)
+  );
+
+  if (files.length > 1000) {
+    logger.warn(
+      `Local linking package at ${path} has more than ${files.length} files.
+  >>> This is unusual, please check package .npmignore or 'files' in package.json <<<`
+    );
+  }
 
   const fmap = { [FILES]: [] };
 

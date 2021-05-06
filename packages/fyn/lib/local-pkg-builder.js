@@ -99,7 +99,7 @@ class LocalPkgBuilder {
     // need to be installed also, even if its own files didn't change.
     // Generally this is unnecessary, except if its build process may
     // depend on that downstream local package.
-    if (!checkPkg.install) {
+    if (!checkPkg.localBuild) {
       logger.debug(`local pkg at ${item.fullPath} doesn't need build`, checkPkg);
       return;
     }

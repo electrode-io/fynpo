@@ -28,6 +28,9 @@ class PkgInstaller {
   }
 
   async install() {
+    this._stepTime = Date.now();
+
+    this.timeCheck("beginning");
     const outputDir = this._fyn.getOutputDir();
     this._binLinker = new PkgBinLinker({ outputDir, fyn: this._fyn });
     // /*deprecated*/ const fynRes = await this._depLinker.readAppFynRes(outputDir);
@@ -40,6 +43,7 @@ class PkgInstaller {
     // go through each package and insert
     // _depResolutions into its package.json
     const pkgsData = this._data.getPkgsData();
+    this.timeCheck("queueing packages");
     for (const info of this._data.resolvedPackages) {
       const depInfo = pkgsData[info.name][info.version];
       logger.debug("queuing", depInfo.name, depInfo.version, "for install");
@@ -264,16 +268,20 @@ class PkgInstaller {
     await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version));
   }
 
+  timeCheck(x) {
+    const tmp = Date.now();
+    logger.debug(
+      `${chalk.green("install time check", x)} ${logFormat.time(tmp - this._stepTime)}`,
+      new Date()
+    );
+    this._stepTime = tmp;
+  }
+
   _doInstall() {
     const start = Date.now();
     const appDir = this._fyn.cwd;
 
-    let stepTime = start;
-    const timeCheck = x => {
-      const tmp = Date.now();
-      logger.debug(`${chalk.green("install time check", x)} ${logFormat.time(tmp - stepTime)}`);
-      stepTime = tmp;
-    };
+    this.timeCheck("starting preinstall");
 
     return (
       Promise.map(
@@ -290,7 +298,7 @@ class PkgInstaller {
         },
         { concurrency: 3 }
       )
-        .tap(() => timeCheck("preInstall"))
+        .tap(() => this.timeCheck("preInstall"))
         .tap(() => {
           logger.updateItem(INSTALL_PACKAGE, `linking packages...`);
         })
@@ -309,32 +317,32 @@ class PkgInstaller {
           }
           return undefined;
         })
-        .tap(() => timeCheck("linking packages"))
+        .tap(() => this.timeCheck("linking packages"))
         .tap(() => logger.debug("linking bin for non-top but promoted packages"))
         .return(this.toLink) // Link bin for all none top but promoted pkg first
         .each(x => !x.top && x.promoted && this._binLinker.linkBin(x))
-        .tap(() => timeCheck("linking bin promoted non-top"))
+        .tap(() => this.timeCheck("linking bin promoted non-top"))
         .tap(() => logger.debug("linking bin for FV_DIR packages"))
         .return(this.toLink) // Link bin for all pkg under FV_DIR
         .each(x => !x.top && !x.promoted && this._binLinker.linkBin(x))
-        .tap(() => timeCheck("linking bin FV_DIR"))
+        .tap(() => this.timeCheck("linking bin FV_DIR"))
         .return(this.toLink) // link bin for package's dep that conflicts
         .each(x => this._binLinker.linkDepBin(x))
-        .tap(() => timeCheck("linking dep bin"))
+        .tap(() => this.timeCheck("linking dep bin"))
         .then(() => {
           // we are about to run install/postInstall scripts
           // save pkg JSON to disk in case any updates were done
           return this._savePkgJson();
         })
-        .tap(() => timeCheck("first _savePkgJson"))
+        .tap(() => this.timeCheck("first _savePkgJson"))
         .then(() => this._initFvVersions())
-        .tap(() => timeCheck("_initFvVersions"))
+        .tap(() => this.timeCheck("_initFvVersions"))
         .then(() => this._cleanUp())
-        .tap(() => timeCheck("_cleanUp"))
+        .tap(() => this.timeCheck("_cleanUp"))
         .then(() => this._cleanOrphanedFv())
-        .tap(() => timeCheck("_cleanOrphanedFv"))
+        .tap(() => this.timeCheck("_cleanOrphanedFv"))
         .then(() => this._cleanBin())
-        .tap(() => timeCheck("_cleanBin"))
+        .tap(() => this.timeCheck("_cleanBin"))
         .return(this.postInstall)
         .map(
           depInfo => {
@@ -370,12 +378,12 @@ class PkgInstaller {
           },
           { concurrency: 3 }
         )
-        .tap(() => timeCheck("postInstall"))
+        .tap(() => this.timeCheck("postInstall"))
         .then(() => {
           // Go through save package.json again in case any changed
           return this._savePkgJson(true);
         })
-        .tap(() => timeCheck("second _savePkgJson"))
+        .tap(() => this.timeCheck("second _savePkgJson"))
         // .then(() => this._saveLocalFynSymlink())
         .return(this.toLink)
         .filter(di => {
@@ -397,7 +405,7 @@ class PkgInstaller {
           }
           return false;
         })
-        .tap(() => timeCheck("show deprecated"))
+        .tap(() => this.timeCheck("show deprecated"))
         .then(warned => {
           if (this._fyn.showDeprecated && _.isEmpty(warned)) {
             logger.info(chalk.green("HOORAY!!! None of your dependencies are marked deprecated."));
@@ -424,8 +432,11 @@ class PkgInstaller {
   async _gatherPkg(depInfo) {
     const { name, version } = depInfo;
     if (depInfo.local) {
+      this.timeCheck("buildLocal");
       await this._buildLocalPkg(depInfo);
+      this.timeCheck("linkLocal");
       await this._linkLocalPkg(depInfo);
+      this.timeCheck("done link Local");
     }
 
     const json = depInfo.json || {};
