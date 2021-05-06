@@ -6,6 +6,7 @@ $pkg:
   check-pkg-new-version-engine: ^1.0.3
   ci-info: ^2.0.0
   es6-promisify: ./es6-promisify
+  filter-scan-dir: ^1.1.1
   glob: ^7.1.6
   ini: ^2.0.0
   item-queue: ^1.0.4
@@ -3335,12 +3336,13 @@ fill-range:
   dependencies:
    to-regex-range: ^5.0.1
 filter-scan-dir:
- _latest: 1.0.10
+ _latest: 1.1.1
  _:
-  ^1.0.10: 1.0.10
- 1.0.10:
-  $: sha512-tuDUZPwDmWULMdJ0CopxwRsHuBq2LAwf2zcNMu0LEXD6V414jwrexMaPRS68/ct0ma2m6EREln8n5jYClvggZQ==
-  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.0.10.tgz'
+  '^1.0.10,^1.1.1': 1.1.1
+ 1.1.1:
+  top: 1
+  $: sha512-TjRjOOqZS+P3Jrixka4w6LPUbkexne3N4qTQsRE2JP8fMt+NyhYlPL9ejIHaKj8W9L5YqEy3ucrZXqTLxzrpgg==
+  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.1.1.tgz'
 find-cache-dir:
  _latest: 3.3.1
  _:

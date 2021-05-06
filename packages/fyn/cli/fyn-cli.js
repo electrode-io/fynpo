@@ -22,7 +22,7 @@ const runNpmScript = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
 const xaa = require("../lib/util/xaa");
-const { scanFileStats, latestMtimeTag } = require("../lib/util/stat-dir");
+const { scanFileStats } = require("../lib/util/stat-dir");
 const { checkPkgNewVersionEngine } = require("check-pkg-new-version-engine");
 const fetch = require("node-fetch-npm");
 const myPkg = require("./mypkg");
@@ -369,11 +369,16 @@ class FynCli {
           this.fyn._installConfig.time
         ) {
           const stats = await scanFileStats(this.fyn.cwd);
-          const ctime = stats[latestMtimeTag];
-          logger.debug("time check from install config:", this.fyn._installConfig.time, ctime);
+          const { latestMtimeMs } = stats;
+          logger.debug(
+            "time check from install config - last install time",
+            this.fyn._installConfig.time,
+            "latest file time",
+            latestMtimeMs
+          );
           logger.debug("stats", JSON.stringify(stats, null, 2));
           if (
-            ctime < this.fyn._installConfig.time &&
+            latestMtimeMs < this.fyn._installConfig.time &&
             !(await this.fyn.checkLocalPkgFromInstallConfigNeedInstall()) &&
             // if fyn-lock.yaml has been removed, then run install also
             this.fyn.checkFynLockExist()

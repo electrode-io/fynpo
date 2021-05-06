@@ -2,54 +2,44 @@
 
 /* eslint-disable max-params, max-statements */
 
-const Fs = require("./file-ops");
+const Fs = require("opfs");
 const Path = require("path");
 const mm = require("minimatch");
+const filterScanDir = require("filter-scan-dir");
 
-const latestMtimeTag = (exports.latestMtimeTag = Symbol("latestMtime"));
-const dirMtimeTag = (exports.dirMtimeTag = Symbol("mtime"));
+async function _scanFileStats(dir, ignores, baseDir = "") {
+  const ignore = fullPath => ignores.find(pattern => mm(fullPath, pattern, { dot: true }));
 
-async function _scanFileStats(dir, output, ignores, baseDir = "") {
-  const fullDir = Path.join(baseDir, dir);
+  let latestMtimeMs = 0;
+  let latestFile = "";
 
-  const forMatch = Path.sep === "/" ? fullDir : fullDir.replace(/\\/g, "/");
-
-  if (ignores.find(pattern => mm(forMatch, pattern, { dot: true }))) {
-    return output;
-  }
-
-  const stat = await Fs.stat(fullDir);
-  const updateLatest = mtime => {
-    if (mtime > output[latestMtimeTag]) {
-      output[latestMtimeTag] = mtime;
+  const updateLatest = (mtimeMs, file) => {
+    if (mtimeMs > latestMtimeMs) {
+      latestMtimeMs = mtimeMs;
+      latestFile = file;
     }
   };
 
-  const mtime = stat.mtime.getTime();
-  if (!stat.isDirectory()) {
-    output[dir] = mtime;
-    updateLatest(mtime);
-  } else {
-    let newOutput;
-
-    if (fullDir === baseDir || fullDir === ".") {
-      output[dirMtimeTag] = mtime;
-      newOutput = output;
-    } else {
-      newOutput = output[dir] = {
-        [dirMtimeTag]: mtime,
-        [latestMtimeTag]: 0
-      };
+  const filter = (file, path, extras) => {
+    if (ignore(extras.fullFile)) {
+      return false;
     }
+    updateLatest(extras.stat.mtimeMs, extras.fullFile);
+    return true;
+  };
 
-    const files = await Fs.readdir(fullDir);
-    for (const f of files) {
-      await _scanFileStats(f, newOutput, ignores, fullDir);
-      updateLatest(newOutput[latestMtimeTag]);
-    }
-  }
+  const fullDir = Path.join(baseDir, dir);
+  const topDirStat = await Fs.stat(fullDir);
+  updateLatest(topDirStat.mtimeMs, fullDir);
 
-  return output;
+  await filterScanDir({
+    dir: fullDir,
+    includeRoot: false,
+    filter,
+    filterDir: filter
+  });
+
+  return { latestMtimeMs, latestFile };
 }
 
 function scanFileStats(dir, options = {}) {
@@ -62,9 +52,7 @@ function scanFileStats(dir, options = {}) {
     .concat(options.moreIgnores)
     .filter(x => x);
 
-  const output = { [latestMtimeTag]: 0 };
-
-  return _scanFileStats(dir, output, ignores, "");
+  return _scanFileStats(dir, ignores, "");
 }
 
 exports.scanFileStats = scanFileStats;

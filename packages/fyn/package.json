@@ -54,6 +54,7 @@
     "check-pkg-new-version-engine": "^1.0.3",
     "ci-info": "^2.0.0",
     "es6-promisify": "./es6-promisify",
+    "filter-scan-dir": "^1.1.1",
     "glob": "^7.1.6",
     "ini": "^2.0.0",
     "item-queue": "^1.0.4",

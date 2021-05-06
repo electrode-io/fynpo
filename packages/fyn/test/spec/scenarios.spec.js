@@ -112,11 +112,15 @@ const debug = false;
       let failError;
       const debugLogFile = `fyn-debug-${step}.log`;
 
+      //
+      // remove existing debug log file for step
+      //
+      rimraf.sync(Path.join(cwd, debugLogFile));
+
       const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
         if (debug && step === debugStep) {
           debugger; // eslint-disable-line
         }
-        rimraf.sync(Path.join(cwd, debugLogFile));
         return Promise.try(() => stepAction.before(cwd))
           .then(() => {
             const stepLockFile = Path.join(stepDir, "lock.yaml");
@@ -268,7 +272,7 @@ const debug = false;
         // "local-hard-linking": {}
         // "local-sym-linking": {}
         // "locked-change-major": {}
-        "locked-change-dedupe": { debugStep: "step-02" }
+        // "locked-change-dedupe": { debugStep: "step-02" }
         // "locked-change-dedupe-2": { debugStep: "step-02" }
         // "locked-npm-dedupe": {}
         // "locked-change-indirect": {}

@@ -9,10 +9,12 @@
   "scripts": {
     "test": "echo test"
   },
+  "files": [
+    "bin"
+  ],
   "bin": {
     "bin1": "bin/bin1.js",
     "bin2": "bin/bin2.js"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

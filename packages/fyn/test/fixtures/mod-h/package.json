@@ -12,6 +12,9 @@
   "bin": {
     "bin1": "bin/bin1.js"
   },
+  "files": [
+    "bin"
+  ],
   "dependencies": {
     "mod-g": "^2.0.0"
   }
