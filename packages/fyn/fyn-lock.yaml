@@ -27,7 +27,7 @@ $pkg:
   rimraf: ^3.0.2
   semver: ^7.3.5
   tar: ^6.1.0
-  visual-exec: ^0.1.8
+  visual-exec: ^0.1.9
   visual-logger: ^1.1.3
   xaa: ^1.7.0
   xenv-config: ^1.3.0
@@ -4197,7 +4197,7 @@ js-tokens:
   $: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
   _: 'https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz'
 js-yaml:
- _latest: 4.0.0
+ _latest: 4.1.0
  _:
   3.14.0: 3.14.0
   '^3.13.1,^3.5.3': 3.14.1
@@ -6580,13 +6580,13 @@ verror:
    core-util-is: 1.0.2
    extsprintf: ^1.2.0
 visual-exec:
- _latest: 0.1.8
+ _latest: 0.1.9
  _:
-  '^0.1.0,^0.1.8': 0.1.8
- 0.1.8:
+  '^0.1.0,^0.1.9': 0.1.9
+ 0.1.9:
   top: 1
-  $: sha512-fw4XR+lifbjJ1MKP/h/JAcP8g/HPEr4gJXycjQNmieRA7cx75pGI4fpCAywDChCj7lQKOz2T+58evO2devLwUQ==
-  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.8.tgz'
+  $: sha512-tNdpZyAFNApt9xvSplVVMKnI5qHxzRiNFNjL2+UsokD5FuAimywdiNbc9aIWBNCvIyKLediHrOSzR4GHePXmKQ==
+  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.9.tgz'
   dependencies:
    chalk: ^4.0.0
    has-ansi: ^3.0.0
