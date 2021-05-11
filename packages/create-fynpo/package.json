@@ -8,13 +8,18 @@
     "test": "xrun xarc/test-only",
     "prepublishOnly": "xrun [[build, docs], xarc/check]",
     "docs": "xrun xarc/docs",
-    "coverage": "xrun xarc/test-cov"
+    "coverage": "xrun xarc/test-cov",
+    "prepack": "publish-util-prepack",
+    "postpack": "publish-util-postpack"
   },
   "bin": {
     "create-fynpo": "bin/create-fynpo.js"
   },
   "keywords": [],
-  "author": "GTP.js",
+  "author": "Walmart GTP.js Team",
+  "contributors": [
+    "Divya Vannilaparambath"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -32,6 +37,7 @@
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-tsdoc": "^0.2.11",
+    "publish-util": "^1.0.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typedoc": "^0.20.13",
