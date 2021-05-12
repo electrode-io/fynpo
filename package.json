@@ -19,11 +19,14 @@
   },
   "homepage": "https://github.com/electrode-io/fynpo#readme",
   "devDependencies": {
-    "fynpo": "^0.1.33"
+    "fynpo": "^0.3.2"
   },
   "fyn": {
     "devDependencies": {
       "fynpo": false
     }
+  },
+  "dependencies": {
+    "fynpo": "^1.0.0"
   }
 }

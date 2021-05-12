@@ -4,5 +4,4 @@ coverage
 *.log
 .tmp
 .vscode
-*-lock.*
 .fynpo
