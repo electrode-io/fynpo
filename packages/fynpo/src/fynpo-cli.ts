@@ -11,20 +11,43 @@ import Init from "./init";
 import Updated from "./updated";
 import Commitlint from "./commitlint";
 import Version from "./version";
-import makePkgDeps from "./make-pkg-deps";
-import readPackages from "./read-packages";
+import { makePkgDeps, readFynpoPackages } from "fynpo-base";
 import logger from "./logger";
 import * as utils from "./utils";
 import Fs from "fs";
+import _ from "lodash";
 
-const makeBootstrap = (parsed) => {
-  const { dir } = utils.loadConfig(parsed.opts.cwd || process.cwd());
-  const opts = Object.assign({ cwd: process.cwd(), dir }, parsed.opts);
-  return new Bootstrap(makePkgDeps(readPackages(dir), opts, parsed.name), opts);
+const globalCmnds = ["bootstrap", "local", "run"];
+
+const readPackages = async (opts: any, cmdName: string = "") => {
+  const result = await makePkgDeps(
+    await readFynpoPackages(_.pick(opts, ["patterns", "cwd"])),
+    opts
+  );
+  if (!_.isEmpty(result.warnings)) {
+    result.warnings.forEach((w) => logger.warn(w));
+  }
+
+  if (result.focusPkgPath) {
+    if (globalCmnds.includes(cmdName)) {
+      logger.error(
+        `${cmdName} command is only supported at mono-repo root level but CWD is '${result.focusPkgPath}`
+      );
+      process.exit(1);
+    }
+  }
+
+  return result;
 };
 
-const execBootstrap = (parsed) => {
-  const bootstrap = makeBootstrap(parsed);
+const makeBootstrap = async (parsed) => {
+  const { dir } = utils.loadConfig(parsed.opts.cwd || process.cwd());
+  const opts = Object.assign({ cwd: process.cwd(), dir }, parsed.opts);
+  return new Bootstrap(await readPackages(opts), opts);
+};
+
+const execBootstrap = async (parsed) => {
+  const bootstrap = await makeBootstrap(parsed);
   let statusCode = 0;
   logger.debug("CLI options", JSON.stringify(parsed));
   return bootstrap
@@ -53,45 +76,45 @@ const execBootstrap = (parsed) => {
     });
 };
 
-const execLocal = (parsed) => {
-  return makeBootstrap(parsed).updateToLocal();
+const execLocal = async (parsed) => {
+  return (await makeBootstrap(parsed)).updateToLocal();
 };
 
-const execPrepare = (parsed) => {
+const execPrepare = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Prepare(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+  return new Prepare(opts, await readPackages(opts)).exec();
 };
 
-const execChangelog = (parsed) => {
+const execChangelog = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Changelog(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+  return new Changelog(opts, await readPackages(opts)).exec();
 };
 
-const execUpdated = (parsed) => {
+const execUpdated = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Updated(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+  return new Updated(opts, await readPackages(opts)).exec();
 };
 
-const execPublish = (parsed) => {
+const execPublish = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Publish(opts, readPackages(opts.cwd)).exec();
+  return new Publish(opts, await readPackages(opts)).exec();
 };
 
-const execVersion = (parsed) => {
+const execVersion = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
-  return new Version(opts, makePkgDeps(readPackages(opts.cwd), parsed.opts)).exec();
+  return new Version(opts, await readPackages(opts)).exec();
 };
 
-const execRunScript = (parsed) => {
+const execRunScript = async (parsed) => {
   const { dir } = utils.loadConfig(parsed.opts.cwd || process.cwd());
   const opts = Object.assign({ cwd: process.cwd(), dir }, parsed.opts);
 
-  return new Run(opts, parsed.args, makePkgDeps(readPackages(dir), opts, parsed.name)).exec();
+  return new Run(opts, parsed.args, await readPackages(opts)).exec();
 };
 
 const execInit = (parsed) => {
@@ -236,7 +259,7 @@ const nixClap = new NixClap({
           default: false,
           desc: "create tags for individual packages",
         },
-      }
+      },
     },
     run: {
       alias: "r",
