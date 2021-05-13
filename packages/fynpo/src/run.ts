@@ -8,6 +8,8 @@ import * as utils from "./utils";
 import _ from "lodash";
 import { npmRunScriptStreaming, npmRunScript } from "./npm-run-script";
 import PQueue from "p-queue";
+import boxen from "boxen";
+import chalk from "chalk";
 
 export default class Run {
   _cwd;
@@ -67,11 +69,7 @@ export default class Run {
       const depPkg = this._packages[depName] || {};
       const scriptToRun = _.get(depPkg, ["pkgJson", "scripts", this._script]);
       const circulars = this._circularMap[depName] || [];
-      if (
-        scriptToRun &&
-        !circulars.includes(pkg.name) &&
-        !this.excuteScript(depPkg, pkgQueue)
-      ) {
+      if (scriptToRun && !circulars.includes(pkg.name) && !this.excuteScript(depPkg, pkgQueue)) {
         pending++;
       }
     });
@@ -164,7 +162,9 @@ export default class Run {
     const joinedCommand = [this._npmClient, "run", this._script].concat(this._args).join(" ");
     const pkgMsg = count === 1 ? "package" : "packages";
 
-    logger.info(`Executing command ${joinedCommand} in ${count} ${pkgMsg}`);
+    logger.info(
+      `Executing command ${joinedCommand} in ${count} ${pkgMsg} - parallel ${this._options.parallel} - topological ${this._options.sort}`
+    );
     const timer = utils.timer();
 
     return Promise.resolve()
@@ -197,8 +197,22 @@ export default class Run {
         );
       })
       .catch((err) => {
+        const tag = _.get(err, "runOpts.stderrOpts.tag", "");
+        const msg = boxen(
+          `
+failed running npm script '${this._script}'
+`,
+          { padding: { top: 0, right: 2, left: 2, bottom: 0 } }
+        );
+        msg.split("\n").forEach((l) => {
+          const l2 = chalk.red(`ERROR ${l} ERROR`);
+          logger.prefix(false).error(`${tag} ${l2}`);
+        });
+
         process.exitCode = err.exitCode;
-        throw err;
+      })
+      .finally(() => {
+        logger.info("RUN COMPLETED");
       });
   }
 }

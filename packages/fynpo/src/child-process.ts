@@ -5,6 +5,8 @@ import chalk from "chalk";
 import execa from "execa";
 import logTransformer from "strong-log-transformer";
 import os from "os";
+import boxen from "boxen";
+import logger from "./logger";
 
 const colorWheel = ["cyan", "magenta", "blue", "yellow", "green", "red"];
 const NUM_COLORS = colorWheel.length;
@@ -37,7 +39,7 @@ const getExitCode = (result) => {
 /**
  * @param {import("execa").ExecaChildProcess<string> & { pkg?: fynpo package }} spawned
  */
-const wrapError = (spawned) => {
+const wrapError = (spawned, runOpts) => {
   if (spawned.pkg) {
     return spawned.catch((err) => {
       // ensure exit code is always a number
@@ -45,6 +47,8 @@ const wrapError = (spawned) => {
 
       // log non-lerna error cleanly
       err.pkg = spawned.pkg;
+
+      err.runOpts = runOpts;
 
       throw err;
     });
@@ -110,7 +114,7 @@ const spawn = (command, args, opts) => {
   const options = Object.assign({}, opts, { stdio: "inherit" });
   const spawned = spawnProcess(command, args, options);
 
-  return wrapError(spawned);
+  return wrapError(spawned, {});
 };
 
 /**
@@ -123,7 +127,7 @@ export const exec = (command, args, opts) => {
   const options = Object.assign({ stdio: "pipe" }, opts);
   const spawned = spawnProcess(command, args, options);
 
-  return wrapError(spawned);
+  return wrapError(spawned, {});
 };
 
 /**
@@ -139,8 +143,8 @@ export const spawnStreaming = (command, args, opts, prefix) => {
 
   const spawned = spawnProcess(command, args, options);
 
-  const stdoutOpts: any = {};
-  const stderrOpts: any = {};
+  const stdoutOpts: any = { tag: "" };
+  const stderrOpts: any = { tag: "" };
 
   if (prefix) {
     const colorName = colorWheel[currentColor % NUM_COLORS];
@@ -152,6 +156,14 @@ export const spawnStreaming = (command, args, opts, prefix) => {
     stderrOpts.tag = `${color(prefix)}:`;
   }
 
+  const banner = boxen(`Starting command  '${command} ${args.join(" ")}'`, {
+    padding: { top: 0, bottom: 0, left: 1, right: 1 },
+  });
+
+  banner.split("\n").forEach((l) => {
+    logger.prefix(false).info(`${stdoutOpts.tag} ${l}`);
+  });
+
   // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
   if (children.size > process.stdout.listenerCount("close")) {
     process.stdout.setMaxListeners(children.size);
@@ -161,5 +173,5 @@ export const spawnStreaming = (command, args, opts, prefix) => {
   spawned.stdout.pipe(logTransformer(stdoutOpts)).pipe(process.stdout);
   spawned.stderr.pipe(logTransformer(stderrOpts)).pipe(process.stderr);
 
-  return wrapError(spawned);
+  return wrapError(spawned, { stdoutOpts, stderrOpts });
 };
