@@ -5,6 +5,59 @@ import mm from "minimatch";
 import _ from "lodash";
 
 /**
+ * Information about a package within the mono-repo
+ */
+export type PackageInfo = {
+  /** name from package.json */
+  name: string;
+  /** version from package.json */
+  version: string;
+  /** dependencies from package.json */
+  dependencies: Record<string, string>;
+  /** devDependencies from package.json */
+  devDependencies: Record<string, string>;
+  /** optionalDependencies from package.json */
+  optionalDependencies: Record<string, string>;
+  /** peerDependencies from package.json */
+  peerDependencies: Record<string, string>;
+  /** local dependencies by type */
+  localDepsByType: {
+    dep: string[];
+    dev: string[];
+    opt: string[];
+  };
+  /** all local dependencies */
+  localDeps: string[];
+  /** all local dependents */
+  dependents: string[];
+  /** all indirect local dependencies */
+  indirectDeps: string[];
+  /**
+   * path to package dir from mono-repo top dir
+   * - not full path
+   * - always uses / for path separator, even on windows
+   */
+  path: string;
+  /**
+   * package dir name only
+   * - If npm scope is part of the dir name, it will be included. like `"@scope/name"`
+   */
+  pkgDir: string;
+  /**
+   * path to package's package.json file
+   * - not full path
+   * - always uses / for path separator, even on windows
+   */
+  pkgFile: string;
+  /** raw string form of package.json */
+  pkgStr: string;
+  /** package.json object */
+  pkgJson: any;
+  /** TODO */
+  installed: boolean;
+};
+
+/**
  * process a list of minimatch objects and group them by the string prefix of their patterns
  *
  * @param mms - array of minimatch
@@ -131,7 +184,7 @@ function includeDeps(packages, level) {
 export async function readFynpoPackages({
   patterns = ["packages/*"],
   cwd = process.cwd(),
-}: { patterns?: string[]; cwd?: string } = {}) {
+}: { patterns?: string[]; cwd?: string } = {}): Promise<Record<string, PackageInfo>> {
   const mms = patterns.map((p) => new mm.Minimatch(p));
   const groups = groupMM(mms, {});
 
@@ -195,11 +248,6 @@ export async function readFynpoPackages({
       pkgJson: { enumerable: false },
     });
   }
-
-  const circulars = [];
-
-  processDirectDeps(allPkgs);
-  processIndirectDeps(allPkgs, circulars);
 
   return allPkgs;
 }
