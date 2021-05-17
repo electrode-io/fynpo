@@ -11,6 +11,7 @@
     "build": "tsc",
     "prepublishOnly": "xrun --serial [build, xarc/check]",
     "docs": "xrun xarc/docs",
+    "ci:check": "xrun xarc/check",
     "prepack": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },

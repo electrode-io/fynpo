@@ -9,6 +9,7 @@
     "docs": "xrun xarc/docs",
     "test": "xrun xarc/test-only",
     "coverage": "xrun xarc/test-cov",
+    "ci:check": "xrun xarc/check",
     "prepack": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },
