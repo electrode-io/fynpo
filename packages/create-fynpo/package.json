@@ -1,6 +1,6 @@
 {
   "name": "create-fynpo",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Create a new fynpo monorepo",
   "main": "index.js",
   "scripts": {
