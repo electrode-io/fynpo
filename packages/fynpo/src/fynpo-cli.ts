@@ -11,7 +11,7 @@ import Init from "./init";
 import Updated from "./updated";
 import Commitlint from "./commitlint";
 import Version from "./version";
-import { makePkgDeps, readFynpoPackages } from "fynpo-base";
+import { makePkgDeps, readFynpoPackages } from "@fynpo/base";
 import logger from "./logger";
 import * as utils from "./utils";
 import Fs from "fs";

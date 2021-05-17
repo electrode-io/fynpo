@@ -1,6 +1,6 @@
 {
-  "name": "fynpo-base",
-  "version": "1.0.0",
+  "name": "@fynpo/base",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -18,6 +18,9 @@
     "Divya Vannilaparambath",
     "Joel Chen"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",

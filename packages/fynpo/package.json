@@ -46,6 +46,7 @@
     "@commitlint/lint": "^12.1.1",
     "@commitlint/read": "^12.1.1",
     "@commitlint/resolve-extends": "^12.1.1",
+    "@fynpo/base": "^1.0.0",
     "bluebird": "^3.5.1",
     "boxen": "^5.0.1",
     "chalk": "^4.1.1",
@@ -55,7 +56,6 @@
     "filter-scan-dir": "^1.2.0",
     "fs-extra": "^9.1.0",
     "fyn": "^0.4.29",
-    "fynpo-base": "^1.0.0",
     "get-stdin": "^8.0.0",
     "item-queue": "^1.0.4",
     "lodash": "^4.17.20",
@@ -154,7 +154,7 @@
   },
   "fyn": {
     "dependencies": {
-      "fynpo-base": "../fynpo-base"
+      "@fynpo/base": "../fynpo-base"
     }
   }
 }

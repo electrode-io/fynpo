@@ -1,1 +1,1 @@
-# fynpo-base
+# @fynpo/base
