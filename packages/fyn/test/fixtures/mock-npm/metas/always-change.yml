@@ -1,0 +1,17 @@
+etag: always-change-1
+name: always-change
+versions:
+  3.0.11:
+    name: always-change
+    description: test fixture always-change
+    version: 3.0.11
+    dependencies: {}
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/always-change/-/always-change-3.0.11.tgz'
+dist-tags:
+  latest: 3.0.11
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #always-change
+_attachments: {}

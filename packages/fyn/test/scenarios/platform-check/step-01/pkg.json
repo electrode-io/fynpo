@@ -1,0 +1,16 @@
+{
+  "name": "pkg-platform-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-a": "^1.0.0",
+    "mod-g": "^2.0.0"
+  },
+  "optionalDependencies": {
+    "mod-bad-os": "^1.0.0"
+  }
+}

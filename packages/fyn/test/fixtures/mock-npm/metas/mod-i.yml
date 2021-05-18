@@ -1,0 +1,18 @@
+etag: mod-i-1
+name: mod-i
+versions:
+  1.0.0:
+    name: mod-i
+    description: test fixture mod-i
+    version: 1.0.0
+    dependencies:
+      mod-g: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-i/-/mod-i-1.0.0.tgz'
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-i
+_attachments: {}

@@ -1,0 +1,13 @@
+node_modules:
+  .bin:
+    bin1: '-> ../.f/_/mod-h/1.0.0/mod-h/bin/bin1.js'
+    bin2: '-> ../.f/_/mod-h/1.0.0/mod-h/bin/bin2.js'
+  .f:
+    .fyn.json: file
+    _:
+      mod-h:
+        1.0.0:
+          mod-h:
+            package.json:
+              id: mod-h@1.0.0
+  mod-h: '-> .f/_/mod-h/1.0.0/mod-h'

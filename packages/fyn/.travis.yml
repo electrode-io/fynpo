@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - v10
+  - v12
+  - v14
+notifications:
+  email:
+    - joel123@gmail.com
+before_install: npm i -g fyn
+install: fyn --pg none
+script: |
+  fun ci
+  fun coveralls

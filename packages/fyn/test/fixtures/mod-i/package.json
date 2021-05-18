@@ -1,0 +1,18 @@
+{
+  "name": "mod-i",
+  "version": "1.0.0",
+  "description": "module for testing local linking",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "scripts": {
+    "test": "echo test"
+  },
+  "bin": {
+    "bin1": "bin/bin1.js"
+  },
+  "dependencies": {
+    "mod-h": "sym:../mod-h"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "optional-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "optionalDependencies": {
+    "mod-e": "^1.0.0",
+    "mod-err": "^4.5.1",
+    "mod-drop": "http://boieiroueorpqoweiracbad:19234/mod-drop-1.0.0.tgz",
+    "mod-drop-tgz": "^1.0.0"
+  }
+}

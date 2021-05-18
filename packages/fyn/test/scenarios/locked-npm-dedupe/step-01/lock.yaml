@@ -1,0 +1,80 @@
+$pkg:
+  dep:
+    mod-i: ^1.0.0
+    mod-j: ^1.0.0
+  opt:
+    mod-e: ^1.0.0
+    mod-err: ^4.5.1
+mod-a:
+  _latest: 2.0.0
+  _:
+    "^1.0.0 || ^2.0.0,^2.0.0": 2.0.0
+  2.0.0:
+    $: sha1-Iw9ypfd1o+L+Up9QTYzpRlzaKF0=
+    _: "http://localhost:53308/mod-a/-/mod-a-2.0.0.tgz"
+mod-d:
+  _latest: 3.0.1
+  _:
+    ^1.0.0: 1.0.1
+  1.0.1:
+    $: sha1-THjRQjjS55GrE0QQ3vcnM8bZ2YU=
+    _: "http://localhost:53308/mod-d/-/mod-d-1.0.1.tgz"
+    dependencies:
+      mod-a: ^2.0.0
+      mod-f: ^1.0.0
+mod-e:
+  _latest: 2.1.1
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    top: 1
+    hasPI: 1
+    $: sha1-mM7uY0B/E6D0xdYx02VtQzpXTsY=
+    _: "http://localhost:53308/mod-e/-/mod-e-1.0.0.tgz"
+    dependencies:
+      mod-d: ^1.0.0
+mod-err:
+  _latest: 4.5.1
+  _:
+    ^4.5.1: 4.5.1
+  4.5.1:
+    top: 1
+    optFailed: 1
+    $: sha1-Dk8PJQ1sEA463oTrH/xOimEyFEA=
+    _: "http://localhost:53308/mod-err/-/mod-err-4.5.1.tgz"
+mod-f:
+  _latest: 2.1.1
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    $: sha1-n4Pg179TzhUZ9QeVNEn0dnwU2pg=
+    _: "http://localhost:53308/mod-f/-/mod-f-1.0.0.tgz"
+    dependencies:
+      mod-a: "^1.0.0 || ^2.0.0"
+mod-g:
+  _latest: 3.0.11
+  _:
+    "^3.0.0,^3.0.11": 3.0.11
+  3.0.11:
+    $: sha1-jjc2X3Uos6N2+BYhwFARTrP5o0c=
+    _: "http://localhost:53308/mod-g/-/mod-g-3.0.11.tgz"
+mod-i:
+  _latest: 1.0.0
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    top: 1
+    $: sha1-wulyObmXj3QdFYYC//LsMx1dvEo=
+    _: "http://localhost:53308/mod-i/-/mod-i-1.0.0.tgz"
+    dependencies:
+      mod-g: ^3.0.0
+mod-j:
+  _latest: 1.0.0
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    top: 1
+    $: sha1-93HNRSLzc7ZSAg/hTfEa5omINYs=
+    _: "http://localhost:53308/mod-j/-/mod-j-1.0.0.tgz"
+    dependencies:
+      mod-g: ^3.0.11

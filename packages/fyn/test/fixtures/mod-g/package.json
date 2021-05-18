@@ -1,0 +1,20 @@
+{
+  "name": "mod-g",
+  "version": "2.1.0",
+  "description": "module for testing local linking",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "scripts": {
+    "test": "echo test"
+  },
+  "files": [
+    "bin"
+  ],
+  "bin": {
+    "bin1": "bin/bin1.js",
+    "bin2": "bin/bin2.js"
+  },
+  "dependencies": {}
+}

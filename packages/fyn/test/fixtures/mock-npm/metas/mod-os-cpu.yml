@@ -1,0 +1,31 @@
+etag: mod-os-cpu-1
+name: mod-os-cpu
+versions:
+  1.0.0:
+    name: mod-os-cpu
+    description: test fixture mod-os-cpu
+    version: 1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-os-cpu/-/mod-os-cpu-1.0.0.tgz'
+    os:
+      - '!foo'
+      - mockOs
+      - aix
+      - darwin
+      - linux
+      - win32
+    cpu:
+      - '!bar'
+      - mockCpu
+      - arm
+      - arm64
+      - ia32
+      - x32
+      - x64
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-os-cpu
+_attachments: {}

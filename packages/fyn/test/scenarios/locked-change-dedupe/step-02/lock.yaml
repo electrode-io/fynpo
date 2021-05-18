@@ -1,0 +1,31 @@
+$pkg:
+  dep:
+    mod-a: ^0.5.0
+    mod-i: ^1.0.0
+mod-a:
+  _latest: 2.0.0
+  _:
+    ^0.5.0: 0.5.0
+  0.5.0:
+    top: 1
+    $: sha1-FaSOf8CE8w8hsTkOCl3SnvMXkPs=
+    _: "http://localhost:64493/mod-a/-/mod-a-0.5.0.tgz"
+    dependencies:
+      mod-g: ^3.0.11
+mod-g:
+  _latest: 3.0.11
+  _:
+    "^3.0.0,^3.0.11": 3.0.11
+  3.0.11:
+    $: sha1-unYPh4siki2HKK5qe4jHTZgcxUI=
+    _: "http://localhost:64493/mod-g/-/mod-g-3.0.11.tgz"
+mod-i:
+  _latest: 1.0.0
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    top: 1
+    $: 0
+    _: "http://localhost:50387/mod-i/-/mod-i-1.0.0.tgz"
+    dependencies:
+      mod-g: ^3.0.0

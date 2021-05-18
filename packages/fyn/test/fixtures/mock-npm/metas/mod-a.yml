@@ -1,0 +1,120 @@
+etag: mod-a-1
+name: mod-a
+versions:
+  0.1.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.1.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.1.0.tgz'
+  0.2.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.2.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.2.0.tgz'
+  0.3.2:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.3.2
+    dependencies:
+      mod-g: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.3.2.tgz'
+  0.4.5:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.4.5
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.4.5.tgz'
+  0.5.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 0.5.0
+    dependencies:
+      mod-g: ^3.0.11
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-0.5.0.tgz'
+  1.0.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.0.tgz'
+  1.0.1:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.0.1
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.1.tgz'
+  1.0.2:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.0.2
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.2.tgz'
+  1.0.3:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.0.3
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.0.3.tgz'
+  1.1.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.1.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.0.tgz'
+  1.1.1:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.1.1
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.1.tgz'
+  1.1.2:
+    name: mod-a
+    description: test fixture mod-a
+    version: 1.1.2
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-1.1.2.tgz'
+  2.0.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 2.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-2.0.0.tgz'
+  3.1.0:
+    name: mod-a
+    description: test fixture mod-a
+    version: 3.1.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-3.1.0.tgz'
+  4.0.1:
+    name: mod-a
+    description: test fixture mod-a
+    version: 4.0.1
+    dependencies:
+      mod-b: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-a/-/mod-a-4.0.1.tgz'
+dist-tags:
+  latest: 2.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-a
+_attachments: {}

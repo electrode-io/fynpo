@@ -1,0 +1,42 @@
+node_modules:
+  .bin:
+    bin1: '-> ../.f/_/mod-g/2.0.1/mod-g/bin/bin1.js'
+    bin2: '-> ../.f/_/mod-g/2.0.1/mod-g/bin/bin2.js'
+  .f:
+    .fyn.json: file
+    _:
+      mod-a:
+        1.1.2:
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
+      mod-e:
+        99.0.0-fynlocal_h:
+          mod-e:
+            package.json:
+              id: mod-e@99.0.0-fynlocal_h
+      mod-g:
+        2.0.1:
+          mod-g:
+            bin:
+              bin1.js: file
+              bin2.js: file
+            package.json:
+              id: mod-g@2.0.1
+      pkg-a:
+        1.0.0-fynlocal_h:
+          pkg-a:
+            package-fyn.json: file
+            package.json:
+              id: pkg-a@1.0.0-fynlocal_h
+      pkg-b:
+        2.0.0-fynlocal_h:
+          pkg-b:
+            package-fyn.json: file
+            package.json:
+              id: pkg-b@2.0.0-fynlocal_h
+  mod-a: '-> .f/_/mod-a/1.1.2/mod-a'
+  mod-e: '-> .f/_/mod-e/99.0.0-fynlocal_h/mod-e'
+  mod-g: '-> .f/_/mod-g/2.0.1/mod-g'
+  pkg-a: '-> .f/_/pkg-a/1.0.0-fynlocal_h/pkg-a'
+  pkg-b: '-> .f/_/pkg-b/2.0.0-fynlocal_h/pkg-b'

@@ -1,0 +1,172 @@
+{
+  "name": "fyn",
+  "version": "0.4.29",
+  "description": "A fast node package manager for better productivity and efficiency",
+  "preferGlobal": true,
+  "main": "./bin/fyn.js",
+  "scripts": {
+    "test": "xrun xarc/test-only",
+    "coverage": "xrun xarc/check",
+    "ci": "xrun -x xarc/lint fyn/create-tgz bundle coverage",
+    "coveralls": "cat coverage/lcov.info | coveralls",
+    "prepublishOnly": "echo Do not run npm publish directly.  Run 'xrun release'. && exit 1"
+  },
+  "bin": {
+    "fyn": "./bin/fyn.js",
+    "fun": "./bin/fun.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "keywords": [
+    "node",
+    "node_modules",
+    "module",
+    "modules",
+    "fast",
+    "package",
+    "manager",
+    "enhanced",
+    "local",
+    "better",
+    "improve",
+    "npm",
+    "link",
+    "development",
+    "workflow",
+    "productivity",
+    "efficient",
+    "disk",
+    "space",
+    "usage"
+  ],
+  "author": "Joel Chen <joel123@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electrode-io/fyn.git"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "cacache": "jchip/cacache",
+    "chalk": "^4.1.0",
+    "check-pkg-new-version-engine": "^1.0.3",
+    "ci-info": "^2.0.0",
+    "es6-promisify": "./es6-promisify",
+    "filter-scan-dir": "^1.1.1",
+    "glob": "^7.1.6",
+    "ini": "^2.0.0",
+    "item-queue": "^1.0.4",
+    "lockfile": "^1.0.4",
+    "lodash": "^4.17.21",
+    "make-fetch-happen": "jchip/make-fetch-happen",
+    "minimatch": "^3.0.4",
+    "mississippi": "^4.0.0",
+    "mkdirp": "^0.5.5",
+    "nix-clap": "^1.3.12",
+    "npm-lifecycle": "^2.1.1",
+    "npm-packlist": "^1.4.8",
+    "npm-registry-fetch": "jchip/npm-registry-fetch",
+    "npmlog": "^4.1.2",
+    "opfs": "^1.1.1",
+    "optional-require": "^1.0.2",
+    "pacote": "jchip/pacote",
+    "pkg-preper": "^0.1.0",
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.5",
+    "tar": "^6.1.0",
+    "visual-exec": "^0.1.9",
+    "visual-logger": "^1.1.3",
+    "xaa": "^1.7.0",
+    "xenv-config": "^1.3.0",
+    "xsh": "^0.4.5",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@xarc/module-dev": "^3.0.0",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.0.4",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.3",
+    "electrode-server": "^3.0.3",
+    "eslint": "^7.16.0",
+    "eslint-config-walmart": "^2.2.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-jsdoc": "^30.7.9",
+    "mocha": "^8.2.1",
+    "mock-require": "^2.0.2",
+    "node-fetch-npm": "^2.0.4",
+    "nyc": "^15.1.0",
+    "prettier": "^1.19.1",
+    "sinon": "^9.2.2",
+    "sinon-chai": "^3.5.0",
+    "webpack": "^5.32.0",
+    "webpack-bundle-analyzer": "^4.4.0",
+    "webpack-cli": "^4.6.0",
+    "which": "^2.0.2",
+    "xstdout": "^0.1.1"
+  },
+  "nyc": {
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "*/pkg-bin-linker-win32.js",
+      "*clap.js",
+      "*clap.ts",
+      "bin",
+      "cli/config",
+      "cli/fun.js",
+      "coverage",
+      "dist",
+      "docs",
+      "es6-promisify",
+      "gulpfile.js",
+      "stubs",
+      "test",
+      "tmp",
+      "webpack.config.js",
+      "xout",
+      "xrun*.js",
+      "xrun*.ts",
+      "**/.eslint*.*"
+    ],
+    "extends": [],
+    "check-coverage": true,
+    "statements": 76,
+    "branches": 68,
+    "functions": 79,
+    "lines": 77,
+    "cache": true
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "opfs": {
+    "mkdirp": true,
+    "rimraf": true,
+    "bluebird": true
+  },
+  "prettier": {
+    "printWidth": 100
+  },
+  "@xarc/module-dev": {
+    "features": [
+      "eslint",
+      "mocha"
+    ]
+  },
+  "mocha": {
+    "require": [
+      "source-map-support/register",
+      "@xarc/module-dev/config/test/setup.js"
+    ],
+    "recursive": true
+  }
+}

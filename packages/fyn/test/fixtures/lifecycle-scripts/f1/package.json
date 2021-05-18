@@ -1,0 +1,11 @@
+{
+  "name": "f1",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo hello",
+    "test1": "echo hello; echo a; echo stderr foo 1>&2",
+    "test2": "exit 0",
+    "test3": "echo stderr blah 1>&2; boo",
+    "test4": "echo \"\""
+  }
+}

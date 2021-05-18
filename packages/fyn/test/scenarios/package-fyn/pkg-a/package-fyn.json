@@ -1,0 +1,7 @@
+{
+  "fyn": {
+    "dependencies": {
+      "pkg-b": "../pkg-b"
+    }
+  }
+}

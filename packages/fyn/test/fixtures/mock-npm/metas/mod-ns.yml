@@ -1,0 +1,23 @@
+etag: mod-ns-1
+name: mod-ns
+versions:
+  1.0.0:
+    name: mod-ns
+    description: test fixture mod-ns
+    version: 1.0.0
+    _hasShrinkwrap: true
+    dependencies:
+      mod-a: ^1.0.0
+      mod-b: ^1.0.0
+      mod-d: ^3.0.0
+      mod-c: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-ns/-/mod-ns-1.0.0.tgz'
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-ns
+  for testing npm-shrinkwrap.json
+_attachments: {}

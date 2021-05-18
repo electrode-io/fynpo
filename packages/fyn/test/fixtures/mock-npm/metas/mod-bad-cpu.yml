@@ -1,0 +1,20 @@
+etag: mod-bad-cpu-1
+name: mod-bad-cpu
+versions:
+  1.0.0:
+    name: mod-bad-cpu
+    description: test fixture mod-bad-cpu
+    version: 1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-bad-cpu/-/mod-bad-cpu-1.0.0.tgz'
+    cpu:
+      - foo
+      - bar
+      - blah
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-bad-cpu
+_attachments: {}

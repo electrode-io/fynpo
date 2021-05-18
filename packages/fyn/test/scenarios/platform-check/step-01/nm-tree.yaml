@@ -1,0 +1,22 @@
+node_modules:
+  .bin:
+    bin1: '-> ../.f/_/mod-g/2.0.1/mod-g/bin/bin1.js'
+    bin2: '-> ../.f/_/mod-g/2.0.1/mod-g/bin/bin2.js'
+  .f:
+    .fyn.json: file
+    _:
+      mod-a:
+        1.1.2:
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
+      mod-g:
+        2.0.1:
+          mod-g:
+            bin:
+              bin1.js: file
+              bin2.js: file
+            package.json:
+              id: mod-g@2.0.1
+  mod-a: '-> .f/_/mod-a/1.1.2/mod-a'
+  mod-g: '-> .f/_/mod-g/2.0.1/mod-g'

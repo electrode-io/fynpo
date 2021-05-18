@@ -1,0 +1,17 @@
+node_modules
+/.vscode
+/coverage
+/.nyc*
+/*.swp
+/*.log*
+/tmp
+.tgz
+/.cache
+/xout
+.tmp*
+/*.tgz
+/dist
+.fyn
+package-fyn.*
+fyn-debug*.log
+package-lock.*

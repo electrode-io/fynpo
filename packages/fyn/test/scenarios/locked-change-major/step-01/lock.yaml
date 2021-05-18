@@ -1,0 +1,77 @@
+"$pkg":
+  "dep":
+    "mod-a": "^0.3.0"
+    "mod-b": "^1.0.0"
+mod-a:
+  _latest: 2.0.0
+  _:
+    ^0.2.0: 0.2.0
+    ^0.3.0: 0.3.2
+    ^0.4.0: 0.4.5
+    ^1.0.1: 1.1.2
+  1.1.2:
+    $: sha1-GI4Xa1SCmBvz63lX5w2BBljhbK0=
+    _: "http://localhost:59858/mod-a/-/mod-a-1.1.2.tgz"
+  0.4.5:
+    $: sha1-lw0zT3avRyEAkDBm/WkrRuMa+xM=
+    _: "http://localhost:59858/mod-a/-/mod-a-0.4.5.tgz"
+  0.3.2:
+    top: 1
+    $: sha1-Q930PUFp8TdbWK49tGxVd9u8uYs=
+    _: "http://localhost:59858/mod-a/-/mod-a-0.3.2.tgz"
+    dependencies:
+      mod-g: ^3.0.0
+  0.2.0:
+    $: sha1-1vPrLuJpzBXYpPPVPa5dHXYHm6k=
+    _: "http://localhost:59858/mod-a/-/mod-a-0.2.0.tgz"
+mod-b:
+  _latest: 1.0.0
+  _:
+    ^1.0.0: 1.0.0
+  1.0.0:
+    top: 1
+    $: sha1-6Z2tpIvZSbB5s6JxCvPqKZWPSc0=
+    _: "http://localhost:59858/mod-b/-/mod-b-1.0.0.tgz"
+    dependencies:
+      mod-a: ^0.2.0
+      mod-d: ^3.0.0
+    optionalDependencies:
+      mod-e: ^2.0.0
+mod-d:
+  _latest: 3.0.1
+  _:
+    ^3.0.0: 3.0.1
+  3.0.1:
+    $: sha1-hCdJqJ6gW5wWUod/Rw+wQGZLGoc=
+    _: "http://localhost:59858/mod-d/-/mod-d-3.0.1.tgz"
+    dependencies:
+      mod-a: ^1.0.1
+      mod-b: ^1.0.0
+mod-e:
+  _latest: 2.1.1
+  _:
+    ^2.0.0: 2.1.1
+  2.1.1:
+    hasPI: 1
+    $: sha1-WKL0L4+CFsJ1WzVu4mUpJOMFdn0=
+    _: "http://localhost:59858/mod-e/-/mod-e-2.1.1.tgz"
+    dependencies:
+      mod-f: ^2.0.0
+    optionalDependencies:
+      mod-a: ^0.4.0
+mod-f:
+  _latest: 2.1.1
+  _:
+    ^2.0.0: 2.1.1
+  2.1.1:
+    $: sha1-ouw/RVwgBmvdA/qHylFMF7yJh6c=
+    _: "http://localhost:59858/mod-f/-/mod-f-2.1.1.tgz"
+    peerDependencies:
+      mod-a: ^0.3.0
+mod-g:
+  _latest: 3.0.11
+  _:
+    ^3.0.0: 3.0.11
+  3.0.11:
+    $: sha1-z5VvulYGMO/e58GbzDaYmKoVmbI=
+    _: "http://localhost:59858/mod-g/-/mod-g-3.0.11.tgz"

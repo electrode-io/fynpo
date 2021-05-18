@@ -1,0 +1,14 @@
+{
+  "name": "e1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "install": "node index.js hello.js"
+  },
+  "dependencies": {
+    "mod-h": "^3.0.1"
+  }
+}

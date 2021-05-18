@@ -1,0 +1,21 @@
+etag: mod-ns2-1
+name: mod-ns2
+versions:
+  1.0.0:
+    name: mod-ns2
+    description: test fixture mod-ns2
+    version: 1.0.0
+    _hasShrinkwrap: true
+    dependencies:
+      mod-ns: ^1.0.0
+      mod-a: ^1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-ns2/-/mod-ns2-1.0.0.tgz'
+dist-tags:
+  latest: 1.0.0
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-ns2
+  for testing npm-shrinkwrap.json
+_attachments: {}

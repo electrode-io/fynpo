@@ -1,0 +1,40 @@
+node_modules:
+  .f:
+    .fyn.json: file
+    _:
+      mod-a:
+        1.1.2:
+          mod-a:
+            package.json:
+              id: mod-a@1.1.2
+        2.0.0:
+          mod-a:
+            package.json:
+              id: mod-a@2.0.0
+      mod-c:
+        3.0.0:
+          mod-c:
+            node_modules:
+              mod-a: '-> ../../../../mod-a/1.1.2/mod-a'
+            package.json:
+              id: mod-c@3.0.0
+      mod-d:
+        1.0.1:
+          mod-d:
+            package.json:
+              id: mod-d@1.0.1
+      mod-e:
+        1.0.0:
+          mod-e:
+            package.json:
+              id: mod-e@1.0.0
+      mod-f:
+        1.0.0:
+          mod-f:
+            package.json:
+              id: mod-f@1.0.0
+  mod-a: '-> .f/_/mod-a/2.0.0/mod-a'
+  mod-c: '-> .f/_/mod-c/3.0.0/mod-c'
+  mod-d: '-> .f/_/mod-d/1.0.1/mod-d'
+  mod-e: '-> .f/_/mod-e/1.0.0/mod-e'
+  mod-f: '-> .f/_/mod-f/1.0.0/mod-f'

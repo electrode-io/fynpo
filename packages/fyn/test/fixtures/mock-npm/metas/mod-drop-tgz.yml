@@ -1,0 +1,20 @@
+etag: mod-drop-tgz-1
+name: mod-drop-tgz
+versions:
+  1.0.1:
+    name: mod-drop-tgz
+    description: test fixture mod-drop-tgz
+    version: 1.0.1
+    scripts:
+      preinstall: echo failing preinstall for mod-drop-tgz && exit 1
+    dependencies:
+      mod-a: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-drop-tgz/-/mod-drop-tgz-1.0.1.tgz'
+dist-tags:
+  latest: 1.0.1
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-drop-tgz
+_attachments: {}

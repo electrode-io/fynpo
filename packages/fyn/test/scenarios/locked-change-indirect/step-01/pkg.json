@@ -1,0 +1,12 @@
+{
+  "name": "locked-change-indirect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-i": "^1.0.0"
+  }
+}

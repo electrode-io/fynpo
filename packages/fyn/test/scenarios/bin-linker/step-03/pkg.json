@@ -1,0 +1,12 @@
+{
+  "name": "bin-linker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": "test",
+  "dependencies": {
+    "mod-g": "^4.0.0"
+  }
+}

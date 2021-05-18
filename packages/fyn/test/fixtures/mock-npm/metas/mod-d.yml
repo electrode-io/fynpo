@@ -1,0 +1,38 @@
+etag: mod-d-1
+name: mod-d
+versions:
+  1.0.1:
+    name: mod-d
+    description: test fixture mod-d
+    version: 1.0.1
+    dependencies:
+      mod-a: ^2.0.0
+      mod-f: ^1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-d/-/mod-d-1.0.1.tgz'
+  3.0.1:
+    name: mod-d
+    description: test fixture mod-d
+    version: 3.0.1
+    dependencies:
+      mod-a: ^1.0.1
+      mod-b: ^1.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-d/-/mod-d-3.0.1.tgz'
+  4.2.1:
+    name: mod-d
+    description: test fixture mod-d
+    version: 4.2.1
+    dependencies:
+      mod-e: ^3.0.0
+    dist:
+      shasum: ''
+      tarball: 'http://localhost:4873/mod-d/-/mod-d-4.2.1.tgz'
+dist-tags:
+  latest: 3.0.1
+_rev: 9-f5a60b1743717bf9
+readme: |
+  #mod-c
+_attachments: {}
