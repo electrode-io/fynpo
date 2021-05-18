@@ -21,41 +21,7 @@ function readPkg() {
 }
 
 xrun.load("fyn", {
-  prepack: {
-    task: () => {
-      const dist = Path.resolve("dist");
-      const data = readPkg();
-      const pkg = JSON.parse(data);
-      delete pkg.scripts;
-      delete pkg.dependencies;
-      delete pkg.nyc;
-      delete pkg.devDependencies;
-      rimraf.sync(dist);
-      mkdirp.sync(dist);
-
-      mkdirp.sync(Path.resolve(".tmp"));
-      Fs.writeFileSync(Path.resolve(".tmp/package.json"), data);
-      Fs.writeFileSync(pkgFile, `${JSON.stringify(pkg, null, 2)}\n`);
-    }
-  },
-
-  postpack: {
-    task: () => {
-      Fs.writeFileSync(pkgFile, readPkg());
-    }
-  },
-
-  ".prepare": ["fyn/prepack", "fyn/bundle"],
-
-  release: {
-    desc: "Release a new version to npm.  package.json must be updated.",
-    task: ["create-tgz", "xarc/check", "fyn/.prepare", "fyn/publish"],
-    finally: ["fyn/postpack"]
-  },
-
   bundle: "webpack",
-
-  publish: "npm publish",
 
   "replace-npm-g": {
     desc: "Replace the version that was installed by 'npm i -g' with current",
