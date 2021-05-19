@@ -1,7 +1,7 @@
 {
   "name": "fynpo",
   "version": "0.4.0",
-  "description": "Supplement tools for using fyn with lerna",
+  "description": "All the benefits of monorepo without the usual downsides",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -14,21 +14,18 @@
     "postpack": "publish-util-postpack"
   },
   "keywords": [
-    "fyn",
-    "flat",
-    "node",
-    "modules",
-    "node_modules",
     "lerna",
-    "repo",
     "mono",
+    "repo",
+    "mono-repo",
+    "workspace",
     "monorepo"
   ],
   "files": [
     "dist",
     "templates"
   ],
-  "author": "Walmart GTP.js Team",
+  "author": "Walmart GTP.js Team and Contributors",
   "contributors": [
     "Joel Chen",
     "Divya Vannilaparambath"
@@ -36,7 +33,8 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jchip/fynpo.git"
+    "url": "https://github.com/electrode-io/fynpo.git",
+    "directory": "packages/fynpo"
   },
   "bin": {
     "fynpo": "dist/fynpo-cli.js"
