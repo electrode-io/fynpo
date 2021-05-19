@@ -15,6 +15,7 @@ const logger = require("../../lib/logger");
 const mockNpm = require("../fixtures/mock-npm");
 const optionalRequire = require("optional-require")(require);
 const sortObjKeys = require("../../lib/util/sort-obj-keys");
+const ci = require("ci-info");
 
 const BASE_ARGS = ["--pg=none", "-q=none", "--no-rcfile"];
 const getFynDirArg = dir => `--fyn-dir=${dir}`;
@@ -33,7 +34,10 @@ const debug = false;
   let server;
   const saveExit = fyntil.exit;
   let registry;
+  let saveCI;
   before(() => {
+    saveCI = ci.isCI;
+    ci.isCI = false;
     fyntil.exit = code => {
       throw new Error(`exit ${code}`);
     };
@@ -44,6 +48,7 @@ const debug = false;
   });
 
   after(() => {
+    ci.isCI = saveCI;
     fyntil.exit = saveExit;
     return server.stop();
   });
@@ -235,6 +240,8 @@ const debug = false;
 +-----------------------------------------------`);
 
                 console.log(logs);
+                console.log("\n");
+                console.log(err);
               } catch (err2) {
                 console.log(`
 +===============================================
