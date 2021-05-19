@@ -235,6 +235,8 @@ const debug = false;
 +-----------------------------------------------`);
 
                 console.log(logs);
+                console.log("\n");
+                console.log(err);
               } catch (err2) {
                 console.log(`
 +===============================================
