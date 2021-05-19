@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable max-params, max-statements */
+/* eslint-disable max-params, max-statements, complexity */
 
 /*
  * clone another directory by:
@@ -15,6 +15,8 @@ const xaa = require("./xaa");
 const npmPacklist = require("npm-packlist");
 const fynTil = require("./fyntil");
 const logger = require("../logger");
+const { SourceMapGenerator } = require("source-map");
+const ci = require("ci-info");
 
 async function linkFile(srcFp, destFp, srcStat) {
   try {
@@ -63,6 +65,7 @@ async function prepDestDir(dest) {
 async function cleanExtraDest(dest, destFiles) {
   for (const k in destFiles) {
     if (destFiles[k] === false) {
+      logger.debug(`removing extra local link file ${k}`);
       await Fs.$.rimraf(Path.join(dest, k));
     }
   }
@@ -111,6 +114,84 @@ async function generatePackTree(path) {
   return fmap;
 }
 
+const FYN_SOURCE_MAP_SIG = "//# fynSourceMap";
+const SOURCE_MAP_URL = "//# sourceMappingURL=";
+
+/**
+ * process or generate source map back to original file
+ *
+ * @param {*} param0
+ */
+async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp }) {
+  const ext = !ci.isCI && Path.extname(file);
+
+  // native plain js or mjs files should map back to the original local files
+  // and it may or may not have source map file
+  if (ext !== ".js" && ext !== ".mjs") {
+    return;
+  }
+
+  const fileMap = `${file}.map`;
+  const srcMapFp = Path.join(src, fileMap);
+  const destMapFp = Path.join(dest, fileMap);
+  const mapContent = await xaa.try(() => Fs.readFile(srcMapFp, "utf-8"));
+  if (mapContent) {
+    // file has source map, need to update map file to point back to original location for source
+    const mapData = JSON.parse(mapContent);
+    const { sourceRoot = "" } = mapData;
+    delete mapData.sourceRoot;
+    mapData.sources = mapData.sources.map(s => {
+      const source1 = sourceRoot + s;
+      return Path.relative(dest, Path.isAbsolute(source1) ? source1 : Path.join(src, source1));
+    });
+    logger.debug(`Rewriting map file sources to ${mapData.sources} for ${destMapFp}`);
+    await Fs.writeFile(destMapFp, JSON.stringify(mapData));
+    destFiles[fileMap] = true;
+
+    return;
+  }
+
+  // file doesn't have source map so fyn needs to generate one for it
+  const content = await Fs.readFile(srcFp, "utf-8");
+  const fynMapped = content.includes(FYN_SOURCE_MAP_SIG);
+  const hasMapUrl = content.includes(SOURCE_MAP_URL);
+  if (fynMapped || !hasMapUrl) {
+    logger.debug(`Generating map file for ${srcFp} to ${destFp}`);
+    const allLines = content.split("\n");
+    const count = allLines.length;
+    const sourceMap = new SourceMapGenerator({ file });
+    const source = Path.relative(dest, srcFp);
+    for (let line = 1; line <= count; line++) {
+      const length = allLines[line - 1].length;
+      // source map format doesn't have a way to say just 1-1 map back to source
+      // so we are mapping every line and every column directly, it's a waste, but
+      // the only way to achieve this.
+      for (let column = 0; column < length; column++) {
+        sourceMap.addMapping({
+          generated: { line, column },
+          source,
+          original: { line, column }
+        });
+      }
+    }
+    await Fs.writeFile(destMapFp, sourceMap.toString());
+    destFiles[fileMap] = true;
+    if (!hasMapUrl) {
+      const sep = content.endsWith("\n") ? "" : "\n";
+      const fynMapStr = fynMapped ? "" : `${FYN_SOURCE_MAP_SIG}\n`;
+      await Fs.writeFile(destFp, `${content}${sep}${fynMapStr}${SOURCE_MAP_URL}${fileMap}\n`);
+    }
+  }
+}
+
+/**
+ * Link tree of files generated from npm pack
+ *
+ * @param {*} tree
+ * @param {*} src
+ * @param {*} dest
+ * @param {*} sym1
+ */
 async function linkPackTree(tree, src, dest, sym1) {
   const files = tree[FILES];
 
@@ -120,10 +201,17 @@ async function linkPackTree(tree, src, dest, sym1) {
   // create hardlinks to files
   //
   for (const file of files) {
+    // In non-CI mode, skip linking source map file by matching for extensions like .js.map
+    // because we rewrite their sources and copy them already
+    if (!ci.isCI && file.match(/.+\..+\.map$/)) {
+      continue;
+    }
+
     destFiles[file] = true;
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
     await linkFile(srcFp, destFp);
+    await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp });
   }
 
   //

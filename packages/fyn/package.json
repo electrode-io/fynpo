@@ -99,6 +99,7 @@
     "pkg-preper": "^0.1.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
+    "source-map": "^0.7.3",
     "tar": "^6.1.0",
     "visual-exec": "^0.1.9",
     "visual-logger": "^1.1.3",
