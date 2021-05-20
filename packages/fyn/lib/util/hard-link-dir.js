@@ -152,10 +152,10 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
 
   const content = await Fs.readFile(srcFp, "utf-8");
   const fynMapped = content.includes(FYN_SOURCE_MAP_SIG);
-  const hasMapUrl = content.includes(SOURCE_MAP_URL);
-  if (!fynMapped && hasMapUrl) {
-    const sourceMapFile = getSourceMapURL(content);
+  const sourceMapFile = getSourceMapURL(content);
 
+  // file contains source map URL that's not marked for fyn, try copy it and rewrite sources
+  if (!fynMapped && sourceMapFile) {
     if (Path.isAbsolute(sourceMapFile)) {
       logger.info(`File ${srcFp} sourcemap ${sourceMapFile} is full path - can't rewrite it`);
       return;
@@ -200,7 +200,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
   }
 
   // file is marked for fynMapped or it doesn't have source map so fyn needs to generate one for it
-  if (fynMapped || !hasMapUrl) {
+  if (fynMapped || !sourceMapFile) {
     const fileMap = `${file}.fyn.map`;
     const destMapFp = Path.join(dest, fileMap);
 
@@ -224,7 +224,8 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
     }
     await Fs.writeFile(destMapFp, sourceMap.toString());
     destFiles[fileMap] = true;
-    if (!hasMapUrl) {
+    // sourcemap url didn't exist, save it to source file
+    if (!sourceMapFile) {
       const sep = content.endsWith("\n") ? "" : "\n";
       const fynMapStr = fynMapped ? "" : `${FYN_SOURCE_MAP_SIG}\n`;
       await Fs.writeFile(destFp, `${content}${sep}${fynMapStr}${SOURCE_MAP_URL}${fileMap}\n`);
