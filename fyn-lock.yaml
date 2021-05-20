@@ -1,6 +1,6 @@
 $pkg:
  dev:
-  fynpo: ^0.4.0
+  fynpo: ^0.4.1
 '@babel/code-frame':
  _latest: 7.12.13
  _:
@@ -157,12 +157,12 @@ $pkg:
   dependencies:
    chalk: ^4.0.0
 '@fynpo/base':
- _latest: 0.1.0-fynlocal_h
+ _latest: 0.1.0
  _:
-  ./packages/fynpo-base: 0.1.0-fynlocal_h
- 0.1.0-fynlocal_h:
-  $: local
-  _: ./packages/fynpo-base
+  ^0.1.0: 0.1.0
+ 0.1.0:
+  $: sha512-bIP0AIYhqCMotQKwCyx1EH5qj/u6Bjww1QN5fWjtIo1eahdp1UyEfhVEDVOpU14FyoOyE715/jIUgT7GR5I+vw==
+  _: 'https://registry.npmjs.org/@fynpo/base/-/base-0.1.0.tgz'
   dependencies:
    filter-scan-dir: ^1.2.0
    lodash: ^4.17.21
@@ -1093,10 +1093,10 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 0.4.29-fynlocal_h
+ _latest: 0.4.31-fynlocal_h
  _:
-  ./packages/fyn: 0.4.29-fynlocal_h
- 0.4.29-fynlocal_h:
+  ./packages/fyn: 0.4.31-fynlocal_h
+ 0.4.31-fynlocal_h:
   $: local
   _: ./packages/fyn
   dependencies:
@@ -1127,6 +1127,7 @@ fyn:
    pkg-preper: ^0.1.0
    rimraf: ^3.0.2
    semver: ^7.3.5
+   source-map: ^0.7.3
    tar: ^6.1.0
    visual-exec: ^0.1.9
    visual-logger: ^1.1.3
@@ -1135,13 +1136,13 @@ fyn:
    xsh: ^0.4.5
    yamljs: ^0.3.0
 fynpo:
- _latest: 0.4.0
+ _latest: 0.4.1
  _:
-  ^0.4.0: 0.4.0
- 0.4.0:
+  ^0.4.1: 0.4.1
+ 0.4.1:
   top: 1
-  $: sha512-t0ja4psdkE6TUFcnCOgvnoBWddHVCPmMnyidGFEJW494Q7c3fQ6kWdQKRo23JUkDTCrkZn4T4Wu1cY5MySpVBg==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-0.4.0.tgz'
+  $: sha512-b+NCRXWbmwNfN9PvVoBQkNalRoBWdHZAbSPp8gZUq/a0vQEhQRQMYshRUwn5xxxwt07ib9KW9zLoXStZeSD6dQ==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-0.4.1.tgz'
   dependencies:
    '@commitlint/execute-rule': ^12.1.1
    '@commitlint/format': ^12.1.1
@@ -1157,7 +1158,7 @@ fynpo:
    execa: ^5.0.0
    filter-scan-dir: ^1.2.0
    fs-extra: ^9.1.0
-   fyn: ^0.4.29
+   fyn: ^0.4.30
    get-stdin: ^8.0.0
    item-queue: ^1.0.4
    lodash: ^4.17.20
@@ -1165,7 +1166,7 @@ fynpo:
    nix-clap: ^1.3.12
    optional-require: ^1.0.3
    p-queue: ^6.0.0
-   prettier: ^2.2.1
+   prettier: ^2.3.0
    resolve-from: ^5.0.0
    resolve-global: ^1.0.0
    semver: ^7.3.4
@@ -2412,7 +2413,7 @@ pkg-preper:
 prettier:
  _latest: 2.3.0
  _:
-  ^2.2.1: 2.3.0
+  ^2.3.0: 2.3.0
  2.3.0:
   $: sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==
   _: 'https://registry.npmjs.org/prettier/-/prettier-2.3.0.tgz'
@@ -2801,6 +2802,13 @@ socks-proxy-agent:
   dependencies:
    agent-base: ~4.2.1
    socks: ~2.3.2
+source-map:
+ _latest: 0.7.3
+ _:
+  ^0.7.3: 0.7.3
+ 0.7.3:
+  $: sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
+  _: 'https://registry.npmjs.org/source-map/-/source-map-0.7.3.tgz'
 spdx-correct:
  _latest: 3.1.1
  _:
