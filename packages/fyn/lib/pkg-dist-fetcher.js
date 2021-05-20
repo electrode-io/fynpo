@@ -158,9 +158,10 @@ class PkgDistFetcher {
 
     const destDir = dir || this._fyn.getInstalledPkgDir(pkg.name, pkg.version);
 
-    return hardLinkDir.link(srcDir, destDir).then(() => {
-      return Fs.$.rimraf(srcDir).then(() => true);
-    });
+    await hardLinkDir.link(srcDir, destDir, { genSourceMaps: this._fyn._options.genSourceMaps });
+    await Fs.$.rimraf(srcDir);
+
+    return true;
   }
 
   async fetchItem(item) {

@@ -193,6 +193,12 @@ const options = {
     type: "boolean",
     desc: "Resolve dependency tree as deep as possible"
   },
+  "source-maps": {
+    alias: "sm",
+    type: "boolean",
+    default: true,
+    desc: "Generate source maps for local linked packages"
+  },
   production: {
     type: "boolean",
     alias: "prod",

@@ -9,7 +9,7 @@ node_modules:
         1.0.0-fynlocal_h:
           e1:
             index.js: file
-            index.js.map: file
+            index.js.fyn.map: file
             node_modules:
               mod-h: "-> ../../../../mod-h/3.0.11/mod-h"
             package.json:

@@ -187,7 +187,9 @@ class PkgOptResolver {
         // await this._depLinker.symlinkLocalPackage(fvInstalledPath, dist.fullPath);
         throw new Error("only hard linking local mode supported now. symlinking local deprecated");
       } else {
-        await hardLinkDir.link(dist.fullPath, fvInstalledPath);
+        await hardLinkDir.link(dist.fullPath, fvInstalledPath, {
+          genSourceMaps: this._fyn._options.sourceMaps
+        });
       }
       return checkPkg(fvInstalledPath);
     };

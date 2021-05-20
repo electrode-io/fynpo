@@ -152,7 +152,8 @@ class LocalPkgBuilder {
       process.argv[0],
       this._fynJs,
       this._fyn._options.registry && `--reg=${this._fyn._options.registry}`,
-      "-q=d --pg=simple --no-build-local"
+      "-q=d --pg=simple --no-build-local",
+      !this._fyn._options.sourceMaps && "--no-source-maps"
     ]
       .filter(x => x)
       .join(" ");
