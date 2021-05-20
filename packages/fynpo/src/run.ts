@@ -111,7 +111,7 @@ export default class Run {
       padding: { top: 0, right: 2, left: 2, bottom: 0 },
     });
 
-    logger.prefix(false).info(msg);
+    msg.split("\n").forEach((l) => logger.prefix(false).info(l));
   }
 
   _logRunResult({ timer, error, output, pkg }) {
@@ -124,18 +124,20 @@ export default class Run {
       padding: { top: 0, right: 2, left: 2, bottom: 0 },
     });
 
-    logger.prefix(false).info(msg);
+    // some build system needs logging one line at a time
+    msg.split("\n").forEach((l) => logger.prefix(false).info(l));
     if (!this._options.stream) {
+      // TODO: use an exec that interleaves stdout and stderr into a single output
       logger.prefix(false).info(output.stdout);
       if (output.stderr) {
         logger.prefix(false).error(output.stderr);
       }
       const m5 = `End of output\n${m2}`;
-      logger.prefix(false).info(
-        boxen(error ? chalk.red(m5) : chalk.green(m5), {
-          padding: { top: 0, right: 2, left: 2, bottom: 0 },
-        })
-      );
+      const msg2 = boxen(error ? chalk.red(m5) : chalk.green(m5), {
+        padding: { top: 0, right: 2, left: 2, bottom: 0 },
+      });
+
+      msg2.split("\n").forEach((l) => logger.prefix(false).info(l));
     }
   }
 
