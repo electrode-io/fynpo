@@ -118,11 +118,30 @@ const FYN_SOURCE_MAP_SIG = "//# fynSourceMap";
 const SOURCE_MAP_URL = "//# sourceMappingURL=";
 
 /**
+ * search for the last sourceMappingURL from a source content
+ *
+ * @param {*} content
+ * @returns
+ */
+function getSourceMapURL(content) {
+  const regex = /(?:\/\/[@#][\s]*sourceMappingURL=([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*sourceMappingURL=([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/gm;
+  let match;
+  let lastMatch;
+
+  // search for the last occurrence of sourceMappingURL
+  while ((match = regex.exec(content))) {
+    lastMatch = match;
+  }
+
+  return lastMatch && lastMatch[1];
+}
+
+/**
  * process or generate source map back to original file
  *
  * @param {*} param0
  */
-async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp }) {
+async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sourceMaps }) {
   const ext = !ci.isCI && Path.extname(file);
 
   // native plain js or mjs files should map back to the original local files
@@ -131,31 +150,60 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp }) {
     return;
   }
 
-  const fileMap = `${file}.map`;
-  const srcMapFp = Path.join(src, fileMap);
-  const destMapFp = Path.join(dest, fileMap);
-  const mapContent = await xaa.try(() => Fs.readFile(srcMapFp, "utf-8"));
-  if (mapContent) {
+  const content = await Fs.readFile(srcFp, "utf-8");
+  const fynMapped = content.includes(FYN_SOURCE_MAP_SIG);
+  const sourceMapFile = getSourceMapURL(content);
+
+  // file contains source map URL that's not marked for fyn, try copy it and rewrite sources
+  if (!fynMapped && sourceMapFile) {
+    if (Path.isAbsolute(sourceMapFile)) {
+      logger.info(`File ${srcFp} sourcemap ${sourceMapFile} is full path - can't rewrite it`);
+      return;
+    }
+
+    const srcMapFp = Path.join(src, sourceMapFile);
+    const mapContent = await xaa.try(() => Fs.readFile(srcMapFp, "utf-8"));
+
+    if (!mapContent) {
+      logger.debug(`Sourcemap of file not found: ${srcFp} - ${sourceMapFile}`);
+      return;
+    }
+
     // file has source map, need to update map file to point back to original location for source
     const mapData = JSON.parse(mapContent);
     const { sourceRoot = "" } = mapData;
     delete mapData.sourceRoot;
     mapData.sources = mapData.sources.map(s => {
       const source1 = sourceRoot + s;
-      return Path.relative(dest, Path.isAbsolute(source1) ? source1 : Path.join(src, source1));
+      const source2 = Path.isAbsolute(source1) ? source1 : Path.join(src, source1);
+      const relPath = Path.relative(dest, source2);
+      logger.debug(`Rewriting map file source to ${relPath} from ${dest} to ${source2}`);
+      return relPath;
     });
-    logger.debug(`Rewriting map file sources to ${mapData.sources} for ${destMapFp}`);
-    await Fs.writeFile(destMapFp, JSON.stringify(mapData));
-    destFiles[fileMap] = true;
+
+    const destMapFp = Path.join(dest, sourceMapFile);
+    await xaa.try(
+      () => Fs.writeFile(destMapFp, JSON.stringify(mapData)),
+      () => {
+        logger.info(`Failed to save rewritten source map file ${destMapFp}`);
+      }
+    );
+
+    // TODO: what if sourceMapFile is not next to the source file?
+    destFiles[sourceMapFile] = true;
 
     return;
   }
 
-  // file doesn't have source map so fyn needs to generate one for it
-  const content = await Fs.readFile(srcFp, "utf-8");
-  const fynMapped = content.includes(FYN_SOURCE_MAP_SIG);
-  const hasMapUrl = content.includes(SOURCE_MAP_URL);
-  if (fynMapped || !hasMapUrl) {
+  if (!sourceMaps) {
+    return;
+  }
+
+  // file is marked for fynMapped or it doesn't have source map so fyn needs to generate one for it
+  if (fynMapped || !sourceMapFile) {
+    const fileMap = `${file}.fyn.map`;
+    const destMapFp = Path.join(dest, fileMap);
+
     logger.debug(`Generating map file for ${srcFp} to ${destFp}`);
     const allLines = content.split("\n");
     const count = allLines.length;
@@ -176,7 +224,8 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp }) {
     }
     await Fs.writeFile(destMapFp, sourceMap.toString());
     destFiles[fileMap] = true;
-    if (!hasMapUrl) {
+    // sourcemap url didn't exist, save it to source file
+    if (!sourceMapFile) {
       const sep = content.endsWith("\n") ? "" : "\n";
       const fynMapStr = fynMapped ? "" : `${FYN_SOURCE_MAP_SIG}\n`;
       await Fs.writeFile(destFp, `${content}${sep}${fynMapStr}${SOURCE_MAP_URL}${fileMap}\n`);
@@ -192,7 +241,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp }) {
  * @param {*} dest
  * @param {*} sym1
  */
-async function linkPackTree(tree, src, dest, sym1) {
+async function linkPackTree({ tree, src, dest, sym1, sourceMaps }) {
   const files = tree[FILES];
 
   const destFiles = await prepDestDir(dest);
@@ -211,7 +260,7 @@ async function linkPackTree(tree, src, dest, sym1) {
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
     await linkFile(srcFp, destFp);
-    await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp });
+    await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sourceMaps });
   }
 
   //
@@ -226,27 +275,29 @@ async function linkPackTree(tree, src, dest, sym1) {
     const destFp = Path.join(dest, dir);
     if (!sym1) {
       // recursively duplicate sub dirs with hardlinks
-      await linkPackTree(tree[dir], srcFp, destFp);
+      await linkPackTree({ tree: tree[dir], src: srcFp, dest: destFp, sourceMaps });
     } else {
       // make symlink to directories in the top level
       await fynTil.symlinkDir(destFp, srcFp);
     }
   }
 
+  logger.debug(`linkPackTree src: ${src} dest: ${dest} - destFiles ${JSON.stringify(destFiles)}`);
+
   // any file exist in dest but not in src are removed
   await cleanExtraDest(dest, destFiles);
 }
 
-async function link(src, dest) {
+async function link(src, dest, { sourceMaps = true } = {}) {
   const tree = await generatePackTree(src);
 
-  return await linkPackTree(tree, src, dest);
+  return await linkPackTree({ tree, src, dest, sourceMaps });
 }
 
 async function linkSym1(src, dest) {
   const tree = await generatePackTree(src);
 
-  return await linkPackTree(tree, src, dest, true);
+  return await linkPackTree({ tree, src, dest, sym1: true });
 }
 
 module.exports = {

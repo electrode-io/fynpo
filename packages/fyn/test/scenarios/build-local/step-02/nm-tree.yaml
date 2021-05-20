@@ -10,9 +10,9 @@ node_modules:
           e1:
             dist:
               hello.js: file
-              hello.js.map: file
+              hello.js.fyn.map: file
             index.js: file
-            index.js.map: file
+            index.js.fyn.map: file
             node_modules:
               mod-h: "-> ../../../../mod-h/3.0.11/mod-h"
             package.json:
@@ -33,7 +33,7 @@ node_modules:
           mod-h:
             bin:
               bin1.js: file
-              bin1.js.map: file
+              bin1.js.fyn.map: file
             node_modules:
               .bin:
                 bin1: "-> ../../../../../mod-g/2.0.1/mod-g/bin/bin1.js"

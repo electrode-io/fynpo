@@ -21,7 +21,7 @@ node_modules:
           mod-h:
             bin:
               bin1.js: file
-              bin1.js.map: file
+              bin1.js.fyn.map: file
             node_modules:
               .bin:
                 bin1: "-> ../../../../../mod-g/2.0.1/mod-g/bin/bin1.js"
