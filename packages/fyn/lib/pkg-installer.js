@@ -67,7 +67,7 @@ class PkgInstaller {
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
     if (depInfo.local === "hard") {
       await hardLinkDir.link(depInfo.dir, vdir, {
-        genSourceMaps: this._fyn._options.sourceMaps
+        sourceMaps: this._fyn._options.sourceMaps
       });
     } else {
       // await this._depLinker.symlinkLocalPackage(vdir, depInfo.dir);

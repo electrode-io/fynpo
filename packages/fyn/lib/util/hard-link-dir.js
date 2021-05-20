@@ -141,7 +141,7 @@ function getSourceMapURL(content) {
  *
  * @param {*} param0
  */
-async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, genSourceMaps }) {
+async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sourceMaps }) {
   const ext = !ci.isCI && Path.extname(file);
 
   // native plain js or mjs files should map back to the original local files
@@ -195,7 +195,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, genS
     return;
   }
 
-  if (!genSourceMaps) {
+  if (!sourceMaps) {
     return;
   }
 
@@ -240,7 +240,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, genS
  * @param {*} dest
  * @param {*} sym1
  */
-async function linkPackTree({ tree, src, dest, sym1, genSourceMaps }) {
+async function linkPackTree({ tree, src, dest, sym1, sourceMaps }) {
   const files = tree[FILES];
 
   const destFiles = await prepDestDir(dest);
@@ -259,7 +259,7 @@ async function linkPackTree({ tree, src, dest, sym1, genSourceMaps }) {
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
     await linkFile(srcFp, destFp);
-    await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, genSourceMaps });
+    await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sourceMaps });
   }
 
   //
@@ -274,7 +274,7 @@ async function linkPackTree({ tree, src, dest, sym1, genSourceMaps }) {
     const destFp = Path.join(dest, dir);
     if (!sym1) {
       // recursively duplicate sub dirs with hardlinks
-      await linkPackTree({ tree: tree[dir], src: srcFp, dest: destFp, genSourceMaps });
+      await linkPackTree({ tree: tree[dir], src: srcFp, dest: destFp, sourceMaps });
     } else {
       // make symlink to directories in the top level
       await fynTil.symlinkDir(destFp, srcFp);
@@ -287,10 +287,10 @@ async function linkPackTree({ tree, src, dest, sym1, genSourceMaps }) {
   await cleanExtraDest(dest, destFiles);
 }
 
-async function link(src, dest, { genSourceMaps = true } = {}) {
+async function link(src, dest, { sourceMaps = true } = {}) {
   const tree = await generatePackTree(src);
 
-  return await linkPackTree({ tree, src, dest, genSourceMaps });
+  return await linkPackTree({ tree, src, dest, sourceMaps });
 }
 
 async function linkSym1(src, dest) {
