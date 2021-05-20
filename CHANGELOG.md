@@ -1,3 +1,46 @@
+# 5/20/2021
+
+- [patch] fyn support generating source map back to original file
+- [patch] fynpo adjust logging to help some build systems
+
+## Packages
+
+- `fyn@0.4.30` `(0.4.29 => 0.4.30)`
+- `fynpo@0.4.1` `(0.4.0 => 0.4.1)`
+
+## Commits
+
+- `packages/fynpo-base`
+
+  - [chore] add ci:check script [commit](https://github.com/electrode-io/fynpo/commit/68b794e8d7fc174a65c0a6b98885bdbf374d6471)
+
+- `packages/fyn`
+
+  - [patch] improving source map rewriting and generation ([#18](https://github.com/electrode-io/fynpo/pull/18)) [commit](https://github.com/electrode-io/fynpo/commit/78d143305440761030fca12813b182389ade477f)
+  - [patch] fyn support generating source map back to original file ([#16](https://github.com/electrode-io/fynpo/pull/16)) [commit](https://github.com/electrode-io/fynpo/commit/313e94f63560b9f3d96dc28c7ec6a795edd5a883)
+  - transferred into mono-repo
+
+- `packages/fynpo`
+
+  - [patch] fynpo adjust logging to help some build systems ([#17](https://github.com/electrode-io/fynpo/pull/17)) [commit](https://github.com/electrode-io/fynpo/commit/51103b989316c74302ad60cf4420fc843c2c42b4)
+  - [chore] update license and readme etc [commit](https://github.com/electrode-io/fynpo/commit/8cb9578a68e854e8a41c0490aa22061bf6d3a64e)
+  - [chore] prettier@2.3.0 ([#36](https://github.com/electrode-io/fynpo/pull/36)) [commit](https://github.com/electrode-io/fynpo/commit/9c32d8f8fc654a6db1709a28e01deb3b3df4b77e)
+  - [chore] add ci:check script [commit](https://github.com/electrode-io/fynpo/commit/68b794e8d7fc174a65c0a6b98885bdbf374d6471)
+
+- `packages/fynpo-cli`
+
+  - [chore] add ci:check script [commit](https://github.com/electrode-io/fynpo/commit/68b794e8d7fc174a65c0a6b98885bdbf374d6471)
+
+- `.github`
+
+  - [chore] update github workflow branch [commit](https://github.com/electrode-io/fynpo/commit/cbdf7272d8dee44d6518d7d04d222ce3520fa177)
+  - Create node.js.yml [commit](https://github.com/electrode-io/fynpo/commit/3ce3e756a07507f87c492d998646b549992f575e)
+
+- `MISC`
+
+  - [chore] update README [commit](https://github.com/electrode-io/fynpo/commit/e798240429f6e1429663c7ca8d25068788c99dbd)
+  - [chore] update dep fynpo [commit](https://github.com/electrode-io/fynpo/commit/b5bb13f27bc916b2fa2977707f625debacfde69e)
+
 # 5/17/2021
 
 - fynpo-base module for common code
