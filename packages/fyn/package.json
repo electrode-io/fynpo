@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "0.4.30",
+  "version": "0.4.31",
   "description": "A fast node package manager for better productivity and efficiency",
   "preferGlobal": true,
   "main": "./bin/fyn.js",
@@ -10,7 +10,7 @@
     "coverage": "xrun xarc/check",
     "ci:check": "xrun --serial xarc/lint xarc/check",
     "coveralls": "cat coverage/lcov.info | coveralls",
-    "prepack": "publish-util-prepack",
+    "prepublishOnly": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },
   "bin": {
