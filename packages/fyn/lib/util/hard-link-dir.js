@@ -114,8 +114,8 @@ async function generatePackTree(path) {
   return fmap;
 }
 
-const FYN_SOURCE_MAP_SIG = "//# fynSourceMap";
-const SOURCE_MAP_URL = "//# sourceMappingURL=";
+const FYN_SOURCE_MAP_SIG = "fynSourceMap=";
+const SOURCE_MAP_URL_SIG = "sourceMappingURL=";
 
 /**
  * search for the last sourceMappingURL from a source content
@@ -123,8 +123,12 @@ const SOURCE_MAP_URL = "//# sourceMappingURL=";
  * @param {*} content
  * @returns
  */
-function getSourceMapURL(content) {
-  const regex = /(?:\/\/[@#][\s]*sourceMappingURL=([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*sourceMappingURL=([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/gm;
+function getSourceMapConfig(content, sig = SOURCE_MAP_URL_SIG) {
+  const regex = new RegExp(
+    // from /(?:\/\/[@#][\s]*${sig}([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*${sig}([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/
+    `(?:\\/\\/[@#][\\s]*${sig}([^\\s'"]+)[\\s]*$)|(?:\\/\\*[@#][\\s]*${sig}([^\\s*'"]+)[\\s]*(?:\\*\\/)[\\s]*$)`,
+    "gm"
+  );
   let match;
   let lastMatch;
 
@@ -150,12 +154,18 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
     return;
   }
 
+  const checkFynMapped = x => {
+    return !(x === "false" || x === "no" || x === "off" || x === "0");
+  };
+
   const content = await Fs.readFile(srcFp, "utf-8");
-  const fynMapped = content.includes(FYN_SOURCE_MAP_SIG);
-  const sourceMapFile = getSourceMapURL(content);
+  const fynMapFlag = getSourceMapConfig(content, FYN_SOURCE_MAP_SIG);
+  const hasFynMapFlag = typeof fynMapFlag === "string";
+  const sourceMapFile = getSourceMapConfig(content);
+  const isFynMapped = checkFynMapped(fynMapFlag);
 
   // file contains source map URL that's not marked for fyn, try copy it and rewrite sources
-  if (!fynMapped && sourceMapFile) {
+  if (!hasFynMapFlag && sourceMapFile) {
     if (Path.isAbsolute(sourceMapFile)) {
       logger.info(`File ${srcFp} sourcemap ${sourceMapFile} is full path - can't rewrite it`);
       return;
@@ -200,7 +210,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
   }
 
   // file is marked for fynMapped or it doesn't have source map so fyn needs to generate one for it
-  if (fynMapped || !sourceMapFile) {
+  if (isFynMapped || (!sourceMapFile && !hasFynMapFlag)) {
     const fileMap = `${file}.fyn.map`;
     const destMapFp = Path.join(dest, fileMap);
 
@@ -227,8 +237,11 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
     // sourcemap url didn't exist, save it to source file
     if (!sourceMapFile) {
       const sep = content.endsWith("\n") ? "" : "\n";
-      const fynMapStr = fynMapped ? "" : `${FYN_SOURCE_MAP_SIG}\n`;
-      await Fs.writeFile(destFp, `${content}${sep}${fynMapStr}${SOURCE_MAP_URL}${fileMap}\n`);
+      const fynMapStr = hasFynMapFlag ? "" : `//# ${FYN_SOURCE_MAP_SIG}${fynMapFlag || "true"}\n`;
+      await Fs.writeFile(
+        destFp,
+        `${content}${sep}${fynMapStr}//# ${SOURCE_MAP_URL_SIG}${fileMap}\n`
+      );
     }
   }
 }
