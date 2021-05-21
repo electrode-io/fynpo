@@ -1,4 +1,4 @@
 // test
 console.log("test");
-//# fynSourceMap
+//# fynSourceMap=true
 //# sourceMappingURL=index.js.fyn.map

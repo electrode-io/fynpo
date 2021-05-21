@@ -1,3 +1,3 @@
 console.log("test");
-//# fynSourceMap
+//# fynSourceMap=true
 //# sourceMappingURL=hello.js.fyn.map

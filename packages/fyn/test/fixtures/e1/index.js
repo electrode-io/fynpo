@@ -21,5 +21,5 @@ if (!Fs.existsSync(distDir)) {
 } else {
   console.log("e1 dist already exist");
 }
-//# fynSourceMap
+//# fynSourceMap=true
 //# sourceMappingURL=index.js.map
