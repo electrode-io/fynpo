@@ -1,3 +1,35 @@
+# 5/21/2021
+
+-   [patch] allow file to turn off fyn generating source maps
+
+## Packages
+
+-   `fyn@0.4.32` `(0.4.31 => 0.4.32)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+
+-   `packages/create-fynpo`
+
+    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+
+-   `packages/fyn`
+
+    -   [patch] allow file to turn off fyn generating source maps ([#19](https://github.com/electrode-io/fynpo/pull/19)) [commit](https://github.com/electrode-io/fynpo/commit/ac241b328dac08c3f31a9acf82c7f56272d90c1b)
+    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+    -   [chore] fix npm publish issue with prepack script [commit](https://github.com/electrode-io/fynpo/commit/735af8fb026061297d5b3c6876ebd382d7392c47)
+
+-   `packages/fynpo`
+
+    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+
+-   `MISC`
+
+    -   [chore] update fynpo to 0.4.1 [commit](https://github.com/electrode-io/fynpo/commit/4bab8320766901ed3f59644240354adbf9fe4240)
+
 # 5/20/2021
 
 - [patch] fyn support generating source map back to original file
