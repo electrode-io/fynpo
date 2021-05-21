@@ -5,7 +5,7 @@ title: Debugging
 
 ## The Problem
 
-When you install a local package **Pkg_A** in another local package **Pkg_B**, `fyn` creates  hard linked copies of **Pkg_A**'s files in **Pkg_B**'s `node_modules`.
+When you install a local package **Pkg_A** in another local package **Pkg_B**, `fyn` creates hard linked copies of **Pkg_A**'s files in **Pkg_B**'s `node_modules`.
 
 Like this:
 
@@ -23,13 +23,13 @@ Like this:
         └── package.json
 ```
 
-The file `Pkg_A/index.js` shows up in two locations but they are the same file because they are linked.  Modifying one will change the other.
+The file `Pkg_A/index.js` shows up in two locations but they are the same file because they are linked. Modifying one will change the other.
 
 **There is still a problem with this**: when you are debugging **Pkg_B**, if you need to trace through code in `Pkg_A/index.js`, your debugger will only see `Pkg_B/node_modules/Pkg_A/index.js`, not the one under `packages/Pkg_A/index.js`.
 
 _A rather inconvenient situation._
 
-Other monorepo solutions don't have this problem because they use symbolic links to link local packages, but that causes other problems like the ones listed in [yarn](https://classic.yarnpkg.com/en/docs/workspaces/#toc-limitations-caveats).
+Other monorepo workspace solutions may not have this problem because they use symbolic links to link local packages, but that causes other problems like the ones listed in [yarn](https://classic.yarnpkg.com/en/docs/workspaces/#toc-limitations-caveats).
 
 ## `fyn`'s Solution
 
@@ -37,7 +37,7 @@ If your debugger supports source maps, like the one in [Visual Studio Code], the
 
 There are two ways that we can get source maps:
 
-1. If your source code is in another dialect like TypeScript, then your packages are installed with the transpiled code.  And you must enable source maps when you transpile your code.
+1. If your source code is in another dialect like TypeScript, then your packages are installed with the transpiled code. And you must enable source maps when you transpile your code.
 2. If you write your source code in idiomatic JavaScript, then `fyn` needs to generate pseudo source maps for them.
 
 - With (1), you don't need to do anything, `fyn` will take care of everything for you.
@@ -47,12 +47,8 @@ To make use of the source maps `fyn` setup for you, you need to setup your debug
 
 For [Visual Studio Code], this is a sample of what you need to setup in `.vscode/launch.json`:
 
-
 ```json
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
@@ -80,7 +76,7 @@ For [Visual Studio Code], this is a sample of what you need to setup in `.vscode
 }
 ```
 
-This example assumes you put your local packages under the npm scope `@myscope` and the  `outFiles` entry `"${workspaceFolder}/apps/app-demo/node_modules/.f/_/@myscope/**/*.js"` tells [Visual Studio Code] debugger to process source maps under that directory and open the one in your original `packages` directory under your monorepo.
+This example assumes you put your local packages under the npm scope `@myscope` and the `outFiles` entry `"${workspaceFolder}/apps/app-demo/node_modules/.f/_/@myscope/**/*.js"` tells [Visual Studio Code] debugger to process source maps under that directory and open the one in your original `packages` directory under your monorepo.
 
 ## `fynSourceMap`
 
@@ -97,10 +93,10 @@ It looks like this in a file named `index.js`:
 
 - It's recommended that you commit your code with these for convenience.
 - You can tell `fyn` to skip generating pseudo source maps by setting `fynSourceMap` to `false`.
-- If you use `nyc` for unit test coverage, then it will fail trying to load the source maps.  To get around that, set `nyc`'s option `sourceMap` to `false`.
+- If you use `nyc` for unit test coverage, then it will fail trying to load the source maps. To get around that, set `nyc`'s option `sourceMap` to `false`.
 
 ## Summary
 
 With a debugger that supports source maps, you can debug and trace through your code in your `fynpo` using the original copy of your files instead of the one linked in `node_modules`.
 
-[Visual Studio Code]: https://code.visualstudio.com/
+[visual studio code]: https://code.visualstudio.com/
