@@ -2,15 +2,14 @@
   "name": "fyn",
   "version": "0.4.31",
   "description": "A fast node package manager for better productivity and efficiency",
-  "preferGlobal": true,
   "main": "./bin/fyn.js",
   "scripts": {
     "test": "xrun xarc/test-only",
     "build": "xrun --serial fyn/create-tgz bundle",
     "coverage": "xrun xarc/check",
-    "ci:check": "xrun --serial xarc/lint xarc/check",
+    "ci:check": "xrun xarc/check",
     "coveralls": "cat coverage/lcov.info | coveralls",
-    "prepublishOnly": "publish-util-prepack",
+    "prepublishOnly": "xrun xarc/check bundle && publish-util-prepublishonly",
     "postpack": "publish-util-postpack"
   },
   "bin": {
@@ -126,7 +125,7 @@
     "node-fetch-npm": "^2.0.4",
     "nyc": "^15.1.0",
     "prettier": "^1.19.1",
-    "publish-util": "^1.1.3",
+    "publish-util": "^1.1.5",
     "sinon": "^9.2.2",
     "sinon-chai": "^3.5.0",
     "webpack": "^5.32.0",

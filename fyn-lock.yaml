@@ -157,12 +157,12 @@ $pkg:
   dependencies:
    chalk: ^4.0.0
 '@fynpo/base':
- _latest: 0.1.0
+ _latest: 0.1.0-fynlocal_h
  _:
-  ^0.1.0: 0.1.0
- 0.1.0:
-  $: sha512-bIP0AIYhqCMotQKwCyx1EH5qj/u6Bjww1QN5fWjtIo1eahdp1UyEfhVEDVOpU14FyoOyE715/jIUgT7GR5I+vw==
-  _: 'https://registry.npmjs.org/@fynpo/base/-/base-0.1.0.tgz'
+  ./packages/fynpo-base: 0.1.0-fynlocal_h
+ 0.1.0-fynlocal_h:
+  $: local
+  _: ./packages/fynpo-base
   dependencies:
    filter-scan-dir: ^1.2.0
    lodash: ^4.17.21
