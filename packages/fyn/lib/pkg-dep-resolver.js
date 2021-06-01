@@ -417,7 +417,7 @@ class PkgDepResolver {
         if (!fromDir) continue;
         const ownerName = chalk.magenta(parent.name);
         const dispName = chalk.green(name);
-        if (fynDeps[name] === false) {
+        if (fynDeps[name] === false || fynDeps[name] === "--no-fyn-local") {
           logger.info(`fyn local disabled for ${dispName} of ${ownerName}`);
           continue;
         }
