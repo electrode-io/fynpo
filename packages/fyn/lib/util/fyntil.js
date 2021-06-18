@@ -20,16 +20,22 @@ const isWin32 = process.platform === "win32";
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
 
 function retry(func, checks, tries, wait) {
-  return Promise.try(func).catch(err => {
-    if (tries <= 0) throw err;
-    tries--;
-    return Promise.try(() =>
-      Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err)
-    ).then(canRetry => {
-      if (!canRetry) throw err;
-      return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
+  let p = Promise.try(func);
+
+  if (!_.isEmpty(checks) && tries > 0 && wait > 0) {
+    p = p.catch(err => {
+      if (tries <= 0) throw err;
+      tries--;
+      return Promise.try(() =>
+        Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err)
+      ).then(canRetry => {
+        if (!canRetry) throw err;
+        return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
+      });
     });
-  });
+  }
+
+  return p;
 }
 
 /**
@@ -82,6 +88,8 @@ const checkValueSatisfyRules = (inRules, userValue) => {
 const posixify = Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/");
 
 module.exports = {
+  isWin32,
+
   missPipe,
 
   retry,
