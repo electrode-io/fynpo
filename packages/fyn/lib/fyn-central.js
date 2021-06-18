@@ -7,16 +7,18 @@ const Fs = require("./util/file-ops");
 const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
-const { retry, missPipe } = require("./util/fyntil");
+const { isWin32, retry, missPipe } = require("./util/fyntil");
 const { linkFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
 const lockfile = require("lockfile");
 const acquireLock = Promise.promisify(lockfile.lock, { context: lockfile });
 const releaseLock = Promise.promisify(lockfile.unlock, { context: lockfile });
 
-const isWin32 = process.platform === "win32";
+const FS_RETRIES = isWin32 ? 10 : 0;
 
-const RENAME_RETRIES = isWin32 ? 10 : 0;
+const FS_RETRY_ERRORS = isWin32 ? ["EACCESS", "EPERM"] : [];
+
+const FS_RETRY_WAIT = 150;
 
 /**
  * convert a directory tree structure to a flatten one like:
@@ -94,11 +96,12 @@ class FynCentral {
 
     try {
       const stat = await Fs.stat(info.contentPath);
+      info.exist = true;
       if (stat.isDirectory()) {
         const treeFile = Path.join(info.contentPath, "tree.json");
         const tree = await Fs.readFile(treeFile)
           .then(JSON.parse)
-          .catch(err => {
+          .catch((err) => {
             throw new Error(`fyn-central: reading ${treeFile} - ${err.message}`);
           });
         info.tree = tree;
@@ -140,7 +143,7 @@ class FynCentral {
 
     await Promise.map(
       list.files,
-      file => linkFile(Path.join(info.contentPath, "package", file), Path.join(destDir, file)),
+      (file) => linkFile(Path.join(info.contentPath, "package", file), Path.join(destDir, file)),
       { concurrency: 5 }
     );
   }
@@ -154,7 +157,7 @@ class FynCentral {
       strip,
       strict: true,
       C: targetDir,
-      onentry: entry => {
+      onentry: (entry) => {
         const parts = entry.path.split(/\/|\\/);
         const isDir = entry.type === "Directory";
         const dirs = parts.slice(strip, isDir ? parts.length : parts.length - 1);
@@ -171,10 +174,10 @@ class FynCentral {
           wtree["/"][fname] = {
             z: entry.size,
             m,
-            $: entry.header.cksumValid && entry.header.cksum
+            $: entry.header.cksumValid && entry.header.cksum,
           };
         }
-      }
+      },
     });
 
     return missPipe(tarStream, untarStream).then(() => dirTree);
@@ -184,12 +187,19 @@ class FynCentral {
     const tmpLock = `${info.contentPath}.lock`;
 
     try {
-      await Fs.$.mkdirp(Path.dirname(info.contentPath));
-      await acquireLock(tmpLock, { wait: 45 * 1000, pollPeriod: 250, stale: 300 * 1000 });
+      await retry(() =>
+        Fs.$.mkdirp(Path.dirname(info.contentPath), FS_RETRY_ERRORS, FS_RETRIES, FS_RETRY_WAIT)
+      );
+      await retry(
+        () => acquireLock(tmpLock, { wait: 5 * 60 * 1000, pollPeriod: 500, stale: 5 * 60 * 1000 }),
+        FS_RETRY_ERRORS,
+        FS_RETRIES,
+        FS_RETRY_WAIT
+      );
     } catch (err) {
-      logger.error("fyn-central storeTarStream - unable to acquire", tmpLock);
+      logger.error("fyn-central storeTarStream - unable to acquire tmp lock", tmpLock);
       const msg = err.message && err.message.replace(tmpLock, "<lockfile>");
-      throw new Error(`Unable to acquire ${tmpLock} - ${msg}`);
+      throw new Error(`Unable to acquire fyn-central tmp lock ${tmpLock} - ${msg}`);
     }
 
     return tmpLock;
@@ -207,10 +217,12 @@ class FynCentral {
     if (stream.then) {
       stream = await stream;
     }
+    // TODO: user could break during untar and cause corruptted module
     info.tree = await this._untarStream(stream, targetDir, info);
     await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(info.tree));
 
-    await retry(() => Fs.rename(tmp, info.contentPath), ["EACCESS", "EPERM"], RENAME_RETRIES, 100);
+    await retry(() => Fs.rename(tmp, info.contentPath), ["EACCESS", "EPERM"], FS_RETRIES, 200);
+    info.exist = true;
   }
 
   async storeTarStream(pkgId, integrity, stream) {
@@ -219,13 +231,16 @@ class FynCentral {
     try {
       let info = await this._loadTree(integrity);
 
-      if (info.tree) {
+      if (info.exist) {
         logger.debug("fyn-central storeTarStream: already exist", info.contentPath);
+        if (!info.tree) {
+          logger.error(`fyn-central exist package missing tree.json`);
+        }
       } else {
         tmpLock = await this._acquireTmpLock(info);
         info = await this._loadTree(integrity, info, true);
 
-        if (info.tree) {
+        if (info.exist) {
           logger.debug("fyn-central storeTarStream: found after lock acquired", info.contentPath);
         } else {
           logger.debug("storing tar to central store", pkgId, integrity);

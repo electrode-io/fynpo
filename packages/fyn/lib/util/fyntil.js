@@ -20,12 +20,12 @@ const isWin32 = process.platform === "win32";
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
 
 function retry(func, checks, tries, wait) {
-  return Promise.try(func).catch(err => {
+  return Promise.try(func).catch((err) => {
     if (tries <= 0) throw err;
     tries--;
     return Promise.try(() =>
       Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err)
-    ).then(canRetry => {
+    ).then((canRetry) => {
       if (!canRetry) throw err;
       return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
     });
@@ -43,7 +43,7 @@ function retry(func, checks, tries, wait) {
  * @returns true|false
  */
 const checkValueSatisfyRules = (inRules, userValue) => {
-  const rules = [].concat(inRules).filter(x => x);
+  const rules = [].concat(inRules).filter((x) => x);
 
   // no rules means satisfied
   if (!rules || rules.length === 0) {
@@ -51,7 +51,7 @@ const checkValueSatisfyRules = (inRules, userValue) => {
   }
 
   // any rule starts with ! means deny the value
-  const denies = rules.filter(x => x[0] === "!");
+  const denies = rules.filter((x) => x[0] === "!");
 
   // any value that's denied would fail immediately
   if (denies.indexOf(`!${userValue}`) >= 0) {
@@ -59,7 +59,7 @@ const checkValueSatisfyRules = (inRules, userValue) => {
   }
 
   // rules that accepts a value
-  const accepts = rules.filter(x => x[0] !== "!");
+  const accepts = rules.filter((x) => x[0] !== "!");
 
   // if no explicitly spelled out values to accept then anything not denied
   // is accepted.
@@ -79,9 +79,11 @@ const checkValueSatisfyRules = (inRules, userValue) => {
 /**
  * If system path sep is not /, then convert a path to use /.
  */
-const posixify = Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/");
+const posixify = Path.sep === "/" ? (x) => x : (x) => x.replace(/\\/g, "/");
 
 module.exports = {
+  isWin32,
+
   missPipe,
 
   retry,
@@ -140,7 +142,7 @@ module.exports = {
         packages[pkgDir] = {
           pkgDir,
           normalizePath,
-          pkgJson
+          pkgJson,
         };
       }
     }
@@ -164,7 +166,7 @@ module.exports = {
   async readPkgJson(dirOrFile, keepRaw, packageFyn = false) {
     const isDir = !dirOrFile.endsWith(".json");
     const dir = isDir ? dirOrFile : Path.dirname(dirOrFile);
-    const files = ["package.json", packageFyn && PACKAGE_FYN_JSON].filter(x => x);
+    const files = ["package.json", packageFyn && PACKAGE_FYN_JSON].filter((x) => x);
     const finalJson = {};
     for (const fname of files) {
       const file = Path.join(dir, fname);
@@ -253,7 +255,7 @@ module.exports = {
 
   checkValueSatisfyRules,
 
-  checkPkgOsCpu: pkg => {
+  checkPkgOsCpu: (pkg) => {
     if (pkg.hasOwnProperty("os") && !checkValueSatisfyRules(pkg.os, process.platform)) {
       return `your platform ${process.platform} doesn't satisfy required os ${pkg.os}`;
     }
@@ -265,5 +267,5 @@ module.exports = {
     return true;
   },
 
-  posixify
+  posixify,
 };
