@@ -28,16 +28,19 @@ const findUpdateType = (name, collated, minBumpType = 0) => {
   const lintConfig = opts.fynpoRc.commitlint;
   const parserOpts = _.get(lintConfig, "parserPreset.parserOpts", {});
 
+  const minorTypes = _.get(lintConfig, "minor", ["feat", "minor"]);
+  const majorTypes = _.get(lintConfig, "major", ["breaking", "major"]);
+
   collated.packages[name] = collated.packages[name] || {};
   const msgs = collated.packages[name].msgs || [];
 
   const updateType = msgs.reduce((a, x) => {
     const parsed: any = utils.lintParser(x.m, parserOpts);
-    if ((parsed.type && parsed.type === "major") || x.m.indexOf("[maj") >= 0) {
+    if ((parsed.type && majorTypes.includes(parsed.type)) || x.m.indexOf("[maj") >= 0) {
       if (a < 2) {
         a = 2;
       }
-    } else if ((parsed.type && parsed.type === "minor") || x.m.indexOf("[min") >= 0) {
+    } else if ((parsed.type && minorTypes.includes(parsed.type)) || x.m.indexOf("[min") >= 0) {
       if (a < 1) {
         a = 1;
       }
