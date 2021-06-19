@@ -224,7 +224,7 @@ class FynCentral {
     info.tree = await this._untarStream(stream, targetDir, info);
     await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(info.tree));
 
-    await retry(() => Fs.rename(tmp, info.contentPath), ["EACCESS", "EPERM"], FS_RETRIES, 200);
+    await retry(() => Fs.rename(tmp, info.contentPath), FS_RETRY_ERRORS, FS_RETRIES, FS_RETRY_WAIT);
     info.exist = true;
   }
 
@@ -259,7 +259,7 @@ class FynCentral {
       }
 
       if (tmpLock) {
-        await releaseLock(tmpLock);
+        await retry(() => releaseLock(tmpLock), FS_RETRY_ERRORS, FS_RETRIES, FS_RETRY_WAIT);
       }
     }
   }
