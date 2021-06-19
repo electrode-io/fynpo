@@ -15,28 +15,9 @@ const { PACKAGE_FYN_JSON } = require("../constants");
 const glob = require("glob");
 const pGlob = Promise.promisify(glob);
 
-const isWin32 = process.platform === "win32";
+const { isWin32, retry } = require("./base-util");
 
 const DIR_SYMLINK_TYPE = isWin32 ? "junction" : "dir";
-
-function retry(func, checks, tries, wait) {
-  let p = Promise.try(func);
-
-  if (!_.isEmpty(checks) && tries > 0 && wait > 0) {
-    p = p.catch(err => {
-      if (tries <= 0) throw err;
-      tries--;
-      return Promise.try(() =>
-        Array.isArray(checks) ? checks.indexOf(err.code) >= 0 : checks(err)
-      ).then(canRetry => {
-        if (!canRetry) throw err;
-        return Promise.delay(wait).then(() => retry(func, checks, tries, wait));
-      });
-    });
-  }
-
-  return p;
-}
 
 /**
  * Check if a value satisfy a list of rules.

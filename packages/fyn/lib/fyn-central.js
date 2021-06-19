@@ -7,18 +7,9 @@ const Fs = require("./util/file-ops");
 const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
-const { isWin32, retry, missPipe } = require("./util/fyntil");
+const { missPipe } = require("./util/fyntil");
 const { linkFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
-const lockfile = require("lockfile");
-const acquireLock = Promise.promisify(lockfile.lock, { context: lockfile });
-const releaseLock = Promise.promisify(lockfile.unlock, { context: lockfile });
-
-const FS_RETRIES = isWin32 ? 10 : 0;
-
-const FS_RETRY_ERRORS = isWin32 ? ["EACCESS", "EPERM"] : [];
-
-const FS_RETRY_WAIT = 150;
 
 /**
  * convert a directory tree structure to a flatten one like:
@@ -187,18 +178,12 @@ class FynCentral {
     const tmpLock = `${info.contentPath}.lock`;
 
     try {
-      await retry(
-        () => Fs.$.mkdirp(Path.dirname(info.contentPath)),
-        FS_RETRY_ERRORS,
-        FS_RETRIES,
-        FS_RETRY_WAIT
-      );
-      await retry(
-        () => acquireLock(tmpLock, { wait: 5 * 60 * 1000, pollPeriod: 500, stale: 5 * 60 * 1000 }),
-        FS_RETRY_ERRORS,
-        FS_RETRIES,
-        FS_RETRY_WAIT
-      );
+      await Fs.$.mkdirp(Path.dirname(info.contentPath));
+      await Fs.$.acquireLock(tmpLock, {
+        wait: 5 * 60 * 1000,
+        pollPeriod: 500,
+        stale: 5 * 60 * 1000
+      });
     } catch (err) {
       logger.error("fyn-central - unable to acquire tmp lock", tmpLock);
       const msg = err.message && err.message.replace(tmpLock, "<lockfile>");
@@ -224,7 +209,7 @@ class FynCentral {
     info.tree = await this._untarStream(stream, targetDir, info);
     await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(info.tree));
 
-    await retry(() => Fs.rename(tmp, info.contentPath), FS_RETRY_ERRORS, FS_RETRIES, FS_RETRY_WAIT);
+    await Fs.rename(tmp, info.contentPath);
     info.exist = true;
   }
 
@@ -245,6 +230,11 @@ class FynCentral {
 
         if (info.exist) {
           logger.debug("fyn-central storeTarStream: found after lock acquired", info.contentPath);
+          if (!info.tree) {
+            const msg = `fyn-central content exist but no tree.json ${info.contentPath}`;
+            logger.error(msg);
+            throw new Error(msg);
+          }
         } else {
           logger.debug("storing tar to central store", pkgId, integrity);
           await this._storeTarStream(info, stream);
@@ -259,7 +249,7 @@ class FynCentral {
       }
 
       if (tmpLock) {
-        await retry(() => releaseLock(tmpLock), FS_RETRY_ERRORS, FS_RETRIES, FS_RETRY_WAIT);
+        await Fs.$.releaseLock(tmpLock);
       }
     }
   }
