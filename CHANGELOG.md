@@ -1,3 +1,37 @@
+# 6/21/2021
+
+## Packages
+
+-   `fyn@0.4.33` `(0.4.32 => 0.4.33)`
+-   `fynpo@0.4.2` `(0.4.1 => 0.4.2)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix(fyn): more fs retry for windows [commit](https://github.com/electrode-io/fynpo/commit/2d472691913a31e948830b0c25f6a69c2e47c2c5)
+    -   fix(fyn): retry release lock [commit](https://github.com/electrode-io/fynpo/commit/dfb6e848a71c84e3b4fb3fd7071197f7ed18b831)
+    -   [patch] fix central locking on windows [commit](https://github.com/electrode-io/fynpo/commit/126da0311b941e4440a689460ed15ded1f075b02)
+    -   [patch] disable local dep with --no-fyn-local as semver [commit](https://github.com/electrode-io/fynpo/commit/fd7cb77b8f3b91d3f785eb520d5283f4add5eb11)
+
+-   `packages/fynpo`
+
+    -   make minor and major types configurable ([#23](https://github.com/electrode-io/fynpo/pull/23)) [commit](https://github.com/electrode-io/fynpo/commit/ffc44fed23792ee470f84699e7cc8ef2e2b0a9e4)
+
+-   `.github`
+
+    -   Update GitHub workflows ([#22](https://github.com/electrode-io/fynpo/pull/22)) [commit](https://github.com/electrode-io/fynpo/commit/d5d25e6f3e3263182f1da9154985dd3b0eb54000)
+
+-   `docs`
+
+    -   [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
+    -   [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
+
+-   `docusaurus`
+
+    -   [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
+    -   [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
+
 # 5/21/2021
 
 -   [patch] allow file to turn off fyn generating source maps
