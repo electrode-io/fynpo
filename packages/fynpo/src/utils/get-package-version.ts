@@ -134,7 +134,9 @@ export const determinePackageVersions = (collated) => {
           }
         } else {
           findUpdateType(name, collated, minBumpType);
-          indirectBumps.push(name);
+          if (!indirectBumps.includes(name)) {
+            indirectBumps.push(name);
+          }
         }
       }
     }
