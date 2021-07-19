@@ -31,9 +31,6 @@ const npmConfigEnv = require("./util/npm-config-env");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const { LocalPkgBuilder } = require("./local-pkg-builder");
 
-const xrequire = eval("require");
-const optionalRequire = require("optional-require")(xrequire);
-
 class Fyn {
   constructor({ opts = {}, _cliSource = {}, _fynpo = true }) {
     this._cliSource = _cliSource;
