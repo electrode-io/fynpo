@@ -186,6 +186,7 @@ const debug = false;
                 `--reg=${registry}`,
                 BASE_ARGS,
                 stepAction.buildLocal ? "--build-local" : "--no-build-local",
+                `--source-maps`,
                 `--sl`,
                 debugLogFile,
                 getFynDirArg(fynDir),
