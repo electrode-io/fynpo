@@ -96,46 +96,7 @@ class Fyn {
    * @returns {*} fynpo config and dir it was found
    */
   async _searchForFynpo() {
-    let dir = this._cwd;
-    let prevDir = dir;
-    let config;
-    let count = 0;
-
-    do {
-      config = optionalRequire(Path.join(dir, "fynpo.config.js"));
-      if (config) {
-        logger.info("Detected a fynpo monorepo at", dir);
-        break;
-      }
-
-      try {
-        config = JSON.parse(await Fs.readFile(Path.join(dir, "fynpo.json")));
-        logger.info("Detected a fynpo monorepo at", dir);
-        break;
-      } catch (e) {}
-
-      try {
-        const lerna = JSON.parse(await Fs.readFile(Path.join(dir, "lerna.json")));
-        if (lerna.fynpo) {
-          logger.info("Detected a lerna monorepo with fynpo at", dir);
-          config = lerna;
-          break;
-        }
-      } catch (e) {}
-
-      prevDir = dir;
-      dir = Path.dirname(dir);
-    } while (++count < 50 && dir !== prevDir);
-
-    const packages = config ? await fyntil.loadFynpoPackages(config.packages, true, dir) : {};
-    const packagesByName = await fyntil.makeFynpoPackagesByName(packages);
-
-    return {
-      config,
-      dir,
-      packages,
-      packagesByName
-    };
+    return await fyntil.searchFynpoConfig(this._cwd);
   }
 
   get isFynpo() {
@@ -208,6 +169,7 @@ class Fyn {
   async _initializePkg() {
     if (!this._fynpo) {
       this._fynpo = await this._searchForFynpo();
+      _.merge(this._options, _.get(this, "_fynpo.fyn.options"));
     }
 
     if (!this._pkg) {

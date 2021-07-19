@@ -1,1 +1,7 @@
-{}
+{
+  "fyn": {
+    "options": {
+      "sourceMaps": false
+    }
+  }
+}

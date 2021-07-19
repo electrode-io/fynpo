@@ -13,6 +13,7 @@ const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
 const defaultRc = require("./default-rc");
 const fynTil = require("../lib/util/fyntil");
+const fyntil = require("../lib/util/fyntil");
 
 const nixClap = new NixClap({
   Promise,
@@ -50,7 +51,7 @@ const pickEnvOptions = () => {
   }, {});
 };
 
-const pickOptions = argv => {
+const pickOptions = async argv => {
   setLogLevel(argv.opts.logLevel);
 
   chalk.enabled = argv.opts.colors;
@@ -76,6 +77,10 @@ const pickOptions = argv => {
   if (!argv.source.saveLogs.startsWith("cli")) {
     argv.opts.saveLogs = undefined;
   }
+
+  const fynpo = await fyntil.searchFynpoConfig(cwd);
+
+  nixClap.applyConfig(_.get(fynpo, "config.fyn.options", {}), argv);
 
   logger.verbose("Final RC", JSON.stringify(fynTil.removeAuthInfo(argv.opts)));
 
@@ -196,8 +201,8 @@ const options = {
   "source-maps": {
     alias: "sm",
     type: "boolean",
-    default: true,
-    desc: "Generate source maps for local linked packages"
+    default: false,
+    desc: "Generate pseudo source maps for local linked packages"
   },
   production: {
     type: "boolean",
@@ -239,8 +244,8 @@ const commands = {
   install: {
     alias: "i",
     desc: "Install modules",
-    exec: argv => {
-      const cli = new FynCli(pickOptions(argv));
+    exec: async argv => {
+      const cli = new FynCli(await pickOptions(argv));
       return cli.install();
     },
     default: true,
@@ -261,8 +266,8 @@ const commands = {
     args: "[packages..]",
     usage: "$0 $1 [packages..] [--dev <dev packages>]",
     desc: "add packages to package.json",
-    exec: argv => {
-      const config = pickOptions(argv);
+    exec: async argv => {
+      const config = await pickOptions(argv);
       const lockFile = config.lockfile;
       config.lockfile = false;
       const cli = new FynCli(config);
@@ -307,7 +312,7 @@ const commands = {
     args: "<packages..>",
     desc: "Remove packages from package.json and install",
     exec: async argv => {
-      const options = pickOptions(argv);
+      const options = await pickOptions(argv);
       const lockFile = options.lockfile;
       options.lockfile = false;
       const cli = new FynCli(options);
@@ -333,15 +338,15 @@ const commands = {
     desc: "Show stats of installed packages",
     usage: "$0 $1 <package-name>[@semver] [...]",
     args: "<string packages..>",
-    exec: argv => {
-      return new FynCli(pickOptions(argv)).stat(argv);
+    exec: async argv => {
+      return new FynCli(await pickOptions(argv)).stat(argv);
     }
   },
   test: {
     desc: "Run the test npm script in your package.json",
     usage: "$0 $1",
-    exec: (argv, parsed) => {
-      return new FynCli(pickOptions(argv)).run(argv);
+    exec: async (argv, parsed) => {
+      return new FynCli(await pickOptions(argv)).run(argv);
     }
   },
   run: {
@@ -349,8 +354,8 @@ const commands = {
     args: "[script]",
     alias: ["rum", "r"],
     usage: "$0 $1 <command> [-- <args>...]",
-    exec: (argv, parsed) => {
-      return new FynCli(pickOptions(argv)).run(argv, parsed);
+    exec: async (argv, parsed) => {
+      return new FynCli(await pickOptions(argv)).run(argv, parsed);
     },
     options: {
       list: {

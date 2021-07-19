@@ -14,6 +14,8 @@ const { PACKAGE_RAW_INFO } = require("../symbols");
 const { PACKAGE_FYN_JSON } = require("../constants");
 const glob = require("glob");
 const pGlob = Promise.promisify(glob);
+const xrequire = eval("require");
+const optionalRequire = require("optional-require")(xrequire);
 
 const { isWin32, retry } = require("./base-util");
 
@@ -68,12 +70,61 @@ const checkValueSatisfyRules = (inRules, userValue) => {
  */
 const posixify = Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/");
 
+let fynpoConfig;
+
 module.exports = {
   isWin32,
 
   missPipe,
 
   retry,
+
+  async searchFynpoConfig(cwd = process.cwd()) {
+    if (fynpoConfig) {
+      return fynpoConfig;
+    }
+
+    let dir = cwd;
+    let prevDir = dir;
+    let config;
+    let count = 0;
+
+    do {
+      config = optionalRequire(Path.join(dir, "fynpo.config.js"));
+      if (config) {
+        logger.info("Detected a fynpo monorepo at", dir);
+        break;
+      }
+
+      try {
+        config = JSON.parse(await Fs.readFile(Path.join(dir, "fynpo.json")));
+        logger.info("Detected a fynpo monorepo at", dir);
+        break;
+      } catch (e) {}
+
+      try {
+        const lerna = JSON.parse(await Fs.readFile(Path.join(dir, "lerna.json")));
+        if (lerna.fynpo) {
+          logger.info("Detected a lerna monorepo with fynpo at", dir);
+          config = lerna;
+          break;
+        }
+      } catch (e) {}
+
+      prevDir = dir;
+      dir = Path.dirname(dir);
+    } while (++count < 50 && dir !== prevDir);
+
+    const packages = config ? await this.loadFynpoPackages(config.packages, true, dir) : {};
+    const packagesByName = await this.makeFynpoPackagesByName(packages);
+
+    return (fynpoConfig = {
+      config,
+      dir,
+      packages,
+      packagesByName
+    });
+  },
 
   removeAuthInfo(rcObj) {
     const rmObj = {};
