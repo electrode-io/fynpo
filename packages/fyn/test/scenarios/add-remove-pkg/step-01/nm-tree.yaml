@@ -32,9 +32,7 @@ node_modules:
           mod-g:
             bin:
               bin1.js: file
-              bin1.js.fyn.map: file
               bin2.js: file
-              bin2.js.fyn.map: file
             package.json:
               id: mod-g@2.1.0-fynlocal_h
   mod-a: "-> .f/_/mod-a/2.0.0/mod-a"
