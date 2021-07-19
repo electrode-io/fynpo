@@ -14,6 +14,9 @@ const { PACKAGE_RAW_INFO } = require("../symbols");
 const { PACKAGE_FYN_JSON } = require("../constants");
 const glob = require("glob");
 const pGlob = Promise.promisify(glob);
+
+/* eslint-disable no-magic-numbers, max-statements, no-empty, complexity, no-eval */
+
 const xrequire = eval("require");
 const optionalRequire = require("optional-require")(xrequire);
 
