@@ -13,7 +13,6 @@ const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
 const defaultRc = require("./default-rc");
 const fynTil = require("../lib/util/fyntil");
-const fyntil = require("../lib/util/fyntil");
 
 const nixClap = new NixClap({
   Promise,
@@ -78,7 +77,7 @@ const pickOptions = async argv => {
     argv.opts.saveLogs = undefined;
   }
 
-  const fynpo = await fyntil.searchFynpoConfig(cwd);
+  const fynpo = await fynTil.searchFynpoConfig(cwd);
 
   nixClap.applyConfig(_.get(fynpo, "config.fyn.options", {}), argv);
 
