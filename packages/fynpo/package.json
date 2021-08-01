@@ -1,7 +1,7 @@
 {
   "name": "fynpo",
   "version": "0.4.2",
-  "description": "All the benefits of monorepo without the usual downsides",
+  "description": "A JavaScript monorepo manager - the benefits of a monorepo without the usual downsides",
   "main": "index.js",
   "scripts": {
     "build": "tsc",

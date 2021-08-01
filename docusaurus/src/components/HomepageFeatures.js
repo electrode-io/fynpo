@@ -1,61 +1,64 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './HomepageFeatures.module.css';
+import React from "react";
+import clsx from "clsx";
+import styles from "./HomepageFeatures.module.css";
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: "Easier Development",
     description: (
       <>
-        Code, publish, and test all in your packages using local sources without skipping a beat
+        Code, publish, and test all your packages using local sources without
+        skipping a beat
       </>
-    ),
+    )
   },
   {
-    title: 'npm Compatible workflow',
+    title: "A Different Approach",
     description: (
       <>
-        Designed from the ground up to enable a mono-repo that 100% retains the standard npm workflow
+        Offers all the benefits of a monorepo workspace, without any of the
+        usual downsides.
       </>
-    ),
+    )
   },
   {
-    title: 'Efficient Storage',
+    title: "Flexible",
     description: (
       <>
-        Uses a central storage for all of a mono-repo's dependencies
+        Develop and test with local packages outside of your monorepo directly
       </>
-    ),
+    )
   },
   {
-    title: 'Hybrid Publish Mode',
+    title: "npm Workflow",
     description: (
       <>
-        Allows selected packages to lock versions or be independent
+        Designed from the ground up to enable a monorepo that integrates with
+        the standard npm workflow
       </>
-    ),
+    )
+  },
+
+  {
+    title: "Hybrid Publish Mode",
+    description: (
+      <>Allows selected packages to lock versions or be independent</>
+    )
   },
   {
-    title: 'Local Package Resolution',
+    title: "Local Package Resolution",
     description: (
       <>
-        Local package resolution logic fully integrated with the normal npm package.json install process
+        Local package resolution logic fully integrated with the normal npm
+        package.json install process
       </>
-    ),
-  },
-  {
-    title: 'Smaller node_modules',
-    description: (
-      <>
-        Guarantees install of single copy of packages
-      </>
-    ),
-  },
+    )
+  }
 ];
 
-function Feature({title, description}) {
+function Feature({ title, description }) {
   return (
-    <div className={clsx('col col--4 padding-vert--md')}>
+    <div className={clsx("col col--4 padding-vert--md")}>
       <div className="text--center padding-horiz--md">
         <h2>{title}</h2>
         <p>{description}</p>

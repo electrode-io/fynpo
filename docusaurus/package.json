@@ -1,7 +1,7 @@
 {
   "name": "fynpo-docs",
   "version": "0.0.1",
-  "description": "Fynpo monorepo",
+  "description": "Fynpo: A JavaScript monorepo manager",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
