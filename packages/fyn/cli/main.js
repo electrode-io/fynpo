@@ -236,6 +236,11 @@ const options = {
     type: "boolean",
     default: true,
     desc: "flattening hoists pkg to top level node_modules"
+  },
+  "meta-memoize": {
+    type: "string",
+    alias: "meta-mem",
+    desc: "a url to a server that helps multiple fyn to share meta cache"
   }
 };
 

@@ -12,6 +12,7 @@ import { isCI } from "./is-ci";
 const isWin32 = process.platform.startsWith("win32");
 
 import { locateGlobalFyn } from "./utils";
+import { startMetaMemoizer } from "./meta-memoizer";
 
 class Bootstrap {
   _opts;
@@ -186,12 +187,19 @@ ${data.error.output.stderr}
             `You have fyn installed globally but its version ${globalFynInfo.pkgJson.version} \
 is different from fynpo's internal version ${fynPkgJson.version}`
           );
-        } else {
-          this._fyn = Path.join(globalFynInfo.dir, globalFynInfo.pkgJson.main);
         }
       }
 
       logger.info(`Executing fyn with '${process.argv[0]} ${this._fyn}'`);
+    }
+
+    let mmOpt;
+
+    try {
+      const metaMemoizer = await startMetaMemoizer();
+      mmOpt = `--meta-mem=http://localhost:${metaMemoizer.info.port}`;
+    } catch (err) {
+      //
     }
 
     const centralDir = Path.resolve(".fynpo/_store");
@@ -214,7 +222,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
         }
 
         const fynOptArgs = [process.env.CI ? "--pg simple" : ""]
-          .concat(fynOpts, logLevelOpts, `install`, `--no-build-local`)
+          .concat(fynOpts, logLevelOpts, `install`, `--sl`, `--no-build-local`, mmOpt)
           .filter((x) => x);
 
         const command = [process.argv[0], this._fyn].concat(fynOptArgs).join(" ");

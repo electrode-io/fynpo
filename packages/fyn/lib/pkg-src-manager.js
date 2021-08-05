@@ -32,6 +32,7 @@ const PkgPreper = require("pkg-preper");
 const VisualExec = require("visual-exec");
 const { readPkgJson, missPipe } = require("./util/fyntil");
 const { MARK_URL_SPEC } = require("./constants");
+const nodeFetch = require("node-fetch-npm");
 
 const WATCH_TIME = 5000;
 
@@ -545,6 +546,8 @@ class PkgSrcManager {
     //   )
 
     let foundCache;
+    let cacheMemoized = false;
+    const metaMemoizeUrl = this._fyn._options.metaMemoize;
 
     const promise = cacache
       .get(this._cacheDir, cacheKey, { memoize: true })
@@ -552,7 +555,23 @@ class PkgSrcManager {
         const packument = JSON.parse(cached.data);
         logger.debug("found", pkgName, "packument cache");
         foundCache = cached;
-        return queueMetaFetchRequest(packument);
+        if (cached && metaMemoizeUrl) {
+          const encKey = encodeURIComponent(cacheKey);
+          return nodeFetch(`${metaMemoizeUrl}?key=${encKey}`).then(
+            res => {
+              if (res.status === 200) {
+                logger.debug(pkgName, "using memoized packument cache");
+                cacheMemoized = true;
+                this._metaStat.wait--;
+                return packument;
+              }
+              return queueMetaFetchRequest(packument);
+            },
+            () => queueMetaFetchRequest(packument)
+          );
+        } else {
+          return queueMetaFetchRequest(packument);
+        }
       })
       .catch(err => {
         if (foundCache) {
@@ -569,6 +588,13 @@ class PkgSrcManager {
       .then(meta => {
         this._metaStat.done++;
         this._meta[pkgKey] = meta;
+        if (!cacheMemoized && metaMemoizeUrl) {
+          const encKey = encodeURIComponent(cacheKey);
+          nodeFetch(`${metaMemoizeUrl}?key=${encKey}`, { method: "POST", body: "" }).then(
+            _.noop,
+            _.noop
+          );
+        }
         return meta;
       })
       .finally(() => {
