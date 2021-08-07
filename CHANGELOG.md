@@ -2,6 +2,28 @@
 
 ## Packages
 
+-   `fyn@0.4.35` `(0.4.34 => 0.4.35)`
+-   `fynpo@0.4.4` `(0.4.3 => 0.4.4)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: look for .npmrc and .fynrc in fynpo dir [commit](https://github.com/electrode-io/fynpo/commit/a78e7c1283bc1cc47b21497bfa302e7ac45edab0)
+    -   fix: handle initial load fynpo config failures [commit](https://github.com/electrode-io/fynpo/commit/9b5e634fbc2bee11eda785c34f469b169a80afe4)
+
+-   `packages/fynpo`
+
+    -   fix: dump fynpo bootstrap for debug log [commit](https://github.com/electrode-io/fynpo/commit/e4be77f891b37a57dc6b1f2a14a0d9f267840693)
+
+-   `MISC`
+
+    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/6b6279c2d4d36d0afa31e14091815fa0ec08702f)
+
+# 8/7/2021
+
+## Packages
+
 -   `fyn@0.4.34` `(0.4.33 => 0.4.34)`
 -   `fynpo@0.4.3` `(0.4.2 => 0.4.3)`
 
