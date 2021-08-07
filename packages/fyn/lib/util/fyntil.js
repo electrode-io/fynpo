@@ -100,13 +100,13 @@ module.exports = {
       }
 
       try {
-        config = JSON.parse(await Fs.readFile(Path.join(dir, "fynpo.json")));
+        config = await this.readJson(Path.join(dir, "fynpo.json"));
         logger.info("Detected a fynpo monorepo at", dir);
         break;
       } catch (e) {}
 
       try {
-        const lerna = JSON.parse(await Fs.readFile(Path.join(dir, "lerna.json")));
+        const lerna = await this.readJson(Path.join(dir, "lerna.json"));
         if (lerna.fynpo) {
           logger.info("Detected a lerna monorepo with fynpo at", dir);
           config = lerna;
@@ -145,8 +145,19 @@ module.exports = {
     process.exit(err ? 1 : 0);
   },
 
-  readJson(file) {
-    return Fs.readFile(file, "utf8").then(JSON.parse);
+  async readJson(file) {
+    try {
+      const data = await Fs.readFile(file, "utf8");
+      return JSON.parse(data);
+    } catch (err) {
+      if (err.code !== "ENOENT") {
+        const msg = `Failed to read JSON file ${file} - ${err.message}`;
+        logger.error(msg);
+        throw new Error(msg);
+      }
+
+      throw err;
+    }
   },
 
   relativePath(from, to, shouldPosixify = false) {
@@ -179,7 +190,7 @@ module.exports = {
         // glob always uses '/', even on windows, so normalize it
         const normalizePath = Path.normalize(entry);
         const pkgDir = Path.dirname(normalizePath);
-        const pkgJson = readPkg ? JSON.parse(await Fs.readFile(normalizePath)) : {};
+        const pkgJson = readPkg ? await this.readJson(normalizePath) : {};
         packages[pkgDir] = {
           pkgDir,
           normalizePath,
@@ -196,7 +207,7 @@ module.exports = {
     for (const dir in packages) {
       const pkg = packages[dir];
       if (!pkg.pkgJson) {
-        pkg.pkgJson = JSON.parse(await Fs.readFile(pkg.normalizePath));
+        pkg.pkgJson = await this.readJson(pkg.normalizePath);
       }
       packagesByName[pkg.pkgJson.name] = pkg;
     }

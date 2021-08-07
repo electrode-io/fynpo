@@ -77,7 +77,14 @@ const pickOptions = async argv => {
     argv.opts.saveLogs = undefined;
   }
 
-  const fynpo = await fynTil.searchFynpoConfig(cwd);
+  let fynpo;
+
+  try {
+    fynpo = await fynTil.searchFynpoConfig(cwd);
+  } catch (err) {
+    logger.error(err.stack);
+    process.exit(1);
+  }
 
   nixClap.applyConfig(_.get(fynpo, "config.fyn.options", {}), argv);
 
