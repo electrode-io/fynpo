@@ -1,3 +1,36 @@
+# 8/7/2021
+
+## Packages
+
+-   `fyn@0.4.34` `(0.4.33 => 0.4.34)`
+-   `fynpo@0.4.3` `(0.4.2 => 0.4.3)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
+    -   fix: default pseudo source maps off ([#26](https://github.com/electrode-io/fynpo/pull/26)) [commit](https://github.com/electrode-io/fynpo/commit/0b7108f75c8085c783d8d66267a63995da980413)
+
+-   `packages/fynpo`
+
+    -   fix: try to handle CI truncating output [commit](https://github.com/electrode-io/fynpo/commit/a9f015a64760ad5675db86a50bfe94c3546f2766)
+    -   feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
+    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+    -   fix: duplicate entries in changelog [commit](https://github.com/electrode-io/fynpo/commit/7564ae6fbb897d05fecec2a6e16a4df5bcb354d0)
+
+-   `docs`
+
+    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+
+-   `docusaurus`
+
+    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+
+-   `MISC`
+
+    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/e6938aed7e5350bc8d6905d2aa2813b5d816bf20)
+
 # 6/21/2021
 
 ## Packages
