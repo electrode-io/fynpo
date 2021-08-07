@@ -1093,10 +1093,10 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 0.4.32-fynlocal_h
+ _latest: 0.4.33-fynlocal_h
  _:
-  ./packages/fyn: 0.4.32-fynlocal_h
- 0.4.32-fynlocal_h:
+  ./packages/fyn: 0.4.33-fynlocal_h
+ 0.4.33-fynlocal_h:
   $: local
   _: ./packages/fyn
   dependencies:
