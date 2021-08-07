@@ -75,6 +75,17 @@ ${data.error.output.stdout}
 
 ${data.error.output.stderr}
 `);
+        } else {
+          // use debug to dump them into logger so they will show up in fynpo-debug.log file
+          logger.debug(`=== bootstrap ${item.name} failure dump of stdout: ===
+
+${data.error.output.stdout}
+`);
+
+          logger.debug(`=== bootstrap ${item.name} failure dump of stderr: ===
+
+${data.error.output.stderr}
+`);
         }
         logger.error(`=== bootstrap ${item.name} error message:`, data.error.message);
         logger.error(`=== END of error info for bootstrapping ${item.name} at ${item.path} ===`);
