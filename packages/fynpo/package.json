@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A JavaScript monorepo manager - the benefits of a monorepo without the usual downsides",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "test": "xrun xarc/test-only",
     "coverage": "xrun xarc/test-cov",
     "ci:check": "xrun xarc/check",
-    "prepublishOnly": "xrun --serial [[build, docs], xarc/check] && publish-util-prepublishonly",
+    "prepublishOnly": "xrun --serial [build, xarc/check] && publish-util-prepublishonly",
     "postpack": "publish-util-postpack"
   },
   "keywords": [
@@ -54,7 +54,7 @@
     "execa": "^5.0.0",
     "filter-scan-dir": "^1.2.0",
     "fs-extra": "^9.1.0",
-    "fyn": "^0.4.33",
+    "fyn": "^0.4.34",
     "get-stdin": "^8.0.0",
     "item-queue": "^1.0.4",
     "lodash": "^4.17.20",
