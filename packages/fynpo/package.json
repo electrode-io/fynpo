@@ -26,7 +26,10 @@
     "dist",
     "templates"
   ],
-  "author": "Joel Chen <joel123@gmail.com>",
+  "publishConfig": {
+    "tag": "v0.3"
+  },
+  "author": "Joel Chen",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

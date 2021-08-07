@@ -50,23 +50,30 @@ class Bootstrap {
         logger.error(`=== Error: fynpo failed bootstrapping ${item.name} at ${item.path}`);
         if (isCI) {
           logger.error(`=== CI detected, dumping the debug logs ===`);
+
           logger.error(`=== bootstrap ${item.name} failure dump of stdout for CI: ===
 
 ${data.error.output.stdout}
 `);
+
+          const lines = data.error.output.stdout.split("\n");
+          if (lines.length > 100) {
+            logger.error(`=== dumping last 50 lines of stdout in case the whole thing get truncated by CI ===
+${lines.slice(lines.length - 50, lines.length).join("\n")}
+`);
+          }
+
           logger.error(`=== bootstrap ${item.name} failure dump of stderr for CI: ===
 
 ${data.error.output.stderr}
 `);
-        } else {
-          logger.debug(`=== bootstrap ${item.name} failure dump of stdout: ===
 
-${data.error.output.stdout}
+          const errLines = data.error.output.stderr.split("\n");
+          if (errLines.length > 100) {
+            logger.error(`=== dumping last 50 lines of stderr in case the whole thing get truncated by CI ===
+${errLines.slice(errLines.length - 50, errLines.length).join("\n")}
 `);
-          logger.debug(`=== bootstrap ${item.name} failure dump of stderr: ===
-
-${data.error.output.stderr}
-`);
+          }
         }
         logger.error(`=== bootstrap ${item.name} error message:`, data.error.message);
         logger.error(`=== END of error info for bootstrapping ${item.name} at ${item.path} ===`);
