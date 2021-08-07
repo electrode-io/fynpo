@@ -5,8 +5,8 @@ import logger from "./logger";
 import _ from "lodash";
 import { cosmiconfigSync } from "cosmiconfig";
 import shcmd from "shcmd";
-import _optionalRequire from "optional-require";
-const optionalRequire = _optionalRequire(require);
+import { makeOptionalRequire } from "optional-require";
+const optionalRequire = makeOptionalRequire(require);
 
 export const locateGlobalNodeModules = async () => {
   //
