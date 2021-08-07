@@ -37,7 +37,7 @@ function readRc(fname) {
   }
 }
 
-function loadRc(cwd) {
+function loadRc(cwd, fynpoDir) {
   const npmrcData = [];
 
   if (cwd === false) {
@@ -54,6 +54,11 @@ function loadRc(cwd) {
     process.env.NPM_CONFIG_USERCONFIG,
     Path.join(homeDir, ".npmrc"),
     Path.join(homeDir, ".fynrc"),
+
+    // fynpo dir
+    fynpoDir && fynpoDir !== cwd && Path.join(fynpoDir, ".npmrc"),
+    fynpoDir && fynpoDir !== cwd && Path.join(fynpoDir, ".fynrc"),
+
     Path.join(cwd, ".npmrc"),
     Path.join(cwd, ".fynrc")
   ].filter(x => x);

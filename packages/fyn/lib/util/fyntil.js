@@ -123,7 +123,7 @@ module.exports = {
 
     return (fynpoConfig = {
       config,
-      dir,
+      dir: config && dir,
       packages,
       packagesByName
     });

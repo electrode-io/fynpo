@@ -61,7 +61,16 @@ const pickOptions = async argv => {
     cwd = Path.join(process.cwd(), cwd);
   }
 
-  const rcData = loadRc(argv.opts.rcfile && cwd);
+  let fynpo;
+
+  try {
+    fynpo = await fynTil.searchFynpoConfig(cwd);
+  } catch (err) {
+    logger.error(err.stack);
+    process.exit(1);
+  }
+
+  const rcData = loadRc(argv.opts.rcfile && cwd, fynpo.dir);
 
   const rc = rcData.all || defaultRc;
 
@@ -75,15 +84,6 @@ const pickOptions = async argv => {
 
   if (!argv.source.saveLogs.startsWith("cli")) {
     argv.opts.saveLogs = undefined;
-  }
-
-  let fynpo;
-
-  try {
-    fynpo = await fynTil.searchFynpoConfig(cwd);
-  } catch (err) {
-    logger.error(err.stack);
-    process.exit(1);
   }
 
   nixClap.applyConfig(_.get(fynpo, "config.fyn.options", {}), argv);
