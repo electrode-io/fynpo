@@ -36,6 +36,9 @@ const nodeFetch = require("node-fetch-npm");
 
 const WATCH_TIME = 5000;
 
+// consider meta cache stale after this much time (30 minutes)
+const META_CACHE_STALE_TIME = 30 * 60 * 1000;
+
 class PkgSrcManager {
   constructor(options) {
     this._options = _.defaults({}, options, {
@@ -310,6 +313,7 @@ class PkgSrcManager {
             `took ${logFormat.time(time)}!!!`
           );
         }
+        cacache.refresh(this._cacheDir, qItem.cacheKey);
         qItem.defer.resolve(x);
       })
       .catch(err => {
@@ -552,10 +556,28 @@ class PkgSrcManager {
     const promise = cacache
       .get(this._cacheDir, cacheKey, { memoize: true })
       .then(cached => {
-        const packument = JSON.parse(cached.data);
-        logger.debug("found", pkgName, "packument cache");
+        const packument = cached && cached.data && JSON.parse(cached.data);
         foundCache = cached;
-        if (cached && metaMemoizeUrl) {
+        const stale = Date.now() - cached.refreshTime;
+        logger.debug(
+          "found",
+          pkgName,
+          "packument cache, refreshTime",
+          cached.refreshTime,
+          "since",
+          (stale / 1000).toFixed(2),
+          "secs"
+        );
+        if (
+          this._fyn._options.refreshMeta !== true &&
+          cached &&
+          cached.refreshTime &&
+          stale < META_CACHE_STALE_TIME
+        ) {
+          cacheMemoized = true;
+          this._metaStat.wait--;
+          return packument;
+        } else if (cached && metaMemoizeUrl) {
           const encKey = encodeURIComponent(cacheKey);
           return nodeFetch(`${metaMemoizeUrl}?key=${encKey}`).then(
             res => {

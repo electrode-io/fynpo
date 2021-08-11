@@ -2360,8 +2360,8 @@ cacache:
   '^11.0.1,^11.2.0,^11.3.2,jchip/cacache': 11.3.2
  11.3.2:
   top: 1
-  $: sha512-Pve0+go2qNlSHHs7rlFc31ZM7qf232ymIIViNyUwdHt1fNmmlYM9klJcHIp2QDpl5Fh5vKxbYLwWxseumuoQfA==
-  _: '~url-spec~{"urlType":"github","semver":"jchip/cacache","_resolved":"github:jchip/cacache#94031d0128c82464666d3a431f30d44f54d32645"}'
+  $: sha512-3J/lqIW2dOCkJRmfIZGVLB9F692JiuvkYx6xVKZ4/r16Q9AsqwhjIDb549j2wOro6c9zsisSAnDqYE1rpf75fQ==
+  _: '~url-spec~{"urlType":"github","semver":"jchip/cacache","_resolved":"github:jchip/cacache#ce164ddc0b6a5d618cabc9ef44df1410f0dd6422"}'
   dependencies:
    bluebird: ^3.5.3
    chownr: ^1.1.1

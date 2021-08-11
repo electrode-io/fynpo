@@ -189,6 +189,11 @@ const options = {
     default: false,
     desc: "refresh all optionalDependencies"
   },
+  "refresh-meta": {
+    type: "boolean",
+    default: false,
+    desc: "force refresh package meta from registry"
+  },
   "ignore-dist": {
     alias: "i",
     type: "boolean",
