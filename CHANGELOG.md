@@ -1,3 +1,21 @@
+# 8/17/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@0.4.36` `(0.4.35 => 0.4.36)`
+
+### Fynpo Updated
+
+-   `fynpo@0.4.5` `(0.4.4 => 0.4.5)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
+
 # 8/7/2021
 
 ## Packages
