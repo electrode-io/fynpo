@@ -1,5 +1,6 @@
 $pkg:
  dep:
+  '@jchip/error': ^1.0.0
   bluebird: ^3.7.2
   cacache: jchip/cacache
   chalk: ^4.1.0
@@ -1591,6 +1592,14 @@ $pkg:
  0.1.2:
   $: sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
   _: 'https://registry.npmjs.com/@istanbuljs/schema/-/schema-0.1.2.tgz'
+'@jchip/error':
+ _latest: 1.0.0
+ _:
+  ^1.0.0: 1.0.0
+ 1.0.0:
+  top: 1
+  $: sha512-QBJf3sFyPoeTQh6Gh7J1OqGGpKjkAN8yd3r55qAYD+pGEv8Z7Vf/dNIyAwYg/ynEjCzJStQnDv21Zz75QIPAYg==
+  _: 'https://registry.npmjs.org/@jchip/error/-/error-1.0.0.tgz'
 '@polka/url':
  _latest: 0.5.0
  _:
@@ -2789,14 +2798,14 @@ dashdash:
   dependencies:
    assert-plus: ^1.0.0
 debug:
- _latest: 4.3.1
+ _latest: 4.3.2
  _:
   '3.1.0,^3.1.0': 3.1.0
   4.2.0: 4.2.0
-  '^4.0.1,^4.1.0,^4.1.1,^4.3.1': 4.3.1
- 4.3.1:
-  $: sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
-  _: 'https://registry.npmjs.org/debug/-/debug-4.3.1.tgz'
+  '^4.0.1,^4.1.0,^4.1.1,^4.3.1': 4.3.2
+ 4.3.2:
+  $: sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
+  _: 'https://registry.npmjs.org/debug/-/debug-4.3.2.tgz'
   dependencies:
    ms: 2.1.2
  4.2.0:

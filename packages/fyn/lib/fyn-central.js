@@ -10,6 +10,7 @@ const Promise = require("bluebird");
 const { missPipe } = require("./util/fyntil");
 const { linkFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
+const { AggregateError } = require("@jchip/error");
 
 /**
  * convert a directory tree structure to a flatten one like:
@@ -118,25 +119,30 @@ class FynCentral {
     if (this._map.has(integrity)) return this._map.get(integrity);
     const info = await this._loadTree(integrity);
     if (!info.tree) {
-      throw new Error("fyn-central can't get package for integrity", integrity);
+      throw new Error(`fyn-central can't get package for integrity ${integrity}`);
     }
     return info;
   }
 
   async replicate(integrity, destDir) {
-    const info = await this.getInfo(integrity);
+    try {
+      const info = await this.getInfo(integrity);
 
-    const list = flattenTree(info.tree, { dirs: [], files: [] }, "");
+      const list = flattenTree(info.tree, { dirs: [], files: [] }, "");
 
-    for (const dir of list.dirs) {
-      await Fs.$.mkdirp(Path.join(destDir, dir));
+      for (const dir of list.dirs) {
+        await Fs.$.mkdirp(Path.join(destDir, dir));
+      }
+
+      await Promise.map(
+        list.files,
+        file => linkFile(Path.join(info.contentPath, "package", file), Path.join(destDir, file)),
+        { concurrency: 5 }
+      );
+    } catch (err) {
+      const msg = `fyn-central can't replicate package at ${destDir} for integrity ${integrity}`;
+      throw new AggregateError([err], msg);
     }
-
-    await Promise.map(
-      list.files,
-      file => linkFile(Path.join(info.contentPath, "package", file), Path.join(destDir, file)),
-      { concurrency: 5 }
-    );
   }
 
   _untarStream(tarStream, targetDir) {

@@ -71,6 +71,7 @@
     "directory": "packages/fyn"
   },
   "dependencies": {
+    "@jchip/error": "^1.0.0",
     "bluebird": "^3.7.2",
     "cacache": "jchip/cacache",
     "chalk": "^4.1.0",
