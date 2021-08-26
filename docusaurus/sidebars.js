@@ -1,6 +1,6 @@
 module.exports = {
   someSidebar: {
-    Fynpo: ["intro", "design-principles", "packages"],
+    Fynpo: ["intro", "packages"],
     "Getting Started": [
       "getting-started/installation",
       "getting-started/configuration",

@@ -18,7 +18,8 @@
     "repo",
     "mono-repo",
     "workspace",
-    "monorepo"
+    "monorepo",
+    "javascript"
   ],
   "files": [
     "dist",

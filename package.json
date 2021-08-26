@@ -1,7 +1,7 @@
 {
   "name": "fynpo",
   "version": "1.0.0",
-  "description": "node.js monorepo",
+  "description": "A node.js JavaScript monorepo manager",
   "main": "index.js",
   "private": true,
   "scripts": {},

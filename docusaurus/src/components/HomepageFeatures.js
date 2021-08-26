@@ -8,21 +8,21 @@ const FeatureList = [
     description: (
       <>
         Code, publish, and test all your packages using local sources without
-        skipping a beat
+        skipping a beat.
       </>
     )
   },
   {
-    title: "A Different Approach",
+    title: "Integrated Local Package Install",
     description: (
       <>
-        Offers all the benefits of a monorepo workspace, without any of the
-        usual downsides.
+        No symlink magic, no dependencies hoisting, no package mixing, no
+        hacking npm dependency graph.
       </>
     )
   },
   {
-    title: "Flexible",
+    title: "Freedom and Flexibility",
     description: (
       <>
         Develop and test with local packages outside of your monorepo directly
@@ -30,7 +30,7 @@ const FeatureList = [
     )
   },
   {
-    title: "npm Workflow",
+    title: "npm workflow",
     description: (
       <>
         Designed from the ground up to enable a monorepo that integrates with
@@ -38,20 +38,19 @@ const FeatureList = [
       </>
     )
   },
-
+  {
+    title: "Independent Applications",
+    description: (
+      <>
+        Applications are not confined to the monorepo. Zip up, copy, or deploy
+        an application from the monorepo and it just works.
+      </>
+    )
+  },
   {
     title: "Hybrid Publish Mode",
     description: (
       <>Allows selected packages to lock versions or be independent</>
-    )
-  },
-  {
-    title: "Local Package Resolution",
-    description: (
-      <>
-        Local package resolution logic fully integrated with the normal npm
-        package.json install process
-      </>
     )
   }
 ];
