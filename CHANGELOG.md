@@ -1,3 +1,26 @@
+# 8/25/2021
+
+## Packages
+
+-   `fyn@0.4.37` `(0.4.36 => 0.4.37)`
+-   `fynpo@0.4.6` `(0.4.5 => 0.4.6)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: better fyn-central package error reporting [commit](https://github.com/electrode-io/fynpo/commit/15d442edd7210ea862ce48864d23ad54c73e75af)
+    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
+    -   fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
+
+-   `packages/fynpo`
+
+    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
+
+-   `MISC`
+
+    -   Update changelog [commit](https://github.com/electrode-io/fynpo/commit/98190b83d556a083ea53c8cd4a8c19d5e63eeaea)
+
 # 8/17/2021
 
 ## Packages
