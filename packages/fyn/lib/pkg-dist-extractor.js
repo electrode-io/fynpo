@@ -98,7 +98,9 @@ class PkgDistExtractor {
 
       if (typeof result === "string") {
         act = "hardlink";
-        retrieve = () => this._fyn.central.replicate(result, fullOutDir);
+        retrieve = () => {
+          return this._fyn.central.replicate(result, fullOutDir);
+        };
       } else {
         act = "extract";
         retrieve = () => {

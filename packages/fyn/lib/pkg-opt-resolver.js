@@ -261,7 +261,9 @@ class PkgOptResolver {
         if (!this._fyn.refreshOptionals && _.get(res, "pkg._fyn.preinstall")) {
           // package already installed and its package.json has _fyn.preinstall set
           // so do not run preinstall script again
-          logPass("_fyn.preinstall from package.json is true => script already passed");
+          logPass(
+            `_fyn.preinstall from package.json is '${res.pkg._fyn.preinstall}' => script already passed`
+          );
           return { passed: true };
         } else if (_.get(res, "pkg.scripts.preinstall")) {
           data.runningScript = true;

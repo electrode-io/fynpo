@@ -8,7 +8,7 @@ const ssri = require("ssri");
 const Tar = require("tar");
 const Promise = require("bluebird");
 const { missPipe } = require("./util/fyntil");
-const { linkFile } = require("./util/hard-link-dir");
+const { linkFile, copyFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
 const { AggregateError } = require("@jchip/error");
 
@@ -136,7 +136,16 @@ class FynCentral {
 
       await Promise.map(
         list.files,
-        file => linkFile(Path.join(info.contentPath, "package", file), Path.join(destDir, file)),
+        file => {
+          const src = Path.join(info.contentPath, "package", file);
+          const dest = Path.join(destDir, file);
+          // copy package.json because we modify it
+          // TODO: don't modify it?
+          if (file === "package.json") {
+            return copyFile(src, dest);
+          }
+          return linkFile(src, dest);
+        },
         { concurrency: 5 }
       );
     } catch (err) {
