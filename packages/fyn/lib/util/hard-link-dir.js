@@ -41,6 +41,15 @@ async function linkFile(srcFp, destFp, srcStat) {
   return undefined;
 }
 
+async function copyFile(srcFp, destFp) {
+  if (Fs.copyFile) {
+    return Fs.copyFile(srcFp, destFp);
+  } else {
+    const srcData = await Fs.readFile(srcFp);
+    return Fs.writeFile(destFp, srcData);
+  }
+}
+
 async function prepDestDir(dest) {
   const statDest = await xaa.try(() => Fs.lstat(dest));
 
@@ -316,5 +325,6 @@ async function linkSym1(src, dest) {
 module.exports = {
   link,
   linkFile,
+  copyFile,
   linkSym1
 };
