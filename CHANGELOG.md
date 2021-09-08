@@ -1,3 +1,28 @@
+# 9/8/2021
+
+## Packages
+
+-   `fyn@0.4.38` `(0.4.37 => 0.4.38)`
+-   `fynpo@0.4.7` `(0.4.6 => 0.4.7)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: copy package.json in central mode because we modify it [commit](https://github.com/electrode-io/fynpo/commit/950e49437f51db442c89ccb05bcf60b4ba7992f8)
+
+-   `packages/fynpo`
+
+    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+
+-   `docs`
+
+    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+
+-   `docusaurus`
+
+    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+
 # 8/25/2021
 
 ## Packages
