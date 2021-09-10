@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "description": "A node.js JavaScript monorepo manager",
   "main": "index.js",
+  "homepage": "https://www.electrode.io/fynpo/",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "test": "fynpo run test",
+    "ci:check": "fynpo run ci:check --stream",
+    "coverage": "fynpo run coverage",
+    "lint": "fynpo run lint"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/electrode-io/fynpo.git"
@@ -12,12 +18,11 @@
   "keywords": [
     "monorepo"
   ],
-  "author": "",
+  "author": "Walmart GTP.js Team and Contributors",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/electrode-io/fynpo/issues"
   },
-  "homepage": "https://github.com/electrode-io/fynpo#readme",
   "devDependencies": {
     "fynpo": "^0.4.1"
   },

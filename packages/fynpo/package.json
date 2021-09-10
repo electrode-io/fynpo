@@ -3,10 +3,12 @@
   "version": "0.4.7",
   "description": "A JavaScript monorepo manager - the benefits of a monorepo without the usual downsides",
   "main": "index.js",
+  "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
     "build": "tsc",
     "docs": "xrun xarc/docs",
     "test": "xrun xarc/test-only",
+    "lint": "xrun xarc/lint",
     "coverage": "xrun xarc/test-cov",
     "ci:check": "xrun xarc/check",
     "prepublishOnly": "xrun --serial [build, xarc/check] && publish-util-prepublishonly",

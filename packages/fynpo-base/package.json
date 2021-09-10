@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
+  "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
     "build": "tsc",
     "test": "xrun xarc/test-only",
+    "lint": "xrun xarc/lint",
     "coverage": "xrun xarc/test-cov",
     "docs": "xrun xarc/docs",
     "ci:check": "xrun xarc/check",
@@ -13,7 +15,7 @@
     "postpack": "publish-util-postpack"
   },
   "keywords": [],
-  "author": "Walmart GTP.js Team",
+  "author": "Walmart GTP.js Team and Contributors",
   "contributors": [
     "Divya Vannilaparambath",
     "Joel Chen"

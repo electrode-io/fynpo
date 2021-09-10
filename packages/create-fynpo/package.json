@@ -3,9 +3,11 @@
   "version": "1.0.4",
   "description": "Create a new fynpo monorepo",
   "main": "index.js",
+  "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
     "build": "tsc",
     "test": "xrun xarc/test-only",
+    "lint": "xrun xarc/lint",
     "docs": "xrun xarc/docs",
     "coverage": "xrun xarc/test-cov",
     "prepublishOnly": "xrun [[build, docs], xarc/check] && publish-util-prepublishonly",
@@ -15,7 +17,7 @@
     "create-fynpo": "bin/create-fynpo.js"
   },
   "keywords": [],
-  "author": "Walmart GTP.js Team",
+  "author": "Walmart GTP.js Team and Contributors",
   "contributors": [
     "Divya Vannilaparambath"
   ],
