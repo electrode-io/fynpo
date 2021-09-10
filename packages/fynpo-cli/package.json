@@ -4,11 +4,15 @@
   "description": "npm install globally to provide the fynpo command",
   "preferGlobal": true,
   "main": "index.js",
+  "homepage": "https://www.electrode.io/fynpo/",
   "bin": {
     "fynpo": "dist/fynpo.js"
   },
   "scripts": {
     "build": "tsc",
+    "test": "xrun xarc/test-only",
+    "lint": "xrun xarc/lint",
+    "coverage": "xrun xarc/test-cov",
     "prepublishOnly": "xrun --serial [build, xarc/check]",
     "docs": "xrun xarc/docs",
     "ci:check": "xrun xarc/check",
