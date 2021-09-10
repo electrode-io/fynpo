@@ -1,50 +1,88 @@
+# 9/10/2021
+
+## Packages
+
+- `@fynpo/base@1.0.0` `(0.1.0 => 1.0.0)`
+- `fyn@1.0.0` `(0.4.38 => 1.0.0)`
+- `fynpo@1.0.0` `(0.4.7 => 1.0.0)`
+- `fynpo-cli@1.0.3` `(1.0.2 => 1.0.3)`
+
+## Commits
+
+- `packages/fynpo-base`
+
+  - chore: update docs [commit](https://github.com/electrode-io/fynpo/commit/b1a49fc349f4be0192dfb0f18bbb045b7df37507)
+  - [major] 1.x release [commit](https://github.com/electrode-io/fynpo/commit/df2fd6fd947c4c44e8d65199eb9affd0544bab5d)
+  - chore: update license and homepage [commit](https://github.com/electrode-io/fynpo/commit/19823db5801cdfdf8db3d4b8127084627e6d8184)
+
+- `packages/create-fynpo`
+
+  - chore: update docs [commit](https://github.com/electrode-io/fynpo/commit/b1a49fc349f4be0192dfb0f18bbb045b7df37507)
+  - chore: update license and homepage [commit](https://github.com/electrode-io/fynpo/commit/19823db5801cdfdf8db3d4b8127084627e6d8184)
+
+- `packages/fyn`
+
+  - [major] 1.x release [commit](https://github.com/electrode-io/fynpo/commit/df2fd6fd947c4c44e8d65199eb9affd0544bab5d)
+  - chore: update license and homepage [commit](https://github.com/electrode-io/fynpo/commit/19823db5801cdfdf8db3d4b8127084627e6d8184)
+
+- `packages/fynpo`
+
+  - chore: update docs [commit](https://github.com/electrode-io/fynpo/commit/b1a49fc349f4be0192dfb0f18bbb045b7df37507)
+  - [major] 1.x release [commit](https://github.com/electrode-io/fynpo/commit/df2fd6fd947c4c44e8d65199eb9affd0544bab5d)
+  - chore: update license and homepage [commit](https://github.com/electrode-io/fynpo/commit/19823db5801cdfdf8db3d4b8127084627e6d8184)
+
+- `packages/fynpo-cli`
+
+  - chore: add homepage [commit](https://github.com/electrode-io/fynpo/commit/f383b59d8004ffd5817a65fee65cc59cca972380)
+  - chore: update license and homepage [commit](https://github.com/electrode-io/fynpo/commit/19823db5801cdfdf8db3d4b8127084627e6d8184)
+
 # 9/8/2021
 
 ## Packages
 
--   `fyn@0.4.38` `(0.4.37 => 0.4.38)`
--   `fynpo@0.4.7` `(0.4.6 => 0.4.7)`
+- `fyn@0.4.38` `(0.4.37 => 0.4.38)`
+- `fynpo@0.4.7` `(0.4.6 => 0.4.7)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   fix: copy package.json in central mode because we modify it [commit](https://github.com/electrode-io/fynpo/commit/950e49437f51db442c89ccb05bcf60b4ba7992f8)
+  - fix: copy package.json in central mode because we modify it [commit](https://github.com/electrode-io/fynpo/commit/950e49437f51db442c89ccb05bcf60b4ba7992f8)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+  - update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
 
--   `docs`
+- `docs`
 
-    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+  - update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
 
--   `docusaurus`
+- `docusaurus`
 
-    -   update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
+  - update readme and docs [commit](https://github.com/electrode-io/fynpo/commit/ebe1506d98d59e7e3b40ce1a63c435df40d46abb)
 
 # 8/25/2021
 
 ## Packages
 
--   `fyn@0.4.37` `(0.4.36 => 0.4.37)`
--   `fynpo@0.4.6` `(0.4.5 => 0.4.6)`
+- `fyn@0.4.37` `(0.4.36 => 0.4.37)`
+- `fynpo@0.4.6` `(0.4.5 => 0.4.6)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   fix: better fyn-central package error reporting [commit](https://github.com/electrode-io/fynpo/commit/15d442edd7210ea862ce48864d23ad54c73e75af)
-    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
-    -   fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
+  - fix: better fyn-central package error reporting [commit](https://github.com/electrode-io/fynpo/commit/15d442edd7210ea862ce48864d23ad54c73e75af)
+  - [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
+  - fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
+  - [Publish] [commit](https://github.com/electrode-io/fynpo/commit/900ef4d029fa2622331c354485952402a75645b7)
 
--   `MISC`
+- `MISC`
 
-    -   Update changelog [commit](https://github.com/electrode-io/fynpo/commit/98190b83d556a083ea53c8cd4a8c19d5e63eeaea)
+  - Update changelog [commit](https://github.com/electrode-io/fynpo/commit/98190b83d556a083ea53c8cd4a8c19d5e63eeaea)
 
 # 8/17/2021
 
@@ -52,138 +90,138 @@
 
 ### Directly Updated
 
--   `fyn@0.4.36` `(0.4.35 => 0.4.36)`
+- `fyn@0.4.36` `(0.4.35 => 0.4.36)`
 
 ### Fynpo Updated
 
--   `fynpo@0.4.5` `(0.4.4 => 0.4.5)`
+- `fynpo@0.4.5` `(0.4.4 => 0.4.5)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
+  - fix: avoid too much meta fetch from registry [commit](https://github.com/electrode-io/fynpo/commit/fd79623fcae132cda95211dcdef26cda23d6807b)
 
 # 8/7/2021
 
 ## Packages
 
--   `fyn@0.4.35` `(0.4.34 => 0.4.35)`
--   `fynpo@0.4.4` `(0.4.3 => 0.4.4)`
+- `fyn@0.4.35` `(0.4.34 => 0.4.35)`
+- `fynpo@0.4.4` `(0.4.3 => 0.4.4)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   fix: look for .npmrc and .fynrc in fynpo dir [commit](https://github.com/electrode-io/fynpo/commit/a78e7c1283bc1cc47b21497bfa302e7ac45edab0)
-    -   fix: handle initial load fynpo config failures [commit](https://github.com/electrode-io/fynpo/commit/9b5e634fbc2bee11eda785c34f469b169a80afe4)
+  - fix: look for .npmrc and .fynrc in fynpo dir [commit](https://github.com/electrode-io/fynpo/commit/a78e7c1283bc1cc47b21497bfa302e7ac45edab0)
+  - fix: handle initial load fynpo config failures [commit](https://github.com/electrode-io/fynpo/commit/9b5e634fbc2bee11eda785c34f469b169a80afe4)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   fix: dump fynpo bootstrap for debug log [commit](https://github.com/electrode-io/fynpo/commit/e4be77f891b37a57dc6b1f2a14a0d9f267840693)
+  - fix: dump fynpo bootstrap for debug log [commit](https://github.com/electrode-io/fynpo/commit/e4be77f891b37a57dc6b1f2a14a0d9f267840693)
 
--   `MISC`
+- `MISC`
 
-    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/6b6279c2d4d36d0afa31e14091815fa0ec08702f)
+  - chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/6b6279c2d4d36d0afa31e14091815fa0ec08702f)
 
 # 8/7/2021
 
 ## Packages
 
--   `fyn@0.4.34` `(0.4.33 => 0.4.34)`
--   `fynpo@0.4.3` `(0.4.2 => 0.4.3)`
+- `fyn@0.4.34` `(0.4.33 => 0.4.34)`
+- `fynpo@0.4.3` `(0.4.2 => 0.4.3)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
-    -   fix: default pseudo source maps off ([#26](https://github.com/electrode-io/fynpo/pull/26)) [commit](https://github.com/electrode-io/fynpo/commit/0b7108f75c8085c783d8d66267a63995da980413)
+  - feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
+  - fix: default pseudo source maps off ([#26](https://github.com/electrode-io/fynpo/pull/26)) [commit](https://github.com/electrode-io/fynpo/commit/0b7108f75c8085c783d8d66267a63995da980413)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   fix: try to handle CI truncating output [commit](https://github.com/electrode-io/fynpo/commit/a9f015a64760ad5675db86a50bfe94c3546f2766)
-    -   feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
-    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
-    -   fix: duplicate entries in changelog [commit](https://github.com/electrode-io/fynpo/commit/7564ae6fbb897d05fecec2a6e16a4df5bcb354d0)
+  - fix: try to handle CI truncating output [commit](https://github.com/electrode-io/fynpo/commit/a9f015a64760ad5675db86a50bfe94c3546f2766)
+  - feat: use a server to share meta cache between multiple fyn installs [commit](https://github.com/electrode-io/fynpo/commit/40e3513af9fb9bf05fb1b025f1fa9af00f9fdb82)
+  - docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+  - fix: duplicate entries in changelog [commit](https://github.com/electrode-io/fynpo/commit/7564ae6fbb897d05fecec2a6e16a4df5bcb354d0)
 
--   `docs`
+- `docs`
 
-    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+  - docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
 
--   `docusaurus`
+- `docusaurus`
 
-    -   docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
+  - docs: update description [commit](https://github.com/electrode-io/fynpo/commit/4d5a42dc9e529da5bec858510f7a0f69afaf52e2)
 
--   `MISC`
+- `MISC`
 
-    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/e6938aed7e5350bc8d6905d2aa2813b5d816bf20)
+  - chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/e6938aed7e5350bc8d6905d2aa2813b5d816bf20)
 
 # 6/21/2021
 
 ## Packages
 
--   `fyn@0.4.33` `(0.4.32 => 0.4.33)`
--   `fynpo@0.4.2` `(0.4.1 => 0.4.2)`
+- `fyn@0.4.33` `(0.4.32 => 0.4.33)`
+- `fynpo@0.4.2` `(0.4.1 => 0.4.2)`
 
 ## Commits
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   fix(fyn): more fs retry for windows [commit](https://github.com/electrode-io/fynpo/commit/2d472691913a31e948830b0c25f6a69c2e47c2c5)
-    -   fix(fyn): retry release lock [commit](https://github.com/electrode-io/fynpo/commit/dfb6e848a71c84e3b4fb3fd7071197f7ed18b831)
-    -   [patch] fix central locking on windows [commit](https://github.com/electrode-io/fynpo/commit/126da0311b941e4440a689460ed15ded1f075b02)
-    -   [patch] disable local dep with --no-fyn-local as semver [commit](https://github.com/electrode-io/fynpo/commit/fd7cb77b8f3b91d3f785eb520d5283f4add5eb11)
+  - fix(fyn): more fs retry for windows [commit](https://github.com/electrode-io/fynpo/commit/2d472691913a31e948830b0c25f6a69c2e47c2c5)
+  - fix(fyn): retry release lock [commit](https://github.com/electrode-io/fynpo/commit/dfb6e848a71c84e3b4fb3fd7071197f7ed18b831)
+  - [patch] fix central locking on windows [commit](https://github.com/electrode-io/fynpo/commit/126da0311b941e4440a689460ed15ded1f075b02)
+  - [patch] disable local dep with --no-fyn-local as semver [commit](https://github.com/electrode-io/fynpo/commit/fd7cb77b8f3b91d3f785eb520d5283f4add5eb11)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   make minor and major types configurable ([#23](https://github.com/electrode-io/fynpo/pull/23)) [commit](https://github.com/electrode-io/fynpo/commit/ffc44fed23792ee470f84699e7cc8ef2e2b0a9e4)
+  - make minor and major types configurable ([#23](https://github.com/electrode-io/fynpo/pull/23)) [commit](https://github.com/electrode-io/fynpo/commit/ffc44fed23792ee470f84699e7cc8ef2e2b0a9e4)
 
--   `.github`
+- `.github`
 
-    -   Update GitHub workflows ([#22](https://github.com/electrode-io/fynpo/pull/22)) [commit](https://github.com/electrode-io/fynpo/commit/d5d25e6f3e3263182f1da9154985dd3b0eb54000)
+  - Update GitHub workflows ([#22](https://github.com/electrode-io/fynpo/pull/22)) [commit](https://github.com/electrode-io/fynpo/commit/d5d25e6f3e3263182f1da9154985dd3b0eb54000)
 
--   `docs`
+- `docs`
 
-    -   [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
-    -   [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
+  - [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
+  - [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
 
--   `docusaurus`
+- `docusaurus`
 
-    -   [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
-    -   [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
+  - [chore] docs add debugging to sidebar ([#21](https://github.com/electrode-io/fynpo/pull/21)) [commit](https://github.com/electrode-io/fynpo/commit/10b0e2a4430f19500bb88fe7faa21e25337f0ade)
+  - [chore] add docs about debugging with source maps ([#20](https://github.com/electrode-io/fynpo/pull/20)) [commit](https://github.com/electrode-io/fynpo/commit/32196e7fe420da780306082bbb8963d97832bef4)
 
 # 5/21/2021
 
--   [patch] allow file to turn off fyn generating source maps
+- [patch] allow file to turn off fyn generating source maps
 
 ## Packages
 
--   `fyn@0.4.32` `(0.4.31 => 0.4.32)`
+- `fyn@0.4.32` `(0.4.31 => 0.4.32)`
 
 ## Commits
 
--   `packages/fynpo-base`
+- `packages/fynpo-base`
 
-    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+  - [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
 
--   `packages/create-fynpo`
+- `packages/create-fynpo`
 
-    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+  - [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
 
--   `packages/fyn`
+- `packages/fyn`
 
-    -   [patch] allow file to turn off fyn generating source maps ([#19](https://github.com/electrode-io/fynpo/pull/19)) [commit](https://github.com/electrode-io/fynpo/commit/ac241b328dac08c3f31a9acf82c7f56272d90c1b)
-    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
-    -   [chore] fix npm publish issue with prepack script [commit](https://github.com/electrode-io/fynpo/commit/735af8fb026061297d5b3c6876ebd382d7392c47)
+  - [patch] allow file to turn off fyn generating source maps ([#19](https://github.com/electrode-io/fynpo/pull/19)) [commit](https://github.com/electrode-io/fynpo/commit/ac241b328dac08c3f31a9acf82c7f56272d90c1b)
+  - [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+  - [chore] fix npm publish issue with prepack script [commit](https://github.com/electrode-io/fynpo/commit/735af8fb026061297d5b3c6876ebd382d7392c47)
 
--   `packages/fynpo`
+- `packages/fynpo`
 
-    -   [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
+  - [chore] update dep publish-util [commit](https://github.com/electrode-io/fynpo/commit/5eed0fead5e9b5c014d039efc22e7f98184d3066)
 
--   `MISC`
+- `MISC`
 
-    -   [chore] update fynpo to 0.4.1 [commit](https://github.com/electrode-io/fynpo/commit/4bab8320766901ed3f59644240354adbf9fe4240)
+  - [chore] update fynpo to 0.4.1 [commit](https://github.com/electrode-io/fynpo/commit/4bab8320766901ed3f59644240354adbf9fe4240)
 
 # 5/20/2021
 
