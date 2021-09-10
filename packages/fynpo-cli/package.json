@@ -1,6 +1,6 @@
 {
   "name": "fynpo-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "npm install globally to provide the fynpo command",
   "preferGlobal": true,
   "main": "index.js",
