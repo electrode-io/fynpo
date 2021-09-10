@@ -1,7 +1,7 @@
 {
   "name": "fynpo",
   "version": "0.4.7",
-  "description": "A JavaScript monorepo manager - the benefits of a monorepo without the usual downsides",
+  "description": "A node.js monorepo manager, that solves some common issues.",
   "main": "index.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {

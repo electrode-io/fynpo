@@ -1,7 +1,7 @@
 {
   "name": "fyn",
   "version": "0.4.38",
-  "description": "A fast node package manager for better productivity and efficiency",
+  "description": "A node package manager, fast, workspace, and better productivity and efficiency",
   "main": "./bin/fyn.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {

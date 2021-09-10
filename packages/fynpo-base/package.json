@@ -1,7 +1,7 @@
 {
   "name": "@fynpo/base",
   "version": "0.1.0",
-  "description": "",
+  "description": "a node.js monorepo manager, support package",
   "main": "dist/index.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
