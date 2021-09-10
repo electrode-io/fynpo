@@ -157,10 +157,10 @@ $pkg:
   dependencies:
    chalk: ^4.0.0
 '@fynpo/base':
- _latest: 0.1.0-fynlocal_h
+ _latest: 1.0.0-fynlocal_h
  _:
-  ./packages/fynpo-base: 0.1.0-fynlocal_h
- 0.1.0-fynlocal_h:
+  ./packages/fynpo-base: 1.0.0-fynlocal_h
+ 1.0.0-fynlocal_h:
   $: local
   _: ./packages/fynpo-base
   dependencies:
@@ -168,6 +168,13 @@ $pkg:
    lodash: ^4.17.21
    minimatch: ^3.0.4
    tslib: ^2.1.0
+'@jchip/error':
+ _latest: 1.0.2
+ _:
+  ^1.0.0: 1.0.2
+ 1.0.2:
+  $: sha512-9jFnNnjdagUU5H2N8ZfOkgVrizkeGsryOw3FFXdSvVN4RqGPqSSg8gbMdsyilCUjC7yQji6JiVy/TOBm9XvS1A==
+  _: 'https://registry.npmjs.org/@jchip/error/-/error-1.0.2.tgz'
 '@types/minimist':
  _latest: 1.2.1
  _:
@@ -1093,13 +1100,14 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 0.4.34-fynlocal_h
+ _latest: 1.0.0-fynlocal_h
  _:
-  ./packages/fyn: 0.4.34-fynlocal_h
- 0.4.34-fynlocal_h:
+  ./packages/fyn: 1.0.0-fynlocal_h
+ 1.0.0-fynlocal_h:
   $: local
   _: ./packages/fyn
   dependencies:
+   '@jchip/error': ^1.0.0
    bluebird: ^3.7.2
    cacache: jchip/cacache
    chalk: ^4.1.0
