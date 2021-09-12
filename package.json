@@ -11,6 +11,10 @@
     "coverage": "fynpo run coverage",
     "lint": "fynpo run lint"
   },
+  "files": [
+    "packages",
+    "docs"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/electrode-io/fynpo.git"
@@ -24,7 +28,7 @@
     "url": "https://github.com/electrode-io/fynpo/issues"
   },
   "devDependencies": {
-    "fynpo": "^0.4.1"
+    "fynpo": "^1.0.0"
   },
   "fyn": {
     "devDependencies": {
