@@ -1,7 +1,7 @@
 {
-  "name": "pkg1",
+  "name": "icir3",
   "version": "1.0.0",
-  "description": "",
+  "description": "indirect circular dep 3",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pkg2": "^1.0.0"
+    "icir1": "^1.0.0"
   }
 }

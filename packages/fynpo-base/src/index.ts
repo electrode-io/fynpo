@@ -3,6 +3,9 @@ import { promises as Fs } from "fs";
 import filterScanDir from "filter-scan-dir";
 import mm from "minimatch";
 import _ from "lodash";
+import { groupMM } from "./minimatch-group";
+
+export * from "./fynpo-dep-graph";
 
 /**
  * Information about a package within the mono-repo
@@ -56,33 +59,6 @@ export type PackageInfo = {
   /** TODO */
   installed: boolean;
 };
-
-/**
- * process a list of minimatch objects and group them by the string prefix of their patterns
- *
- * @param mms - array of minimatch
- * @param groups - object to group the minimatch objects
- * @returns object of grouped minimatch objects
- */
-function groupMM(mms: mm.MiniMatch[], groups: any) {
-  mms.forEach((mm) => {
-    mm.set.forEach((set, setIx) => {
-      const ix = set.findIndex((s) => typeof s !== "string");
-      const prefix = set.slice(0, ix).join("/");
-      const save = {
-        mm,
-        set,
-        setIx,
-        ix,
-        remain: set.length - ix,
-      };
-
-      groups[prefix] = groups[prefix] ? [].concat(groups[prefix], save) : [save];
-    });
-  });
-
-  return groups;
-}
 
 /**
  * Take an array of packages and figure out their dependencies on each other
@@ -199,6 +175,7 @@ export async function readFynpoPackages({
           if (dir !== "node_modules") {
             return groups[prefix].find((save) => save.mm.match(extras.dirFile));
           }
+          return false;
         },
       })
     );

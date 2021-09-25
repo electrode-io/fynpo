@@ -1,0 +1,92 @@
+{
+  "name": "subapp-web",
+  "version": "1.0.50",
+  "description": "Electrode subapp web support",
+  "module": "dist/dev/index.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "clap test",
+    "coverage": "clap coverage",
+    "check": "clap check",
+    "build": "clap compile",
+    "prepublishOnly": "clap compile"
+  },
+  "keywords": [
+    "web",
+    "react",
+    "subapp"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
+  },
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "history": "^4.9.0",
+    "jsesc": "^2.5.2",
+    "loadjs": "^4.2.0",
+    "lodash": "^4.17.15",
+    "optional-require": "^1.1.6",
+    "request": "^2.88.0",
+    "subapp-util": "^1.1.2",
+    "xaa": "^1.6.0"
+  },
+  "peerDependencies": {
+    "@xarc/app": "^10.0.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.7.7",
+    "@xarc/app": "^10.0.6",
+    "babel-preset-minify": "^0.5.1",
+    "chai-as-promised": "^7.1.1",
+    "electrode-archetype-njs-module-dev": "^3.0.3",
+    "electrode-react-webapp": "^3.8.9",
+    "jsdom": "^16.5.1",
+    "mock-require": "^1.3.0",
+    "run-verify": "^1.2.2",
+    "subapp-pkg-util": "../subapp-pkg-util"
+  },
+  "nyc": {
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "*clap.js",
+      "gulpfile.js",
+      "dist",
+      "test",
+      "browser",
+      "node-dist",
+      ".babelrc.js"
+    ],
+    "check-coverage": true,
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0,
+    "cache": true
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  }
+}

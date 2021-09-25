@@ -1,0 +1,16 @@
+{
+  "name": "opt-archetype-check",
+  "version": "1.0.0",
+  "description": "common code for electrode optional archetype checking",
+  "main": "optional-check.js",
+  "scripts": {
+    "test": "node test/test1.js"
+  },
+  "keywords": [],
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "private": true
+}

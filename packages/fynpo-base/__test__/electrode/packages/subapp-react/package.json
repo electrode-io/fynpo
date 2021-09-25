@@ -1,0 +1,97 @@
+{
+  "name": "subapp-react",
+  "version": "0.0.42",
+  "description": "Electrode subapp support for React/Redux/React Router",
+  "module": "dist/dev/index.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "clap test",
+    "coverage": "clap coverage",
+    "check": "clap check",
+    "build": "clap compile",
+    "prepublishOnly": "clap compile"
+  },
+  "keywords": [
+    "web",
+    "react",
+    "subapp",
+    "redux",
+    "react-router"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
+  },
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "optional-require": "^1.1.6",
+    "subapp-util": "^1.1.2",
+    "subapp-web": "^1.0.50"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.7.7",
+    "@xarc/app": "^10.0.10",
+    "babel-preset-minify": "^0.5.1",
+    "electrode-archetype-njs-module-dev": "^3.0.3",
+    "jsdom": "^15.2.1",
+    "react": "^16.8.3",
+    "react-async-ssr": "^0.6.0",
+    "react-dom": "^16.8.3",
+    "react-redux": "^6.0.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "redux": "^4.0.1",
+    "run-verify": "^1.2.2",
+    "subapp-pkg-util": "../subapp-pkg-util"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "nyc": {
+    "all": true,
+    "require": [
+      "@babel/register",
+      "mocha"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "*clap.js",
+      "gulpfile.js",
+      "dist",
+      "test",
+      "browser",
+      "**/.babelrc.js"
+    ],
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100,
+    "cache": true
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  }
+}

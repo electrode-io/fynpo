@@ -1,6 +1,6 @@
 {
-  "name": "pkg1",
-  "version": "1.0.0",
+  "name": "pkg2",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "pkg2": "^1.0.0"
-  }
+  "license": "ISC"
 }

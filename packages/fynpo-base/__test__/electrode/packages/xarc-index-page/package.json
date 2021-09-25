@@ -1,0 +1,103 @@
+{
+  "name": "@xarc/index-page",
+  "version": "1.0.9",
+  "description": "Electrode X template and handlers for generating index.html webpage",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "clap user/build",
+    "test": "clap test",
+    "coverage": "clap test-cov",
+    "check": "clap check",
+    "prepublishOnly": "clap -n build docs && clap check",
+    "docs": "clap xarc/docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electrode-io/electrode.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "webapp",
+    "index-page"
+  ],
+  "dependencies": {
+    "@xarc/jsx-renderer": "^1.0.8",
+    "@xarc/render-context": "^1.0.6",
+    "@xarc/tag-renderer": "^1.0.7"
+  },
+  "author": "Walmart GTP.js",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/electrode-io/electrode/issues"
+  },
+  "homepage": "https://github.com/electrode-io/electrode#readme",
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.7.6",
+    "@types/sinon": "^9.0.0",
+    "@types/sinon-chai": "^3.2.4",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
+    "@xarc/module-dev": "^2.2.5",
+    "babel-eslint": "^10.1.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-walmart": "^2.2.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-jsdoc": "^21.0.0",
+    "mocha": "^7.1.0",
+    "nyc": "^15.0.0",
+    "sinon": "^7.2.6",
+    "sinon-chai": "^3.3.0",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.6.2",
+    "typedoc": "^0.17.4",
+    "typescript": "^3.8.3",
+    "xclap": "^0.2.51",
+    "xsh": "^0.4.5",
+    "xstdout": "^0.1.1"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "nyc": {
+    "extends": [
+      "@istanbuljs/nyc-config-typescript"
+    ],
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "*clap.js",
+      "*clap.ts",
+      "coverage",
+      "dist",
+      "docs",
+      "gulpfile.js",
+      "test"
+    ],
+    "check-coverage": true,
+    "statements": 29.59,
+    "branches": 8.33,
+    "functions": 12.2,
+    "lines": 30,
+    "cache": false
+  },
+  "mocha": {
+    "require": [
+      "./config/test/setup.js",
+      "ts-node/register",
+      "source-map-support/register",
+      "@xarc/module-dev/config/test/setup.js"
+    ],
+    "recursive": true
+  }
+}

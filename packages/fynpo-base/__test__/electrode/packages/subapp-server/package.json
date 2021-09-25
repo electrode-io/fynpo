@@ -1,0 +1,83 @@
+{
+  "name": "subapp-server",
+  "version": "1.3.15",
+  "description": "Electrode SubApp app server support",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "clap -n -x build electrode/test-only",
+    "coverage": "clap -n -x build electrode/test-cov",
+    "check": "clap -n -x build electrode/check",
+    "build": "babel src -d resources --source-maps",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "web",
+    "react",
+    "subapp"
+  ],
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "files": [
+    "lib",
+    "resources",
+    "src",
+    "template.js"
+  ],
+  "dependencies": {
+    "@hapi/boom": "^7.4.1",
+    "@xarc/index-page": "^1.0.9",
+    "@xarc/jsx-renderer": "^1.0.9",
+    "@xarc/tag-renderer": "^1.0.8",
+    "filter-scan-dir": "^1.0.9",
+    "http-status-codes": "^1.3.0",
+    "optional-require": "^1.1.6",
+    "subapp-util": "^1.1.2",
+    "xaa": "^1.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.4.4",
+    "electrode-archetype-njs-module-dev": "^3.0.3",
+    "electrode-server": "^3.0.0",
+    "run-verify": "^1.1.2",
+    "@xarc/fastify-server": "^1.1.0"
+  },
+  "nyc": {
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "*clap.js",
+      "gulpfile.js",
+      "dist",
+      "test",
+      "resources"
+    ],
+    "check-coverage": true,
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0,
+    "cache": true
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
+  }
+}

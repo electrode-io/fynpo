@@ -1,0 +1,105 @@
+{
+  "name": "@xarc/create-app",
+  "version": "6.1.1",
+  "description": "Create react.js/node.js webapp using the Electrode Platform",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublishOnly": "webpack",
+    "test": "mocha",
+    "coverage": "nyc npm test",
+    "check": "nyc npm test"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
+  },
+  "bin": {
+    "create-app": "bin/create-app.js"
+  },
+  "keywords": [
+    "electrode",
+    "react",
+    "node.js",
+    "webapp"
+  ],
+  "files": [
+    "bin",
+    "dist",
+    "lib",
+    "template"
+  ],
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@xarc/app": "^10.0.9",
+    "@xarc/app-dev": "^10.0.9",
+    "@xarc/module-dev": "^2.2.4",
+    "@xarc/react": "^0.3.1",
+    "@xarc/react-query": "^0.3.0",
+    "@xarc/react-redux": "^0.3.0",
+    "babel-loader": "^8.0.6",
+    "chai": "^4.2.0",
+    "chalker": "^1.2.0",
+    "lodash": "^4.17.21",
+    "mocha": "^7.1.0",
+    "nyc": "^15.0.0",
+    "opfs": "^1.1.1",
+    "prettier": "^2.2.1",
+    "prompts": "^2.3.2",
+    "run-verify": "^1.2.6",
+    "shcmd": "^0.8.4",
+    "sinon": "^7.2.6",
+    "sinon-chai": "^3.3.0",
+    "webpack": "^4.41.0",
+    "webpack-bundle-analyzer": "^3.5.2",
+    "webpack-cli": "^3.3.9",
+    "xclap": "^0.2.51"
+  },
+  "prettier": {
+    "printWidth": 100
+  },
+  "mocha": {
+    "require": [
+      "./test/setup.js"
+    ],
+    "recursive": true
+  },
+  "nyc": {
+    "extends": [],
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "include": [
+      "src"
+    ],
+    "exclude": [
+      "*clap.js",
+      "*clap.ts",
+      "coverage",
+      "dist",
+      "docs",
+      "gulpfile.js",
+      "test",
+      "xrun*.js",
+      "xrun*.ts",
+      "template",
+      "bin"
+    ],
+    "check-coverage": false,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100,
+    "cache": true
+  }
+}

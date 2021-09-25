@@ -1,0 +1,86 @@
+{
+  "name": "subapp-redux",
+  "version": "1.0.50",
+  "description": "Electrode subapp redux support",
+  "module": "dist/dev/index.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "clap test",
+    "coverage": "clap coverage",
+    "check": "clap check",
+    "build": "clap compile",
+    "prepublishOnly": "clap compile"
+  },
+  "keywords": [
+    "web",
+    "react",
+    "subapp"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
+  },
+  "author": "Electrode (http://www.electrode.io/)",
+  "contributors": [
+    "Joel Chen <xchen@walmartlabs.com>"
+  ],
+  "license": "Apache-2.0",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "dependencies": {
+    "optional-require": "^1.1.6",
+    "subapp-util": "^1.1.2",
+    "subapp-web": "^1.0.50"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
+    "babel-preset-minify": "^0.4.3",
+    "electrode-archetype-njs-module-dev": "^3.0.3",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "run-verify": "^1.2.2",
+    "subapp-pkg-util": "../subapp-pkg-util"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "redux": "*",
+    "react-redux": "*"
+  },
+  "nyc": {
+    "all": true,
+    "require": [
+      "@babel/register",
+      "mocha"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "exclude": [
+      "coverage",
+      "*clap.js",
+      "gulpfile.js",
+      "dist",
+      "test",
+      "browser"
+    ],
+    "check-coverage": true,
+    "statements": 10,
+    "branches": 10,
+    "functions": 10,
+    "lines": 10,
+    "cache": true
+  }
+}
