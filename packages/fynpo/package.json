@@ -48,7 +48,6 @@
     "@commitlint/read": "^12.1.1",
     "@commitlint/resolve-extends": "^12.1.1",
     "@fynpo/base": "^1.0.0",
-    "@xarc/fastify-server": "^3.3.0",
     "bluebird": "^3.5.1",
     "boxen": "^5.0.1",
     "chalk": "^4.1.1",

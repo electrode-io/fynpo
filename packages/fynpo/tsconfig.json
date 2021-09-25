@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "lib": ["es2018"],
+    "lib": ["es2018", "dom"],
     "module": "CommonJS",
     "esModuleInterop": true,
     "importHelpers": true,

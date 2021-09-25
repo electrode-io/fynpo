@@ -1,46 +1,52 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const fastifyServer = require("@xarc/fastify-server");
+import http from "http";
 
 const metaMemoize = {};
+
+type Server = http.Server & {
+  info: { port: number };
+};
 
 /**
  * Start a local server to help multiple fyn installs to communicate
  * with each other to indicate that a package's meta was already retrieved
  * and its cache can be used directly.
  *
- * @returns fastify server
+ * @returns simple HTTP server
  */
-export async function startMetaMemoizer() {
-  const server = await fastifyServer({ deferStart: true, connection: { port: 0 } });
-
-  const handle = (res, key, set) => {
+export async function startMetaMemoizer(): Promise<Server> {
+  const handle = (res: http.ServerResponse, key: string, set: boolean) => {
     if (key) {
       if (set) {
         metaMemoize[key] = Date.now();
       }
 
       if (metaMemoize[key]) {
-        return res.code(200).send({ time: metaMemoize[key] });
+        res.writeHead(200, { "content-type": "application/json" });
+        return res.end(JSON.stringify({ time: metaMemoize[key] }));
       }
     }
 
-    return res.code(404).send({ err: "not found" });
+    res.writeHead(404, { "content-type": "application/json" });
+
+    return res.end(JSON.stringify({ err: "not found" }));
   };
 
-  server.route({
-    method: "GET",
-    path: "/",
-    handler: (req, res) => handle(res, req.query.key, false),
+  const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
+    const method = req.method.toUpperCase();
+    const { searchParams } = new URL(req.headers.host + req.url);
+    const key = searchParams.get("key");
+
+    handle(res, key, method === "POST");
   });
 
-  server.route({
-    method: "POST",
-    path: "/",
-    handler: (req, res) => handle(res, req.query.key, true),
+  const port: number = await new Promise((resolve) => {
+    server.listen(0, () => resolve((server.address() as any).port));
   });
 
-  await server.start();
+  const server2 = server as Server;
+  server2.info = { port };
 
-  return server;
+  return server2;
 }
