@@ -2,42 +2,37 @@
 /* eslint-disable consistent-return */
 
 import xsh from "xsh";
-import Promise from "bluebird";
 import logger from "./logger";
 import * as utils from "./utils";
 import _ from "lodash";
 import { npmRunScriptStreaming, npmRunScript } from "./npm-run-script";
-import PQueue from "p-queue";
 import boxen from "boxen";
 import chalk from "chalk";
+import { FynpoDepGraph, FynpoTopoPackages, PackageDepData, FynpoPackageInfo } from "@fynpo/base";
+import ItemQueue from "item-queue";
 
 export default class Run {
   _cwd;
   _script;
-  _packages;
   _options;
   _args;
   _npmClient;
-  _circularMap;
+  graph: FynpoDepGraph;
   _concurrency: number;
+  private topo: FynpoTopoPackages;
 
-  constructor(opts, args, data) {
+  constructor(opts, args, graph: FynpoDepGraph) {
     this._script = args.script;
     this._cwd = opts.dir || opts.cwd;
-    this._packages = data.packages;
     this._options = opts;
     this._args = this._options["--"] || [];
     this._npmClient = "npm";
-    this._circularMap = {};
     // enforce concurrency to be an integer between 1 and 10, else default to 3
     this._concurrency =
       Number.isInteger(opts.concurrency) && opts.concurrency >= 1 && opts.concurrency <= 10
         ? opts.concurrency
         : 3;
-    data.circulars.reduce((mapping, locks) => {
-      locks.forEach((name) => (mapping[name] = locks));
-      return mapping;
-    }, this._circularMap);
+    this.topo = graph.getTopoSortPackages();
   }
 
   _sh(command, cwd = this._cwd, silent = true) {
@@ -61,33 +56,6 @@ export default class Run {
     };
   }
 
-  executeScript(pkg, pkgQueue) {
-    if (pkg.ignore) {
-      return true;
-    }
-
-    if (pkg.executed === "pending") return false;
-    if (pkg.executed) return true;
-
-    let pending = 0;
-
-    _.each(pkg.localDeps, (depName) => {
-      const depPkg = this._packages[depName] || {};
-      const scriptToRun = _.get(depPkg, ["pkgJson", "scripts", this._script]);
-      const circulars = this._circularMap[depName] || [];
-      if (scriptToRun && !circulars.includes(pkg.name) && !this.executeScript(depPkg, pkgQueue)) {
-        pending++;
-      }
-    });
-
-    if (pending === 0 && !pkg.executed) {
-      pkg.executed = "pending";
-      pkgQueue.push(pkg);
-    }
-
-    return false;
-  }
-
   getRunner() {
     return this._options.stream
       ? (pkg) => this.runScriptWithStream(pkg)
@@ -103,21 +71,29 @@ export default class Run {
   }
 
   runScriptsInLexical(packagesToRun) {
-    return Promise.map(packagesToRun, this.getRunner(), { concurrency: this._concurrency });
+    return this.runScriptsInParallel(packagesToRun);
   }
 
   _logQueueMsg(pkg) {
-    const msg = boxen(`Queueing package ${pkg.name} to run script '${this._script}'`, {
-      padding: { top: 0, right: 2, left: 2, bottom: 0 },
-    });
+    const name = pkg.name;
+    const msg = boxen(
+      `Queueing package ${name} to run script '${this._script}'
+path: ${pkg.path}`,
+      {
+        padding: { top: 0, right: 2, left: 2, bottom: 0 },
+      }
+    );
 
     msg.split("\n").forEach((l) => logger.prefix(false).info(l));
   }
 
   _logRunResult({ timer, error, output, pkg }) {
+    const name = pkg.name;
+
     const duration = (timer() / 1000).toFixed(1);
     const m1 = error ? "ERROR - Failed" : "Completed";
-    const m2 = `${m1} run script '${this._script}' for package ${pkg.name}.  Time: ${duration}s`;
+    const m2 = `${m1} run script '${this._script}' for package ${name}.  Time: ${duration}s
+path: ${pkg.path}`;
     const m3 = `${this._options.stream ? "" : "\nOutput follows:"}`;
     const m4 = `${m2}${m3}`;
     const msg = boxen(error ? chalk.red(m4) : chalk.green(m4), {
@@ -141,31 +117,29 @@ export default class Run {
     }
   }
 
-  async runScriptsInParallel(packagesToRun) {
+  async runScriptsInParallel(packagesToRun: FynpoPackageInfo[]) {
     const errors = [];
     const results = [];
 
-    const queueTasks = packagesToRun.map((pkg) => {
-      // cannot run the script here, must return a function that will run the script
-      // else we start running script for all packages at once
-      return async () => {
+    const queue = new ItemQueue<FynpoPackageInfo>({
+      processItem: async (pkgInfo) => {
         // TODO: expose continueOnError option
         if (!this._options.continueOnError && errors.length > 0) {
           return;
         }
 
-        this._logQueueMsg(pkg);
+        this._logQueueMsg(pkgInfo);
 
         const runData: any = {
-          pkg,
+          pkg: pkgInfo,
           timer: utils.timer(),
         };
 
         try {
-          runData.output = await this.getRunner()(pkg);
+          runData.output = await this.getRunner()(pkgInfo);
           results.push(runData.output);
         } catch (err: any) {
-          err.pkg = pkg;
+          err.pkg = pkgInfo;
           errors.push(err);
           results.push(err);
           runData.error = err;
@@ -173,17 +147,17 @@ export default class Run {
         } finally {
           this._logRunResult(runData);
         }
-      };
+      },
+      itemQ: packagesToRun,
+      concurrency: this._concurrency,
     });
 
-    const queue = new PQueue({ concurrency: this._concurrency });
+    await queue.start().wait();
 
-    queue.addAll(queueTasks);
-    await queue.onIdle();
     return results;
   }
 
-  runScriptsInTopological(packagesToRun) {
+  runScriptsInTopological(packagesToRun: FynpoPackageInfo[]) {
     // TODO: what does topo run mean?
     return this.runScriptsInParallel(packagesToRun);
   }
@@ -194,10 +168,13 @@ export default class Run {
       process.exit(1);
     }
 
-    const packagesToRun = Object.values(this._packages).filter((pkg: any) => {
-      const scriptToRun = _.get(pkg, ["pkgJson", "scripts", this._script]);
-      return scriptToRun && !pkg.ignore;
-    });
+    const packagesToRun = this.topo.sorted
+      .filter((depData: PackageDepData) => {
+        const pkgInfo = depData.pkgInfo;
+        const scriptToRun = _.get(pkgInfo, ["pkgJson", "scripts", this._script]);
+        return scriptToRun;
+      })
+      .map((d) => d.pkgInfo);
 
     const count = packagesToRun.length;
 
@@ -215,6 +192,7 @@ export default class Run {
 
     try {
       let results: ({ failed: boolean; exitCode: number } & Error)[];
+
       if (this._options.parallel) {
         results = await this.runScriptsInParallel(packagesToRun);
       } else if (this._options.sort) {
@@ -236,7 +214,7 @@ export default class Run {
         process.exitCode = exitCode;
       } else {
         const duration = (timer() / 1000).toFixed(1);
-        const messages = packagesToRun.map((pkg: any) => ` - ${pkg.name}`);
+        const messages = packagesToRun.map((pkg) => ` - ${pkg.name}`);
         logger.info(
           `Finished run npm script '${this._script}' in ${count} ${pkgMsg} in ${duration}s:
 ${messages.join("\n")}

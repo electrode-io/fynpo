@@ -11,7 +11,7 @@ import Init from "./init";
 import Updated from "./updated";
 import Commitlint from "./commitlint";
 import Version from "./version";
-import { makePkgDeps, readFynpoPackages } from "@fynpo/base";
+import { makePkgDeps, readFynpoPackages, FynpoDepGraph } from "@fynpo/base";
 import logger from "./logger";
 import * as utils from "./utils";
 import Fs from "fs";
@@ -41,9 +41,12 @@ const readPackages = async (opts: any, cmdName: string = "") => {
 };
 
 const makeBootstrap = async (parsed) => {
-  const { dir } = utils.loadConfig(parsed.opts.cwd || process.cwd());
-  const opts = Object.assign({ cwd: process.cwd(), dir }, parsed.opts);
-  return new Bootstrap(await readPackages(opts), opts);
+  const config: any = utils.loadConfig(parsed.opts.cwd || process.cwd());
+  const optConfig = Object.assign({}, config, parsed.opts);
+  const opts = { cwd: process.cwd(), patterns: ["packages/*"], ...optConfig };
+  const graph = new FynpoDepGraph(opts);
+  await graph.resolve();
+  return new Bootstrap(graph, opts);
 };
 
 const execBootstrap = async (parsed) => {
@@ -77,7 +80,7 @@ const execBootstrap = async (parsed) => {
 };
 
 const execLocal = async (parsed) => {
-  return (await makeBootstrap(parsed)).updateToLocal();
+  return await makeBootstrap(parsed);
 };
 
 const execPrepare = async (parsed) => {
@@ -111,10 +114,12 @@ const execVersion = async (parsed) => {
 };
 
 const execRunScript = async (parsed) => {
-  const { dir } = utils.loadConfig(parsed.opts.cwd || process.cwd());
-  const opts = Object.assign({ cwd: process.cwd(), dir }, parsed.opts);
-
-  return new Run(opts, parsed.args, await readPackages(opts)).exec();
+  const config: any = utils.loadConfig(parsed.opts.cwd || process.cwd());
+  const optConfig = Object.assign({}, config, parsed.opts);
+  const opts = { cwd: process.cwd(), patterns: ["packages/*"], ...optConfig };
+  const graph = new FynpoDepGraph(opts);
+  await graph.resolve();
+  return new Run(opts, parsed.args, graph).exec();
 };
 
 const execInit = (parsed) => {
@@ -275,8 +280,7 @@ const nixClap = new NixClap({
         parallel: {
           type: "boolean",
           default: false,
-          desc:
-            "run a given command or script immediately in all matching packages with prefixed streaming output",
+          desc: "run a given command or script immediately in all matching packages with prefixed streaming output",
         },
         prefix: {
           type: "boolean",
@@ -286,8 +290,7 @@ const nixClap = new NixClap({
         bail: {
           type: "boolean",
           default: true,
-          desc:
-            "no-bail to disable exit on error and run script in all packages regardless of exit code",
+          desc: "no-bail to disable exit on error and run script in all packages regardless of exit code",
         },
         concurrency: {
           alias: "cc",

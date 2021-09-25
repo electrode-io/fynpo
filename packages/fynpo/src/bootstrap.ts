@@ -1,41 +1,42 @@
 /* eslint-disable no-magic-numbers, consistent-return */
 
 import Promise from "bluebird";
-import Fs from "fs";
 import _ from "lodash";
-import ItemQueue from "item-queue";
+import ItemQueue, { ItemQueueResult } from "item-queue";
 import VisualExec from "visual-exec";
 import logger from "./logger";
-import Path from "path";
 import chalk from "chalk";
 import { isCI } from "./is-ci";
-const isWin32 = process.platform.startsWith("win32");
 
 import { locateGlobalFyn } from "./utils";
 import { startMetaMemoizer } from "./meta-memoizer";
+import { FynpoDepGraph, PackageDepRef, PackageDepData, pkgInfoId } from "@fynpo/base";
+
+type PackageInstallInfo = {
+  depData: PackageDepData;
+  status?: string;
+};
 
 class Bootstrap {
   _opts;
-  _data;
-  _errors;
-  _pkgDirMap;
+  _errors: ItemQueueResult<PackageInstallInfo>[];
   _fyn;
-  _circularMap;
-  constructor(data, opts) {
+  graph: FynpoDepGraph;
+  installInfo: Record<string, PackageInstallInfo>;
+
+  constructor(graph: FynpoDepGraph, opts) {
     this._opts = opts;
-    this._data = data;
+    this.graph = graph;
+    const topo = graph.getTopoSortPackages();
+    this.installInfo = {};
+    for (const depData of topo.sorted) {
+      this.installInfo[depData.pkgInfo.path] = {
+        depData,
+        status: "",
+      };
+    }
 
     this._errors = [];
-    this._pkgDirMap = {};
-    this._circularMap = {};
-    _.each(data.packages, (pkg) => {
-      this._pkgDirMap[pkg.name] = pkg.path;
-    });
-
-    data.circulars.reduce((mapping, locks) => {
-      locks.forEach((name) => (mapping[name] = locks));
-      return mapping;
-    }, this._circularMap);
 
     this._fyn = null;
   }
@@ -45,151 +46,105 @@ class Bootstrap {
   }
 
   logErrors() {
-    if (this._errors.length > 0) {
-      _.each(this._errors, (data) => {
-        const item = data.item || {};
-        logger.error(`=== Error: fynpo failed bootstrapping ${item.name} at ${item.path}`);
-        if (isCI) {
-          logger.error(`=== CI detected, dumping the debug logs ===`);
+    _.each(this._errors, (data: ItemQueueResult<PackageInstallInfo>) => {
+      const pkgInfo = data.item?.depData?.pkgInfo;
+      const name = pkgInfo?.name;
+      const path = pkgInfo?.path;
+      const error: any = data.error;
+      const output: any = error.output;
 
-          const lines = data.error.output.stdout.split("\n");
-          if (lines.length > 100) {
-            logger.error(`=== dumping last 50 lines of stdout in case the whole thing get truncated by CI ===
+      logger.error(`=== Error: fynpo failed bootstrapping ${name} at ${path}`);
+      if (isCI) {
+        logger.error(`=== CI detected, dumping the debug logs ===`);
+
+        const lines = output.stdout.split("\n");
+        if (lines.length > 100) {
+          logger.error(`=== dumping last 50 lines of stdout in case the whole thing get truncated by CI ===
 ${lines.slice(lines.length - 50, lines.length).join("\n")}
 `);
-          }
+        }
 
-          const errLines = data.error.output.stderr.split("\n");
-          if (errLines.length > 100) {
-            logger.error(`=== dumping last 50 lines of stderr in case the whole thing get truncated by CI ===
+        const errLines = output.stderr.split("\n");
+        if (errLines.length > 100) {
+          logger.error(`=== dumping last 50 lines of stderr in case the whole thing get truncated by CI ===
 ${errLines.slice(errLines.length - 50, errLines.length).join("\n")}
 `);
-          }
-
-          logger.error(`=== bootstrap ${item.name} failure dump of stdout for CI: ===
-
-${data.error.output.stdout}
-`);
-
-          logger.error(`=== bootstrap ${item.name} failure dump of stderr for CI: ===
-
-${data.error.output.stderr}
-`);
-        } else {
-          // use debug to dump them into logger so they will show up in fynpo-debug.log file
-          logger.debug(`=== bootstrap ${item.name} failure dump of stdout: ===
-
-${data.error.output.stdout}
-`);
-
-          logger.debug(`=== bootstrap ${item.name} failure dump of stderr: ===
-
-${data.error.output.stderr}
-`);
         }
-        logger.error(`=== bootstrap ${item.name} error message:`, data.error.message);
-        logger.error(`=== END of error info for bootstrapping ${item.name} at ${item.path} ===`);
-      });
-    }
+
+        logger.error(`=== bootstrap ${name} failure dump of stdout for CI: ===
+
+${output.stdout}
+`);
+
+        logger.error(`=== bootstrap ${name} failure dump of stderr for CI: ===
+
+${output.stderr}
+`);
+      } else {
+        // use debug to dump them into logger so they will show up in fynpo-debug.log file
+        logger.debug(`=== bootstrap ${name} failure dump of stdout: ===
+
+${output.stdout}
+`);
+
+        logger.debug(`=== bootstrap ${name} failure dump of stderr: ===
+
+${output.stderr}
+`);
+      }
+      logger.error(`=== bootstrap ${name} error message:`, error?.message);
+      logger.error(`=== END of error info for bootstrapping ${name} at ${path} ===`);
+    });
   }
 
-  install(pkg, queue) {
-    if (pkg.ignore) {
+  install(installInfo: PackageInstallInfo, queue: PackageInstallInfo[], nesting = false) {
+    const { pkgInfo } = installInfo.depData;
+    const pkgRefs = [pkgInfo.name, pkgInfo.path, pkgInfoId(pkgInfo)];
+
+    if (!_.isEmpty(this._opts.ignore) && pkgRefs.find((r) => this._opts.ignore.includes(r))) {
       return true;
     }
-    if (pkg.installed === "pending") return false;
-    if (pkg.installed) return true;
+
+    if (
+      !nesting &&
+      !_.isEmpty(this._opts.only) &&
+      !pkgRefs.find((r) => this._opts.only.includes(r))
+    ) {
+      return true;
+    }
+
+    if (installInfo.status === "pending") {
+      return false;
+    }
+
+    if (installInfo.status === "done") {
+      return true;
+    }
 
     let pending = 0;
-
-    _.each(pkg.localDeps, (depName) => {
-      const circulars = this._circularMap[depName] || [];
-      if (!circulars.includes(pkg.name) && !this.install(this._data.packages[depName], queue)) {
+    for (const path in installInfo.depData.localDepsByPath) {
+      if (!this.install(this.installInfo[path], queue, true)) {
         pending++;
+        break;
       }
-    });
+    }
 
-    if (pending === 0 && !pkg.installed) {
-      queue.push(pkg);
-      pkg.installed = "pending";
+    if (pending === 0 && !installInfo.status) {
+      queue.push(installInfo);
+      installInfo.status = "pending";
     }
 
     return false;
   }
-
-  descopePkgName(name) {
-    if (name.startsWith("@")) {
-      const ix = name.indexOf("/");
-      if (ix > 0) {
-        return name.substr(ix + 1);
-      }
-    }
-    return name;
-  }
-
-  updatePkgToLocal(pkg) {
-    if (pkg.ignore) return false;
-    const json = pkg.pkgJson;
-    if (!json) return false;
-    let count = 0;
-    ["dependencies", "devDependencies", "optionalDependencies"].forEach((sec) => {
-      const deps = json[sec];
-      if (!deps) return;
-      if (!json.fyn) json.fyn = {};
-      const fynDeps = json.fyn[sec] || {};
-      _.each(pkg.localDeps, (depName) => {
-        if (!this._data.packages[depName].ignore && deps.hasOwnProperty(depName)) {
-          const depDir = this._pkgDirMap[depName];
-          let relPath = Path.relative(pkg.path, depDir);
-          if (relPath !== depDir && !relPath.startsWith(".")) {
-            relPath = `./${relPath}`;
-          }
-          if (isWin32) {
-            relPath = relPath.replace(/\\/g, "/");
-          }
-          if (fynDeps[depName] !== relPath) {
-            count++;
-            fynDeps[depName] = relPath;
-          }
-        }
-      });
-      if (!_.isEmpty(fynDeps)) json.fyn[sec] = fynDeps;
-    });
-    if (count > 0) {
-      logger.info(
-        "updating package.json with fyn local dependencies for",
-        pkg.pkgJson.name,
-        "in",
-        pkg.path
-      );
-      Fs.writeFileSync(pkg.pkgFile, `${JSON.stringify(json, null, 2)}\n`);
-      return true;
-    }
-    return false;
-  }
-
-  // restorePkgJson() {
-  //   _.each(this._data.packages, pkg => {
-  //     if (!pkg.ignore) Fs.writeFileSync(pkg.pkgFile, pkg.pkgStr);
-  //   });
-  // }
 
   getMoreInstall() {
-    const queue = [];
+    const queue: PackageInstallInfo[] = [];
 
-    _.each(this._data.packages, (pkg) => {
-      this.install(pkg, queue);
+    _.each(this.installInfo, (info: PackageInstallInfo) => {
+      this.install(info, queue);
     });
 
     return queue;
-  }
-
-  updateToLocal() {
-    _.each(this._data.packages, (pkg) => {
-      if (this.updatePkgToLocal(pkg)) {
-        logger.info("Update package", pkg.name, "dependencies to local");
-      }
-    });
   }
 
   async exec({ build = true, fynOpts = [], concurrency = 3, skip = [] }) {
@@ -211,7 +166,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       logger.info(`Executing fyn with '${process.argv[0]} ${this._fyn}'`);
     }
 
-    let mmOpt;
+    let mmOpt = "";
 
     try {
       const metaMemoizer = await startMetaMemoizer();
@@ -220,18 +175,17 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       //
     }
 
-    const centralDir = Path.resolve(".fynpo/_store");
-    logger.info(`Setting env FYN_CENTRAL_DIR to ${centralDir}`);
-    process.env.FYN_CENTRAL_DIR = centralDir;
     const start = Date.now();
     const itemQ = new ItemQueue({
       Promise,
       concurrency,
       stopOnError: true,
-      processItem: (item) => {
-        const name = chalk.magenta(item.name);
-        if (skip && skip.includes(item.name)) {
-          logger.info("bootstrap skipping", name);
+      processItem: (item: PackageInstallInfo) => {
+        const pkgInfo = item.depData.pkgInfo;
+        const name = pkgInfo.name;
+        const colorName = chalk.magenta(name);
+        if (skip && skip.includes(name)) {
+          logger.info("bootstrap skipping", colorName);
           return;
         }
         let logLevelOpts = "";
@@ -245,10 +199,10 @@ is different from fynpo's internal version ${fynPkgJson.version}`
 
         const command = [process.argv[0], this._fyn].concat(fynOptArgs).join(" ");
         const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
-        logger[isCI ? "info" : "debug"]("bootstrap", name, dispCmd, chalk.blue(item.path));
+        logger[isCI ? "info" : "debug"]("bootstrap", colorName, dispCmd, chalk.blue(pkgInfo.path));
         const ve = new VisualExec({
-          displayTitle: `bootstrap ${name} ${dispCmd}`,
-          cwd: item.path,
+          displayTitle: `bootstrap ${colorName} ${dispCmd}`,
+          cwd: pkgInfo.path,
           command,
           visualLogger: logger,
         });
@@ -258,8 +212,11 @@ is different from fynpo's internal version ${fynPkgJson.version}`
         return ve.execute();
       },
       handlers: {
-        doneItem: (data) => {
-          if (data.item) data.item.installed = true;
+        doneItem: (data: any) => {
+          const item: PackageInstallInfo = data.item;
+          if (item) {
+            item.status = "done";
+          }
           const items = this.getMoreInstall();
           itemQ.addItems(items, true);
         },
