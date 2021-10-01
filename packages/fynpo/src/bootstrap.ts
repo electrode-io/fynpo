@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers, consistent-return */
+/* eslint-disable no-magic-numbers, consistent-return, complexity */
 
 import Promise from "bluebird";
 import _ from "lodash";
