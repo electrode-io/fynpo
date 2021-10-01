@@ -176,6 +176,7 @@ $pkg:
    filter-scan-dir: ^1.2.0
    lodash: ^4.17.21
    minimatch: ^3.0.4
+   semver: ^7.3.5
    tslib: ^2.1.0
 '@jchip/error':
  _latest: 1.0.2
@@ -271,13 +272,13 @@ agentkeepalive:
   dependencies:
    humanize-ms: ^1.2.1
 ajv:
- _latest: 8.6.2
+ _latest: 8.6.3
  _:
   '^6.11.0,^6.12.3,^6.12.6': 6.12.6
-  ^8.1.0: 8.6.2
- 8.6.2:
-  $: sha512-9807RlWAgT564wT+DjeyU5OFMPjmzxVobvDFmNAhY+5zD6A2ly3jDp6sgnfyDtlIQ+7H97oc/DGCzzfu9rjw9w==
-  _: 'https://registry.npmjs.org/ajv/-/ajv-8.6.2.tgz'
+  ^8.1.0: 8.6.3
+ 8.6.3:
+  $: sha512-SMJOdDP6LqTkD0Uq8qLi+gMwSt0imXLSV080qFVwJCpH9U6Mb+SUGHAXM0KNbcBPguytWyvFxcHgMLe2D2XSpw==
+  _: 'https://registry.npmjs.org/ajv/-/ajv-8.6.3.tgz'
   dependencies:
    fast-deep-equal: ^3.1.1
    json-schema-traverse: ^1.0.0
@@ -1102,12 +1103,12 @@ fast-json-stable-stringify:
   $: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==
   _: 'https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz'
 fast-json-stringify:
- _latest: 2.7.9
+ _latest: 2.7.10
  _:
-  ^2.5.2: 2.7.9
- 2.7.9:
-  $: sha512-FC9RJtux5cyojLEbpLyt6cMo6lkJPsfvx0E5O/I5fFkcnYVOSFjg53VUeVWudYXNJOS9Mmjx7totdrLCUWHPTA==
-  _: 'https://registry.npmjs.org/fast-json-stringify/-/fast-json-stringify-2.7.9.tgz'
+  ^2.5.2: 2.7.10
+ 2.7.10:
+  $: sha512-MPuVXMMueV8e3TRVLOpxxicJnSdu5mwbHrsO9IZU15zqfay6k19OqIv7N2DCeNPDOCNOmZwjvMUTwvblZsUmFw==
+  _: 'https://registry.npmjs.org/fast-json-stringify/-/fast-json-stringify-2.7.10.tgz'
   dependencies:
    ajv: ^6.11.0
    deepmerge: ^4.2.2
@@ -1128,12 +1129,12 @@ fast-safe-stringify:
   $: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==
   _: 'https://registry.npmjs.org/fast-safe-stringify/-/fast-safe-stringify-2.1.1.tgz'
 fastify:
- _latest: 3.21.0
+ _latest: 3.22.0
  _:
-  ^3.13.0: 3.21.0
- 3.21.0:
-  $: sha512-hc9p0meCV8PXIQzg8BwXekhCmJm5LHfeJi7U3mKQTMu7pQT24CL756jUxM9sOLEbBpQoD82PejVPW2lfLiXJsw==
-  _: 'https://registry.npmjs.org/fastify/-/fastify-3.21.0.tgz'
+  ^3.13.0: 3.22.0
+ 3.22.0:
+  $: sha512-JWNf/S90SOiOp6SwhMFdTT43+jT/gB2Yi2tPHQ/e7Kaua9PzFLm7Qmwhe2jBA3X6HPDKNugrRd7oPYeIb1Q3Zg==
+  _: 'https://registry.npmjs.org/fastify/-/fastify-3.22.0.tgz'
   dependencies:
    '@fastify/ajv-compiler': ^1.0.0
    abstract-logging: ^2.0.0
@@ -2676,12 +2677,12 @@ performance-now:
   $: sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
   _: 'https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz'
 pino:
- _latest: 6.13.2
+ _latest: 6.13.3
  _:
-  ^6.13.0: 6.13.2
- 6.13.2:
-  $: sha512-vmD/cabJ4xKqo9GVuAoAEeQhra8XJ7YydPV/JyIP+0zDtFTu5JSKdtt8eksGVWKtTSrNGcRrzJ4/IzvUWep3FA==
-  _: 'https://registry.npmjs.org/pino/-/pino-6.13.2.tgz'
+  ^6.13.0: 6.13.3
+ 6.13.3:
+  $: sha512-tJy6qVgkh9MwNgqX1/oYi3ehfl2Y9H0uHyEEMsBe74KinESIjdMrMQDWpcZPpPicg3VV35d/GLQZmo4QgU2Xkg==
+  _: 'https://registry.npmjs.org/pino/-/pino-6.13.3.tgz'
   dependencies:
    fast-redact: ^3.0.0
    fast-safe-stringify: ^2.0.8
@@ -2833,12 +2834,12 @@ queue-microtask:
   $: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
   _: 'https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz'
 quick-format-unescaped:
- _latest: 4.0.3
+ _latest: 4.0.4
  _:
-  ^4.0.3: 4.0.3
- 4.0.3:
-  $: sha512-MaL/oqh02mhEo5m5J2rwsVL23Iw2PEaGVHgT2vFt8AAsr0lfvQA5dpXo9TPu0rz7tSBdUPgkbam0j/fj5ZM8yg==
-  _: 'https://registry.npmjs.org/quick-format-unescaped/-/quick-format-unescaped-4.0.3.tgz'
+  ^4.0.3: 4.0.4
+ 4.0.4:
+  $: sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==
+  _: 'https://registry.npmjs.org/quick-format-unescaped/-/quick-format-unescaped-4.0.4.tgz'
 quick-lru:
  _latest: 6.0.0
  _:
@@ -3194,7 +3195,7 @@ socks-proxy-agent:
    agent-base: ~4.2.1
    socks: ~2.3.2
 sonic-boom:
- _latest: 2.2.3
+ _latest: 2.3.0
  _:
   ^1.0.2: 1.4.1
  1.4.1:
