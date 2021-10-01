@@ -1,3 +1,32 @@
+# 9/30/2021
+
+## Packages
+
+-   `@fynpo/base@1.0.1` `(1.0.0 => 1.0.1)`
+-   `fyn@1.0.1` `(1.0.0 => 1.0.1)`
+-   `fynpo@1.0.1` `(1.0.0 => 1.0.1)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   new dep graph handling [commit](https://github.com/electrode-io/fynpo/commit/7f019aeef52a274be2d4566260e509083164c384)
+
+-   `packages/fyn`
+
+    -   chore: add badges [commit](https://github.com/electrode-io/fynpo/commit/0c49668e2ba93a95b2f102098f6f0eb6d64e5b53)
+
+-   `packages/fynpo`
+
+    -   update tests [commit](https://github.com/electrode-io/fynpo/commit/50a96aa83eb82319df475886d943036158a37a8c)
+    -   use vanilla http for meta memoizer server [commit](https://github.com/electrode-io/fynpo/commit/1e2d06efc7838dbb30c0c2166075968031121692)
+    -   use new dep graph for bootstrap and run [commit](https://github.com/electrode-io/fynpo/commit/3685057a96231a5a730b29bbebd977a1c788048b)
+    -   chore: add badges [commit](https://github.com/electrode-io/fynpo/commit/0c49668e2ba93a95b2f102098f6f0eb6d64e5b53)
+
+-   `MISC`
+
+    -   update dep [commit](https://github.com/electrode-io/fynpo/commit/60e258ce0409cf1eeda657504088431bb4480fb7)
+
 # 9/10/2021
 
 ## Packages
