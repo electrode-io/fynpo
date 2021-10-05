@@ -188,6 +188,7 @@ function checkUrl(semver) {
 
 /**
  * fix some bad semver
+ *
  * @param {*} semver semver to fix
  * @returns {string} semver fixed
  */
@@ -207,6 +208,12 @@ function fixBadSv(semver) {
   return parts.join(".");
 }
 
+/**
+ * analyze a semver to detect its type
+ *
+ * @param {*} semver
+ * @returns
+ */
 function analyze(semver) {
   const sv = { $: semver };
 
@@ -243,7 +250,10 @@ function analyze(semver) {
   return sv;
 }
 
-module.exports = {
+/**
+ * semver utilities lib
+ */
+const semverLib = {
   satisfies: (v, semver) => {
     return Semver.satisfies(unlocalify(v), semver);
   },
@@ -274,3 +284,5 @@ module.exports = {
 
   checkUrl
 };
+
+module.exports = semverLib;

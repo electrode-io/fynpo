@@ -111,6 +111,11 @@ export class FynpoConfigManager {
       dir = Path.dirname(dir);
     } while (++count < 50 && dir !== prevDir);
 
+    // add alias patterns for packages config
+    if (this._config.hasOwnProperty("packages")) {
+      this._config.patterns = this._config.packages;
+    }
+
     this._topDir = dir;
   }
 }

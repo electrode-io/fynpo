@@ -17,8 +17,8 @@
 const RESOLVED_PKGS = Symbol("resolved packages");
 
 class DepData {
-  constructor(data) {
-    data = data || {};
+  constructor(_data) {
+    const data = _data || {};
     this.pkgs = data.pkgs || {};
     this.badPkgs = {};
     this.res = data.res || {};

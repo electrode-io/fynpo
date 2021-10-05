@@ -10,7 +10,7 @@ import { isCI } from "./is-ci";
 
 import { locateGlobalFyn } from "./utils";
 import { startMetaMemoizer } from "./meta-memoizer";
-import { FynpoDepGraph, PackageDepRef, PackageDepData, pkgInfoId } from "@fynpo/base";
+import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
 
 type PackageInstallInfo = {
   depData: PackageDepData;
@@ -39,6 +39,10 @@ class Bootstrap {
     this._errors = [];
 
     this._fyn = null;
+  }
+
+  get cwd() {
+    return this._opts.cwd;
   }
 
   get failed() {
@@ -175,6 +179,18 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       //
     }
 
+    let logLevelOpts = "";
+    if (fynOpts.indexOf("-q") < 0 && fynOpts.indexOf("--log-level") < 0) {
+      logLevelOpts = "-q d";
+    }
+
+    const fynOptArgs = [process.env.CI ? "--pg simple" : ""]
+      .concat(fynOpts, logLevelOpts, `install`, `--sl`, `--no-build-local`, mmOpt)
+      .filter((x) => x);
+
+    const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
+    logger.info(`bootstrap command: ${dispCmd}`);
+
     const start = Date.now();
     const itemQ = new ItemQueue({
       Promise,
@@ -183,25 +199,18 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       processItem: (item: PackageInstallInfo) => {
         const pkgInfo = item.depData.pkgInfo;
         const name = pkgInfo.name;
-        const colorName = chalk.magenta(name);
+        const colorId = chalk.magenta(pkgInfoId(pkgInfo));
         if (skip && skip.includes(name)) {
-          logger.info("bootstrap skipping", colorName);
+          logger.info("bootstrap skipping", colorId);
           return;
         }
-        let logLevelOpts = "";
-        if (fynOpts.indexOf("-q") < 0 && fynOpts.indexOf("--log-level") < 0) {
-          logLevelOpts = "-q d";
-        }
-
-        const fynOptArgs = [process.env.CI ? "--pg simple" : ""]
-          .concat(fynOpts, logLevelOpts, `install`, `--sl`, `--no-build-local`, mmOpt)
-          .filter((x) => x);
+        const colorPath = chalk.blue(pkgInfo.path);
 
         const command = [process.argv[0], this._fyn].concat(fynOptArgs).join(" ");
-        const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
-        logger[isCI ? "info" : "debug"]("bootstrap", colorName, dispCmd, chalk.blue(pkgInfo.path));
+        const colorFyn = chalk.cyan(`fyn`);
+        logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
         const ve = new VisualExec({
-          displayTitle: `bootstrap ${colorName} ${dispCmd}`,
+          displayTitle: `bootstrap ${colorId} in ${colorPath} ${colorFyn}`,
           cwd: pkgInfo.path,
           command,
           visualLogger: logger,

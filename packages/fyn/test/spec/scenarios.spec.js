@@ -67,13 +67,7 @@ const debug = false;
     extraArgs: []
   };
 
-  function executeScenario(cwd, options) {
-    const stopStep = options.stopStep;
-    const debugStep = options.debugStep;
-    const pkgJsonFile = Path.join(cwd, "package.json");
-    const pkgJson = {};
-    const files = Fs.readdirSync(cwd).filter(x => x.startsWith("step-"));
-
+  function executeScenario(scenarioDir, options) {
     const cleanLock = lock => {
       _.each(lock, (pkg, name) => {
         if (name.startsWith("$")) return;
@@ -87,10 +81,10 @@ const debug = false;
       return lock;
     };
 
-    const verifyLock = stepDir => {
+    const verifyLock = (_cwd, stepDir) => {
       const expectLockFile = Path.join(stepDir, "lock.yaml");
       if (Fs.existsSync(expectLockFile)) {
-        const actualLockFile = Path.join(cwd, "fyn-lock.yaml");
+        const actualLockFile = Path.join(_cwd, "fyn-lock.yaml");
         const expectLock = Yaml.safeLoad(Fs.readFileSync(expectLockFile).toString());
         const actualLock = Yaml.safeLoad(Fs.readFileSync(actualLockFile).toString());
         expect(cleanLock(actualLock), "lock file should match").to.deep.equal(
@@ -108,25 +102,30 @@ const debug = false;
         }
       });
     };
+    const accumulatedPkgJson = {};
 
     const makeStep = step => {
-      const stepDir = Path.join(cwd, step);
+      const stepDir = Path.join(scenarioDir, step);
       const stepAction = optionalRequire(Path.join(stepDir), { default: {} });
+
       _.defaults(stepAction, nulStepAction);
+
+      const cwd = stepAction.pkgDir ? Path.join(scenarioDir, stepAction.pkgDir) : scenarioDir;
+
       const stepTitle = stepAction.title ? `: ${stepAction.title}` : "";
       let failError;
-      const debugLogFile = `fyn-debug-${step}.log`;
 
       //
       // remove existing debug log file for step
       //
+      const debugLogFile = `fyn-debug-${step}.log`;
       rimraf.sync(Path.join(cwd, debugLogFile));
 
       const testCase = (stepAction.skip ? it.skip : it)(`${step}${stepTitle}`, () => {
-        if (debug && step === debugStep) {
+        if (debug && step === options.debugStep) {
           debugger; // eslint-disable-line
         }
-        return Promise.try(() => stepAction.before(cwd))
+        return Promise.try(() => stepAction.before(cwd, scenarioDir))
           .then(() => {
             const stepLockFile = Path.join(stepDir, "lock.yaml");
             if (stepAction.copyLock && Fs.existsSync(stepLockFile)) {
@@ -135,30 +134,31 @@ const debug = false;
             }
           })
           .then(() => {
+            const pkgJsonFile = Path.join(cwd, "package.json");
             const pkg = readJson(Path.join(stepDir, "pkg.json"));
             if (pkg) {
-              _.merge(pkgJson, pkg);
+              _.merge(accumulatedPkgJson, pkg);
               [
                 "dependencies",
                 "devDependencies",
                 "optionalDependencies",
                 "peerDependencies"
               ].forEach(k => {
-                if (pkgJson[k]) {
-                  pkgJson[k] = sortObjKeys(pkgJson[k]);
+                if (accumulatedPkgJson[k]) {
+                  accumulatedPkgJson[k] = sortObjKeys(accumulatedPkgJson[k]);
                 }
               });
-              deleteNullFields(pkgJson);
-              Fs.writeFileSync(pkgJsonFile, `${JSON.stringify(pkgJson, null, 2)}\n`);
+              deleteNullFields(accumulatedPkgJson);
+              Fs.writeFileSync(pkgJsonFile, `${JSON.stringify(accumulatedPkgJson, null, 2)}\n`);
             }
-            const fynDir = Path.join(cwd, ".fyn");
+            const fynDir = Path.join(scenarioDir, ".fyn");
             if (stepAction.run) {
               return stepAction.run({
                 registry,
                 fynDir,
-                cwd,
+                cwd: cwd,
                 baseArgs: BASE_ARGS,
-                pkgJson,
+                pkgJson: accumulatedPkgJson,
                 pkgJsonFile,
                 debug
               });
@@ -170,11 +170,11 @@ const debug = false;
               args = stepAction.getArgs({
                 registry,
                 fynDir,
-                cwd,
+                cwd: cwd,
                 baseArgs: []
                   .concat(BASE_ARGS)
                   .concat(`--sl`, debugLogFile, (debug && ["-q", "debug"]) || []),
-                pkgJson,
+                pkgJson: accumulatedPkgJson,
                 pkgJsonFile,
                 debug
               });
@@ -227,7 +227,7 @@ const debug = false;
               Fs.readFileSync(Path.join(stepDir, "nm-tree.yaml")).toString()
             );
             expect(nmTree).to.deep.equal(expectNmTree);
-            verifyLock(stepDir);
+            verifyLock(cwd, stepDir);
           })
           .catch(err => {
             if (!debug) {
@@ -253,7 +253,7 @@ const debug = false;
             }
             throw err;
           })
-          .then(() => stepAction.verify(cwd))
+          .then(() => stepAction.verify(cwd, scenarioDir))
           .delay(10)
           .finally(() => stepAction.after());
       });
@@ -262,9 +262,11 @@ const debug = false;
       else if (stepAction.timeout) testCase.timeout(stepAction.timeout);
     };
 
+    const files = Fs.readdirSync(scenarioDir).filter(x => x.startsWith("step-"));
+
     for (const step of files.sort()) {
       makeStep(step);
-      if (step === stopStep) break;
+      if (step === options.stopStep) break;
     }
   }
 
@@ -275,7 +277,8 @@ const debug = false;
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
-        // "fyn-central": {}
+        "fyn-central": {},
+        "fynpo-sample": {}
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}

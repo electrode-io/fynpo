@@ -67,7 +67,7 @@ export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string
 };
 
 export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
-  let fynpoRc = {};
+  let fynpoRc: any = {};
   let dir = cwd;
   let fileName = "";
 
@@ -76,7 +76,7 @@ export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
   if (data && !data.isEmpty) {
     fileName = data.filepath ? Path.basename(data.filepath) : "";
     dir = data.filepath ? Path.dirname(data.filepath) : cwd;
-    if (fileName === "lerna.json") {
+    if (fileName === "lerna.json" && !data.config.fynpo) {
       logger.info("found lerna.json at", dir, "adding fynpo signature");
       fynpoRc = { ...data.config, fynpo: true };
       Fs.writeFileSync(Path.join(dir, "lerna.json"), JSON.stringify(fynpoRc, null, 2) + "\n");
@@ -104,6 +104,11 @@ export const loadConfig = (cwd = process.cwd(), commitlint = false) => {
       };
       Fs.writeFileSync(dest, `${JSON.stringify(fynpoRc, null, 2)}\n`);
     }
+  }
+
+  // add alias patterns for packages config
+  if (fynpoRc.hasOwnProperty("packages")) {
+    fynpoRc.patterns = fynpoRc.packages;
   }
 
   return { fynpoRc, dir, fileName };

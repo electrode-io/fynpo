@@ -553,8 +553,12 @@ class PkgSrcManager {
     let cacheMemoized = false;
     const metaMemoizeUrl = this._fyn._options.metaMemoize;
 
-    const promise = cacache
-      .get(this._cacheDir, cacheKey, { memoize: true })
+    const promise = (item.urlType
+      ? // when the semver is a url then the meta is not from npm registry and
+        // we can't use the cache for registry
+        Promise.resolve()
+      : cacache.get(this._cacheDir, cacheKey, { memoize: true })
+    )
       .then(cached => {
         const packument = cached && cached.data && JSON.parse(cached.data);
         foundCache = cached;

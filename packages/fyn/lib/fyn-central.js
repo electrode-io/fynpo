@@ -75,7 +75,17 @@ class FynCentral {
     return { algorithm, contentPath, hex };
   }
 
-  async _loadTree(integrity, info, noSet) {
+  /**
+   * load a dir tree for a centrally stored package
+   *
+   * @param {*} integrity - package integrity checksum
+   * @param {*} _info - package info
+   * @param {*} _noSet - if true, then do not mark package in map
+   * @returns dir tree info
+   */
+  async _loadTree(integrity, _info, _noSet) {
+    let info = _info;
+    let noSet = _noSet;
     if (!info) {
       if (this._map.has(integrity)) {
         info = this._map.get(integrity);
@@ -208,7 +218,8 @@ class FynCentral {
     return tmpLock;
   }
 
-  async _storeTarStream(info, stream) {
+  async _storeTarStream(info, _stream) {
+    let stream = _stream;
     const tmp = `${info.contentPath}.tmp`;
 
     await Fs.$.rimraf(tmp); // in case there was any remnant left from an interrupted install

@@ -17,6 +17,7 @@ const simpleSemverCompare = semverUtil.simpleCompare;
 const logFormat = require("./util/log-format");
 const { LONG_WAIT_META } = require("./log-items");
 const { checkPkgOsCpu, relativePath } = require("./util/fyntil");
+const { getDepSection, makeDepStep } = require("@fynpo/base");
 const xaa = require("./util/xaa");
 
 const {
@@ -326,7 +327,18 @@ class PkgDepResolver {
     }
   }
 
-  makePkgDepItems(pkg, parent, dev, noPrefetch, deepResolve) {
+  /**
+   * create the dep relation items for a package
+   *
+   * @param {*} pkg - the package
+   * @param {*} depItem - the dep relation item for the package, this serves as the parent
+   *                      of all the new dep items created
+   * @param {*} dev
+   * @param {*} noPrefetch
+   * @param {*} deepResolve
+   * @returns
+   */
+  makePkgDepItems(pkg, depItem, dev, noPrefetch, deepResolve) {
     const bundled = pkg.bundleDependencies;
 
     const depPriorities = {
@@ -338,20 +350,20 @@ class PkgDepResolver {
 
     const makeDepItems = (deps, dsrc) => {
       const items = [];
-      const src = parent.src || dsrc;
+      const src = depItem.src || dsrc;
       const depNames = Object.keys(deps);
       for (let idx = 0; idx < depNames.length; idx++) {
         const name = depNames[idx];
-        if (!bundled || bundled.indexOf(name) < 0) {
+        if (!_.includes(bundled, name)) {
           const opt = {
             name,
-            priority: parent.priority || depPriorities[dsrc] - idx,
+            priority: depItem.priority || depPriorities[dsrc] - idx,
             semver: deps[name],
             src,
             dsrc,
             deepResolve
           };
-          const newItem = new DepItem(opt, parent);
+          const newItem = new DepItem(opt, depItem);
 
           if (noPrefetch !== true) this.prefetchMeta(newItem);
           items.push(newItem);
@@ -375,19 +387,34 @@ class PkgDepResolver {
       return deps;
     };
 
-    const joinFynDep = sec => {
-      if (!this._fyn.fynlocal) return pkg[sec];
+    const findFynpoPkgOfDep = (di, steps) => {
+      const fynpoPath = di.fullPath
+        ? Path.relative(this._fyn._fynpo.dir, di.fullPath)
+        : Path.relative(this._fyn._fynpo.dir, this._fyn.cwd);
+      const fynpoPkg = this._fyn._fynpo.graph.packages.byPath[fynpoPath];
+      if (fynpoPkg) {
+        steps.push(makeDepStep(fynpoPkg.name, fynpoPkg.version, di.dsrc));
+        return fynpoPkg;
+      }
+      if (di.parent) {
+        steps.push(makeDepStep(di.name, di.version, di.dsrc));
+        return findFynpoPkgOfDep(di.parent, steps);
+      }
+      return false;
+    };
 
-      const deps = Object.assign({}, pkg[sec]);
+    const joinFynDep = depSec => {
+      if (!this._fyn.fynlocal) return pkg[depSec];
 
-      const fynDeps = _.get(pkg, ["fyn", sec], {});
+      const deps = Object.assign({}, pkg[depSec]);
+
+      const fynDeps = _.get(pkg, ["fyn", depSec], {});
       let fromDir = pkg[PACKAGE_RAW_INFO] && pkg[PACKAGE_RAW_INFO].dir;
 
       // if in fynpo mode, gather deps that are actually local packages in the mono-repo
       if (this._fyn.isFynpo) {
         const locals = [];
         const fynpo = this._fyn._fynpo;
-        const { packagesByName } = fynpo;
         if (!fromDir) {
           // this case means an downstream pkg has a dep on a mono-repo package
           // TODO: should make sure mono-repo local copy's version satisfies
@@ -395,33 +422,50 @@ class PkgDepResolver {
           fromDir = this._fyn.cwd;
         }
         for (const name in deps) {
-          // is pkg 'name' a fynpo package?
-          if (packagesByName[name] && !fynDeps.hasOwnProperty(name)) {
-            locals.push(name);
-            fynDeps[name] = relativePath(fromDir, packagesByName[name].pkgDir, true);
+          // is pkg 'name@semver' a fynpo package?
+          const fynpoPkg = fynpo.graph.resolvePackage(name, deps[name]);
+          if (fynpoPkg) {
+            locals.push(fynpoPkg);
+            const fullPkgDir = Path.join(fynpo.dir, fynpoPkg.path);
+            fynDeps[name] = relativePath(fromDir, fullPkgDir, true);
           }
         }
         if (locals.length > 0 && !this._options.deDuping) {
+          const revSteps = [];
+          const fynpoPkg = findFynpoPkgOfDep(depItem, revSteps);
+          if (fynpoPkg) {
+            const steps = revSteps.reverse();
+            locals.forEach(x => {
+              const sec = getDepSection(depSec);
+              if (fynpo.graph.addDep(fynpoPkg, x, sec, steps)) {
+                fynpo.indirects.push({
+                  fromPkg: _.pick(fynpoPkg, ["name", "version", "path"]),
+                  onPkg: _.pick(x, ["name", "version", "path"]),
+                  depSection: sec,
+                  indirectSteps: steps
+                });
+              }
+            });
+          }
+          const names = locals.map(x => x.name).join(", ");
           logger.info(
-            `These packages in ${
-              pkg.name
-            }'s ${sec} using local copies from your mono-repo: ${locals.join(", ")}`
+            `These packages in ${pkg.name}'s ${depSec} using local copies from your mono-repo: ${names}`
           );
         }
       }
 
       for (const name in fynDeps) {
         if (!deps[name]) {
-          logger.warn(`You ONLY defined ${name} in fyn.${sec}!`);
+          logger.warn(`You ONLY defined ${name} in fyn.${depSec}!`);
         }
         if (!fromDir) continue;
-        const ownerName = chalk.magenta(parent.name);
+        const ownerName = chalk.magenta(depItem.name);
         const dispName = chalk.green(name);
         if (fynDeps[name] === false || fynDeps[name] === "--no-fyn-local") {
           logger.info(`fyn local disabled for ${dispName} of ${ownerName}`);
           continue;
         }
-        const dispSec = chalk.cyan(`fyn.${sec}`);
+        const dispSec = chalk.cyan(`fyn.${depSec}`);
         const dispSemver = chalk.blue(fynDeps[name]);
         try {
           Fs.statSync(Path.join(fromDir, fynDeps[name]));

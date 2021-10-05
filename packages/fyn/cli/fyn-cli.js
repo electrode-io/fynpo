@@ -242,7 +242,7 @@ class FynCli {
         results.forEach(item => {
           if (item.semverPath) {
             // set in package-fyn
-            if (!this._fyn.isFynpo || !this._fyn._fynpo.packagesByName[item.name]) {
+            if (!this._fyn.isFynpo || !this._fyn._fynpo.graph.getPackageByName(item.name)) {
               _.set(pkgFyn, ["fyn", item.section, item.name], item.found);
             }
             // set in package if it's not there
@@ -445,6 +445,8 @@ class FynCli {
       .then(async () => {
         logger.removeItem(INSTALL_PACKAGE);
         const end = Date.now();
+
+        await this.fyn.saveFynpoIndirects();
 
         logger.info(
           chalk.green("complete in total"),

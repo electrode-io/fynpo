@@ -1,0 +1,15 @@
+{
+  "name": "ifoo1",
+  "version": "1.0.0",
+  "description": "test a package depending on a package that has indirect circular",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "icir1": "^1.0.0"
+  }
+}

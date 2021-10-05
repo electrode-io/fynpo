@@ -30,6 +30,7 @@ const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = req
 const npmConfigEnv = require("./util/npm-config-env");
 const PkgOptResolver = require("./pkg-opt-resolver");
 const { LocalPkgBuilder } = require("./local-pkg-builder");
+const { posixify } = require("./util/fyntil");
 
 class Fyn {
   constructor({ opts = {}, _cliSource = {}, _fynpo = true }) {
@@ -184,7 +185,7 @@ class Fyn {
       let fynpoNpmRun;
 
       if (this._fynpo.config) {
-        if (this._fynpo.packages[this._cwd]) {
+        if (this._fynpo.graph.getPackageAtDir(this._cwd)) {
           fynpoNpmRun = _.get(this, "_fynpo.config.command.bootstrap.npmRunScripts", undefined);
           if (_.isArray(fynpoNpmRun) && !_.isEmpty(fynpoNpmRun)) {
             logger.info("fynpo monorepo: npm run scripts", fynpoNpmRun);
@@ -193,7 +194,12 @@ class Fyn {
             logger.info("fynpo monorepo: default to auto run npm scripts:", fynpoNpmRun);
           }
         } else {
-          logger.info("package at", this._cwd, "is not part of fynpo's packages");
+          logger.info(
+            "package at",
+            this._cwd,
+            "is not part of fynpo's packages. fynpo top dir is",
+            this._fynpo.dir
+          );
         }
       }
 
@@ -208,6 +214,33 @@ class Fyn {
         pkgSrcMgr: this._pkgSrcMgr,
         fyn: this
       });
+    }
+  }
+
+  async saveFynpoIndirects() {
+    if (!this.isFynpo) {
+      return;
+    }
+
+    const lockFile = Path.join(this._fynpo.dir, ".fynpo/fynpo-data.lock");
+
+    try {
+      const indirects = this._fynpo.indirects;
+      const dataFile = Path.join(this._fynpo.dir, ".fynpo-data.json");
+      await Fs.$.mkdirp(Path.join(this._fynpo.dir, ".fynpo"));
+      await Fs.$.acquireLock(lockFile);
+      const path = posixify(Path.relative(this._fynpo.dir, this.cwd));
+      const fynpoData = await fyntil.readJson(dataFile, { indirects: { [path]: [] } });
+      if (JSON.stringify(indirects) !== JSON.stringify(fynpoData.indirects[path])) {
+        logger.info(
+          `saving indirect dep to .fynpo-data.json. fyn recommends that you commit the file.`
+        );
+        fynpoData.indirects[path] = indirects;
+        fynpoData.__timestamp = Date.now();
+        await Fs.writeFile(dataFile, `${JSON.stringify(fynpoData, null, 2)}\n`);
+      }
+    } finally {
+      await Fs.$.releaseLock(lockFile);
     }
   }
 

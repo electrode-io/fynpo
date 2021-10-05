@@ -146,6 +146,7 @@
       "bin",
       "cli/config",
       "cli/fun.js",
+      "lib/util/file-ops-win32.js",
       "coverage",
       "dist",
       "docs",

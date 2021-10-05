@@ -6,6 +6,7 @@ import mm from "minimatch";
 import _ from "lodash";
 import Semver from "semver";
 import { groupMM, MMGroups } from "./minimatch-group";
+import { posixify } from "./util";
 
 /**
  * Basic information about a package: name, version, and its path in the monorepo
@@ -36,6 +37,39 @@ export type PackageBasicInfo = {
  */
 export type DEP_SECTIONS = "dep" | "dev" | "opt" | "peer";
 
+const DepSectionMap = {
+  dependencies: "dep",
+  devDependencies: "dev",
+  optionalDependencies: "opt",
+  peerDependencies: "peer",
+  dep: "dep",
+  dev: "dev",
+  opt: "opt",
+  peer: "peer",
+};
+
+/**
+ * get the dep section from package.json dep sections
+ *
+ * @param fullName - full name from package.json dep section
+ * @returns dep section
+ */
+export function getDepSection(fullName: string): DEP_SECTIONS {
+  return DepSectionMap[fullName] || "dep";
+}
+
+/**
+ * make a indirect dep step string
+ *
+ * @param name package name
+ * @param version package version
+ * @param sec section it's specified as a dep package
+ * @returns step string
+ */
+export function makeDepStep(name: string, version: string, sec: string) {
+  return `${pkgId(name, version)}(${sec})`;
+}
+
 /**
  * Basic referencing information of a package to remember the dependency relationship
  *
@@ -52,6 +86,20 @@ export type PackageDepRef = PackageBasicInfo & {
    * if the dependency was pulled by an intermediate package,
    * this list the packages that lead up to it.
    */
+  indirectSteps?: string[];
+};
+
+/**
+ * Specify a dependency relation between two packages
+ */
+export type PackageDepRelation = {
+  /** the package dependency is from */
+  fromPkg: PackageBasicInfo;
+  /** the package dependency is on */
+  onPkg: PackageBasicInfo;
+  /** package.json section */
+  depSection: DEP_SECTIONS;
+  /** If not a direct dep, then the list of packages in between */
   indirectSteps?: string[];
 };
 
@@ -175,12 +223,28 @@ export class FynpoDepGraph {
     this._options = { patterns: ["packages/*"], cwd: process.cwd(), ...options };
     this.depMapByPath = {};
     this.resolvedCache = {};
+    this.packages = {
+      byId: {},
+      byName: {},
+      byPath: {},
+    };
   }
 
+  /**
+   * resolve packages from fynpo
+   */
   async resolve() {
-    if (!this.packages) {
+    if (_.isEmpty(this.packages.byName)) {
       await this.readPackages();
     }
+    this.updateDepMap();
+  }
+
+  /**
+   * update package depdencies map
+   * - re-entrant safe
+   */
+  updateDepMap() {
     this.resolveDirectDeps();
     this.resolveIndirectDeps();
   }
@@ -216,6 +280,7 @@ export class FynpoDepGraph {
 
     while (changed.length > 0) {
       const record = depRecords[changed.pop()];
+      /* istanbul ignore else */
       if (record.count === 0) {
         record.count = -1;
         sorted.push(record.depData.pkgInfo.path);
@@ -292,58 +357,90 @@ export class FynpoDepGraph {
 
     const allFiles: string[] = [].concat(...files);
 
-    const byName: Record<string, FynpoPackageInfo[]> = {};
-
     // Read each package.json and generate PackageInfo for it
     for (const pkgFile of allFiles) {
-      const pkgStr = await Fs.readFile(Path.join(cwd, pkgFile), "utf-8");
-      const pkgJson = JSON.parse(pkgStr);
-
-      if (pkgJson.fynpo === false) {
-        continue;
-      }
-
-      const path = Path.dirname(pkgFile);
-
-      assert(pkgJson.name, `package at ${pkgFile} doesn't have name`);
-
-      // check for npm scope
-      const pkgDir: string =
-        pkgJson.name[0] === "@" && (path.endsWith(`/${pkgJson.name}`) || path === pkgJson.name)
-          ? pkgJson.name
-          : Path.basename(path);
-
-      const pkgInfo: FynpoPackageInfo = {
-        name: pkgJson.name,
-        version: pkgJson.version,
-        path,
-        pkgDir,
-        ..._.pick(pkgJson, [
-          "private",
-          "dependencies",
-          "devDependencies",
-          "optionalDependencies",
-          "peerDependencies",
-        ]),
-        pkgStr,
-        pkgJson,
-      };
-
-      // hide the original raw data
-      Object.defineProperties(pkgInfo, {
-        pkgStr: { enumerable: false },
-        pkgJson: { enumerable: false },
-      });
-
-      if (byName.hasOwnProperty(pkgJson.name)) {
-        byName[pkgJson.name].push(pkgInfo);
-      } else {
-        byName[pkgJson.name] = [pkgInfo];
-      }
+      await this.addPackageByFile(pkgFile);
     }
 
-    let byPath: Record<string, FynpoPackageInfo> = {};
-    let byId: Record<string, FynpoPackageInfo> = {};
+    this.updateAuxPackageData();
+
+    return this.packages;
+  }
+
+  /**
+   * Add a package to the graph by the path to its package.json file
+   *
+   * @param pkgFile - path to the package.json file
+   */
+  async addPackageByFile(pkgFile: string) {
+    const pkgStr = await Fs.readFile(Path.join(this._options.cwd, pkgFile), "utf-8");
+    const pkgJson = JSON.parse(pkgStr);
+    this.addPackage(pkgJson, Path.dirname(pkgFile), pkgStr);
+  }
+
+  /**
+   * Add a package to the graph using the data from its package.json
+   *
+   * @param pkgJson - data from package.json
+   * @param pkgPath - relative path from the top dir of fynpo to the package.  **It must use `/` only.**
+   * @param pkgStr - string form of package.json
+   * @returns
+   */
+  addPackage(pkgJson: Record<string, any>, pkgPath: string, pkgStr?: string) {
+    if (pkgJson.fynpo === false) {
+      return;
+    }
+
+    assert(pkgJson.name, `package at ${pkgPath} doesn't have name`);
+
+    // check for npm scope
+    const pkgDir: string =
+      pkgJson.name[0] === "@" && (pkgPath.endsWith(`/${pkgJson.name}`) || pkgPath === pkgJson.name)
+        ? pkgJson.name
+        : Path.basename(pkgPath);
+
+    const pkgInfo: FynpoPackageInfo = {
+      name: pkgJson.name,
+      version: pkgJson.version,
+      path: pkgPath,
+      pkgDir,
+      ..._.pick(pkgJson, [
+        "private",
+        "dependencies",
+        "devDependencies",
+        "optionalDependencies",
+        "peerDependencies",
+      ]),
+      pkgStr,
+      pkgJson,
+    };
+
+    // hide the original raw data
+    Object.defineProperties(pkgInfo, {
+      pkgStr: { enumerable: false },
+      pkgJson: { enumerable: false },
+    });
+
+    const { byName } = this.packages;
+
+    if (byName.hasOwnProperty(pkgJson.name)) {
+      byName[pkgJson.name].push(pkgInfo);
+    } else {
+      byName[pkgJson.name] = [pkgInfo];
+    }
+  }
+
+  /**
+   * update auxiliary package data
+   *
+   * - (re)generate `byId` map
+   * - (re)generate `byPath` map
+   * - sort multiple versions from latest to oldest in `byName`
+   */
+  updateAuxPackageData() {
+    this.packages.byId = {};
+    this.packages.byPath = {};
+    const { byName, byPath, byId } = this.packages;
 
     // create package map byPath and byId
     for (const name in byName) {
@@ -356,8 +453,20 @@ export class FynpoDepGraph {
         byName[name].sort((a, b) => Semver.compare(b.version, a.version));
       }
     }
+  }
 
-    return (this.packages = { byName, byPath, byId });
+  /**
+   * Resolve a package by its name and semver against the fynpo packages
+   *
+   * @param name - package name
+   * @param semver - semver
+   * @returns fynpo package info
+   */
+  resolvePackage(name: string, semver: string): FynpoPackageInfo {
+    if (this.packages.byName[name]) {
+      return resolvePackage(semver, this.packages.byName[name]);
+    }
+    return undefined;
   }
 
   /**
@@ -395,11 +504,13 @@ export class FynpoDepGraph {
     };
 
     for (const path in byPath) {
-      depMapByPath[path] = {
-        pkgInfo: byPath[path],
-        localDepsByPath: {},
-        dependentsByPath: {},
-      };
+      if (!depMapByPath[path]) {
+        depMapByPath[path] = {
+          pkgInfo: byPath[path],
+          localDepsByPath: {},
+          dependentsByPath: {},
+        };
+      }
     }
 
     for (const id in byId) {
@@ -471,6 +582,17 @@ export class FynpoDepGraph {
   }
 
   /**
+   * Add depdencies from a list of dep relations
+   *
+   * @param relations - relations
+   */
+  addDepRelations(relations: PackageDepRelation[]) {
+    relations.forEach((rel) => {
+      this.addDepByPath(rel.fromPkg.path, rel.onPkg.path, rel.depSection, rel.indirectSteps);
+    });
+  }
+
+  /**
    * Add a dependency relation
    *
    * @param pkgInfo package that depends on another
@@ -478,6 +600,7 @@ export class FynpoDepGraph {
    * @param depSection section in package.json
    * @param indirectSteps intermediate dep steps
    *
+   * @returns boolean - whether dep is added (it's not if it already exist)
    */
   addDep(
     pkgInfo: FynpoPackageInfo,
@@ -487,6 +610,11 @@ export class FynpoDepGraph {
   ) {
     const dataPkg = this.depMapByPath[pkgInfo.path];
     const dataDep = this.depMapByPath[depPkg.path];
+
+    if (dataPkg.localDepsByPath[depPkg.path]) {
+      // dep relation already exist
+      return false;
+    }
 
     dataPkg.localDepsByPath[depPkg.path] = {
       name: depPkg.name,
@@ -508,6 +636,27 @@ export class FynpoDepGraph {
     }
 
     this.checkCircular(pkgInfo, depPkg);
+
+    return true;
+  }
+
+  /**
+   * Get a package at a directory
+   *
+   * @param dir - directory of package to get
+   */
+  getPackageAtDir(dir: string): FynpoPackageInfo {
+    const path = posixify(Path.isAbsolute(dir) ? Path.relative(this._options.cwd, dir) : dir);
+    return this.packages.byPath[path];
+  }
+
+  /**
+   * Get a package by its name
+   * @param name - name of package
+   * @returns
+   */
+  getPackageByName(name: string): FynpoPackageInfo {
+    return _.first(this.packages.byName[name]);
   }
 
   /**
@@ -529,7 +678,6 @@ export class FynpoDepGraph {
       // go through all found deps
       _.each(localDeps, (depRef: PackageDepRef) => {
         const sec = section || depRef.depSection;
-        const depId = pkgInfoId(depRef);
         const depInfo = byPath[depRef.path];
         const dataDep = depMapByPath[depRef.path];
         // check circular
@@ -552,7 +700,7 @@ export class FynpoDepGraph {
         doResolve(
           dataPkg,
           dataDep.localDepsByPath,
-          stepsCopy.concat(`${depId}(${depRef.depSection})`),
+          stepsCopy.concat(makeDepStep(depRef.name, depRef.version, depRef.depSection)),
           sec
         );
       });

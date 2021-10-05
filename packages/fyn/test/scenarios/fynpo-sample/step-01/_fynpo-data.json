@@ -1,0 +1,21 @@
+{
+  "indirects": {
+    "@scope/pkg-2": [
+      {
+        "fromPkg": {
+          "name": "@scope/pkg-2",
+          "version": "1.0.0",
+          "path": "@scope/pkg-2"
+        },
+        "onPkg": {
+          "name": "pkg1",
+          "version": "1.0.0",
+          "path": "packages/pkg1"
+        },
+        "depSection": "dep",
+        "indirectSteps": ["@scope/pkg-2@1.0.0(pkg)", "dep-on-pkg1(dep)"]
+      }
+    ]
+  },
+  "__timestamp": 1633445919728
+}

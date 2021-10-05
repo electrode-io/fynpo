@@ -384,6 +384,8 @@ const commands = {
 };
 
 const run = (args, start) => {
+  fynTil.fynpoConfig = undefined;
+
   if (start === undefined && args !== undefined) {
     start = 0;
   }

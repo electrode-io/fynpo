@@ -69,18 +69,18 @@ const checkValueSatisfyRules = (inRules, userValue) => {
  */
 const posixify = Path.sep === "/" ? x => x : x => x.replace(/\\/g, "/");
 
-let fynpoConfig;
-
-module.exports = {
+const fyntil = {
   isWin32,
 
   missPipe,
 
   retry,
 
+  fynpoConfig: undefined,
+
   async loadFynpo(cwd = process.cwd()) {
-    if (fynpoConfig) {
-      return fynpoConfig;
+    if (fyntil.fynpoConfig) {
+      return fyntil.fynpoConfig;
     }
     const fcm = new FynpoConfigManager({ cwd });
     const config = await fcm.load();
@@ -93,27 +93,15 @@ module.exports = {
       }
       const graph = new FynpoDepGraph(opts);
       await graph.resolve();
-      const packages = {};
-      const packagesByName = {};
 
-      _.each(graph.packages.byName, (pkgInfo, name) => {
-        const { pkgJson, path } = pkgInfo[0];
-        const pkgDir = posixify(Path.join(fcm.topDir, path));
-        packagesByName[name] = packages[pkgDir] = {
-          pkgDir,
-          pkgJson
-        };
-      });
-
-      return (fynpoConfig = {
+      return (fyntil.fynpoConfig = {
         config,
         dir: fcm.topDir,
         graph,
-        packages,
-        packagesByName
+        indirects: []
       });
     } else {
-      return (fynpoConfig = {});
+      return (fyntil.fynpoConfig = {});
     }
   },
 
@@ -133,7 +121,7 @@ module.exports = {
     process.exit(err ? 1 : 0);
   },
 
-  async readJson(file) {
+  async readJson(file, defaultData) {
     try {
       const data = await Fs.readFile(file, "utf8");
       return JSON.parse(data);
@@ -142,6 +130,10 @@ module.exports = {
         const msg = `Failed to read JSON file ${file} - ${err.message}`;
         logger.error(msg);
         throw new Error(msg);
+      }
+
+      if (defaultData !== undefined) {
+        return defaultData;
       }
 
       throw err;
@@ -262,3 +254,5 @@ module.exports = {
 
   posixify
 };
+
+module.exports = fyntil;

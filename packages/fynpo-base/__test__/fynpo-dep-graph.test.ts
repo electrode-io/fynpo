@@ -59,6 +59,33 @@ describe("fynpo dep graph", () => {
     expect(topo).toEqual(expectData);
   });
 
+  it("should resolvePackage by name and semver", async () => {
+    const graph = new FynpoDepGraph({
+      cwd: path.join(__dirname, "electrode"),
+    });
+    await graph.resolve();
+    const r1 = graph.resolvePackage("@xarc/app", "^10.0.0");
+    expect(r1).toHaveProperty("name", "@xarc/app");
+
+    graph.addPackage(
+      { name: "@xarc/app", version: "11.1.5" },
+      path.join(path.dirname(r1.path), "xarc-app-11")
+    );
+
+    graph.updateAuxPackageData();
+
+    const r2 = graph.resolvePackage("@xarc/app", "^11.0.0");
+    expect(r2).toHaveProperty("name", "@xarc/app");
+    expect(r2).toHaveProperty("version", "11.1.5");
+
+    const r3 = graph.resolvePackage("@xarc/app", "^12.0.0");
+    expect(r3).toHaveProperty("name", "@xarc/app");
+    expect(r3).toHaveProperty("version", "11.1.5");
+
+    const r4 = graph.resolvePackage("blahblah", "^1.0.0");
+    expect(r4).toEqual(undefined);
+  });
+
   it("addDepByPath should add dependency", async () => {
     const graph = new FynpoDepGraph({
       patterns: null,
@@ -83,6 +110,8 @@ describe("fynpo dep graph", () => {
     await graph.resolve();
     const topoSorted1 = JSON.stringify(graph.getTopoSortPackages());
     const ids = Object.keys(graph.packages.byId);
+    graph.addDepById(ids[0], ids[1], "dep");
+    // test adding again
     graph.addDepById(ids[0], ids[1], "dep");
 
     const topoSorted2 = JSON.stringify(graph.getTopoSortPackages());

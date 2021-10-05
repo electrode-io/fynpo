@@ -14,7 +14,7 @@ import Version from "./version";
 import { makePkgDeps, readFynpoPackages, FynpoDepGraph } from "@fynpo/base";
 import logger from "./logger";
 import * as utils from "./utils";
-import Fs from "fs";
+import Fs, { read } from "fs";
 import _ from "lodash";
 
 const globalCmnds = ["bootstrap", "local", "run"];
@@ -40,43 +40,89 @@ const readPackages = async (opts: any, cmdName: string = "") => {
   return result;
 };
 
-const makeBootstrap = async (parsed) => {
-  const config: any = utils.loadConfig(parsed.opts.cwd || process.cwd());
-  const optConfig = Object.assign({}, config, parsed.opts);
-  const opts = { cwd: process.cwd(), patterns: ["packages/*"], ...optConfig };
+const readFynpoData = async (cwd) => {
+  try {
+    const data = Fs.readFileSync(Path.join(cwd, ".fynpo-data.json"), "utf-8");
+    return JSON.parse(data);
+  } catch (_err) {
+    return { indirects: {} };
+  }
+};
+
+const makeOpts = async (parsed) => {
+  const cwd = parsed.opts.cwd || process.cwd();
+  const fynpo: any = utils.loadConfig();
+  const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts);
+  const opts = { cwd, patterns: ["packages/*"], ...optConfig };
+
+  return opts;
+};
+
+const makeDepGraph = async (opts) => {
   const graph = new FynpoDepGraph(opts);
   await graph.resolve();
+  const fynpoData = await readFynpoData(opts.cwd);
+  if (!_.isEmpty(fynpoData.indirects)) {
+    _.each(fynpoData.indirects, (relations) => {
+      graph.addDepRelations(relations);
+    });
+    graph.updateDepMap();
+  }
+
+  return graph;
+};
+
+const makeBootstrap = async (parsed) => {
+  const opts = await makeOpts(parsed);
+  const graph = await makeDepGraph(opts);
   return new Bootstrap(graph, opts);
 };
 
-const execBootstrap = async (parsed) => {
+const execBootstrap = async (parsed, cli, second = false) => {
   const bootstrap = await makeBootstrap(parsed);
+  const fynpoDataStart = await readFynpoData(bootstrap.cwd);
   let statusCode = 0;
-  logger.debug("CLI options", JSON.stringify(parsed));
-  return bootstrap
-    .exec({
+
+  if (!second) {
+    logger.debug("CLI options", JSON.stringify(parsed));
+  }
+
+  let secondRun = false;
+  try {
+    await bootstrap.exec({
       build: parsed.opts.build,
       fynOpts: parsed.opts.fynOpts,
       concurrency: parsed.opts.concurrency,
       skip: parsed.opts.skip,
-    })
-    .then(
-      () => {
-        bootstrap.logErrors();
-        statusCode = bootstrap.failed;
-      },
-      () => {
-        bootstrap.logErrors();
-        statusCode = 1;
+    });
+
+    if (!second) {
+      const fynpoDataEnd = await readFynpoData(bootstrap.cwd);
+      if (fynpoDataEnd.__timestamp !== fynpoDataStart.__timestamp) {
+        logger.info(
+          "=== fynpo data changed - running bootstrap again - fynpo recommands that you commit the .fynpo-data.json file ==="
+        );
+        secondRun = true;
+        return await execBootstrap(parsed, cli, true);
       }
-    )
-    .finally(() => {
+    }
+
+    bootstrap.logErrors();
+    statusCode = bootstrap.failed;
+  } catch (err) {
+    if (!secondRun) {
+      bootstrap.logErrors();
+      statusCode = 1;
+    }
+  } finally {
+    if (!secondRun) {
       if (statusCode !== 0 || parsed.opts.saveLog) {
         Fs.writeFileSync("fynpo-debug.log", logger.logData.join("\n") + "\n");
         logger.error("Please check the file fynpo-debug.log for more info.");
       }
       process.exit(statusCode);
-    });
+    }
+  }
 };
 
 const execLocal = async (parsed) => {
@@ -114,11 +160,8 @@ const execVersion = async (parsed) => {
 };
 
 const execRunScript = async (parsed) => {
-  const config: any = utils.loadConfig(parsed.opts.cwd || process.cwd());
-  const optConfig = Object.assign({}, config, parsed.opts);
-  const opts = { cwd: process.cwd(), patterns: ["packages/*"], ...optConfig };
-  const graph = new FynpoDepGraph(opts);
-  await graph.resolve();
+  const opts = await makeOpts(parsed);
+  const graph = await makeDepGraph(opts);
   return new Run(opts, parsed.args, graph).exec();
 };
 

@@ -9,6 +9,8 @@ export * from "./fynpo-dep-graph";
 
 export * from "./fynpo-config";
 
+export * from "./util";
+
 /**
  * Information about a package within the mono-repo
  */
