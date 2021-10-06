@@ -1,3 +1,42 @@
+# 10/5/2021
+
+## Packages
+
+-   `@fynpo/base@1.1.0` `(1.0.1 => 1.1.0)`
+-   `fyn@1.1.0` `(1.0.1 => 1.1.0)`
+-   `fynpo@1.1.0` `(1.0.1 => 1.1.0)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   [minor]: fyn help save fynpo local package indirect dep relations [commit](https://github.com/electrode-io/fynpo/commit/11ea2e26de254aaeaeb3e468e0fc76f5683c20f0)
+    -   move fynpo config loading to fynpo-base [commit](https://github.com/electrode-io/fynpo/commit/7329c6aa9526f71aaa8831c352fbd88d126ec1b6)
+    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/c50cdc2bb1ece25090fafdeb145a42731e38d800)
+    -   new dep graph handling [commit](https://github.com/electrode-io/fynpo/commit/7f019aeef52a274be2d4566260e509083164c384)
+
+-   `packages/fyn`
+
+    -   [minor]: fyn help save fynpo local package indirect dep relations [commit](https://github.com/electrode-io/fynpo/commit/11ea2e26de254aaeaeb3e468e0fc76f5683c20f0)
+    -   move fynpo config loading to fynpo-base [commit](https://github.com/electrode-io/fynpo/commit/7329c6aa9526f71aaa8831c352fbd88d126ec1b6)
+    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/c50cdc2bb1ece25090fafdeb145a42731e38d800)
+    -   chore: add badges [commit](https://github.com/electrode-io/fynpo/commit/0c49668e2ba93a95b2f102098f6f0eb6d64e5b53)
+
+-   `packages/fynpo`
+
+    -   [minor]: fyn help save fynpo local package indirect dep relations [commit](https://github.com/electrode-io/fynpo/commit/11ea2e26de254aaeaeb3e468e0fc76f5683c20f0)
+    -   [Publish] [commit](https://github.com/electrode-io/fynpo/commit/c50cdc2bb1ece25090fafdeb145a42731e38d800)
+    -   update tests [commit](https://github.com/electrode-io/fynpo/commit/50a96aa83eb82319df475886d943036158a37a8c)
+    -   use vanilla http for meta memoizer server [commit](https://github.com/electrode-io/fynpo/commit/1e2d06efc7838dbb30c0c2166075968031121692)
+    -   use new dep graph for bootstrap and run [commit](https://github.com/electrode-io/fynpo/commit/3685057a96231a5a730b29bbebd977a1c788048b)
+    -   chore: add badges [commit](https://github.com/electrode-io/fynpo/commit/0c49668e2ba93a95b2f102098f6f0eb6d64e5b53)
+
+-   `MISC`
+
+    -   chore: update dep [commit](https://github.com/electrode-io/fynpo/commit/062132fff7dc2fa6b083684ee8a79f6b5ec36ffa)
+    -   update dep [commit](https://github.com/electrode-io/fynpo/commit/60e258ce0409cf1eeda657504088431bb4480fb7)
+    -   Update changelog [commit](https://github.com/electrode-io/fynpo/commit/d07d1cc5b50acad53ceb1a8e7269764a258a9cbf)
+
 # 9/30/2021
 
 ## Packages
