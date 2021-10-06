@@ -1,16 +1,16 @@
 $pkg:
  dep:
-  '@jchip/error': ^1.0.0
+  '@fynpo/base': ../fynpo-base
+  '@jchip/error': ^1.0.3
   bluebird: ^3.7.2
   cacache: jchip/cacache
-  chalk: ^4.1.0
+  chalk: ^4.1.2
   check-pkg-new-version-engine: ^1.0.3
   ci-info: ^2.0.0
   es6-promisify: ./es6-promisify
-  filter-scan-dir: ^1.1.1
-  glob: ^7.1.6
+  filter-scan-dir: ^1.2.0
   ini: ^2.0.0
-  item-queue: ^1.0.4
+  item-queue: ^1.1.2
   lockfile: ^1.0.4
   lodash: ^4.17.21
   make-fetch-happen: jchip/make-fetch-happen
@@ -23,7 +23,7 @@ $pkg:
   npm-registry-fetch: jchip/npm-registry-fetch
   npmlog: ^4.1.2
   opfs: ^1.1.1
-  optional-require: ^1.0.2
+  optional-require: ^1.1.8
   pacote: jchip/pacote
   pkg-preper: ^0.1.0
   rimraf: ^3.0.2
@@ -1199,6 +1199,21 @@ $pkg:
    lodash: ^4.17.20
    minimatch: ^3.0.4
    strip-json-comments: ^3.1.1
+'@fynpo/base':
+ _latest: 1.0.1-fynlocal_h
+ _:
+  ../fynpo-base: 1.0.1-fynlocal_h
+ 1.0.1-fynlocal_h:
+  top: 1
+  $: local
+  _: ../fynpo-base
+  dependencies:
+   filter-scan-dir: ^1.2.0
+   lodash: ^4.17.21
+   minimatch: ^3.0.4
+   optional-require: ^1.1.8
+   semver: ^7.3.5
+   tslib: ^2.1.0
 '@hapi/accept':
  _latest: 5.0.2
  _:
@@ -1593,13 +1608,13 @@ $pkg:
   $: sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
   _: 'https://registry.npmjs.com/@istanbuljs/schema/-/schema-0.1.2.tgz'
 '@jchip/error':
- _latest: 1.0.0
+ _latest: 1.0.3
  _:
-  ^1.0.0: 1.0.0
- 1.0.0:
+  ^1.0.3: 1.0.3
+ 1.0.3:
   top: 1
-  $: sha512-QBJf3sFyPoeTQh6Gh7J1OqGGpKjkAN8yd3r55qAYD+pGEv8Z7Vf/dNIyAwYg/ynEjCzJStQnDv21Zz75QIPAYg==
-  _: 'https://registry.npmjs.org/@jchip/error/-/error-1.0.0.tgz'
+  $: sha512-4mh+7ucOm55u7USv2mwumdp7r020J+bZ1PkkUi+Zn+AAzU1+QoXVmN/5W2thZ1kkpHjJXS7tY1SDkUjI2FZgvw==
+  _: 'https://registry.npmjs.org/@jchip/error/-/error-1.0.3.tgz'
 '@polka/url':
  _latest: 0.5.0
  _:
@@ -2465,20 +2480,20 @@ chai:
    pathval: ^1.1.0
    type-detect: ^4.0.5
 chalk:
- _latest: 4.1.0
+ _latest: 4.1.2
  _:
   ^2.0.0: 2.4.2
-  '^4.0.0,^4.1.0': 4.1.0
- 4.1.0:
+  '^4.0.0,^4.1.0,^4.1.2': 4.1.2
+ 4.1.2:
   top: 1
-  $: sha512-qwx12AxXe2Q5xQ43Ac//I6v5aXTipYrSESdOgzrN+9XjgEpyjpKuvSGaN4qE93f7TQTlerQQ8S+EQ0EyDoVL1A==
-  _: 'https://registry.npmjs.com/chalk/-/chalk-4.1.0.tgz'
+  $: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
+  _: 'https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz'
   dependencies:
    ansi-styles: ^4.1.0
    supports-color: ^7.1.0
  2.4.2:
   $: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
-  _: 'https://registry.npmjs.com/chalk/-/chalk-2.4.2.tgz'
+  _: 'https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz'
   dependencies:
    ansi-styles: ^3.2.1
    escape-string-regexp: ^1.0.5
@@ -3347,13 +3362,13 @@ fill-range:
   dependencies:
    to-regex-range: ^5.0.1
 filter-scan-dir:
- _latest: 1.1.1
+ _latest: 1.2.0
  _:
-  '^1.0.10,^1.1.1': 1.1.1
- 1.1.1:
+  '^1.0.10,^1.2.0': 1.2.0
+ 1.2.0:
   top: 1
-  $: sha512-TjRjOOqZS+P3Jrixka4w6LPUbkexne3N4qTQsRE2JP8fMt+NyhYlPL9ejIHaKj8W9L5YqEy3ucrZXqTLxzrpgg==
-  _: 'https://registry.npmjs.com/filter-scan-dir/-/filter-scan-dir-1.1.1.tgz'
+  $: sha512-CM3Xay0kkwn2IALf7KRXBT0mHkTfNQ7RRGUttGQhycQd+32eFI8JEuk62//ZbkV3qCs2k6ismC0VUUIVAoKMqw==
+  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.2.0.tgz'
 find-cache-dir:
  _latest: 3.3.1
  _:
@@ -3621,7 +3636,6 @@ glob:
  _:
   '7.1.6,^7.0.0,^7.0.3,^7.0.5,^7.1.3,^7.1.4,^7.1.6': 7.1.6
  7.1.6:
-  top: 1
   $: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
   _: 'https://registry.npmjs.com/glob/-/glob-7.1.6.tgz'
   dependencies:
@@ -4177,13 +4191,15 @@ istanbul-reports:
    html-escaper: ^2.0.0
    istanbul-lib-report: ^3.0.0
 item-queue:
- _latest: 1.0.4
+ _latest: 1.1.2
  _:
-  ^1.0.4: 1.0.4
- 1.0.4:
+  ^1.1.2: 1.1.2
+ 1.1.2:
   top: 1
-  $: sha512-JLGx41JDCccb4Jw9YpRjFTvRF5sQi9TSO+Azvn0GlHDc2PHXBpNnU/WIVzVOEiQ8IBWbPosVQjbelcff6awo/g==
-  _: 'https://registry.npmjs.com/item-queue/-/item-queue-1.0.4.tgz'
+  $: sha512-GrZv3Ghz1SBUecDWOPHu0jfhzb/ay51G+KpJzd0m5z2jYoWovSYjseGARBHrlagitOtEQPuiyGfXXmAvpRmEkg==
+  _: 'https://registry.npmjs.org/item-queue/-/item-queue-1.1.2.tgz'
+  dependencies:
+   tslib: ^2.1.0
 jaro-winkler:
  _latest: 0.2.8
  _:
@@ -5090,13 +5106,15 @@ opfs:
   $: sha512-1gVNS4XUqb6RikfaHrhiS7WPR7ht3WH1nn2//65AOeSmTkzo3qosxXJX+oRlurPrnabx+uKLoi4wWr3mfgSKbg==
   _: 'https://registry.npmjs.com/opfs/-/opfs-1.1.1.tgz'
 optional-require:
- _latest: 1.0.2
+ _latest: 1.1.8
  _:
-  ^1.0.2: 1.0.2
- 1.0.2:
+  '^1.0.2,^1.1.8': 1.1.8
+ 1.1.8:
   top: 1
-  $: sha512-HZubVd6IfHsbnpdNF/ICaSAzBUEW1TievpkjY3tB4Jnk8L7+pJ3conPzUt3Mn/6OZx9uzTDOHYPGA8/AxYHBOg==
-  _: 'https://registry.npmjs.com/optional-require/-/optional-require-1.0.2.tgz'
+  $: sha512-jq83qaUb0wNg9Krv1c5OQ+58EK+vHde6aBPzLvPPqJm89UQWsvSuFy9X/OSNJnFeSOKo7btE0n8Nl2+nE+z5nA==
+  _: 'https://registry.npmjs.org/optional-require/-/optional-require-1.1.8.tgz'
+  dependencies:
+   require-at: ^1.0.6
 optionator:
  _latest: 0.9.1
  _:

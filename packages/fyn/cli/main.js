@@ -64,7 +64,7 @@ const pickOptions = async argv => {
   let fynpo;
 
   try {
-    fynpo = await fynTil.searchFynpoConfig(cwd);
+    fynpo = await fynTil.loadFynpo(cwd);
   } catch (err) {
     logger.error(err.stack);
     process.exit(1);
@@ -382,45 +382,6 @@ const commands = {
     }
   }
 };
-
-if (process.platform === "win32") {
-  commands.win = {
-    desc: `Generate setup file "fynwin.cmd" at your CWD.`,
-    exec: argv => {
-      let cmd;
-      try {
-        cmd = `set NODE_OPTIONS=${makeNodeOptions()}`;
-      } catch (e) {
-        cmd = `@echo ${e.message}`;
-      }
-
-      const keep = argv.opts.keep;
-      const del = keep ? "" : `@(goto) 2>nul & del "%~f0"\r\n`;
-      Fs.writeFileSync(Path.resolve("fynwin.cmd"), `${cmd}\r\n${del}`);
-      if (!argv.opts.quiet) {
-        logger.fyi(
-          `${chalk.green("fynwin.cmd")} generated at ${chalk.magenta(process.cwd())} for you.`
-        );
-        logger.fyi(
-          `You can run it by typing ${chalk.magenta("fynwin")}.`,
-          keep ? "" : `It will delete itself.`
-        );
-      }
-    },
-    options: {
-      keep: {
-        desc: "fynwin.cmd does not delete itself",
-        type: "boolean",
-        default: false
-      },
-      quiet: {
-        desc: "don't show any message",
-        type: "boolean",
-        default: false
-      }
-    }
-  };
-}
 
 const run = (args, start) => {
   if (start === undefined && args !== undefined) {

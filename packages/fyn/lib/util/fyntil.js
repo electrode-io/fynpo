@@ -12,13 +12,9 @@ const mississippi = require("mississippi");
 const missPipe = Promise.promisify(mississippi.pipe, { context: mississippi });
 const { PACKAGE_RAW_INFO } = require("../symbols");
 const { PACKAGE_FYN_JSON } = require("../constants");
-const glob = require("glob");
-const pGlob = Promise.promisify(glob);
+const { FynpoConfigManager, FynpoDepGraph } = require("@fynpo/base");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity, no-eval */
-
-const xrequire = eval("require");
-const optionalRequire = require("optional-require")(xrequire);
 
 const { isWin32, retry } = require("./base-util");
 
@@ -82,51 +78,43 @@ module.exports = {
 
   retry,
 
-  async searchFynpoConfig(cwd = process.cwd()) {
+  async loadFynpo(cwd = process.cwd()) {
     if (fynpoConfig) {
       return fynpoConfig;
     }
+    const fcm = new FynpoConfigManager({ cwd });
+    const config = await fcm.load();
 
-    let dir = cwd;
-    let prevDir = dir;
-    let config;
-    let count = 0;
-
-    do {
-      config = optionalRequire(Path.join(dir, "fynpo.config.js"));
-      if (config) {
-        logger.info("Detected a fynpo monorepo at", dir);
-        break;
+    if (config) {
+      logger.info(`Detected a ${fcm.repoType} at ${fcm.topDir}`);
+      const opts = { cwd: fcm.topDir };
+      if (config.hasOwnProperty("packages")) {
+        opts.patterns = config.packgaes;
       }
+      const graph = new FynpoDepGraph(opts);
+      await graph.resolve();
+      const packages = {};
+      const packagesByName = {};
 
-      try {
-        config = await this.readJson(Path.join(dir, "fynpo.json"));
-        logger.info("Detected a fynpo monorepo at", dir);
-        break;
-      } catch (e) {}
+      _.each(graph.packages.byName, (pkgInfo, name) => {
+        const { pkgJson, path } = pkgInfo[0];
+        const pkgDir = posixify(Path.join(fcm.topDir, path));
+        packagesByName[name] = packages[pkgDir] = {
+          pkgDir,
+          pkgJson
+        };
+      });
 
-      try {
-        const lerna = await this.readJson(Path.join(dir, "lerna.json"));
-        if (lerna.fynpo) {
-          logger.info("Detected a lerna monorepo with fynpo at", dir);
-          config = lerna;
-          break;
-        }
-      } catch (e) {}
-
-      prevDir = dir;
-      dir = Path.dirname(dir);
-    } while (++count < 50 && dir !== prevDir);
-
-    const packages = config ? await this.loadFynpoPackages(config.packages, true, dir) : {};
-    const packagesByName = await this.makeFynpoPackagesByName(packages);
-
-    return (fynpoConfig = {
-      config,
-      dir: config && dir,
-      packages,
-      packagesByName
-    });
+      return (fynpoConfig = {
+        config,
+        dir: fcm.topDir,
+        graph,
+        packages,
+        packagesByName
+      });
+    } else {
+      return (fynpoConfig = {});
+    }
   },
 
   removeAuthInfo(rcObj) {
@@ -166,53 +154,6 @@ module.exports = {
       return `.${Path.sep}${rel}`;
     }
     return shouldPosixify ? posixify(rel) : rel;
-  },
-
-  /**
-   * Take an array of glob patterns for a mono-repo's packages and search for
-   * all package.json file, and return these directories, with the content of
-   * package.json.
-   *
-   * @param {*} packageGlobs - glob patterns for the packages
-   * @param {*} readPkg - true to read package.json
-   * @param {*} cwd - dir to start searching
-   *
-   * @returns monorepo's packages dirs
-   */
-  async loadFynpoPackages(packageGlobs = ["packages/*"], readPkg = true, cwd = process.cwd()) {
-    const packages = {};
-
-    const options = { cwd, strict: true, absolute: true };
-    for (const pattern of packageGlobs) {
-      const entries = await pGlob(Path.join(pattern, "package.json"), options);
-
-      for (const entry of entries) {
-        // glob always uses '/', even on windows, so normalize it
-        const normalizePath = Path.normalize(entry);
-        const pkgDir = Path.dirname(normalizePath);
-        const pkgJson = readPkg ? await this.readJson(normalizePath) : {};
-        packages[pkgDir] = {
-          pkgDir,
-          normalizePath,
-          pkgJson
-        };
-      }
-    }
-
-    return packages;
-  },
-
-  async makeFynpoPackagesByName(packages) {
-    const packagesByName = {};
-    for (const dir in packages) {
-      const pkg = packages[dir];
-      if (!pkg.pkgJson) {
-        pkg.pkgJson = await this.readJson(pkg.normalizePath);
-      }
-      packagesByName[pkg.pkgJson.name] = pkg;
-    }
-
-    return packagesByName;
   },
 
   async readPkgJson(dirOrFile, keepRaw, packageFyn = false) {

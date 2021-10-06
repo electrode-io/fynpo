@@ -87,15 +87,6 @@ class Fyn {
     return false;
   }
 
-  /**
-   * Search from cwd and up for fynpo.config.js, fynpo.json, or lerna.json:fynpo
-   *
-   * @returns {*} fynpo config and dir it was found
-   */
-  async _searchForFynpo() {
-    return await fyntil.searchFynpoConfig(this._cwd);
-  }
-
   get isFynpo() {
     return Boolean(this._fynpo && this._fynpo.config);
   }
@@ -165,7 +156,7 @@ class Fyn {
 
   async _initializePkg() {
     if (!this._fynpo) {
-      this._fynpo = await this._searchForFynpo();
+      this._fynpo = await fyntil.loadFynpo(this._cwd);
       _.merge(this._options, _.get(this, "_fynpo.fyn.options"));
     }
 

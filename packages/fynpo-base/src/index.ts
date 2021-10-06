@@ -7,6 +7,8 @@ import { groupMM } from "./minimatch-group";
 
 export * from "./fynpo-dep-graph";
 
+export * from "./fynpo-config";
+
 /**
  * Information about a package within the mono-repo
  */

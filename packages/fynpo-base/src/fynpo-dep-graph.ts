@@ -171,13 +171,8 @@ export class FynpoDepGraph {
   resolvedCache: Record<string, string>;
   _options: ReadFynpoOptions;
 
-  constructor(
-    options: ReadFynpoOptions = {
-      patterns: ["packages/*"],
-      cwd: process.cwd(),
-    }
-  ) {
-    this._options = options;
+  constructor(options: ReadFynpoOptions = {}) {
+    this._options = { patterns: ["packages/*"], cwd: process.cwd(), ...options };
     this.depMapByPath = {};
     this.resolvedCache = {};
   }

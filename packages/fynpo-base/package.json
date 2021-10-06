@@ -43,6 +43,7 @@
     "filter-scan-dir": "^1.2.0",
     "lodash": "^4.17.21",
     "minimatch": "^3.0.4",
+    "optional-require": "^1.1.8",
     "semver": "^7.3.5",
     "tslib": "^2.1.0"
   },
