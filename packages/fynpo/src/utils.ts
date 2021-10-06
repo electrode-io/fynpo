@@ -8,6 +8,8 @@ import shcmd from "shcmd";
 import _optionalRequire from "optional-require";
 const optionalRequire = _optionalRequire(require);
 
+/* eslint-disable complexity */
+
 export const locateGlobalNodeModules = async () => {
   //
   const nodeBinDir = Path.dirname(process.argv[0]);

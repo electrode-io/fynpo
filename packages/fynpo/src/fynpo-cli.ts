@@ -123,6 +123,8 @@ const execBootstrap = async (parsed, cli, second = false) => {
       process.exit(statusCode);
     }
   }
+
+  return undefined;
 };
 
 const execLocal = async (parsed) => {
