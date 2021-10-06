@@ -26,7 +26,7 @@ describe("fynpo dep graph", () => {
     expect(topoSorted1).toEqual(topoSorted2);
 
     const graph2 = new FynpoDepGraph({
-      patterns: ["@scope/*", "packages/**", "test1/*", "tests/**"],
+      patterns: ["@scope/*", "packages/**", "test1", "tests/**"],
       cwd: path.join(__dirname, "sample"),
     });
 

@@ -340,7 +340,7 @@ export class FynpoDepGraph {
         cwd,
         prefix,
         filter: (file: string, path: string) => {
-          return path !== "." && file === "package.json";
+          return path && path !== "." && file === "package.json";
         },
         filterDir: (dir: string, _p: string, extras: any) => {
           if (dir !== "node_modules") {
