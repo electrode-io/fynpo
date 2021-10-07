@@ -1,3 +1,30 @@
+# 10/6/2021
+
+## Packages
+
+-   `@fynpo/base@1.1.1` `(1.1.0 => 1.1.1)`
+-   `fyn@1.1.1` `(1.1.0 => 1.1.1)`
+-   `fynpo@1.1.1` `(1.1.0 => 1.1.1)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: handle non-fynpo [commit](https://github.com/electrode-io/fynpo/commit/b8e81958c8b082b6d57a23e7ad53db8c77e46192)
+    -   [patch]: fix scan pattern without wildcards [commit](https://github.com/electrode-io/fynpo/commit/bfbfb40d54c522a9f44eb05d881dc9fc41a983f8)
+
+-   `packages/fyn`
+
+    -   [chore]: fix ci [commit](https://github.com/electrode-io/fynpo/commit/e8825278acaf65c3d991766143a7cac79354e84f)
+
+-   `packages/fynpo`
+
+    -   [chore]: fix ci [commit](https://github.com/electrode-io/fynpo/commit/e8825278acaf65c3d991766143a7cac79354e84f)
+
+-   `.github`
+
+    -   [chore]: fix ci [commit](https://github.com/electrode-io/fynpo/commit/e8825278acaf65c3d991766143a7cac79354e84f)
+
 # 10/5/2021
 
 ## Packages
