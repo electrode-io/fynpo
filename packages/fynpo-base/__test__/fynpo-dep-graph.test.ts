@@ -1,7 +1,17 @@
 import { describe, it, expect } from "@jest/globals";
-import { FynpoDepGraph } from "../src";
+import { FynpoDepGraph, getDepSection } from "../src";
 import path from "path";
 import Fs from "fs";
+
+describe("getDepSection", function () {
+  it("should return dep for dependencies", () => {
+    expect(getDepSection("dependencies")).toEqual("dep");
+  });
+
+  it("should default to dep", () => {
+    expect(getDepSection("")).toEqual("dep");
+  });
+});
 
 describe("fynpo dep graph", () => {
   it("should default to read only packgaes/* in CWD", async () => {
