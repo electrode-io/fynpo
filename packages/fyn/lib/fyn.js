@@ -228,7 +228,13 @@ class Fyn {
       const indirects = this._fynpo.indirects;
       const dataFile = Path.join(this._fynpo.dir, ".fynpo-data.json");
       await Fs.$.mkdirp(Path.join(this._fynpo.dir, ".fynpo"));
-      await Fs.$.acquireLock(lockFile);
+      await Fs.$.acquireLock(lockFile, {
+        wait: 5000,
+        pollPeriod: 100,
+        stale: 8000,
+        retries: 10,
+        retryWait: 500
+      });
       const path = posixify(Path.relative(this._fynpo.dir, this.cwd));
       const fynpoData = await fyntil.readJson(dataFile, { indirects: { [path]: [] } });
       if (JSON.stringify(indirects) !== JSON.stringify(fynpoData.indirects[path])) {
