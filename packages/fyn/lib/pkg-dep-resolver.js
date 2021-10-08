@@ -19,6 +19,7 @@ const { LONG_WAIT_META } = require("./log-items");
 const { checkPkgOsCpu, relativePath } = require("./util/fyntil");
 const { getDepSection, makeDepStep } = require("@fynpo/base");
 const xaa = require("./util/xaa");
+const { AggregateError } = require("@jchip/error");
 
 const {
   SEMVER,
@@ -936,6 +937,13 @@ class PkgDepResolver {
     return meta.versions ? meta.versions[resolved] && resolved : resolved;
   }
 
+  _failUnsatisfySemver(item) {
+    throw new Error(
+      `Unable to find a version from lock data that satisfied semver ${item.name}@${item.semver}
+${item.depPath.join(" > ")}`
+    );
+  }
+
   _resolveWithMeta({ item, meta, force, noLocal, lockOnly }) {
     let resolved = item.nestedResolve(item.name, item.semver);
 
@@ -949,10 +957,7 @@ class PkgDepResolver {
 
     if (!resolved) {
       if (!force) return false;
-      throw new Error(
-        `No version of ${item.name} satisfied semver ${item.semver}
-${item.depPath.join(" > ")}`
-      );
+      this._failUnsatisfySemver(item);
     }
 
     if (semverUtil.isLocal(resolved)) {
@@ -1029,10 +1034,7 @@ ${item.depPath.join(" > ")}`
     }
 
     if (force) {
-      throw new Error(
-        `No version of ${item.name} from lock data satisfied semver ${item.semver}
-${item.depPath.join(" > ")}`
-      );
+      this._failUnsatisfySemver(item);
     }
 
     // unable to resolve with lock data
@@ -1109,7 +1111,7 @@ ${item.depPath.join(" > ")}`
           .catch(err => {
             // item is not optional => fail
             if (item.dsrc !== "opt") {
-              throw err;
+              throw new AggregateError([err], `Unable to retrieve meta for package ${item.name}`);
             } else {
               item.resolved = `metaFail_${item.semver}`;
               // add to opt resolver directly as failed package with a dummy meta

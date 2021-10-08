@@ -33,6 +33,7 @@ const VisualExec = require("visual-exec");
 const { readPkgJson, missPipe } = require("./util/fyntil");
 const { MARK_URL_SPEC } = require("./constants");
 const nodeFetch = require("node-fetch-npm");
+const { AggregateError } = require("@jchip/error");
 
 const WATCH_TIME = 5000;
 
@@ -291,8 +292,9 @@ class PkgSrcManager {
           updateItem(x._cached ? "cached" : "200");
         })
         .catch(err => {
-          const display = `failed fetching packument of ${pkgName}`;
-          logger.error(chalk.yellow(display), chalk.red(err.message));
+          const msg = `pacote failed fetching packument of ${pkgName}`;
+          logger.error(chalk.yellow(msg), chalk.red(err.message));
+          throw new AggregateError([err], msg);
         });
     };
 

@@ -80,6 +80,11 @@ export class FynpoConfigManager {
     let count = 0;
 
     do {
+      // allow manually disable fynpo with a file
+      if (Fs.existsSync(Path.join(dir, ".no-fynpo"))) {
+        break;
+      }
+
       [".js", ".json"].find((ext) => {
         return (this._config = optionalRequire(Path.join(dir, `fynpo.config${ext}`)));
       });
