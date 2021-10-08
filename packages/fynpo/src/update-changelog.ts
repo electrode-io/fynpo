@@ -109,7 +109,7 @@ export default class Changelog {
       return;
     }
 
-    return this._sh(`git add ${this._changeLogFile} && git commit -m "Update changelog"`)
+    return this._sh(`git add ${this._changeLogFile} && git commit -n -m "Update changelog"`)
       .then(() => {
         logger.info("Changelog committed");
       })
@@ -132,7 +132,7 @@ export default class Changelog {
     return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
       .then((output) => {
         logger.info("git add", output);
-        return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
+        return this._sh(`git commit -n -m "[Publish]" -m " - ${tags.join("\n - ")}"`);
       })
       .then((output) => {
         logger.info("git commit", output);

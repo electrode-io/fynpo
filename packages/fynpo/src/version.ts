@@ -110,7 +110,7 @@ export default class Version {
     return this._sh(`git add ${this._changeLogFile} ${packages.map((x) => `"${x}"`).join(" ")}`)
       .then((output) => {
         logger.info("git add", output);
-        return this._sh(`git commit -m [Publish] -m " - ${tags.join("\n - ")}"`);
+        return this._sh(`git commit -n -m "[Publish]" -m " - ${tags.join("\n - ")}"`);
       })
       .then((output) => {
         logger.info("git commit", output);

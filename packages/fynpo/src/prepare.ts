@@ -160,7 +160,7 @@ that's not latest but none set in fynpo config`
     return this._sh(`git add ${packages.map((x) => `"${x}"`).join(" ")}`)
       .then((output) => {
         logger.info("git add", output);
-        return this._sh(`git commit -m [Publish] -m " - ${this._tags.join("\n - ")}"`);
+        return this._sh(`git commit -n -m "[Publish]" -m " - ${this._tags.join("\n - ")}"`);
       })
       .then((output) => {
         logger.info("git commit", output);
