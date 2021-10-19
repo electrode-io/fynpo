@@ -7,6 +7,57 @@ import { cosmiconfigSync } from "cosmiconfig";
 import shcmd from "shcmd";
 import _optionalRequire from "optional-require";
 const optionalRequire = _optionalRequire(require);
+import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
+
+export const defaultTagTemplate = `fynpo-rel-{YYYY}{MM}{DD}-{COMMIT}`;
+
+/**
+ * Make a publish tag from template
+ * - template is a string with special tokens in `{}`
+ * - `{DD}` - two digit date
+ * - `{MM}` - two digit month
+ * - `{YYYY}` - four digit year
+ * - `{COMMIT}` - first 8 chars from git commit hash
+ * - `{hh}` - two digit hour in 24 format
+ * - `{mm}` - two digit minute
+ * - `{ss}` - two digit second
+ *
+ * @param tmpl publish tag template
+ */
+export function makePublishTag(tmpl: string, { date = undefined, gitHash = "" } = {}): string {
+  const d = date || new Date();
+  const replacers = {
+    "{DD}": _.padStart(`${d.getDate()}`, 2, "0"),
+    "{MM}": _.padStart(`${d.getMonth() + 1}`, 2, "0"),
+    "{YYYY}": _.padStart(`${d.getFullYear()}`, 4, "0"),
+    "{COMMIT}": gitHash.substr(0, 8),
+    "{hh}": `${d.getHours()}`.padStart(2, "0"),
+    "{mm}": `${d.getMinutes()}`.padStart(2, "0"),
+    "{ss}": `${d.getSeconds()}`.padStart(2, "0"),
+  };
+
+  const newTag = (tmpl || defaultTagTemplate).replace(/{[^}]+}/g, (token) => {
+    if (replacers[token]) {
+      return replacers[token];
+    }
+    const valid = Object.keys(replacers).join(", ");
+    throw new Error(
+      `unknown token '${token}' in command.publish.gitTagTemplate - valid tokens are: ${valid}`
+    );
+  });
+
+  return newTag;
+}
+
+/**
+ * Make a git tag search term from the publish tag template
+ *
+ * @param tmpl
+ * @returns
+ */
+export function makePublishTagSearchTerm(tmpl: string): string {
+  return (tmpl || defaultTagTemplate).replace(/{[^}]+}/g, "*").replace(/\*+/g, "*");
+}
 
 /* eslint-disable complexity */
 
@@ -65,6 +116,8 @@ export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string
   const explore = explicitPath ? explorer.load : explorer.search;
   const searchPath = explicitPath ? explicitPath : cwd;
   const config = explore(searchPath);
+
+  logger.info("config from cosmic", JSON.stringify(config, null, 2));
   return config ? config : null;
 };
 
@@ -209,3 +262,37 @@ export const lintParser = (commit, options) => {
 
   return header;
 };
+
+/**
+ * match versionLocks config to packages and generate the
+ * mapping of locked packages.
+ *
+ * @param versionLocks - version locks config
+ * @param graph - packages dep graph
+ * @param byField - generate lock mapping by field, `name`, `id`, or `path`
+ *
+ * @returns version lock map
+ */
+export function makeVersionLockMap(
+  versionLocks: string[][],
+  graph: FynpoDepGraph,
+  byField = "name"
+): Record<string, string[]> {
+  return versionLocks.reduce((mapping, locks) => {
+    const lockRef = locks.map((ref: string) => new PackageRef(ref));
+
+    const foundLocks = [];
+    _.each(graph.packages.byId, (pkgInfo: PackageInfo, _id: string) => {
+      const matched = lockRef.find((pkgRef) => pkgRef.match(pkgInfo));
+      if (matched) {
+        if (mapping[pkgInfo.path]) {
+          logger.error(`package ${pkgInfo.name} at ${pkgInfo.path} version is already locked`);
+        } else {
+          mapping[pkgInfo[byField]] = foundLocks;
+          foundLocks.push(pkgInfo[byField]);
+        }
+      }
+    });
+    return mapping;
+  }, {});
+}

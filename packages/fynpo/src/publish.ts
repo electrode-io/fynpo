@@ -33,7 +33,7 @@ export default class Publish {
     const gitTagTmpl = _.get(
       this._fynpoRc,
       "command.publish.gitTagTemplate",
-      `fynpo-rel-{YYYY}{MM}{DD}-{COMMIT}`
+      utils.defaultTagTemplate
     );
 
     this._tagTmpl = gitTagTmpl;
@@ -62,7 +62,8 @@ export default class Publish {
   }
 
   getLatestTag() {
-    return this._sh(`git tag --points-at HEAD --list fynpo-rel-*`).then((output) => {
+    const tagSearch = utils.makePublishTagSearchTerm(this._tagTmpl);
+    return this._sh(`git tag --points-at HEAD --list ${tagSearch}`).then((output) => {
       const tagInfo = output.stdout.split("\n").filter((x) => x.trim().length > 0);
       if (tagInfo.length > 0) {
         logger.error(
@@ -165,23 +166,9 @@ export default class Publish {
         commitIds = commitOutput.stdout.split("\n").filter((x) => x.trim().length > 0);
       }
 
-      const date = new Date();
-
-      const tokens = {
-        "{YYYY}": () => _.padStart(`${date.getFullYear()}`, 4, "0"),
-        "{MM}": () => _.padStart(`${date.getMonth() + 1}`, 2, "0"),
-        "{DD}": () => _.padStart(`${date.getDate()}`, 2, "0"),
-        "{COMMIT}": () => commitIds[0] || "",
-      };
-
-      const newTag = this._tagTmpl.replace(/({[A-Z]+})/g, (_m, token) => {
-        if (tokens[token]) {
-          return tokens[token]();
-        }
-        const valid = Object.keys(token).join(", ");
-        throw new Error(
-          `unknown token '${token}' in command.publish.gitTagTemplate - valid tokens are: ${valid}`
-        );
+      const newTag = utils.makePublishTag(this._tagTmpl, {
+        date: new Date(),
+        gitHash: commitIds[0] || "",
       });
 
       const tagOut = await this._sh(`git tag -a ${newTag} -m "Release Tag"`);
@@ -193,7 +180,7 @@ export default class Publish {
 
       logger.info(`Release tag ${newTag} created. Pushing the tag to remote..`);
 
-      await this._sh(`git push origin ${newTag}`, this._cwd, false);
+      // await this._sh(`git push origin ${newTag}`, this._cwd, false);
     } catch (err) {
       this._logError("Creating release tag failed", err);
       process.exit(1);

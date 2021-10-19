@@ -71,6 +71,90 @@ export function makeDepStep(name: string, version: string, sec: string) {
 }
 
 /**
+ * refer to a package by `id`, `path`, or `name`
+ */
+type PackageRefType = "id" | "path" | "name";
+
+/**
+ * Reference to a package by id, path, or name.
+ *
+ * Supports RegExp or minimatch (for path)
+ */
+export class PackageRef {
+  /** value's reference type, `id`, `path`, or `name` */
+  type: PackageRefType;
+  /** value that reference the package */
+  value: string;
+  /**
+   * If value reference is a regexp (starts with / and has a closing /), then
+   * create a RegExp from it.
+   */
+  regex?: RegExp;
+  mm?: mm.IMinimatch;
+
+  constructor(ref: string) {
+    this.parseRef(ref);
+  }
+
+  /**
+   * Parse a package ref in string form
+   *
+   * The reference type can be a package id, name, or path.
+   *
+   * - user can specify type with `id:`, `name:` or `path:`
+   * - if no type but there's a `@` in the middle then it's `id`
+   *   else default to `name`
+   *
+   * @param ref package string reference
+   */
+  parseRef(ref: string): void {
+    const parts = ref.split(":");
+
+    if (parts.length > 1) {
+      const tmp = parts[0].trim();
+      if (tmp === "id" || tmp === "path" || tmp === "name") {
+        this.type = tmp;
+      } else {
+        throw new Error(
+          `package ref '${ref}' has unknown type '${tmp}' - must be 'id', 'path', or 'name'`
+        );
+      }
+      this.value = parts[1].trim();
+    } else {
+      this.value = parts[0].trim();
+      if (this.value.lastIndexOf("@") > 0) {
+        this.type = "id";
+      } else {
+        this.type = "name";
+      }
+    }
+
+    if (this.value[0] === "/") {
+      const endIx = this.value.lastIndexOf("/");
+      if (endIx > 1) {
+        const regExpStr = this.value.substring(1, endIx);
+        const flagStr = this.value.substring(endIx + 1);
+        this.regex = new RegExp(regExpStr, flagStr);
+      }
+    } else if (this.type === "path") {
+      this.mm = new mm.Minimatch(this.value);
+    }
+  }
+
+  match(pkgInfo: PackageBasicInfo): boolean {
+    if (this.type === "path") {
+      return this.regex ? this.regex.exec(pkgInfo.path) !== null : this.mm.match(pkgInfo.path);
+    } else if (this.type === "id") {
+      return this.regex
+        ? this.regex.exec(pkgInfoId(pkgInfo)) !== null
+        : this.value === pkgInfoId(pkgInfo);
+    } else {
+      return this.regex ? this.regex.exec(pkgInfo.name) !== null : this.value === pkgInfo.name;
+    }
+  }
+}
+
+/**
  * Basic referencing information of a package to remember the dependency relationship
  *
  * - It could be a package that another depends on

@@ -3,15 +3,21 @@
 import logger from "../logger";
 import { execSync } from "../child-process";
 import minimatch from "minimatch";
-import path from "path";
+import Path from "path";
 import slash from "slash";
 import _ from "lodash";
+import { FynpoDepGraph } from "@fynpo/base";
 
-const ifTagExists = (execOptions) => {
+import { makePublishTag, makePublishTagSearchTerm } from "../utils";
+
+const ifTagExists = (opts) => {
   let result = false;
 
+  const tagTmpl = _.get(opts, "command.publish.gitTagTemplate");
+  const searchTerm = makePublishTagSearchTerm(tagTmpl);
+
   try {
-    result = !!execSync("git", ["tag", "--list", "fynpo-rel-*"], execOptions);
+    result = !!execSync("git", ["tag", "--list", searchTerm], { cwd: opts.cwd });
   } catch (err) {
     logger.warn("Can't find latest release tag from this branch!");
   }
@@ -19,15 +25,21 @@ const ifTagExists = (execOptions) => {
   return result;
 };
 
-const getLatestTag = (execOptions) => {
-  const args = ["describe", "--long", "--first-parent", "--match", "fynpo-rel-*"];
-  const stdout = execSync("git", args, execOptions);
+const getLatestTag = (opts) => {
+  const tagTmpl = _.get(opts, "command.publish.gitTagTemplate");
+  const searchTerm = makePublishTagSearchTerm(tagTmpl);
+
+  const args = ["describe", "--long", "--first-parent", "--match", searchTerm];
+  const stdout = execSync("git", args, { cwd: opts.cwd });
   const [, tagName, commitCount, sha] = /^(.*)-(\d+)-g([0-9a-f]+)$/.exec(stdout) || [];
   return { tagName, commitCount, sha };
 };
 
-const addDependents = (name, changed, packages) => {
-  const dependents = _.get(packages, [name, "dependents"], {});
+const addDependents = (name, changed, graph: FynpoDepGraph) => {
+  const pkg = graph.getPackageByName(name);
+  const depPaths = Object.keys(graph.depMapByPath[pkg.path].dependentsByPath);
+  const dependents = depPaths.map((path) => graph.packages.byPath[path].name);
+
   dependents.forEach((dep) => {
     if (!changed.pkgs.includes(dep)) {
       changed.pkgs.push(dep);
@@ -52,7 +64,7 @@ const addVersionLocks = (name, changed, opts) => {
   }
 };
 
-const getUpdatedPackages = (data, opts) => {
+export const getUpdatedPackages = (graph: FynpoDepGraph, opts) => {
   let latestTag;
   const changed = {
     pkgs: [],
@@ -61,14 +73,14 @@ const getUpdatedPackages = (data, opts) => {
     forceUpdated: [],
     latestTag: undefined,
   };
-  const packages = data.packages || {};
+  const packages = graph.packages.byName || {};
   const forced = opts.forcePublish || [];
   const execOpts = {
     cwd: opts.cwd,
   };
 
-  if (ifTagExists(execOpts)) {
-    const { tagName, commitCount } = getLatestTag(execOpts);
+  if (ifTagExists(opts)) {
+    const { tagName, commitCount } = getLatestTag(opts);
     changed.latestTag = tagName;
 
     if (commitCount === "0" && forced.length === 0) {
@@ -87,8 +99,10 @@ const getUpdatedPackages = (data, opts) => {
       logger.info("All packages are version locked.");
     }
     logger.info("Assuming all packages changed.");
-    Object.keys(packages).forEach((name) => {
+    const pkgNames = Object.keys(packages);
+    pkgNames.forEach((name) => {
       changed.pkgs.push(name);
+      changed.verLocks[name] = pkgNames;
     });
   } else {
     logger.info(`Detecting changed packages since the release tag: ${latestTag}`);
@@ -114,10 +128,10 @@ const getUpdatedPackages = (data, opts) => {
     };
 
     const isChanged = (name) => {
-      const pkg = packages[name];
+      const pkg = packages[name][0];
 
       const args = ["diff", "--name-only", `${latestTag}...HEAD`];
-      const pathArg = slash(path.relative(execOpts.cwd || process.cwd(), pkg.path));
+      const pathArg = slash(Path.relative(execOpts.cwd || process.cwd(), pkg.path));
       if (pathArg) {
         args.push("--", pathArg);
       }
@@ -146,13 +160,11 @@ const getUpdatedPackages = (data, opts) => {
     changed.pkgs.forEach((name) => {
       addVersionLocks(name, changed, opts);
     });
-
-    changed.pkgs.forEach((name) => {
-      addDependents(name, changed, packages);
-    });
   }
+
+  changed.pkgs.forEach((name) => {
+    addDependents(name, changed, graph);
+  });
 
   return changed;
 };
-
-export = getUpdatedPackages;

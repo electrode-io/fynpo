@@ -6,13 +6,13 @@ import semver from "semver";
 import logger from "../logger";
 
 const findVersion = (name, updateType, collated) => {
-  const packages = _.get(collated, "opts.data.packages", {});
   const types = ["patch", "minor", "major"];
-  const Pkg = _.get(packages, [name, "pkgJson"], {});
+  const pkg = collated.opts.graph.getPackageByName(name);
+  const pkgJson = _.get(pkg, "pkgJson", {});
   collated.packages[name] = collated.packages[name] || {};
 
-  collated.packages[name].version = Pkg.version;
-  const x = semver.parse(Pkg.version);
+  collated.packages[name].version = pkgJson.version;
+  const x = semver.parse(pkgJson.version);
   collated.packages[name].versionOnly = `${x.major}.${x.minor}.${x.patch}`;
   collated.packages[name].semver = x;
   collated.packages[name].newVersion = semver.inc(
@@ -20,7 +20,7 @@ const findVersion = (name, updateType, collated) => {
     types[updateType]
   );
   collated.packages[name].updateType = updateType;
-  collated.packages[name].originalPkg = Pkg;
+  collated.packages[name].originalPkg = pkgJson;
 };
 
 const findUpdateType = (name, collated, minBumpType = 0) => {
@@ -54,7 +54,6 @@ const findUpdateType = (name, collated, minBumpType = 0) => {
 export const determinePackageVersions = (collated) => {
   const opts = collated.opts || {};
   const changed = collated.changed || {};
-  const packages = _.get(collated, "opts.data.packages", {});
 
   // find bump type for packages that have direct changes
   collated.realPackages.forEach((name) => findUpdateType(name, collated));
@@ -65,8 +64,9 @@ export const determinePackageVersions = (collated) => {
       .map((name) => collated.packages[name])
       .map((x) => x.updateType);
     const minBumpType = _.max(updateTypes);
+    const pkgNames = Object.keys(_.get(collated, "opts.graph.packages.byName", {}));
 
-    for (const name of Object.keys(packages)) {
+    for (const name of pkgNames) {
       if (!collated.realPackages.includes(name)) {
         collated.realPackages.push(name);
       }

@@ -21,7 +21,7 @@ xsh.envPath.addToFront(Path.join(__dirname, "../node_modules/.bin"));
 import _ from "lodash";
 import * as utils from "./utils";
 import logger from "./logger";
-import getUpdatedPackages from "./utils/get-updated-packages";
+import { getUpdatedPackages } from "./utils/get-updated-packages";
 import {
   isAnythingCommitted,
   getNewCommits,
@@ -32,38 +32,37 @@ import { updateChangelog } from "./utils/update-changelog-file";
 import { updatePackageVersions } from "./utils/update-package-versions";
 import { getCurrentBranch } from "./utils/get-current-branch";
 
+import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
+
 export default class Changelog {
   name;
   _cwd;
   _fynpoRc;
   _options;
-  _data;
   _changeLogFile;
   _changeLog;
-  _lockAll;
   _versionLockMap;
   _gitClean;
+  _lockAll: boolean;
+  _graph: FynpoDepGraph;
 
-  constructor(opts, data) {
+  constructor(opts, graph: FynpoDepGraph) {
     this.name = "changelog";
-    const { fynpoRc, dir } = utils.loadConfig(opts.cwd);
-    this._cwd = dir || opts.cwd;
-    this._fynpoRc = fynpoRc || {};
-    this._data = data;
+    this._cwd = opts.cwd;
+    this._fynpoRc = opts;
+    this._graph = graph;
 
     const commandConfig = (this._fynpoRc as any).command || {};
     const overrides = [this.name, ...this.relatedCommands].map((key) => commandConfig[key]);
     this._options = _.defaults(opts, ...overrides, this._fynpoRc);
 
-    this._versionLockMap = {};
     const versionLocks = _.get(this._fynpoRc, "versionLocks", []);
     if (versionLocks[0] && versionLocks[0] === "*") {
       this._lockAll = true;
+      this._versionLockMap = utils.makeVersionLockMap([["name:/.*/"]], graph);
     } else {
-      versionLocks.reduce((mapping, locks) => {
-        locks.forEach((name) => (mapping[name] = locks));
-        return mapping;
-      }, this._versionLockMap);
+      this._versionLockMap = utils.makeVersionLockMap(versionLocks, graph);
+      logger.info("version lock", this._versionLockMap);
     }
 
     try {
@@ -177,11 +176,11 @@ export default class Changelog {
       changeLog: this._changeLog,
       changeLogFile: this._changeLogFile,
       fynpoRc: this._fynpoRc,
-      lockAll: this._lockAll,
       versionLockMap: this._versionLockMap,
-      data: this._data,
+      lockAll: this._lockAll,
+      graph: this._graph,
     });
-    const changed = getUpdatedPackages(this._data, opts);
+    const changed = getUpdatedPackages(this._graph, opts);
 
     if (!changed.pkgs.length) {
       logger.info(`No changed packages to update changelog.`);

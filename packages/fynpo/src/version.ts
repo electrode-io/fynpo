@@ -21,7 +21,7 @@ xsh.envPath.addToFront(Path.join(__dirname, "../node_modules/.bin"));
 import _ from "lodash";
 import * as utils from "./utils";
 import logger from "./logger";
-import getUpdatedPackages from "./utils/get-updated-packages";
+import { getUpdatedPackages } from "./utils/get-updated-packages";
 import { determinePackageVersions } from "./utils/get-package-version";
 import { updateChangelog } from "./utils/update-changelog-file";
 import { updatePackageVersions } from "./utils/update-package-versions";
@@ -31,6 +31,7 @@ import {
   getNewCommits,
   collateCommitsPackages,
 } from "./utils/git-list-commits";
+import { FynpoDepGraph } from "@fynpo/base";
 
 export default class Version {
   name;
@@ -39,31 +40,25 @@ export default class Version {
   _options;
   _changeLog;
   _changeLogFile;
-  _lockAll;
   _versionLockMap;
-  _data;
   _gitClean;
+  _graph: FynpoDepGraph;
 
-  constructor(opts, data) {
+  constructor(opts, graph: FynpoDepGraph) {
     this.name = "version";
-    const { dir, fynpoRc } = utils.loadConfig(opts.cwd);
-    this._cwd = dir || opts.cwd;
-    this._fynpoRc = fynpoRc || {};
-    this._data = data;
+    this._cwd = opts.cwd;
+    this._fynpoRc = opts;
+    this._graph = graph;
 
     const commandConfig = (this._fynpoRc as any).command || {};
     const overrides = [this.name, ...this.relatedCommands].map((key) => commandConfig[key]);
     this._options = _.defaults(opts, ...overrides, this._fynpoRc);
 
-    this._versionLockMap = {};
     const versionLocks = _.get(this._fynpoRc, "versionLocks", []);
     if (versionLocks[0] && versionLocks[0] === "*") {
-      this._lockAll = true;
+      this._versionLockMap = utils.makeVersionLockMap([["name:/.*/"]], graph);
     } else {
-      versionLocks.reduce((mapping, locks) => {
-        locks.forEach((name) => (mapping[name] = locks));
-        return mapping;
-      }, this._versionLockMap);
+      this._versionLockMap = utils.makeVersionLockMap(versionLocks, graph);
     }
 
     try {
@@ -149,11 +144,10 @@ export default class Version {
       changeLog: this._changeLog,
       changeLogFile: this._changeLogFile,
       fynpoRc: this._fynpoRc,
-      lockAll: this._lockAll,
       versionLockMap: this._versionLockMap,
-      data: this._data,
+      graph: this._graph,
     });
-    const changed = getUpdatedPackages(this._data, opts);
+    const changed = getUpdatedPackages(this._graph, opts);
 
     if (!changed.pkgs.length) {
       logger.info(`No changed packages to version`);

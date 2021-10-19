@@ -138,15 +138,19 @@ const execPrepare = async (parsed) => {
 };
 
 const execChangelog = async (parsed) => {
-  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+  logger.info("updating changelog");
+  const opts = await makeOpts(parsed);
+  logger.info("fynpo opts", JSON.stringify(opts, null, 2));
+  const graph = await makeDepGraph(opts);
 
-  return new Changelog(opts, await readPackages(opts)).exec();
+  return new Changelog(opts, graph).exec();
 };
 
 const execUpdated = async (parsed) => {
-  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+  const opts = await makeOpts(parsed);
+  const graph = await makeDepGraph(opts);
 
-  return new Updated(opts, await readPackages(opts)).exec();
+  return new Updated(opts, graph).exec();
 };
 
 const execPublish = async (parsed) => {
@@ -156,9 +160,10 @@ const execPublish = async (parsed) => {
 };
 
 const execVersion = async (parsed) => {
-  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+  const opts = await makeOpts(parsed);
+  const graph = await makeDepGraph(opts);
 
-  return new Version(opts, await readPackages(opts)).exec();
+  return new Version(opts, graph).exec();
 };
 
 const execRunScript = async (parsed) => {
