@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPl
 
 const base = {
   mode: "development",
-  //devtool: "source-map",
+  // devtool: "source-map",
   entry: {
     "fyn.js": Path.resolve("cli/main.js")
   },
@@ -18,7 +18,7 @@ const base = {
     process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin()
   ].filter(x => x),
   resolve: {
-    symlinks: false, // don't resolve symlinks to their real path
+    symlinks: true, // resolve symlinks to their real path
     alias: {
       xml2js: Path.resolve("stubs/xml2js.js"),
       "iconv-lite": Path.resolve("stubs/iconv-lite.js"),
