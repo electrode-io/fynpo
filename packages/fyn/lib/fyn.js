@@ -341,7 +341,9 @@ class Fyn {
     }
   }
 
-  async loadPkg(options) {
+  async loadPkg(_options) {
+    const options = _options || this._options;
+
     if (options.pkgFile) {
       const pkgFile = Path.resolve(this._cwd, options.pkgFile);
       logger.debug("package.json file", pkgFile);

@@ -487,12 +487,56 @@ class FynCli {
     });
   }
 
+  async runScript(pkg, script) {
+    const config = x => this.fyn.allrc[x];
+
+    const options = {
+      config: this.fyn.allrc,
+      dir: Path.join(this.fyn.cwd, this.fyn.targetDir),
+      failOk: false,
+      force: config("force"),
+      group: config("group"),
+      log: npmlog,
+      ignorePrepublish: config("ignore-prepublish"),
+      ignoreScripts: config("ignore-scripts"),
+      nodeOptions: config("node-options"),
+      production: this.fyn.production,
+      scriptShell: config("script-shell"),
+      scriptsPrependNodePath: config("scripts-prepend-node-path"),
+      unsafePerm: config("unsafe-perm"),
+      user: config("user")
+    };
+
+    return npmLifecycle(pkg, script, this.fyn.cwd, options);
+  }
+
+  async runScripts(scripts, { single } = {}) {
+    if (!this.fyn._pkg) {
+      await this.fyn.loadPkg();
+    }
+
+    const pkg = Object.assign({}, this.fyn._pkg);
+    pkg._id = `${pkg.name}@${pkg.version}`;
+
+    const _scripts = [].concat(
+      ...scripts.map(s => {
+        if (!single && !s.startsWith("pre") && !s.startsWith("post")) {
+          return [`pre${s}`, s, `post${s}`];
+        } else {
+          return s;
+        }
+      })
+    );
+
+    return Promise.each(_scripts, s => _.get(pkg, ["scripts", s]) && this.runScript(pkg, s));
+  }
+
   async run(argv) {
     this._config._fynpo = false;
 
     if (argv.opts.list || !argv.args.script) {
       try {
-        await this.fyn._initialize({ noLock: true });
+        await this.fyn.loadPkg();
         if (!argv.opts.list) {
           console.log(`Lifecycle scripts included in ${this.fyn._pkg.name}:\n`);
         }
@@ -502,50 +546,16 @@ class FynCli {
       }
     }
 
-    let { script } = argv.args;
+    const { script } = argv.args;
 
-    const config = x => this.fyn.allrc[x];
+    await this.fyn.loadPkg();
 
-    const run = (pkg, xscr) => {
-      const options = {
-        config: this.fyn.allrc,
-        dir: Path.join(this.fyn.cwd, this.fyn.targetDir),
-        failOk: false,
-        force: config("force"),
-        group: config("group"),
-        log: npmlog,
-        ignorePrepublish: config("ignore-prepublish"),
-        ignoreScripts: config("ignore-scripts"),
-        nodeOptions: config("node-options"),
-        production: this.fyn.production,
-        scriptShell: config("script-shell"),
-        scriptsPrependNodePath: config("scripts-prepend-node-path"),
-        unsafePerm: config("unsafe-perm"),
-        user: config("user")
-      };
+    if (!_.get(this.fyn._pkg, ["scripts", script])) {
+      logger.error(`Error: missing script: ${script} - not found in package.json scripts`);
+      fyntil.exit(1);
+    }
 
-      return npmLifecycle(pkg, xscr, this.fyn.cwd, options);
-    };
-
-    return this.fyn._initialize({ noLock: true }).then(() => {
-      if (!_.get(this.fyn._pkg, ["scripts", script])) {
-        logger.error(`missing script ${script}`);
-        fyntil.exit(1);
-      }
-
-      const pkg = Object.assign({}, this.fyn._pkg);
-
-      pkg._id = `${pkg.name}@${pkg.version}`;
-      let scripts;
-
-      if (!script.startsWith("pre") && !script.startsWith("post")) {
-        scripts = [`pre${script}`, script, `post${script}`];
-      } else {
-        scripts = [script];
-      }
-
-      return Promise.each(scripts, s => _.get(pkg, ["scripts", s]) && run(pkg, s));
-    });
+    return this.runScripts([script]);
   }
 }
 

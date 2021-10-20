@@ -50,7 +50,7 @@ const pickEnvOptions = () => {
   }, {});
 };
 
-const pickOptions = async argv => {
+const pickOptions = async (argv, checkFynpo = true) => {
   setLogLevel(argv.opts.logLevel);
 
   chalk.enabled = argv.opts.colors;
@@ -61,15 +61,16 @@ const pickOptions = async argv => {
     cwd = Path.join(process.cwd(), cwd);
   }
 
-  let fynpo;
+  let fynpo = {};
 
-  try {
-    fynpo = await fynTil.loadFynpo(cwd);
-  } catch (err) {
-    logger.error(err.stack);
-    process.exit(1);
+  if (checkFynpo) {
+    try {
+      fynpo = await fynTil.loadFynpo(cwd);
+    } catch (err) {
+      logger.error(err.stack);
+      process.exit(1);
+    }
   }
-
   const rcData = loadRc(argv.opts.rcfile && cwd, fynpo.dir);
 
   const rc = rcData.all || defaultRc;
@@ -371,7 +372,7 @@ const commands = {
     alias: ["rum", "r"],
     usage: "$0 $1 <command> [-- <args>...]",
     exec: async (argv, parsed) => {
-      return new FynCli(await pickOptions(argv)).run(argv, parsed);
+      return new FynCli(await pickOptions(argv, !argv.opts.list)).run(argv, parsed);
     },
     options: {
       list: {
