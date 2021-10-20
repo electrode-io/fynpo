@@ -95,7 +95,7 @@ export class FynpoConfigManager {
 
       try {
         this._config = await this.readJson(Path.join(dir, "fynpo.json"));
-        this._type = "fynpo monorepo at";
+        this._type = "fynpo monorepo";
         break;
       } catch (_e) {
         //
