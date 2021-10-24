@@ -57,6 +57,7 @@ $pkg:
   publish-util: ^1.1.5
   sinon: ^9.2.2
   sinon-chai: ^3.5.0
+  v8-compile-cache: ^2.3.0
   webpack: ^5.32.0
   webpack-bundle-analyzer: ^4.4.0
   webpack-cli: ^4.6.0
@@ -6547,12 +6548,13 @@ uuid:
   $: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
   _: 'https://registry.npmjs.com/uuid/-/uuid-3.4.0.tgz'
 v8-compile-cache:
- _latest: 2.2.0
+ _latest: 2.3.0
  _:
-  '^2.0.3,^2.2.0': 2.2.0
- 2.2.0:
-  $: sha512-gTpR5XQNKFwOd4clxfnhaqvfqMpqEwr4tOtCyz4MtYZX2JYhfr1JvBFKdS+7K/9rfpZR3VLX+YWBbKoxCgS43Q==
-  _: 'https://registry.npmjs.com/v8-compile-cache/-/v8-compile-cache-2.2.0.tgz'
+  '^2.0.3,^2.2.0,^2.3.0': 2.3.0
+ 2.3.0:
+  top: 1
+  $: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==
+  _: 'https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz'
 validate-npm-package-license:
  _latest: 3.0.4
  _:

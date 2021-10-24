@@ -9,20 +9,14 @@ const which = require("which");
 const { loadTasks, xrun } = require("@xarc/module-dev");
 loadTasks();
 
-const pkgFile = Path.resolve("package.json");
-let pkgData;
-
-function readPkg() {
-  if (!pkgData) {
-    pkgData = Fs.readFileSync(pkgFile);
-  }
-
-  return pkgData;
-}
-
 xrun.load("fyn", {
-  bundle: "webpack",
+  bundle: [xrun.exec("webpack"), "v8-compile-cache"],
 
+  "v8-compile-cache": () => {
+    const v8CompileCache = require.resolve("v8-compile-cache");
+    const distPath = Path.join(__dirname, "dist");
+    return xrun.exec(`cp ${v8CompileCache} ${distPath}`);
+  },
   "replace-npm-g": {
     desc: "Replace the version that was installed by 'npm i -g' with current",
     task: [
