@@ -14,7 +14,7 @@ import Version from "./version";
 import { makePkgDeps, readFynpoPackages, FynpoDepGraph } from "@fynpo/base";
 import logger from "./logger";
 import * as utils from "./utils";
-import Fs, { read } from "fs";
+import Fs from "fs";
 import _ from "lodash";
 
 const globalCmnds = ["bootstrap", "local", "run"];
@@ -116,6 +116,8 @@ const execBootstrap = async (parsed, cli, second = false) => {
     }
   } finally {
     if (!secondRun) {
+      const sec = (bootstrap.elapsedTime / 1000).toFixed(2);
+      logger.info(`bootstrap completed in ${sec}secs`);
       if (statusCode !== 0 || parsed.opts.saveLog) {
         Fs.writeFileSync("fynpo-debug.log", logger.logData.join("\n") + "\n");
         logger.error("Please check the file fynpo-debug.log for more info.");
@@ -268,7 +270,7 @@ const nixClap = new NixClap({
         concurrency: {
           alias: "cc",
           type: "number",
-          default: 3,
+          default: 6,
           desc: "number of packages to bootstrap concurrently",
         },
         skip: {
@@ -330,28 +332,28 @@ const nixClap = new NixClap({
         parallel: {
           type: "boolean",
           default: false,
-          desc: "run a given command or script immediately in all matching packages with prefixed streaming output",
+          desc: "run script immediately in all matching packages",
         },
         prefix: {
           type: "boolean",
           default: true,
-          desc: "no-prefix to disable package name prefixing for stream output",
+          desc: "add package name prefixing for stream output, --no-prefix to disable",
         },
         bail: {
           type: "boolean",
           default: true,
-          desc: "no-bail to disable exit on error and run script in all packages regardless of exit code",
+          desc: "immediately stop if any package's script fail, --no-bail to disable",
         },
         concurrency: {
           alias: "cc",
           type: "number",
-          default: 3,
-          desc: "number of packages to bootstrap concurrently",
+          default: 6,
+          desc: "number of packages to run script concurrently when parallel is not set",
         },
         sort: {
           type: "boolean",
           default: true,
-          desc: "no-sort to disable topological sorting",
+          desc: "run the script through packages in topological sort order, --no-sort to disable",
         },
       },
     },

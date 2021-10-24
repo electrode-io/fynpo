@@ -117,7 +117,6 @@ export const loadFynpoConfig = (cwd: string = process.cwd(), configPath?: string
   const searchPath = explicitPath ? explicitPath : cwd;
   const config = explore(searchPath);
 
-  logger.info("config from cosmic", JSON.stringify(config, null, 2));
   return config ? config : null;
 };
 

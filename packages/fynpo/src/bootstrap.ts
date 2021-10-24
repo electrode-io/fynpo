@@ -1,8 +1,7 @@
 /* eslint-disable no-magic-numbers, consistent-return, complexity */
 
-import Promise from "bluebird";
 import _ from "lodash";
-import ItemQueue, { ItemQueueResult } from "item-queue";
+import { ItemQueueResult } from "item-queue";
 import VisualExec from "visual-exec";
 import logger from "./logger";
 import chalk from "chalk";
@@ -12,6 +11,8 @@ import { locateGlobalFyn } from "./utils";
 import { startMetaMemoizer } from "./meta-memoizer";
 import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
 
+import { TopoRunner } from "./topo-runner";
+
 type PackageInstallInfo = {
   depData: PackageDepData;
   status?: string;
@@ -19,25 +20,14 @@ type PackageInstallInfo = {
 
 class Bootstrap {
   _opts;
-  _errors: ItemQueueResult<PackageInstallInfo>[];
   _fyn;
   graph: FynpoDepGraph;
   installInfo: Record<string, PackageInstallInfo>;
+  _topoRunner: TopoRunner;
 
   constructor(graph: FynpoDepGraph, opts) {
     this._opts = opts;
-    this.graph = graph;
-    const topo = graph.getTopoSortPackages();
-    this.installInfo = {};
-    for (const depData of topo.sorted) {
-      this.installInfo[depData.pkgInfo.path] = {
-        depData,
-        status: "",
-      };
-    }
-
-    this._errors = [];
-
+    this._topoRunner = new TopoRunner(graph.getTopoSortPackages(), opts);
     this._fyn = null;
   }
 
@@ -46,11 +36,15 @@ class Bootstrap {
   }
 
   get failed() {
-    return this._errors.length > 0 ? 1 : 0;
+    return this._topoRunner._errors.length > 0 ? 1 : 0;
+  }
+
+  get elapsedTime() {
+    return this._topoRunner._totalTime;
   }
 
   logErrors() {
-    _.each(this._errors, (data: ItemQueueResult<PackageInstallInfo>) => {
+    _.each(this._topoRunner._errors, (data: ItemQueueResult<PackageInstallInfo>) => {
       const pkgInfo = data.item?.depData?.pkgInfo;
       const name = pkgInfo?.name;
       const path = pkgInfo?.path;
@@ -58,7 +52,13 @@ class Bootstrap {
       const output: any = error.output;
 
       logger.error(`=== Error: fynpo failed bootstrapping ${name} at ${path}`);
-      if (isCI) {
+
+      if (!output) {
+        logger.error(error);
+        return;
+      }
+
+      if (isCI && output) {
         logger.error(`=== CI detected, dumping the debug logs ===`);
 
         const lines = output.stdout.split("\n");
@@ -101,57 +101,7 @@ ${output.stderr}
     });
   }
 
-  install(installInfo: PackageInstallInfo, queue: PackageInstallInfo[], nesting = false) {
-    const { pkgInfo } = installInfo.depData;
-    const pkgRefs = [pkgInfo.name, pkgInfo.path, pkgInfoId(pkgInfo)];
-
-    if (!_.isEmpty(this._opts.ignore) && pkgRefs.find((r) => this._opts.ignore.includes(r))) {
-      return true;
-    }
-
-    if (
-      !nesting &&
-      !_.isEmpty(this._opts.only) &&
-      !pkgRefs.find((r) => this._opts.only.includes(r))
-    ) {
-      return true;
-    }
-
-    if (installInfo.status === "pending") {
-      return false;
-    }
-
-    if (installInfo.status === "done") {
-      return true;
-    }
-
-    let pending = 0;
-    for (const path in installInfo.depData.localDepsByPath) {
-      if (!this.install(this.installInfo[path], queue, true)) {
-        pending++;
-        break;
-      }
-    }
-
-    if (pending === 0 && !installInfo.status) {
-      queue.push(installInfo);
-      installInfo.status = "pending";
-    }
-
-    return false;
-  }
-
-  getMoreInstall() {
-    const queue: PackageInstallInfo[] = [];
-
-    _.each(this.installInfo, (info: PackageInstallInfo) => {
-      this.install(info, queue);
-    });
-
-    return queue;
-  }
-
-  async exec({ build = true, fynOpts = [], concurrency = 3, skip = [] }) {
+  async exec({ build = true, fynOpts = [], concurrency = 6, skip = [] }) {
     if (!this._fyn) {
       this._fyn = require.resolve("fyn");
       /* eslint-disable @typescript-eslint/no-var-requires */
@@ -190,17 +140,11 @@ is different from fynpo's internal version ${fynPkgJson.version}`
 
     const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
     logger.info(`bootstrap command: ${dispCmd}`);
-
-    const start = Date.now();
-    const itemQ = new ItemQueue({
-      Promise,
+    await this._topoRunner.start({
       concurrency,
-      stopOnError: true,
-      processItem: (item: PackageInstallInfo) => {
-        const pkgInfo = item.depData.pkgInfo;
-        const name = pkgInfo.name;
+      proccesor: (pkgInfo) => {
         const colorId = chalk.magenta(pkgInfoId(pkgInfo));
-        if (skip && skip.includes(name)) {
+        if (skip && skip.includes(pkgInfo.name)) {
           logger.info("bootstrap skipping", colorId);
           return;
         }
@@ -216,32 +160,11 @@ is different from fynpo's internal version ${fynPkgJson.version}`
           visualLogger: logger,
         });
 
-        // eslint-disable-next-line
-        ve.logFinalOutput = function (err, output) {};
+        ve.logFinalOutput = _.noop;
         return ve.execute();
       },
-      handlers: {
-        doneItem: (data: any) => {
-          const item: PackageInstallInfo = data.item;
-          if (item) {
-            item.status = "done";
-          }
-          const items = this.getMoreInstall();
-          itemQ.addItems(items, true);
-        },
-        done: () => {
-          const ts = (Date.now() - start) / 1000;
-          logger.info(`bootstrap completed in ${ts}secs`);
-          // return this.restorePkgJson();
-        },
-        failItem: (data) => {
-          this._errors.push(data);
-          // this.restorePkgJson();
-        },
-      },
+      stopOnError: true,
     });
-
-    return itemQ.addItems(this.getMoreInstall()).wait();
   }
 }
 

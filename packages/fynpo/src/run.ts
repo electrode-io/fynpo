@@ -8,8 +8,17 @@ import _ from "lodash";
 import { npmRunScriptStreaming, npmRunScript } from "./npm-run-script";
 import boxen from "boxen";
 import chalk from "chalk";
-import { FynpoDepGraph, FynpoTopoPackages, PackageDepData, FynpoPackageInfo } from "@fynpo/base";
+import {
+  FynpoDepGraph,
+  FynpoTopoPackages,
+  PackageDepData,
+  FynpoPackageInfo,
+  pkgInfoId,
+} from "@fynpo/base";
 import ItemQueue from "item-queue";
+import { TopoRunner } from "./topo-runner";
+
+type RunResult = { failed: boolean; exitCode: number } & Error;
 
 export default class Run {
   _cwd;
@@ -27,9 +36,9 @@ export default class Run {
     this._options = opts;
     this._args = this._options["--"] || [];
     this._npmClient = "npm";
-    // enforce concurrency to be an integer between 1 and 10, else default to 3
+    // enforce concurrency to be an integer between 1 and 100, else default to 3
     this._concurrency =
-      Number.isInteger(opts.concurrency) && opts.concurrency >= 1 && opts.concurrency <= 10
+      Number.isInteger(opts.concurrency) && opts.concurrency >= 1 && opts.concurrency <= 100
         ? opts.concurrency
         : 3;
     this.topo = graph.getTopoSortPackages();
@@ -117,38 +126,42 @@ path: ${pkg.path}`;
     }
   }
 
-  async runScriptsInParallel(packagesToRun: FynpoPackageInfo[]) {
-    const errors = [];
-    const results = [];
+  async runPackage(pkgInfo: FynpoPackageInfo, results: RunResult[], errors: Error[]) {
+    // TODO: expose continueOnError option
+    if (!this._options.continueOnError && errors.length > 0) {
+      return;
+    }
+
+    this._logQueueMsg(pkgInfo);
+
+    const runData: any = {
+      pkg: pkgInfo,
+      timer: utils.timer(),
+    };
+
+    try {
+      runData.output = await this.getRunner()(pkgInfo);
+      results.push(runData.output);
+    } catch (err: any) {
+      err.pkg = pkgInfo;
+      errors.push(err);
+      results.push(err);
+      runData.error = err;
+      runData.output = err;
+    } finally {
+      this._logRunResult(runData);
+    }
+  }
+
+  async runScriptsInParallel(packagesToRun: PackageDepData[]) {
+    const errors: Error[] = [];
+    const results: RunResult[] = [];
 
     const queue = new ItemQueue<FynpoPackageInfo>({
       processItem: async (pkgInfo) => {
-        // TODO: expose continueOnError option
-        if (!this._options.continueOnError && errors.length > 0) {
-          return;
-        }
-
-        this._logQueueMsg(pkgInfo);
-
-        const runData: any = {
-          pkg: pkgInfo,
-          timer: utils.timer(),
-        };
-
-        try {
-          runData.output = await this.getRunner()(pkgInfo);
-          results.push(runData.output);
-        } catch (err: any) {
-          err.pkg = pkgInfo;
-          errors.push(err);
-          results.push(err);
-          runData.error = err;
-          runData.output = err;
-        } finally {
-          this._logRunResult(runData);
-        }
+        return this.runPackage(pkgInfo, results, errors);
       },
-      itemQ: packagesToRun,
+      itemQ: packagesToRun.map((d) => d.pkgInfo),
       concurrency: this._concurrency,
     });
 
@@ -157,9 +170,20 @@ path: ${pkg.path}`;
     return results;
   }
 
-  runScriptsInTopological(packagesToRun: FynpoPackageInfo[]) {
-    // TODO: what does topo run mean?
-    return this.runScriptsInParallel(packagesToRun);
+  async runScriptsInTopological(packagesToRun: PackageDepData[]) {
+    const errors: Error[] = [];
+    const results: RunResult[] = [];
+
+    const topoRunner = new TopoRunner({ ...this.topo, sorted: packagesToRun }, this._options);
+
+    await topoRunner.start({
+      concurrency: this._concurrency,
+      proccesor: (pkgInfo: FynpoPackageInfo) => {
+        return this.runPackage(pkgInfo, results, errors);
+      },
+    });
+
+    return results;
   }
 
   async exec() {
@@ -168,13 +192,11 @@ path: ${pkg.path}`;
       process.exit(1);
     }
 
-    const packagesToRun = this.topo.sorted
-      .filter((depData: PackageDepData) => {
-        const pkgInfo = depData.pkgInfo;
-        const scriptToRun = _.get(pkgInfo, ["pkgJson", "scripts", this._script]);
-        return scriptToRun;
-      })
-      .map((d) => d.pkgInfo);
+    const packagesToRun = this.topo.sorted.filter((depData: PackageDepData) => {
+      const pkgInfo = depData.pkgInfo;
+      const scriptToRun = _.get(pkgInfo, ["pkgJson", "scripts", this._script]);
+      return scriptToRun;
+    });
 
     const count = packagesToRun.length;
 
@@ -191,13 +213,21 @@ path: ${pkg.path}`;
     const timer = utils.timer();
 
     try {
-      let results: ({ failed: boolean; exitCode: number } & Error)[];
+      let results: RunResult[];
 
       if (this._options.parallel) {
+        this._concurrency = Infinity;
+        logger.info(`executing script in all packages in parallel`);
         results = await this.runScriptsInParallel(packagesToRun);
       } else if (this._options.sort) {
+        logger.info(
+          `executing script in packages in topo sort order - concurrency ${this._concurrency}`
+        );
         results = await this.runScriptsInTopological(packagesToRun);
       } else {
+        logger.info(
+          `executing script in packages in lexical order - concurrency ${this._concurrency}`
+        );
         results = await this.runScriptsInLexical(packagesToRun);
       }
 
@@ -214,7 +244,7 @@ path: ${pkg.path}`;
         process.exitCode = exitCode;
       } else {
         const duration = (timer() / 1000).toFixed(1);
-        const messages = packagesToRun.map((pkg) => ` - ${pkg.name}`);
+        const messages = packagesToRun.map((d) => ` - ${d.pkgInfo.name}`);
         logger.info(
           `Finished run npm script '${this._script}' in ${count} ${pkgMsg} in ${duration}s:
 ${messages.join("\n")}
