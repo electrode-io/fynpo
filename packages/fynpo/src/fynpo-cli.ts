@@ -332,7 +332,7 @@ const nixClap = new NixClap({
         parallel: {
           type: "boolean",
           default: false,
-          desc: "run script immediately in all matching packages",
+          desc: "run script immediately in up to concurrency number of matching packages",
         },
         prefix: {
           type: "boolean",

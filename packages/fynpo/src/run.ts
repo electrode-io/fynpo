@@ -216,8 +216,7 @@ path: ${pkg.path}`;
       let results: RunResult[];
 
       if (this._options.parallel) {
-        this._concurrency = Infinity;
-        logger.info(`executing script in all packages in parallel`);
+        logger.info(`executing script in packages in parallel - concurrency ${this._concurrency}`);
         results = await this.runScriptsInParallel(packagesToRun);
       } else if (this._options.sort) {
         logger.info(
@@ -236,7 +235,7 @@ path: ${pkg.path}`;
         const failures = results.filter((result) => result.failed);
         failures.forEach((result) => {
           const name = _.get(result, "pkg.name");
-          logger.error(chalk.red(`  - ${name} - exitCode ${result.exitCode}`));
+          logger.error(chalk.red(`  - ${name} - exit code ${result.exitCode}`));
         });
         // propagate "highest" error code, it's probably the most useful
         const codes = failures.map((error) => error.exitCode);
