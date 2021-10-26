@@ -157,10 +157,10 @@ $pkg:
   dependencies:
    chalk: ^4.0.0
 '@fynpo/base':
- _latest: 1.1.1-fynlocal_h
+ _latest: 1.1.2-fynlocal_h
  _:
-  ../fynpo-base: 1.1.1-fynlocal_h
- 1.1.1-fynlocal_h:
+  ../fynpo-base: 1.1.2-fynlocal_h
+ 1.1.2-fynlocal_h:
   $: local
   _: ./packages/fynpo-base
   dependencies:
@@ -1089,14 +1089,14 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 1.1.1-fynlocal_h
+ _latest: 1.1.2-fynlocal_h
  _:
-  ../fyn: 1.1.1-fynlocal_h
- 1.1.1-fynlocal_h:
+  ../fyn: 1.1.2-fynlocal_h
+ 1.1.2-fynlocal_h:
   $: local
   _: ./packages/fyn
   dependencies:
-   '@fynpo/base': ^1.1.1
+   '@fynpo/base': ^1.1.2
    '@jchip/error': ^1.0.3
    bluebird: ^3.7.2
    cacache: jchip/cacache
@@ -1133,10 +1133,10 @@ fyn:
    xsh: ^0.4.5
    yamljs: ^0.3.0
 fynpo:
- _latest: 1.1.1-fynlocal_h
+ _latest: 1.1.2-fynlocal_h
  _:
-  ./packages/fynpo: 1.1.1-fynlocal_h
- 1.1.1-fynlocal_h:
+  ./packages/fynpo: 1.1.2-fynlocal_h
+ 1.1.2-fynlocal_h:
   top: 1
   $: local
   _: ./packages/fynpo
@@ -1146,7 +1146,7 @@ fynpo:
    '@commitlint/lint': ^12.1.1
    '@commitlint/read': ^12.1.1
    '@commitlint/resolve-extends': ^12.1.1
-   '@fynpo/base': ^1.1.1
+   '@fynpo/base': ^1.1.2
    bluebird: ^3.5.1
    boxen: ^5.0.1
    chalk: ^4.1.1
@@ -1155,7 +1155,7 @@ fynpo:
    execa: ^5.0.0
    filter-scan-dir: ^1.2.0
    fs-extra: ^9.1.0
-   fyn: ^1.1.1
+   fyn: ^1.1.2
    get-stdin: ^8.0.0
    item-queue: ^1.1.2
    lodash: ^4.17.20
