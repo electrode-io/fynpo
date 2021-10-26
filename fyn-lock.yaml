@@ -564,10 +564,6 @@ chownr:
  _latest: 2.0.0
  _:
   '^1.1.1,^1.1.4': 1.1.4
-  ^2.0.0: 2.0.0
- 2.0.0:
-  $: sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
-  _: 'https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz'
  1.1.4:
   $: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==
   _: 'https://registry.npmjs.org/chownr/-/chownr-1.1.4.tgz'
@@ -1061,12 +1057,6 @@ fs-minipass:
  _latest: 2.1.0
  _:
   ^1.2.7: 1.2.7
-  ^2.0.0: 2.1.0
- 2.1.0:
-  $: sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==
-  _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-2.1.0.tgz'
-  dependencies:
-   minipass: ^3.0.0
  1.2.7:
   $: sha512-GWSSJGFy4e9GUeCcbIkED+bgAoFyj7XF1mV8rma3QW4NIqX9Kyx79N/PF61H5udOV3aY1IaMLs6pGbH71nlCTA==
   _: 'https://registry.npmjs.org/fs-minipass/-/fs-minipass-1.2.7.tgz'
@@ -1135,7 +1125,7 @@ fyn:
    rimraf: ^3.0.2
    semver: ^7.3.5
    source-map: ^0.7.3
-   tar: ^6.1.0
+   tar: ^4.4.19
    visual-exec: ^0.1.9
    visual-logger: ^1.1.3
    xaa: ^1.7.0
@@ -1887,12 +1877,6 @@ minipass:
  _latest: 3.1.5
  _:
   '^2.3.5,^2.6.0,^2.9.0': 2.9.0
-  ^3.0.0: 3.1.5
- 3.1.5:
-  $: sha512-+8NzxD82XQoNKNrl1d/FSi+X8wAEWR+sbYAfIvub4Nz0d22plFG72CEVVaufV8PNf4qSslFTD8VMOxNVhHCjTw==
-  _: 'https://registry.npmjs.org/minipass/-/minipass-3.1.5.tgz'
-  dependencies:
-   yallist: ^4.0.0
  2.9.0:
   $: sha512-wxfUjg9WebH+CUDX/CdbRlh5SmfZiy/hpkxaRI16Y9W56Pa75sWgd/rvFilSgrauD9NyFymP/+JFV3KwzIsJeg==
   _: 'https://registry.npmjs.org/minipass/-/minipass-2.9.0.tgz'
@@ -1903,13 +1887,6 @@ minizlib:
  _latest: 2.1.2
  _:
   ^1.3.3: 1.3.3
-  ^2.1.1: 2.1.2
- 2.1.2:
-  $: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==
-  _: 'https://registry.npmjs.org/minizlib/-/minizlib-2.1.2.tgz'
-  dependencies:
-   minipass: ^3.0.0
-   yallist: ^4.0.0
  1.3.3:
   $: sha512-6ZYMOEnmVsdCeTJVE0W9ZD+pVnE8h9Hma/iOwwRDsdQoePpoX56/8B6z3P9VNwppJuBKNRuFDRNRqRWexT9G9Q==
   _: 'https://registry.npmjs.org/minizlib/-/minizlib-1.3.3.tgz'
@@ -1952,7 +1929,7 @@ mkdirp:
  _latest: 1.0.4
  _:
   '^0.5.0,^0.5.1,^0.5.5': 0.5.5
-  '^1.0.3,^1.0.4': 1.0.4
+  ^1.0.4: 1.0.4
  1.0.4:
   $: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
   _: 'https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz'
@@ -3007,18 +2984,7 @@ supports-color:
 tar:
  _latest: 6.1.11
  _:
-  '^4.4.6,^4.4.8': 4.4.19
-  ^6.1.0: 6.1.11
- 6.1.11:
-  $: sha512-an/KZQzQUkZCkuoAA64hM92X0Urb6VpRhAFllDzz44U2mcD5scmT3zBc4VgVpkugF580+DQn8eAFSyoQt0tznA==
-  _: 'https://registry.npmjs.org/tar/-/tar-6.1.11.tgz'
-  dependencies:
-   chownr: ^2.0.0
-   fs-minipass: ^2.0.0
-   minipass: ^3.0.0
-   minizlib: ^2.1.1
-   mkdirp: ^1.0.3
-   yallist: ^4.0.0
+  '^4.4.19,^4.4.6,^4.4.8': 4.4.19
  4.4.19:
   $: sha512-a20gEsvHnWe0ygBY8JbxoM4w3SJdhc7ZAuxkLqh+nvNQN2IOt0B5lLgM490X5Hl8FF0dl0tOf2ewFYAlIFgzVA==
   _: 'https://registry.npmjs.org/tar/-/tar-4.4.19.tgz'
