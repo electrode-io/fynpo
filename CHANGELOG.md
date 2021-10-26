@@ -1,3 +1,40 @@
+# 10/25/2021
+
+## Packages
+
+-   `@fynpo/base@1.1.2` `(1.1.1 => 1.1.2)`
+-   `fyn@1.1.2` `(1.1.1 => 1.1.2)`
+-   `fynpo@1.1.2` `(1.1.1 => 1.1.2)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: typo [commit](https://github.com/electrode-io/fynpo/commit/5993b58cc5601784747476b4f0216217f7fc96d1)
+    -   fix: use dep graph for update changelog [commit](https://github.com/electrode-io/fynpo/commit/b86f54a0ed047f0dff545e884f1f78f0e8611fe8)
+    -   fix: propage error with AggregateError [commit](https://github.com/electrode-io/fynpo/commit/2f6f48b2ecb554418f308691e2d2ae4966550e05)
+
+-   `packages/fyn`
+
+    -   fix: minor clean up of logs [commit](https://github.com/electrode-io/fynpo/commit/aa1a475616c1d4c2bda5dcfed0f9e28fd1ec4165)
+    -   add v8-compile-cache for fyn [commit](https://github.com/electrode-io/fynpo/commit/22aea58930b27b26a6922bf8f420fe0fca4a21ae)
+    -   fix: webpack config minimize size [commit](https://github.com/electrode-io/fynpo/commit/7d06f3c8d3ad5f86ddb99be55dd11f0124606382)
+    -   fix: fyn run avoid initializing install [commit](https://github.com/electrode-io/fynpo/commit/ce61eb3ad89e8e37a46a80a997cff371845ec1aa)
+    -   fix: wait for fynpo data lock [commit](https://github.com/electrode-io/fynpo/commit/816a0a7ab75b1ebac1c731ae450e8377daf8a70f)
+    -   fix: propage error with AggregateError [commit](https://github.com/electrode-io/fynpo/commit/2f6f48b2ecb554418f308691e2d2ae4966550e05)
+
+-   `packages/fynpo`
+
+    -   fix: minor clean up of logs [commit](https://github.com/electrode-io/fynpo/commit/aa1a475616c1d4c2bda5dcfed0f9e28fd1ec4165)
+    -   fix: parallel use concurrency [commit](https://github.com/electrode-io/fynpo/commit/30f467fc7a07c44827f2bef99a077cb22e8a4214)
+    -   refactor: extract topo runner [commit](https://github.com/electrode-io/fynpo/commit/af27ca8c6820377b52693c1cf9c8bcf7cf27f830)
+    -   fix: use dep graph for update changelog [commit](https://github.com/electrode-io/fynpo/commit/b86f54a0ed047f0dff545e884f1f78f0e8611fe8)
+    -   fix: add -n flag to git commit [commit](https://github.com/electrode-io/fynpo/commit/cd1d4cc604187afce76dbbcbf21bdbd510340d63)
+
+-   `MISC`
+
+    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/87be9f29552ed6f2fb6e40150ce3fc3385994bc3)
+
 # 10/6/2021
 
 ## Packages
