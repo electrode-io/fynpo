@@ -3,6 +3,8 @@
 // before it's run.
 //
 
+/* eslint-disable complexity */
+
 import Promise from "bluebird";
 import _ from "lodash";
 import ItemQueue, { ItemQueueResult } from "item-queue";

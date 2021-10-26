@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A node package manager, fast, workspace, and better productivity and efficiency",
   "main": "./bin/fyn.js",
   "homepage": "https://www.electrode.io/fynpo/",
@@ -68,7 +68,7 @@
     "directory": "packages/fyn"
   },
   "dependencies": {
-    "@fynpo/base": "^1.1.1",
+    "@fynpo/base": "^1.1.2",
     "@jchip/error": "^1.0.3",
     "bluebird": "^3.7.2",
     "cacache": "jchip/cacache",
