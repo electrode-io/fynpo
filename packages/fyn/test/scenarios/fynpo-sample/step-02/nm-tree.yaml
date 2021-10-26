@@ -1,0 +1,22 @@
+node_modules:
+  .f:
+    .fyn.json: file
+    _:
+      dep-on-pkg1:
+        1.0.0-fynlocal_h:
+          dep-on-pkg1:
+            package.json:
+              id: dep-on-pkg1@1.0.0-fynlocal_h
+      pkg1:
+        1.0.0-fynlocal_h:
+          pkg1:
+            package.json:
+              id: pkg1@1.0.0-fynlocal_h
+      pkg2:
+        1.0.0-fynlocal_h:
+          pkg2:
+            package.json:
+              id: pkg2@1.0.0-fynlocal_h
+  dep-on-pkg1: "-> .f/_/dep-on-pkg1/1.0.0-fynlocal_h/dep-on-pkg1"
+  pkg1: "-> .f/_/pkg1/1.0.0-fynlocal_h/pkg1"
+  pkg2: "-> .f/_/pkg2/1.0.0-fynlocal_h/pkg2"

@@ -1,6 +1,5 @@
 "use strict";
 
-const Fs = require("fs");
 const Path = require("path");
 const chalk = require("chalk");
 const Promise = require("bluebird");
@@ -294,6 +293,7 @@ const commands = {
         config.lockfile = lockFile;
         config.noStartupInfo = true;
         logger.info("installing...");
+        fynTil.resetFynpo();
         return new FynCli(config).install();
       });
     },
@@ -339,6 +339,7 @@ const commands = {
         if (!argv.opts.install) return;
         options.lockfile = lockFile;
         options.noStartupInfo = true;
+        fynTil.resetFynpo();
         logger.info("installing...");
         return await new FynCli(options).install();
       }
@@ -385,7 +386,7 @@ const commands = {
 };
 
 const run = (args, start) => {
-  fynTil.fynpoConfig = undefined;
+  fynTil.resetFynpo();
 
   if (start === undefined && args !== undefined) {
     start = 0;

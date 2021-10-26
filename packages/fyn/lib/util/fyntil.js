@@ -78,6 +78,10 @@ const fyntil = {
 
   fynpoConfig: undefined,
 
+  resetFynpo() {
+    fyntil.fynpoConfig = undefined;
+  },
+
   async loadFynpo(cwd = process.cwd()) {
     if (fyntil.fynpoConfig) {
       return fyntil.fynpoConfig;

@@ -3,12 +3,9 @@ const Path = require("path");
 const { expect } = require("chai");
 
 module.exports = {
-  title: "should add a package from fynpo monorepo",
-  pkgDir: ".ignore-dir",
+  title: "should handle a fynpo monorepo",
+  pkgDir: "@scope/pkg-2",
   timeout: 10000,
-  getArgs(options) {
-    return [].concat(options.baseArgs).concat([`add`, `../packages/pkg2`]);
-  },
   async before(cwd, scenarioDir) {
     try {
       Fs.unlinkSync(Path.join(scenarioDir, ".fynpo-data.json"));
@@ -17,9 +14,8 @@ module.exports = {
     }
   },
   async verify(cwd, scenarioDir) {
-    expect(
-      Fs.existsSync(Path.join(scenarioDir, ".fynpo-data.json")),
-      ".fynpo-data.json should not exist"
-    ).equal(false);
+    const fynData = JSON.parse(Fs.readFileSync(Path.join(scenarioDir, ".fynpo-data.json")));
+    const eData = JSON.parse(Fs.readFileSync(Path.join(__dirname, "_fynpo-data.json")));
+    expect(fynData.indirects).to.deep.equal(eData.indirects);
   }
 };

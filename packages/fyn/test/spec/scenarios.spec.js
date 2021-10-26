@@ -277,8 +277,8 @@ const debug = false;
         // "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
-        "fyn-central": {},
-        "fynpo-sample": {}
+        // "fyn-central": {},
+        "fynpo-sample": { stopStep: "step-01" }
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}
