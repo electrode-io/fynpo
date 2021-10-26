@@ -142,7 +142,6 @@ const execPrepare = async (parsed) => {
 const execChangelog = async (parsed) => {
   logger.info("updating changelog");
   const opts = await makeOpts(parsed);
-  logger.info("fynpo opts", JSON.stringify(opts, null, 2));
   const graph = await makeDepGraph(opts);
 
   return new Changelog(opts, graph).exec();

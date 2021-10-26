@@ -193,7 +193,7 @@ class Fyn {
             fynpoNpmRun = ["build"];
             logger.info("fynpo monorepo: default to auto run npm scripts:", fynpoNpmRun);
           }
-        } else {
+        } else if (this._cwd !== this._fynpo.dir) {
           logger.info(
             "package at",
             this._cwd,

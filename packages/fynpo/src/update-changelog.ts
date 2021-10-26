@@ -62,7 +62,6 @@ export default class Changelog {
       this._versionLockMap = utils.makeVersionLockMap([["name:/.*/"]], graph);
     } else {
       this._versionLockMap = utils.makeVersionLockMap(versionLocks, graph);
-      logger.info("version lock", this._versionLockMap);
     }
 
     try {

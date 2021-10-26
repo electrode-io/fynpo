@@ -54,7 +54,6 @@ const addVersionLocks = (name, changed, opts) => {
   changed.verLocks[name] = [];
 
   if (verLocks) {
-    logger.info("version locks:", name, verLocks);
     for (const lockPkgName of _.without(verLocks, name)) {
       if (!changed.pkgs.includes(lockPkgName)) {
         changed.pkgs.push(lockPkgName);
