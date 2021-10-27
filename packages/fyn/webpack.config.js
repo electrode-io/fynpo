@@ -45,7 +45,8 @@ const node8 = Object.assign({}, base, {
     rules: [
       {
         test: /\.js$/,
-        exclude: x => x.indexOf("node_modules") > 0,
+        // ensure all code are transpiled, in case a module we use no longer supports node 8.0
+        exclude: () => false,
         use: {
           loader: "babel-loader",
           options: {
