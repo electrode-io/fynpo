@@ -13,13 +13,6 @@ const loadRc = require("./load-rc");
 const defaultRc = require("./default-rc");
 const fynTil = require("../lib/util/fyntil");
 
-const nixClap = new NixClap({
-  Promise,
-  name: myPkg.name,
-  version: myPkg.version,
-  usage: "$0 [options] <command>"
-});
-
 function setLogLevel(ll) {
   if (ll) {
     const levels = Object.keys(CliLogger.Levels);
@@ -49,7 +42,7 @@ const pickEnvOptions = () => {
   }, {});
 };
 
-const pickOptions = async (argv, checkFynpo = true) => {
+const pickOptions = async (argv, nixClap, checkFynpo = true) => {
   setLogLevel(argv.opts.logLevel);
 
   chalk.enabled = argv.opts.colors;
@@ -74,7 +67,6 @@ const pickOptions = async (argv, checkFynpo = true) => {
 
   const rc = rcData.all || defaultRc;
 
-  // nixClap.applyConfig(rc, argv);
   _.defaults(argv.opts, rc);
   nixClap.applyConfig(pickEnvOptions(), argv);
 
@@ -260,8 +252,8 @@ const commands = {
   install: {
     alias: "i",
     desc: "Install modules",
-    exec: async argv => {
-      const cli = new FynCli(await pickOptions(argv));
+    async exec(argv, parsed) {
+      const cli = new FynCli(await pickOptions(argv, parsed.nixClap));
       return cli.install();
     },
     default: true,
@@ -282,8 +274,8 @@ const commands = {
     args: "[packages..]",
     usage: "$0 $1 [packages..] [--dev <dev packages>]",
     desc: "add packages to package.json",
-    exec: async argv => {
-      const config = await pickOptions(argv);
+    exec: async (argv, parsed) => {
+      const config = await pickOptions(argv, parsed.nixClap);
       const lockFile = config.lockfile;
       config.lockfile = false;
       const cli = new FynCli(config);
@@ -328,8 +320,8 @@ const commands = {
     alias: "rm",
     args: "<packages..>",
     desc: "Remove packages from package.json and install",
-    exec: async argv => {
-      const options = await pickOptions(argv);
+    exec: async (argv, parsed) => {
+      const options = await pickOptions(argv, parsed.nixClap);
       const lockFile = options.lockfile;
       options.lockfile = false;
       const cli = new FynCli(options);
@@ -356,15 +348,8 @@ const commands = {
     desc: "Show stats of installed packages",
     usage: "$0 $1 <package-name>[@semver] [...]",
     args: "<string packages..>",
-    exec: async argv => {
-      return new FynCli(await pickOptions(argv)).stat(argv);
-    }
-  },
-  test: {
-    desc: "Run the test npm script in your package.json",
-    usage: "$0 $1",
     exec: async (argv, parsed) => {
-      return new FynCli(await pickOptions(argv)).run(argv);
+      return new FynCli(await pickOptions(argv, parsed.nixClap)).stat(argv);
     }
   },
   run: {
@@ -373,7 +358,7 @@ const commands = {
     alias: ["rum", "r"],
     usage: "$0 $1 <command> [-- <args>...]",
     exec: async (argv, parsed) => {
-      return new FynCli(await pickOptions(argv, !argv.opts.list)).run(argv, parsed);
+      return new FynCli(await pickOptions(argv, parsed.nixClap, !argv.opts.list)).run(argv);
     },
     options: {
       list: {
@@ -385,14 +370,53 @@ const commands = {
   }
 };
 
-const run = (args, start) => {
+const createNixClap = handlers => {
+  return new NixClap({
+    Promise,
+    name: myPkg.name,
+    version: myPkg.version,
+    usage: "$0 [options] <command>",
+    handlers
+  });
+};
+
+const run = async (args, start, tryRun = true) => {
   fynTil.resetFynpo();
+
+  const handlers = {
+    "parse-fail": parsed => {
+      if (parsed.commands.length < 1 && parsed.error.message.includes("Unknown command")) {
+        parsed.nixClap.skipExec();
+      } else {
+        parsed.nixClap.showHelp(parsed.error);
+      }
+    },
+    "unknown-option": () => {}
+  };
 
   if (start === undefined && args !== undefined) {
     start = 0;
   }
 
-  return nixClap.init(options, commands).parseAsync(args, start);
+  const parsed = await createNixClap(handlers)
+    .init(options, commands)
+    .parseAsync(args, start);
+
+  if (!tryRun || !parsed.error) {
+    return;
+  }
+
+  if (parsed.error && parsed.commands.length < 1) {
+    const x = start === undefined ? 2 : start;
+    const args2 = (args || process.argv).slice();
+    args2.splice(x, 0, "run");
+
+    await createNixClap()
+      .init(options, commands)
+      .parseAsync(args2, x);
+  } else {
+    parsed.nixClap.showHelp(parsed.error);
+  }
 };
 
 const fun = () => {
@@ -400,7 +424,7 @@ const fun = () => {
 
   argv.splice(2, 0, "run");
 
-  return run(argv, 2);
+  return run(argv, 2, false);
 };
 
 module.exports = {

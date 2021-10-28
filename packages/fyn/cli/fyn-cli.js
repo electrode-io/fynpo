@@ -531,10 +531,11 @@ class FynCli {
     return Promise.each(_scripts, s => _.get(pkg, ["scripts", s]) && this.runScript(pkg, s));
   }
 
-  async run(argv) {
+  async run(argv, script = "") {
     this._config._fynpo = false;
 
-    if (argv.opts.list || !argv.args.script) {
+    script = script || argv.args.script;
+    if (argv.opts.list || !script) {
       try {
         await this.fyn.loadPkg();
         if (!argv.opts.list) {
@@ -546,12 +547,12 @@ class FynCli {
       }
     }
 
-    const { script } = argv.args;
-
     await this.fyn.loadPkg();
 
     if (!_.get(this.fyn._pkg, ["scripts", script])) {
-      logger.error(`Error: missing script: ${script} - not found in package.json scripts`);
+      logger.error(
+        `Error: missing script: ${JSON.stringify(script)} - not found in package.json scripts`
+      );
       fyntil.exit(1);
     }
 
