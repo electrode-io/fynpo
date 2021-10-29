@@ -155,6 +155,15 @@ class Fyn {
     }
   }
 
+  checkNoFynLocal(name) {
+    const noFynLocal = ["dependencies", "devDependencies", "optionalDependencies"].find(sec => {
+      const semv = _.get(this._pkg, ["fyn", sec, name]);
+      return semv === false || (semv && semv.includes("no-fyn-local"));
+    });
+
+    return Boolean(noFynLocal);
+  }
+
   async _initializePkg() {
     if (!this._fynpo) {
       this._fynpo = await fyntil.loadFynpo(this._cwd);

@@ -423,6 +423,9 @@ class PkgDepResolver {
           fromDir = this._fyn.cwd;
         }
         for (const name in deps) {
+          if (this._fyn.checkNoFynLocal(name)) {
+            continue;
+          }
           // is pkg 'name@semver' a fynpo package?
           const fynpoPkg = fynpo.graph.resolvePackage(name, deps[name]);
           if (fynpoPkg) {
@@ -456,15 +459,15 @@ class PkgDepResolver {
       }
 
       for (const name in fynDeps) {
-        if (!deps[name]) {
-          logger.warn(`You ONLY defined ${name} in fyn.${depSec}!`);
-        }
         if (!fromDir) continue;
         const ownerName = chalk.magenta(depItem.name);
         const dispName = chalk.green(name);
-        if (fynDeps[name] === false || fynDeps[name] === "--no-fyn-local") {
+        if (this._fyn.checkNoFynLocal(name)) {
           logger.info(`fyn local disabled for ${dispName} of ${ownerName}`);
           continue;
+        }
+        if (!deps[name]) {
+          logger.warn(`You ONLY defined ${name} in fyn.${depSec}!`);
         }
         const dispSec = chalk.cyan(`fyn.${depSec}`);
         const dispSemver = chalk.blue(fynDeps[name]);
