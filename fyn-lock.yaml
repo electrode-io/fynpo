@@ -1,6 +1,6 @@
 $pkg:
  dev:
-  fynpo: ^1.1.3
+  fynpo: ^1.1.6
 '@babel/code-frame':
  _latest: 7.15.8
  _:
@@ -614,20 +614,20 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 1.1.5
+ _latest: 1.1.6
  _:
-  ^1.1.3: 1.1.5
- 1.1.5:
-  $: sha512-xxXo8PZ6LxeKKiAqZeZvtG/PYr2pMMos8lhd9eatB+t8tV+nFAQ+GgLtvFXVU0NV8MQRMPG5SJbeEY520NaBPw==
-  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.5.tgz'
+  ^1.1.6: 1.1.6
+ 1.1.6:
+  $: sha512-tinbfuZDvGx4krrnxnlW3aHHtvLfLTBVSmB2nJ+5pkFJZ2Ss5pnSusfrDUJwCJ2OrXhQjBQtAQnxCtPZNia7UA==
+  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.6.tgz'
 fynpo:
- _latest: 1.1.3
+ _latest: 1.1.6
  _:
-  ^1.1.3: 1.1.3
- 1.1.3:
+  ^1.1.6: 1.1.6
+ 1.1.6:
   top: 1
-  $: sha512-hmuL+1GEvQpWnsYujdYrL4WWDFLCNxDrOtL6755QFn/x9f6QdVbkKOO9HsCXPV1862Whq5mKeuFNGydrZ6rJBQ==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.3.tgz'
+  $: sha512-Q5PIRix/EBIzLL1NldcvXVBK2oOM5BcRQ6hYEvXRRPiYIg4jGkTxde9ZsHOjYy8g1sXMDQNnaTzCYt4lUYcu6g==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.6.tgz'
   dependencies:
    '@commitlint/execute-rule': ^12.1.1
    '@commitlint/format': ^12.1.1
@@ -643,7 +643,7 @@ fynpo:
    execa: ^5.0.0
    filter-scan-dir: ^1.2.0
    fs-extra: ^9.1.0
-   fyn: ^1.1.3
+   fyn: ^1.1.6
    get-stdin: ^8.0.0
    item-queue: ^1.1.2
    lodash: ^4.17.20
