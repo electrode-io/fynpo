@@ -1092,6 +1092,9 @@ ${item.depPath.join(" > ")}`
         ? tryLock().then(r => r || (item.semverPath && tryLocal()))
         : tryLocal().then(r => r || tryLock());
 
+    const failMetaMsg = name =>
+      `Unable to retrieve meta for package ${name} - If you've updated its version recently, try to run fyn with '--refresh-meta' again`;
+
     return promise
       .then(r => {
         if (r && !_.get(r, ["meta", "versions", r.resolved, "_missingJson"])) {
@@ -1106,7 +1109,7 @@ ${item.depPath.join(" > ")}`
           .fetchMeta(item)
           .then(meta => {
             if (!meta) {
-              throw new Error(`Unable to retrieve meta for package ${item.name}`);
+              throw new Error(failMetaMsg(item.name));
             }
             const updated = this._fyn.depLocker.update(item, meta);
             return this._resolveWithMeta({ item, meta: updated, force: true, noLocal: true });
@@ -1114,7 +1117,11 @@ ${item.depPath.join(" > ")}`
           .catch(err => {
             // item is not optional => fail
             if (item.dsrc !== "opt") {
-              throw new AggregateError([err], `Unable to retrieve meta for package ${item.name}`);
+              if (err.message.includes("Unable to retrieve meta")) {
+                throw err;
+              } else {
+                throw new AggregateError([err], failMetaMsg(item.name));
+              }
             } else {
               item.resolved = `metaFail_${item.semver}`;
               // add to opt resolver directly as failed package with a dummy meta
