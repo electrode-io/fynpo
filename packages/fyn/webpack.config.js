@@ -5,10 +5,20 @@ const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const base = {
-  mode: "development",
+  mode: "production",
   // devtool: "source-map",
   entry: {
     "fyn.js": Path.resolve("cli/main.js")
+  },
+  optimization: {
+    minimize: false,
+    concatenateModules: false,
+    mangleExports: false,
+    mergeDuplicateChunks: true,
+    innerGraph: false,
+    chunkIds: "named",
+    moduleIds: "named",
+    nodeEnv: "production"
   },
   plugins: [
     new webpack.BannerPlugin({
