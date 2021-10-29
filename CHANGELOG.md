@@ -4,6 +4,29 @@
 
 ### Directly Updated
 
+-   `fyn@1.1.6` `(1.1.5 => 1.1.6)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.6` `(1.1.3 => 1.1.6)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: package.json can disable fyn-local for indirect deps [commit](https://github.com/electrode-io/fynpo/commit/fbb58f5b99787188d02526849fc2e0beb8bc4ea7)
+    -   fix: publish [commit](https://github.com/electrode-io/fynpo/commit/86a35f006b86d1bec053debb025176bae14dfc7e)
+
+-   `MISC`
+
+    -   chore: update top lockfile [commit](https://github.com/electrode-io/fynpo/commit/4cd219b29a9d03b2e344fb7121ffbf0c7b620509)
+
+# 10/28/2021
+
+## Packages
+
+### Directly Updated
+
 -   `fyn@1.1.3` `(1.1.2 => 1.1.3)`
 
 ### Fynpo Updated
