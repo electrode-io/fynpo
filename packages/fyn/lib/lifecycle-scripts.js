@@ -104,7 +104,7 @@ class LifecycleScripts {
     const xrequire = requireAt(npmDir);
     const npmPkg = xrequire("./package.json");
     const version = parseInt(npmPkg.version.split(".")[0]);
-    if (version > 7) {
+    if (version > 8) {
       logger.error(`Unknown npm version ${version} - can't provide node-gyp binary`);
       return;
     }
