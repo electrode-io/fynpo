@@ -1,3 +1,31 @@
+# 10/28/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.3` `(1.1.2 => 1.1.3)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.3` `(1.1.2 => 1.1.3)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: webpack bundle in production mode [commit](https://github.com/electrode-io/fynpo/commit/254603c8ae1bc996404bafa845e519e083407aeb)
+    -   chore: update webpack dep [commit](https://github.com/electrode-io/fynpo/commit/0c4dadfaa2c006eb22b94079a5ed2a3b6844e8f3)
+    -   fix: log error [commit](https://github.com/electrode-io/fynpo/commit/a227cb8bf61274e4911a9542a65b3d04a89a1481)
+    -   fix: handle npm 8 [commit](https://github.com/electrode-io/fynpo/commit/464fbc6e158e381e5c4001ac12863ccb2bbad778)
+    -   feat: treat unknown command as npm script to run [commit](https://github.com/electrode-io/fynpo/commit/6da7655c28a60938aaa91d79cb74c2510f0a1a87)
+    -   fix: compatible with node 8 [commit](https://github.com/electrode-io/fynpo/commit/c616d80f073195f787d643b2d815416ef4b9c27f)
+    -   fix: fyn add reload fynpo before installing [commit](https://github.com/electrode-io/fynpo/commit/48b08bf8054e36da62c9cc5107e10b46cc19278a)
+
+-   `MISC`
+
+    -   chore: update lockfile [commit](https://github.com/electrode-io/fynpo/commit/78e947b060f6c17c5192dfd3854f87711072ca60)
+
 # 10/25/2021
 
 ## Packages
