@@ -9,7 +9,9 @@
     "test": "fynpo run test",
     "ci:check": "fynpo run ci:check --stream",
     "coverage": "fynpo run coverage",
-    "lint": "fynpo run lint"
+    "lint": "fynpo run lint",
+    "bootstrap": "fynpo",
+    "install": "fynpo"
   },
   "files": [
     "packages",
