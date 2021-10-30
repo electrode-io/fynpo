@@ -2,7 +2,7 @@ import shcmd from "shcmd";
 import { describe, it, expect } from "@jest/globals";
 
 const execBootstrap = () => {
-  const command = "npx ../../dist/fynpo-cli.js";
+  const command = "node --require ts-node/register ../../src";
   shcmd.pushd("-q", "test/sample");
   shcmd.exec(command);
 };

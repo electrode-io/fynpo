@@ -2,10 +2,10 @@
   "name": "fynpo",
   "version": "1.1.7",
   "description": "A node.js monorepo manager, that solves some common issues.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "docs": "xrun xarc/docs",
     "test": "xrun xarc/test-only",
     "lint": "xrun xarc/lint",
@@ -39,7 +39,7 @@
     "directory": "packages/fynpo"
   },
   "bin": {
-    "fynpo": "dist/fynpo-cli.js"
+    "fynpo": "dist/index.js"
   },
   "dependencies": {
     "@commitlint/execute-rule": "^12.1.1",
