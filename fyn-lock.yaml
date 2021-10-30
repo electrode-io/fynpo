@@ -1,6 +1,6 @@
 $pkg:
  dev:
-  fynpo: ^1.1.6
+  fynpo: ^1.1.8
 '@babel/code-frame':
  _latest: 7.15.8
  _:
@@ -283,14 +283,14 @@ balanced-match:
 bluebird:
  _latest: 3.7.2
  _:
-  ^3.5.1: 3.7.2
+  ^3.7.2: 3.7.2
  3.7.2:
   $: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
   _: 'https://registry.npmjs.org/bluebird/-/bluebird-3.7.2.tgz'
 boxen:
  _latest: 6.2.1
  _:
-  ^5.0.1: 5.1.2
+  ^5.1.2: 5.1.2
  5.1.2:
   $: sha512-9gYgQKXx+1nP8mP7CzFyaUARhg7D3n1dF/FnErWmu9l6JvGpNUN278h0aSb+QjoiKSWG+iZ3uHrcqk0qrY9RQQ==
   _: 'https://registry.npmjs.org/boxen/-/boxen-5.1.2.tgz'
@@ -346,7 +346,7 @@ chalk:
  _latest: 4.1.2
  _:
   ^2.0.0: 2.4.2
-  '^4.0.0,^4.1.0,^4.1.1': 4.1.2
+  '^4.0.0,^4.1.0,^4.1.2': 4.1.2
  4.1.2:
   $: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
   _: 'https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz'
@@ -614,20 +614,20 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 1.1.6
+ _latest: 1.1.8
  _:
-  ^1.1.6: 1.1.6
- 1.1.6:
-  $: sha512-tinbfuZDvGx4krrnxnlW3aHHtvLfLTBVSmB2nJ+5pkFJZ2Ss5pnSusfrDUJwCJ2OrXhQjBQtAQnxCtPZNia7UA==
-  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.6.tgz'
+  ^1.1.8: 1.1.8
+ 1.1.8:
+  $: sha512-wFKApV2pUWxzzuqyEV72Ru8UJbo4EBkSL50ytp5i5Z7N2klrQF93zD/2n1gC2xzUbau+VSXU2ZLMC8OIEgUjfQ==
+  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.8.tgz'
 fynpo:
- _latest: 1.1.6
+ _latest: 1.1.8
  _:
-  ^1.1.6: 1.1.6
- 1.1.6:
+  ^1.1.8: 1.1.8
+ 1.1.8:
   top: 1
-  $: sha512-Q5PIRix/EBIzLL1NldcvXVBK2oOM5BcRQ6hYEvXRRPiYIg4jGkTxde9ZsHOjYy8g1sXMDQNnaTzCYt4lUYcu6g==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.6.tgz'
+  $: sha512-9SQ00fgLxc3/DzRSc4Yr3UMI4K7lXfELkHxW/s+Es4zEpUcfjAq8GHt89HdZGWL0wYlfsRJJjlMVS9c42VoYYQ==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.8.tgz'
   dependencies:
    '@commitlint/execute-rule': ^12.1.1
    '@commitlint/format': ^12.1.1
@@ -635,29 +635,29 @@ fynpo:
    '@commitlint/read': ^12.1.1
    '@commitlint/resolve-extends': ^12.1.1
    '@fynpo/base': ^1.1.2
-   bluebird: ^3.5.1
-   boxen: ^5.0.1
-   chalk: ^4.1.1
+   bluebird: ^3.7.2
+   boxen: ^5.1.2
+   chalk: ^4.1.2
    chalker: ^1.2.0
    cosmiconfig: ^7.0.0
    execa: ^5.0.0
    filter-scan-dir: ^1.2.0
    fs-extra: ^9.1.0
-   fyn: ^1.1.6
+   fyn: ^1.1.8
    get-stdin: ^8.0.0
    item-queue: ^1.1.2
-   lodash: ^4.17.20
+   lodash: ^4.17.21
    minimatch: ^3.0.4
-   nix-clap: ^1.3.12
-   optional-require: ^1.0.3
-   prettier: ^2.3.0
+   nix-clap: ^1.3.13
+   optional-require: ^1.1.8
+   prettier: ^2.4.1
    resolve-from: ^5.0.0
    resolve-global: ^1.0.0
-   semver: ^7.3.4
+   semver: ^7.3.5
    shcmd: ^0.8.4
    slash: ^3.0.0
    strong-log-transformer: ^2.1.0
-   tslib: ^2.1.0
+   tslib: ^2.3.1
    visual-exec: ^0.1.8
    visual-logger: ^1.1.3
    xsh: ^0.4.5
@@ -948,7 +948,7 @@ locate-path:
 lodash:
  _latest: 4.17.21
  _:
-  '^4.17.15,^4.17.19,^4.17.20,^4.17.21': 4.17.21
+  '^4.17.15,^4.17.19,^4.17.21': 4.17.21
  4.17.21:
   $: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
   _: 'https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz'
@@ -1054,7 +1054,7 @@ minimist-options:
 nix-clap:
  _latest: 1.3.13
  _:
-  ^1.3.12: 1.3.13
+  ^1.3.13: 1.3.13
  1.3.13:
   $: sha512-ejn05GSB4qDNi6nPGgR7IGkqwzL9Eh8HYoc0T7Zs6QpNUGhyiAIoKCxgsHe0VXJIFI2eVb83DYiK9xzN8OQx3Q==
   _: 'https://registry.npmjs.org/nix-clap/-/nix-clap-1.3.13.tgz'
@@ -1111,7 +1111,7 @@ onetime:
 optional-require:
  _latest: 1.1.8
  _:
-  '^1.0.3,^1.1.8': 1.1.8
+  ^1.1.8: 1.1.8
  1.1.8:
   $: sha512-jq83qaUb0wNg9Krv1c5OQ+58EK+vHde6aBPzLvPPqJm89UQWsvSuFy9X/OSNJnFeSOKo7btE0n8Nl2+nE+z5nA==
   _: 'https://registry.npmjs.org/optional-require/-/optional-require-1.1.8.tgz'
@@ -1213,7 +1213,7 @@ path-type:
 prettier:
  _latest: 2.4.1
  _:
-  ^2.3.0: 2.4.1
+  ^2.4.1: 2.4.1
  2.4.1:
   $: sha512-9fbDAXSBcc6Bs1mZrDYb3XKzDLm4EXXL9sC1LqKP5rZkT6KRr/rf9amVUcODVXgguK/isJz0d0hP72WeaKWsvA==
   _: 'https://registry.npmjs.org/prettier/-/prettier-2.4.1.tgz'
@@ -1545,7 +1545,7 @@ trim-newlines:
 tslib:
  _latest: 2.3.1
  _:
-  ^2.1.0: 2.3.1
+  '^2.1.0,^2.3.1': 2.3.1
  2.3.1:
   $: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
   _: 'https://registry.npmjs.org/tslib/-/tslib-2.3.1.tgz'
