@@ -21,7 +21,7 @@ describe("fynpo topo-runner", () => {
 
   let runner;
   beforeAll(async () => {
-    const graph = new FynpoDepGraph({ cwd: path.join(__dirname, "./sample") });
+    const graph = new FynpoDepGraph({ cwd: path.join(__dirname, "../test/sample") });
     await graph.resolve();
     runner = new TopoRunner(graph.getTopoSortPackages(), parsed.opts);
   });

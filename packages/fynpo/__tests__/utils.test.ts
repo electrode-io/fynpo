@@ -5,7 +5,7 @@ import fs from "fs";
 import shcmd from "shcmd";
 
 describe("loadConfig", () => {
-  const dir = path.join(__dirname, "sample");
+  const dir = path.join(__dirname, "../test/sample");
 
   afterAll(() => {
     shcmd.rm(path.join(dir, "fynpo.json"));

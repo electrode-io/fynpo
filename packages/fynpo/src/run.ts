@@ -178,7 +178,7 @@ path: ${pkg.path}`;
 
     await topoRunner.start({
       concurrency: this._concurrency,
-      proccesor: (pkgInfo: FynpoPackageInfo) => {
+      processor: (pkgInfo: FynpoPackageInfo) => {
         return this.runPackage(pkgInfo, results, errors);
       },
     });

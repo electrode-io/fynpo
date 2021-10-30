@@ -2,7 +2,7 @@
 
 "use strict";
 
-require(require("./bundle"))
+require("./index")
   .fun()
   .then(() => {
     process.exit(0);

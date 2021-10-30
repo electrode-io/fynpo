@@ -1,34 +1,30 @@
-/* eslint-disable consistent-return */
-
 import xsh from "xsh";
 import Path from "path";
 import Promise from "bluebird";
 import logger from "./logger";
 import * as utils from "./utils";
 import * as _ from "lodash";
+import fyn from "fyn/bin";
+import shcmd from "shcmd";
+import { FynpoDepGraph, FynpoPackageInfo } from "@fynpo/base";
+import { TopoRunner } from "./topo-runner";
 
 export default class Publish {
-  _cwd;
-  _distTag;
-  _dryRun;
+  _cwd: string;
+  _distTag: string;
+  _dryRun: boolean;
   _push;
-  _packageInfo;
-  _packagesToPublish;
-  _rootScripts;
-  _fynpoRc;
+  _packagesToPublish: FynpoPackageInfo[];
+  _fynpoRc: any;
   _messages;
   _tagTmpl: string;
-  constructor({ cwd, distTag, dryRun, push }, pkgInfo = {}) {
-    this._distTag = distTag;
-    this._dryRun = dryRun;
-    this._push = push;
-    this._packageInfo = pkgInfo;
+  _graph: FynpoDepGraph;
+  _tgzFiles: string[];
 
-    const { fynpoRc, dir } = utils.loadConfig(this._cwd);
-    this._cwd = dir || cwd;
-    this._fynpoRc = fynpoRc || {};
-
-    this._rootScripts = utils.getRootScripts(this._cwd);
+  constructor(opts, graph: FynpoDepGraph) {
+    this._cwd = opts.cwd;
+    this._fynpoRc = opts;
+    this._graph = graph;
 
     const gitTagTmpl = _.get(
       this._fynpoRc,
@@ -37,6 +33,7 @@ export default class Publish {
     );
 
     this._tagTmpl = gitTagTmpl;
+    this._tgzFiles = [];
   }
 
   _sh(command, cwd = this._cwd, silent = false) {
@@ -75,80 +72,118 @@ export default class Publish {
     });
   }
 
-  runLifeCycleScripts(scripts = []) {
-    return Promise.map(
-      scripts,
-      (name) => {
-        if (this._rootScripts[name]) {
-          return this._sh(this._rootScripts[name]);
-        }
-      },
-      { concurrency: 1 }
-    ).then(() => {
-      logger.info(`Successfully ran scripts ${scripts.join(",")} in root.`);
-    });
-  }
-
-  getPackagesToPublish() {
-    return Promise.all([
+  async getPackagesToPublish() {
+    const [changedFiles, commitMsg] = await Promise.all([
       // this will output file paths with / as separator, even on windows
       // note: it may actually depend on git configuration
       this._sh(`git diff-tree --no-commit-id --name-only -r HEAD`),
       // get the commit message
       this._sh(`git log -1 --pretty=%B`),
-    ]).then(([changedFiles, commitMsg]) => {
-      if (!commitMsg.stdout.includes("[Publish]")) {
-        return [];
-      }
+    ]);
 
-      const packageNames = commitMsg.stdout
-        .split("\n")
-        .map((x) => x.trim())
-        .filter((x) => x.length > 0 && x.startsWith(`- `))
-        .map((x) => {
-          const ix2 = x.lastIndexOf("@");
-          return x.substring(2, ix2);
-        });
+    if (!commitMsg.stdout.includes("[Publish]")) {
+      logger.info(`Head git commit message doesn't have '[Publish]' - skip publish`);
+      return [];
+    }
 
-      const packagePaths = changedFiles.stdout
-        .split("\n")
-        .map((x) => x.trim())
-        .filter((x) => Path.basename(x) === "package.json")
-        .map((x) => Path.dirname(x));
-
-      return Object.values(this._packageInfo.packages).filter((pkg: any) => {
-        return (
-          packagePaths.includes(pkg.path) && !pkg.pkgJson.private && packageNames.includes(pkg.name)
-        );
+    const packageNames = commitMsg.stdout
+      .split("\n")
+      .map((x) => x.trim())
+      .filter((x) => x.length > 0 && x.startsWith(`- `))
+      .map((x) => {
+        const ix2 = x.lastIndexOf("@");
+        return x.substring(2, ix2);
       });
+
+    const packagePaths = changedFiles.stdout
+      .split("\n")
+      .map((x) => x.trim())
+      .filter((x) => Path.basename(x) === "package.json")
+      .map((x) => Path.dirname(x));
+
+    return Object.values(this._graph.packages.byId).filter((pkg: FynpoPackageInfo) => {
+      return (
+        packagePaths.includes(pkg.path) && !pkg.pkgJson.private && packageNames.includes(pkg.name)
+      );
     });
   }
 
-  publishPackages() {
-    const dryRunCmd = this._dryRun ? " --dry-run" : "";
-    const distTagCmd = this._distTag ? ` --tag ${this._distTag}` : "";
+  async runScript(pkg: FynpoPackageInfo, script: string) {
+    if (_.get(pkg.pkgJson, ["scripts", script])) {
+      const pkgFullDir = Path.join(this._fynpoRc.cwd, pkg.path);
+      shcmd.pushd(pkgFullDir);
+      try {
+        await fyn.run(["run", script, "--cwd", pkgFullDir], 0, false);
+      } finally {
+        shcmd.popd();
+      }
+    }
+  }
 
-    return Promise.map(
-      this._packagesToPublish,
-      (pkg) => {
-        const publishCmd = `npm publish${distTagCmd}${dryRunCmd}`;
-        logger.info(`===== Running publish for package ${pkg.name} with '${publishCmd}' =====`);
-        logger.info(`===== package dir: ${pkg.path} =====`);
+  _cleanupFile(name: string) {
+    try {
+      shcmd.rm(name);
+    } catch (_err) {
+      //
+    }
+  }
 
-        return this._sh(publishCmd, Path.resolve(this._cwd, pkg.path)).then((_output) => {
-          logger.info(`===== Published package ${pkg.name}@${pkg.version} =====`);
-          logger.info("-------------------------------------------------");
-        });
+  async publishPackages() {
+    const toPublishPaths = this._packagesToPublish.map((x) => x.path);
+    const topoRunner = new TopoRunner(this._graph.getTopoSortPackages(), this._fynpoRc);
+
+    await topoRunner.start({
+      concurrency: 1,
+      processor: async (pkgInfo) => {
+        if (toPublishPaths.includes(pkgInfo.path)) {
+          logger.info(`Publishing ${pkgInfo.name} at path ${pkgInfo.path}`);
+
+          const pkgFullDir = Path.join(this._fynpoRc.cwd, pkgInfo.path);
+
+          shcmd.pushd(pkgFullDir);
+
+          try {
+            await this.runScript(pkgInfo, "prepublishOnly");
+            const pack = this._sh("npm pack", pkgFullDir);
+            await pack.promise;
+            await this.runScript(pkgInfo, "publish");
+            await this.runScript(pkgInfo, "postpublish");
+          } finally {
+            shcmd.popd();
+          }
+
+          const outName = pkgInfo.name.replace(/\//g, "-").replace(/@/g, "");
+          const tgzName = `${outName}-${pkgInfo.version}.tgz`;
+          logger.info(`Prepared ${tgzName} for publishing`);
+          this._tgzFiles.push(Path.join(pkgFullDir, tgzName));
+        }
       },
-      { concurrency: 1 }
-    )
-      .then(() => {
-        logger.info(`Successfully published:\n${this._messages.join("\n")}`);
-      })
-      .catch((err) => {
-        this._logError("Publish failed:", err);
-        process.exit(1);
-      });
+    });
+
+    const errors: Error[] = [];
+
+    if (!this._dryRun) {
+      logger.info(`Publishing these tgz files with npm`, this._tgzFiles);
+      for (const tgzFile of this._tgzFiles) {
+        const tag = this._distTag ? ` --tag ${this._distTag}` : "";
+        const cmd = `npm publish${tag} ${tgzFile}`;
+        logger.info(`===== publishing ${tgzFile} with command '${cmd}'`);
+        const sh = this._sh(cmd, Path.dirname(tgzFile));
+        try {
+          await sh.promise;
+          logger.info(`===== Successfully published ${tgzFile} =====`);
+          this._cleanupFile(tgzFile);
+        } catch (err) {
+          delete err.output;
+          logger.error(`==== failed to publish '${tgzFile}' ====`, err);
+          errors.push(err);
+        }
+      }
+    } else {
+      logger.info(`Dry-run true, not doing actual npm publish, tgz files:`, this._tgzFiles);
+    }
+
+    return errors;
   }
 
   async addReleaseTag() {
@@ -158,6 +193,8 @@ export default class Publish {
 
     logger.info(`===== Adding Release Tag =====`);
 
+    let newTag: string;
+
     try {
       let commitIds = [];
 
@@ -166,14 +203,14 @@ export default class Publish {
         commitIds = commitOutput.stdout.split("\n").filter((x) => x.trim().length > 0);
       }
 
-      const newTag = utils.makePublishTag(this._tagTmpl, {
+      newTag = utils.makePublishTag(this._tagTmpl, {
         date: new Date(),
         gitHash: commitIds[0] || "",
       });
 
       const tagOut = await this._sh(`git tag -a ${newTag} -m "Release Tag"`);
       logger.info("tag", newTag, "output", tagOut);
-      if (this._dryRun || !this._push) {
+      if (!this._push) {
         logger.info(`Release tag ${newTag} created!`);
         return;
       }
@@ -182,29 +219,37 @@ export default class Publish {
 
       // await this._sh(`git push origin ${newTag}`, this._cwd, false);
     } catch (err) {
-      this._logError("Creating release tag failed", err);
+      this._logError(`Failed to create release tag ${newTag}`, err);
       process.exit(1);
     }
   }
 
-  exec() {
-    return this.getLatestTag()
-      .then(() => this.getPackagesToPublish())
-      .then((packagesToPublish) => {
-        if (!packagesToPublish.length) {
-          logger.warn("No changed packages to publish!");
-          process.exit(1);
-        }
+  async exec() {
+    await this.getLatestTag();
+    const packagesToPublish = await this.getPackagesToPublish();
 
-        this._packagesToPublish = packagesToPublish;
-        this._messages = packagesToPublish.map((pkg) => ` - ${pkg.name}@${pkg.version}`);
+    if (!packagesToPublish.length) {
+      logger.warn("No changed packages to publish!");
+      process.exit(1);
+    }
 
-        logger.info(`Found these packages to publish:\n${this._messages.join("\n")}`);
-        //return this.runLifeCycleScripts(["prepare", "prepublishOnly"]);
-        return this.publishPackages();
-      })
-      .then(() => {
-        return this.addReleaseTag();
-      });
+    this._packagesToPublish = packagesToPublish;
+    this._messages = packagesToPublish.map(
+      (pkg: FynpoPackageInfo) => ` - ${pkg.name}@${pkg.version}`
+    );
+
+    logger.info(`Found these packages to publish:\n${this._messages.join("\n")}`);
+
+    try {
+      const errors = await this.publishPackages();
+      if (errors.length > 0) {
+        logger.error(`Some error occurred with publishing - skipping create git release tag`);
+      } else {
+        await this.addReleaseTag();
+      }
+    } catch (err) {
+      logger.error(`==== failure encountered publishing packages =====`, err);
+      process.exit(1);
+    }
   }
 }

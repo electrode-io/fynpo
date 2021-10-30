@@ -5,7 +5,7 @@ import fs from "fs";
 import shcmd from "shcmd";
 
 describe("fynpo prepare", () => {
-  const dir = path.join(__dirname, "sample");
+  const dir = path.join(__dirname, "../test/sample");
   const data = {
     packages: {
       pkg1: {

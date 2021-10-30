@@ -142,7 +142,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
     logger.info(`bootstrap command: ${dispCmd}`);
     await this._topoRunner.start({
       concurrency,
-      proccesor: (pkgInfo) => {
+      processor: (pkgInfo) => {
         const colorId = chalk.magenta(pkgInfoId(pkgInfo));
         if (skip && skip.includes(pkgInfo.name)) {
           logger.info("bootstrap skipping", colorId);

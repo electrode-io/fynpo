@@ -51,8 +51,8 @@ const readFynpoData = async (cwd) => {
 
 const makeOpts = async (parsed) => {
   const cwd = parsed.opts.cwd || process.cwd();
-  const fynpo: any = utils.loadConfig();
-  const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts);
+  const fynpo: any = utils.loadConfig(cwd);
+  const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts, { cwd: fynpo.dir });
   const opts = { cwd, patterns: ["packages/*"], ...optConfig };
 
   return opts;
@@ -155,9 +155,10 @@ const execUpdated = async (parsed) => {
 };
 
 const execPublish = async (parsed) => {
-  const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
+  const opts = await makeOpts(parsed);
+  const graph = await makeDepGraph(opts);
 
-  return new Publish(opts, await readPackages(opts)).exec();
+  return new Publish(opts, graph).exec();
 };
 
 const execVersion = async (parsed) => {

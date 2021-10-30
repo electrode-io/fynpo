@@ -95,7 +95,7 @@ export class TopoRunner {
     return queue;
   }
 
-  async start({ concurrency = 3, proccesor, stopOnError = true }) {
+  async start({ concurrency = 3, processor, stopOnError = true }) {
     const start = Date.now();
 
     const itemQ = new ItemQueue<PackageRunInfo>({
@@ -104,7 +104,7 @@ export class TopoRunner {
       stopOnError,
       processItem: (item: PackageRunInfo) => {
         const pkgInfo = item.depData.pkgInfo;
-        return proccesor(pkgInfo);
+        return processor(pkgInfo);
       },
       handlers: {
         doneItem: (data: any) => {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require(require("./bundle"))
+require("./index")
   .run()
   .then(() => {
     process.exit(0);

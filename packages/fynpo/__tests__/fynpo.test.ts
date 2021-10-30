@@ -3,7 +3,7 @@ import { describe, it, expect } from "@jest/globals";
 
 const execBootstrap = () => {
   const command = "npx ../../dist/fynpo-cli.js";
-  shcmd.pushd("-q", "__tests__/sample");
+  shcmd.pushd("-q", "test/sample");
   shcmd.exec(command);
 };
 
