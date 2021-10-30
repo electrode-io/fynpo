@@ -1,3 +1,27 @@
+# 10/30/2021
+
+## Packages
+
+-   `fyn@1.1.8` `(1.1.7 => 1.1.8)`
+-   `fynpo@1.1.8` `(1.1.7 => 1.1.8)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: publish that handles mid failures better [commit](https://github.com/electrode-io/fynpo/commit/617b5bda15e3ddeeb192eecb7f8deabd2625b1af)
+    -   fix: improve retriev meta fail error message [commit](https://github.com/electrode-io/fynpo/commit/bc998f4d5990375dd296f157c5c40f332ff4a7fd)
+
+-   `packages/fynpo`
+
+    -   fix: has an index file [commit](https://github.com/electrode-io/fynpo/commit/9fd0aea75c6945e2270363a053b712beb4d66ff0)
+    -   fix: update dep [commit](https://github.com/electrode-io/fynpo/commit/40b2cd694e92400eda64fcf312c8028ea569ca53)
+    -   fix: publish that handles mid failures better [commit](https://github.com/electrode-io/fynpo/commit/617b5bda15e3ddeeb192eecb7f8deabd2625b1af)
+
+-   `MISC`
+
+    -   chore: update top dep [commit](https://github.com/electrode-io/fynpo/commit/5242e55d0d3e59257a23f94e1cad982472974930)
+
 # 10/28/2021
 
 ## Packages
