@@ -1,3 +1,19 @@
+# 10/31/2021
+
+## Packages
+
+-   `fynpo@1.1.9` `(1.1.8 => 1.1.9)`
+
+## Commits
+
+-   `packages/fynpo`
+
+    -   fix: publish handles CLI options [commit](https://github.com/electrode-io/fynpo/commit/1bec4f37b234d9f00ff878f836143ec4b0decbfb)
+
+-   `MISC`
+
+    -   chore: update dep [commit](https://github.com/electrode-io/fynpo/commit/7370f7849bbc0deabb3a314b661bf52c9488cc1a)
+
 # 10/30/2021
 
 ## Packages
