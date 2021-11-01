@@ -21,14 +21,15 @@ describe("fynpo prepare", () => {
     },
   };
 
+  const fynpoConfigFile = path.join(dir, "fynpo.json");
   let prepare;
   beforeAll(() => {
-    fs.writeFileSync(path.join(dir, "fynpo.json"), "{}\n");
+    fs.writeFileSync(fynpoConfigFile, "{}\n");
     prepare = new Prepare({ cwd: dir, tag: true }, data);
   });
 
   afterAll(() => {
-    shcmd.rm(path.join(dir, "fynpo.json"));
+    shcmd.rm("-f", fynpoConfigFile);
   });
 
   it("should initialize prepare class", () => {

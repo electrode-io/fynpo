@@ -8,7 +8,7 @@ describe("loadConfig", () => {
   const dir = path.join(__dirname, "../test/sample");
 
   afterAll(() => {
-    shcmd.rm(path.join(dir, "fynpo.json"));
+    shcmd.rm("-f", path.join(dir, "fynpo.json"));
   });
 
   const makeConfigFile = (fileName, data) => {

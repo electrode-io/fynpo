@@ -193,15 +193,12 @@ export default class Publish {
   }
 
   async addReleaseTag() {
-    if (this._dryRun) {
-      return;
-    }
-
     logger.info(`===== Adding Release Tag =====`);
 
     let newTag: string;
 
     try {
+      const dryRun = this._dryRun ? `echo DRY RUN ` : "";
       let commitIds = [];
 
       if (this._tagTmpl.includes("{COMMIT}")) {
@@ -214,16 +211,33 @@ export default class Publish {
         gitHash: commitIds[0] || "",
       });
 
-      const tagOut = await this._sh(`git tag -a ${newTag} -m "Release Tag"`);
-      logger.info("tag", newTag, "output", tagOut);
-      if (!this._push) {
-        logger.info(`Release tag ${newTag} created!`);
+      const tagOut = await this._sh(`${dryRun}git tag -a ${newTag} -m "Release Tag"`);
+      logger.info(`create tag ${newTag} output`, tagOut);
+
+      const gitStatus = await this._sh(`git status -b --porcelain=v2`);
+      logger.info(`git status output`, gitStatus.stdout);
+      const upstream = gitStatus.stdout.split("\n").find((x) => x.includes(`branch.upstream`));
+      const [gitRemote, gitBranch] = upstream.split(" ")[2].split("/");
+
+      if (!gitRemote || !gitBranch) {
+        logger.error(
+          `Unable to figure out git tracking remote and branch - skip create and push git release tag`
+        );
         return;
       }
 
-      logger.info(`Release tag ${newTag} created. Pushing the tag to remote..`);
+      if (!this._push) {
+        logger.info(
+          `Release tag ${newTag} created for branch ${gitBranch}, but not pushing to git remote ${gitRemote}!`
+        );
+        return;
+      }
 
-      // await this._sh(`git push origin ${newTag}`, this._cwd, false);
+      logger.info(
+        `Release tag ${newTag} created for branch ${gitBranch}. Pushing the tag to remote ${gitRemote}..`
+      );
+
+      await this._sh(`${dryRun}git push ${gitRemote} ${newTag}`, this._cwd, false);
     } catch (err) {
       this._logError(`Failed to create release tag ${newTag}`, err);
       process.exit(1);
