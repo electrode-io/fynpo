@@ -32,7 +32,7 @@ import { updateChangelog } from "./utils/update-changelog-file";
 import { updatePackageVersions } from "./utils/update-package-versions";
 import { getCurrentBranch } from "./utils/get-current-branch";
 
-import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
+import { FynpoDepGraph } from "@fynpo/base";
 
 export default class Changelog {
   name;

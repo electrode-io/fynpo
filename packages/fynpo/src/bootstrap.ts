@@ -101,7 +101,12 @@ ${output.stderr}
     });
   }
 
-  async exec({ build = true, fynOpts = [], concurrency = 6, skip = [] }) {
+  async exec({
+    build = true, // eslint-disable-line
+    fynOpts = [],
+    concurrency = 6,
+    skip = [],
+  }) {
     if (!this._fyn) {
       this._fyn = require.resolve("fyn");
       /* eslint-disable @typescript-eslint/no-var-requires */

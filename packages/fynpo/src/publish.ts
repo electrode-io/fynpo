@@ -9,14 +9,17 @@ import shcmd from "shcmd";
 import { FynpoDepGraph, FynpoPackageInfo } from "@fynpo/base";
 import { TopoRunner } from "./topo-runner";
 
+/**
+ * `fynpo publish` command executor class
+ *
+ */
 export default class Publish {
   _cwd: string;
   _distTag: string;
   _dryRun: boolean;
-  _push;
+  _push: boolean;
   _packagesToPublish: FynpoPackageInfo[];
   _fynpoRc: any;
-  _messages;
   _tagTmpl: string;
   _graph: FynpoDepGraph;
   _tgzFiles: string[];
@@ -25,6 +28,9 @@ export default class Publish {
     this._cwd = opts.cwd;
     this._fynpoRc = opts;
     this._graph = graph;
+    this._dryRun = opts.dryRun;
+    this._distTag = opts.distTag;
+    this._push = opts.push;
 
     const gitTagTmpl = _.get(
       this._fynpoRc,
@@ -36,7 +42,7 @@ export default class Publish {
     this._tgzFiles = [];
   }
 
-  _sh(command, cwd = this._cwd, silent = false) {
+  _sh(command: string, cwd = this._cwd, silent = false) {
     logger.info(`Executing shell command '${command}' in ${cwd}`);
     return xsh.exec(
       {
@@ -48,7 +54,7 @@ export default class Publish {
     );
   }
 
-  _logError(msg, err, showOutput = false) {
+  _logError(msg: string, err: Error, showOutput = false) {
     logger.error(msg, err.stack);
     if (showOutput) {
       const stdout = _.get(err, "output.stdout", "");
@@ -234,11 +240,11 @@ export default class Publish {
     }
 
     this._packagesToPublish = packagesToPublish;
-    this._messages = packagesToPublish.map(
+    const messages = packagesToPublish.map(
       (pkg: FynpoPackageInfo) => ` - ${pkg.name}@${pkg.version}`
     );
 
-    logger.info(`Found these packages to publish:\n${this._messages.join("\n")}`);
+    logger.info(`Found these packages to publish:\n${messages.join("\n")}`);
 
     try {
       const errors = await this.publishPackages();

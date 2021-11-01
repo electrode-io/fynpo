@@ -8,7 +8,7 @@ import slash from "slash";
 import _ from "lodash";
 import { FynpoDepGraph } from "@fynpo/base";
 
-import { makePublishTag, makePublishTagSearchTerm } from "../utils";
+import { makePublishTagSearchTerm } from "../utils";
 
 const ifTagExists = (opts) => {
   let result = false;

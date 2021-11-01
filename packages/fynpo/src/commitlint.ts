@@ -195,12 +195,12 @@ export default class Commitlint {
         : "https://github.com/conventional-changelog/commitlint/#what-is-commitlint";
 
     return {
-      extends: preset.extends!,
-      formatter: preset.formatter!,
-      parserPreset: preset.parserPreset!,
-      ignores: preset.ignores!,
-      defaultIgnores: preset.defaultIgnores!,
-      plugins: preset.plugins!,
+      extends: preset.extends,
+      formatter: preset.formatter,
+      parserPreset: preset.parserPreset,
+      ignores: preset.ignores,
+      defaultIgnores: preset.defaultIgnores,
+      plugins: preset.plugins,
       rules: qualifiedRules,
       helpUrl,
     };

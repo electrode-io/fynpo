@@ -90,10 +90,6 @@ const spawnProcess = (command, args, opts) => {
   return child;
 };
 
-const getChildProcessCount = () => {
-  return children.size;
-};
-
 /**
  * Execute a command synchronously.
  * @param {string} command
@@ -102,19 +98,6 @@ const getChildProcessCount = () => {
  */
 export const execSync = (command, args, opts) => {
   return execa.sync(command, args, opts).stdout;
-};
-
-/**
- * Spawn a command asynchronously, _always_ inheriting stdio.
- * @param {string} command
- * @param {string[]} args
- * @param {import("execa").Options} [opts]
- */
-const spawn = (command, args, opts) => {
-  const options = Object.assign({}, opts, { stdio: "inherit" });
-  const spawned = spawnProcess(command, args, options);
-
-  return wrapError(spawned, {});
 };
 
 /**
