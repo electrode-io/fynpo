@@ -2,6 +2,22 @@
 
 ## Packages
 
+-   `fynpo@1.1.10` `(1.1.9 => 1.1.10)`
+
+## Commits
+
+-   `packages/fynpo`
+
+    -   fix: pushing release tag to git remote [commit](https://github.com/electrode-io/fynpo/commit/d0714c574df8963c3b52faf0194dfcff7b529fac)
+
+-   `MISC`
+
+    -   chore: update top dep [commit](https://github.com/electrode-io/fynpo/commit/9b95b57faf2e87528668bb640c7189d31cb2f790)
+
+# 10/31/2021
+
+## Packages
+
 -   `fynpo@1.1.9` `(1.1.8 => 1.1.9)`
 
 ## Commits
