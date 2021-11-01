@@ -1,6 +1,6 @@
 $pkg:
  dev:
-  fynpo: ^1.1.8
+  fynpo: ^1.1.9
 '@babel/code-frame':
  _latest: 7.15.8
  _:
@@ -621,13 +621,13 @@ fyn:
   $: sha512-wFKApV2pUWxzzuqyEV72Ru8UJbo4EBkSL50ytp5i5Z7N2klrQF93zD/2n1gC2xzUbau+VSXU2ZLMC8OIEgUjfQ==
   _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.8.tgz'
 fynpo:
- _latest: 1.1.8
+ _latest: 1.1.9
  _:
-  ^1.1.8: 1.1.8
- 1.1.8:
+  ^1.1.9: 1.1.9
+ 1.1.9:
   top: 1
-  $: sha512-9SQ00fgLxc3/DzRSc4Yr3UMI4K7lXfELkHxW/s+Es4zEpUcfjAq8GHt89HdZGWL0wYlfsRJJjlMVS9c42VoYYQ==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.8.tgz'
+  $: sha512-9nFm+QnKmVUolaNYbvM0MK7syL6XERtu21LfNmakWeEuGRwf0408j2ba71vQGesImxf2ZlmylpH8VFZerntk6A==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.9.tgz'
   dependencies:
    '@commitlint/execute-rule': ^12.1.1
    '@commitlint/format': ^12.1.1
