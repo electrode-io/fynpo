@@ -212,10 +212,7 @@ export default class Publish {
       });
 
       const tagOut = await this._sh(`${dryRun}git tag -a ${newTag} -m "Release Tag"`);
-      logger.info(`create tag ${newTag} output`, tagOut);
-
       const gitStatus = await this._sh(`git status -b --porcelain=v2`);
-      logger.info(`git status output`, gitStatus.stdout);
       const upstream = gitStatus.stdout.split("\n").find((x) => x.includes(`branch.upstream`));
       const [gitRemote, gitBranch] = upstream.split(" ")[2].split("/");
 
