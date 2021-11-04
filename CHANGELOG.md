@@ -2,6 +2,32 @@
 
 ## Packages
 
+-   `@fynpo/base@1.1.3` `(1.1.2 => 1.1.3)`
+-   `fyn@1.1.10` `(1.1.9 => 1.1.10)`
+-   `fynpo@1.1.12` `(1.1.11 => 1.1.12)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: remove default patterns to trigger searching package.json [commit](https://github.com/electrode-io/fynpo/commit/4ad7715de5dffd64ea4c13b99838c07bacb4630e)
+
+-   `packages/fyn`
+
+    -   fix: remove default patterns to trigger searching package.json [commit](https://github.com/electrode-io/fynpo/commit/4ad7715de5dffd64ea4c13b99838c07bacb4630e)
+
+-   `packages/fynpo`
+
+    -   fix: remove default patterns to trigger searching package.json [commit](https://github.com/electrode-io/fynpo/commit/4ad7715de5dffd64ea4c13b99838c07bacb4630e)
+
+-   `MISC`
+
+    -   chore: update top dep [commit](https://github.com/electrode-io/fynpo/commit/2d6342ee0ec9ecdf582acc84ba0000a9244f8500)
+
+# 11/3/2021
+
+## Packages
+
 -   `fyn@1.1.9` `(1.1.8 => 1.1.9)`
 -   `fynpo@1.1.11` `(1.1.10 => 1.1.11)`
 
