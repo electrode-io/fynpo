@@ -52,10 +52,12 @@ const readFynpoData = async (cwd) => {
 const makeOpts = async (parsed) => {
   const cwd = parsed.opts.cwd || process.cwd();
   const fynpo: any = utils.loadConfig(cwd);
-  const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts, { cwd: fynpo.dir });
-  const opts = { cwd, patterns: ["packages/*"], ...optConfig };
+  const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts, {
+    cwd: fynpo.dir,
+    patterns: fynpo.packages,
+  });
 
-  return opts;
+  return optConfig;
 };
 
 const makeDepGraph = async (opts) => {

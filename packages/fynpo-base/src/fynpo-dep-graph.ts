@@ -304,7 +304,7 @@ export class FynpoDepGraph {
   _options: ReadFynpoOptions;
 
   constructor(options: ReadFynpoOptions = {}) {
-    this._options = { patterns: ["packages/*"], cwd: process.cwd(), ...options };
+    this._options = { cwd: process.cwd(), ...options };
     this.depMapByPath = {};
     this.resolvedCache = {};
     this.packages = {
@@ -411,6 +411,7 @@ export class FynpoDepGraph {
     const { patterns, cwd } = this._options;
     let groups: MMGroups;
 
+    // no patterns => setup to search for all package.json
     if (_.isEmpty(patterns)) {
       groups = { ".": null };
     } else {

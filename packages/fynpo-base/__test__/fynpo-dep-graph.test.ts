@@ -14,12 +14,12 @@ describe("getDepSection", function () {
 });
 
 describe("fynpo dep graph", () => {
-  it("should default to read only packgaes/* in CWD", async () => {
+  it.only("should read only packages matching patterns in CWD", async () => {
     const saveDir = process.cwd();
     process.chdir(path.join(__dirname, "sample"));
-    const graph = new FynpoDepGraph();
-    process.chdir(saveDir);
+    const graph = new FynpoDepGraph({ patterns: ["packages/*"] });
     await graph.resolve();
+    process.chdir(saveDir);
     const paths = Object.keys(graph.packages.byPath);
     expect(paths.every((p) => p.startsWith("packages/"))).toEqual(true);
   });
