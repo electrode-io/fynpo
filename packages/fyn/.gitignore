@@ -15,3 +15,4 @@ node_modules
 package-fyn.*
 fyn-debug*.log
 package-lock.*
+yarn/lib

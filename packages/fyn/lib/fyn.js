@@ -24,6 +24,7 @@ const unlock = util.promisify(lockfile.unlock);
 const ck = require("chalker");
 const { PACKAGE_RAW_INFO, DEP_ITEM } = require("./symbols");
 const { FYN_LOCK_FILE, FYN_INSTALL_CONFIG_FILE, FV_DIR, PACKAGE_FYN_JSON } = require("./constants");
+const { parseYarnLock } = require("../yarn");
 
 /* eslint-disable no-magic-numbers, max-statements, no-empty, complexity, no-eval */
 
@@ -74,6 +75,7 @@ class Fyn {
       return Boolean(foundLock);
     }
 
+    // try to read and consume npm's lockfile
     // https://docs.npmjs.com/files/shrinkwrap.json.html
     for (const npmLockFile of ["npm-shrinkwrap.json", "package-lock.json"]) {
       this._npmLockData = await Fs.readFile(Path.join(this._cwd, npmLockFile))
@@ -83,6 +85,14 @@ class Fyn {
         logger.info(`using lock data from ${npmLockFile}.`);
         return true;
       }
+    }
+
+    // try to read and consume yarn's lockfile
+    const yarnLockName = Path.join(this._cwd, "yarn.lock");
+    if (Fs.existsSync(yarnLockName)) {
+      logger.info("Reading yarn.lock");
+      const yarnLockData = await Fs.readFile(yarnLockName, "utf-8");
+      this._yarnLock = parseYarnLock(yarnLockData);
     }
 
     return false;
@@ -562,12 +572,13 @@ class Fyn {
 
     this._optResolver = new PkgOptResolver({ fyn: this });
 
-    const doResolve = async ({ shrinkwrap, buildLocal = true, deDuping = false }) => {
+    const doResolve = async ({ shrinkwrap, yarnLock, buildLocal = true, deDuping = false }) => {
       this._data = this._options.data || new DepData();
       this._depResolver = new PkgDepResolver(this._pkg, {
         fyn: this,
         data: this._data,
         shrinkwrap,
+        yarnLock,
         optResolver: this._optResolver,
         buildLocal,
         deDuping
@@ -576,13 +587,20 @@ class Fyn {
       await this._depResolver.wait();
     };
 
-    await doResolve({ shrinkwrap: this._npmLockData, buildLocal: this._options.buildLocal });
+    await doResolve({
+      shrinkwrap: this._npmLockData,
+      yarnLock: this._yarnLock,
+      buildLocal: this._options.buildLocal
+    });
 
     if (this._npmLockData) {
       this.depLocker.generate(this._data);
     }
 
-    if ((this._npmLockData || this.depLocker.pkgDepChanged) && this.deDupeLocks()) {
+    if (
+      (this._yarnLock || this._npmLockData || this.depLocker.pkgDepChanged) &&
+      this.deDupeLocks()
+    ) {
       logger.info("changed dependencies and duplicate versions detected => de-duping");
       await doResolve({ buildLocal: false, deDuping: true });
     }

@@ -7,12 +7,13 @@
   "scripts": {
     "test": "xrun xarc/test-only",
     "lint": "xrun xarc/lint",
-    "build": "xrun --serial fyn/create-tgz bundle",
-    "analyze": "ANALYZE_BUNDLE=1 xrun bundle",
+    "compile-yarn": "babel yarn/src --out-dir yarn/lib",
+    "build": "xrun --serial fyn/create-tgz compile-yarn bundle",
+    "analyze": "ANALYZE_BUNDLE=1 xrun compile-yarn bundle",
     "coverage": "xrun xarc/check",
     "ci:check": "xrun xarc/check",
     "coveralls": "cat coverage/lcov.info | coveralls",
-    "prepublishOnly": "xrun xarc/check bundle && publish-util-prepublishonly",
+    "prepublishOnly": "xrun xarc/check compile-yarn bundle && publish-util-prepublishonly",
     "postpack": "publish-util-postpack"
   },
   "bin": {
@@ -79,6 +80,7 @@
     "es6-promisify": "./es6-promisify",
     "filter-scan-dir": "^1.2.0",
     "ini": "^2.0.0",
+    "invariant": "^2.2.4",
     "item-queue": "^1.1.2",
     "lockfile": "^1.0.4",
     "lodash": "^4.17.21",
@@ -98,6 +100,7 @@
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "source-map": "^0.7.3",
+    "strip-bom": "^4.0.0",
     "tar": "^4.4.19",
     "visual-exec": "^0.1.9",
     "visual-logger": "^1.1.3",
@@ -107,8 +110,10 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.0",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.2.0",
+    "@babel/preset-flow": "^7.16.0",
     "@xarc/module-dev": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.4",
@@ -161,7 +166,8 @@
       "xout",
       "xrun*.js",
       "xrun*.ts",
-      "**/.eslint*.*"
+      "**/.eslint*.*",
+      "yarn"
     ],
     "extends": [],
     "check-coverage": true,

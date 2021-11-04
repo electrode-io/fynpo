@@ -771,6 +771,20 @@ class PkgDepResolver {
     const kpkg = this._data.getPkg(item); // known package
     let foundInKnown;
 
+    const tryYarnLock = () => {
+      // is there yarn lock data that we should use?
+      if (this._options.yarnLock) {
+        const key = `${item.name}@${item.semver}`;
+        const fromYarn = this._options.yarnLock[key];
+        if (fromYarn) {
+          logger.debug(`Resolved ${key} to ${fromYarn.version} from yarn.lock`);
+          return fromYarn.version;
+        }
+      }
+
+      return undefined;
+    };
+
     // check if the same semver has been resolved before
     const getKnownSemver = () => {
       const find = rsv => {
@@ -896,6 +910,7 @@ class PkgDepResolver {
       if (!resolved || mustUseRealMeta) {
         resolved = find(sortedVersions, meta.time || {}, mustUseRealMeta);
       }
+
       // logger.log("found meta version", resolved, "that satisfied", item.name, item.semver);
 
       return resolved;
@@ -916,7 +931,11 @@ class PkgDepResolver {
     };
 
     let resolved =
-      (!noLocal && getLocalVersion()) || getUrlVersion() || getKnownSemver() || searchKnown();
+      (!noLocal && getLocalVersion()) ||
+      getUrlVersion() ||
+      getKnownSemver() ||
+      searchKnown() ||
+      tryYarnLock();
 
     if (!resolved) {
       resolved = this.findVersionFromDistTag(meta, item.semver);
