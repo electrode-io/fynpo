@@ -347,7 +347,14 @@ class PkgInstaller {
         .tap(() => this.timeCheck("_cleanBin"))
         .return(this.postInstall)
         .map(
-          depInfo => {
+          async depInfo => {
+            const integrity = fynTil.distIntegrity(depInfo.dist);
+            const centralBeforeSha =
+              this._fyn.central &&
+              (await this._fyn.central.allow(integrity)) &&
+              (await this._fyn.central.getMutation(integrity)) === undefined &&
+              (await this._fyn.central.getContentShasum(integrity));
+
             let runningScript;
             return Promise.each(depInfo.install, installScript => {
               runningScript = installScript;
@@ -362,21 +369,36 @@ class PkgInstaller {
                   depInfo.fynLinkData[installScript] = true;
                 }
               });
-            }).catch(err => {
-              if (this._isDepSrcOptionalOnly(depInfo)) {
-                logger.info(
-                  "running package",
-                  logFormat.pkgId(depInfo),
-                  "script",
-                  chalk.magenta(runningScript),
-                  `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
-                  "optional, so ignoring and removing."
-                );
-                return this._removeFailedOptional(depInfo);
-              } else {
-                throw err;
-              }
-            });
+            })
+              .then(async () => {
+                if (centralBeforeSha) {
+                  const afterSha = await this._fyn.central.getContentShasum(integrity);
+                  const id = logFormat.pkgId(depInfo);
+                  if (afterSha !== centralBeforeSha) {
+                    logger.info(
+                      `package ${id} can't use central store because its post install scripts ${depInfo.install} mutated content, before: ${centralBeforeSha} after: ${afterSha}`
+                    );
+                    await this._fyn.central.setMutation(integrity, true);
+                  } else {
+                    await this._fyn.central.setMutation(integrity, false);
+                  }
+                }
+              })
+              .catch(err => {
+                if (this._isDepSrcOptionalOnly(depInfo)) {
+                  logger.info(
+                    "running package",
+                    logFormat.pkgId(depInfo),
+                    "script",
+                    chalk.magenta(runningScript),
+                    `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
+                    "optional, so ignoring and removing."
+                  );
+                  return this._removeFailedOptional(depInfo);
+                } else {
+                  throw err;
+                }
+              });
           },
           { concurrency: 3 }
         )

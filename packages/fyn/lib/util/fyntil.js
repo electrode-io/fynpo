@@ -244,6 +244,23 @@ const fyntil = {
 
   checkValueSatisfyRules,
 
+  shaToIntegrity(ss) {
+    if (!ss) {
+      return undefined;
+    }
+    if (ss.startsWith("sha")) {
+      return ss;
+    }
+    return `sha1-${Buffer.from(ss, "hex").toString("base64")}`;
+  },
+
+  distIntegrity(dist) {
+    if (dist.integrity) {
+      return dist.integrity;
+    }
+    return fyntil.shaToIntegrity(dist.shasum);
+  },
+
   checkPkgOsCpu: pkg => {
     if (pkg.hasOwnProperty("os") && !checkValueSatisfyRules(pkg.os, process.platform)) {
       return `your platform ${process.platform} doesn't satisfy required os ${pkg.os}`;

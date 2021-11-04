@@ -11,6 +11,8 @@ const { missPipe } = require("./util/fyntil");
 const { linkFile, copyFile } = require("./util/hard-link-dir");
 const logger = require("./logger");
 const { AggregateError } = require("@jchip/error");
+const filterScanDir = require("filter-scan-dir");
+const Crypto = require("crypto");
 
 /**
  * convert a directory tree structure to a flatten one like:
@@ -86,6 +88,7 @@ class FynCentral {
   async _loadTree(integrity, _info, _noSet) {
     let info = _info;
     let noSet = _noSet;
+
     if (!info) {
       if (this._map.has(integrity)) {
         info = this._map.get(integrity);
@@ -100,14 +103,10 @@ class FynCentral {
       const stat = await Fs.stat(info.contentPath);
       info.exist = true;
       if (stat.isDirectory()) {
-        const treeFile = Path.join(info.contentPath, "tree.json");
-        const tree = await Fs.readFile(treeFile)
-          .then(JSON.parse)
-          .catch(err => {
-            throw new Error(`fyn-central: reading ${treeFile} - ${err.message}`);
-          });
-        info.tree = tree;
-        if (!noSet) this._map.set(integrity, info);
+        await this.readInfoTree(info);
+        if (!noSet) {
+          this._map.set(integrity, info);
+        }
       }
       return info;
     } catch (err) {
@@ -115,10 +114,32 @@ class FynCentral {
     }
   }
 
+  /**
+   * check if central has the package
+   *
+   * @param {*} integrity - package integrity
+   * @returns boolean
+   */
   async has(integrity) {
-    if (this._map.has(integrity)) return true;
-    const info = await this._loadTree(integrity);
+    const info = this._map.has(integrity)
+      ? this._map.get(integrity)
+      : await this._loadTree(integrity);
+
     return Boolean(info.tree);
+  }
+
+  /**
+   * check if if a package is allowed to go into central store
+   *
+   * @param {*} integrity  - package integrity
+   * @returns boolean
+   */
+  async allow(integrity) {
+    const info = this._map.has(integrity)
+      ? this._map.get(integrity)
+      : await this._loadTree(integrity);
+
+    return info.mutates ? false : true;
   }
 
   async get(integrity) {
@@ -126,12 +147,92 @@ class FynCentral {
   }
 
   async getInfo(integrity) {
-    if (this._map.has(integrity)) return this._map.get(integrity);
+    if (this._map.has(integrity)) {
+      return this._map.get(integrity);
+    }
     const info = await this._loadTree(integrity);
     if (!info.tree) {
       throw new Error(`fyn-central can't get package for integrity ${integrity}`);
     }
     return info;
+  }
+
+  async getContentShasum(integrity) {
+    try {
+      const info = await this.getInfo(integrity);
+      const packageDir = Path.join(info.contentPath, "package");
+      const filter = (_file, _path, extras) => {
+        const { stat, dirFile } = extras;
+        return { formatName: `${dirFile}-${stat.mtimeMs}-${stat.size}` };
+      };
+
+      const files = await filterScanDir({
+        cwd: packageDir,
+        filter,
+        filterDir: filter,
+        sortFiles: true,
+        includeDir: true
+      });
+
+      const hash = Crypto.createHash("sha512");
+      const shaSum = hash.update(JSON.stringify(files)).digest("base64");
+      return shaSum;
+    } catch (_err) {
+      return undefined;
+    }
+  }
+
+  async getMutation(integrity) {
+    const info = this._map.has(integrity)
+      ? this._map.get(integrity)
+      : await this._loadTree(integrity);
+
+    return info.mutates;
+  }
+
+  /**
+   * Read the content dir tree from file into into
+   *
+   * @param {*} info - info
+   */
+  async readInfoTree(info) {
+    const treeFile = Path.join(info.contentPath, "tree.json");
+    try {
+      const data = await Fs.readFile(treeFile);
+      const tree = JSON.parse(data);
+      if (tree._ >= 1) {
+        if (tree.mutates !== undefined) {
+          info.mutates = tree.mutates;
+        }
+        info.tree = tree.$;
+      } else {
+        info.tree = tree;
+      }
+    } catch (err) {
+      throw new AggregateError([err], `fyn-central: reading tree file ${treeFile}`);
+    }
+  }
+
+  /**
+   * Save the content dir tree from info to file
+   *
+   * @param {*} info - info
+   * @param {*} path - path to save the file
+   */
+  async saveInfoTree(info, path) {
+    await Fs.writeFile(
+      Path.join(path || info.contentPath, "tree.json"),
+      JSON.stringify({ $: info.tree, mutates: info.mutates, _: 1 })
+    );
+  }
+
+  async setMutation(integrity, mutates = true) {
+    const info = await this._loadTree(integrity);
+    if (!info.exist || !info.tree || info.mutates === mutates) {
+      return;
+    }
+    info.mutates = mutates;
+    await this.saveInfoTree(info);
   }
 
   async replicate(integrity, destDir) {
@@ -233,7 +334,7 @@ class FynCentral {
     }
     // TODO: user could break during untar and cause corruptted module
     info.tree = await this._untarStream(stream, targetDir, info);
-    await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(info.tree));
+    await this.saveInfoTree(info, tmp);
 
     await Fs.rename(tmp, info.contentPath);
     info.exist = true;

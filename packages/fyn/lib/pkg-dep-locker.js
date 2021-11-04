@@ -36,12 +36,6 @@ class PkgDepLocker {
     return this._lockData;
   }
 
-  intFromSha1(ss) {
-    if (!ss) return undefined;
-    if (ss.startsWith("sha")) return ss;
-    return `sha1-${Buffer.from(ss, "hex").toString("base64")}`;
-  }
-
   //
   // generate lock data from dep data
   //
@@ -114,7 +108,7 @@ class PkgDepLocker {
             meta.$ = "local";
             meta._ = dist.fullPath;
           } else {
-            meta.$ = dist.integrity || this.intFromSha1(dist.shasum) || 0;
+            meta.$ = fyntil.distIntegrity(dist) || 0;
             meta._ = dist.tarball;
           }
 
@@ -227,7 +221,7 @@ class PkgDepLocker {
             };
           } else {
             vpkg.dist = {
-              integrity: this.intFromSha1(vpkg.$),
+              integrity: fyntil.shaToIntegrity(vpkg.$),
               tarball: vpkg._
             };
           }

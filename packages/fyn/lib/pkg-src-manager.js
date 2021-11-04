@@ -684,7 +684,7 @@ class PkgSrcManager {
   }
 
   async getCentralPackage(integrity, pkgInfo) {
-    const central = this._fyn.central;
+    const { central, copy } = this._fyn;
 
     const tarId = this.tarballFetchId(pkgInfo);
 
@@ -694,21 +694,22 @@ class PkgSrcManager {
         : this.pacoteTarballStream(tarId, pkgInfo, integrity);
     };
 
-    const copy = this._fyn.copy;
-
     // TODO: probably don't want to do central for github/url/file tarballs
     // If a dep is pointing to a tgz file directly, then there is no integrity
     // and best to avoid doing central storage for it.
     if (integrity && central) {
       const verId = `${pkgInfo.name}@${pkgInfo.version}`;
-      if (pkgInfo.hasPI) {
-        logger.info(`copying pkg ${verId} in central store mode due to preinstall script`);
-      } else if (pkgInfo.hasI) {
-        logger.info(`copying pkg ${verId} in central store mode due to install/postinstall script`);
-      } else if (copy.indexOf(pkgInfo.name) >= 0 || copy.indexOf(verId) >= 0) {
-        logger.info(`copying pkg ${verId} in central store mode due to copy option`);
+      const dispId = logFormat.pkgId(verId);
+
+      if (copy.indexOf(pkgInfo.name) >= 0 || copy.indexOf(verId) >= 0) {
+        logger.info(`copying pkg ${dispId} in central store mode due to copy option`);
+      } else if (!(await central.allow(integrity))) {
+        logger.info(
+          `copying pkg ${dispId} in central store mode because it mutates in postinstall step.`
+        );
       } else {
         const hasCentral = await central.has(integrity);
+
         if (!hasCentral) {
           await central.storeTarStream(tarId, integrity, tarStream);
         }
