@@ -1,3 +1,25 @@
+# 11/3/2021
+
+## Packages
+
+-   `fyn@1.1.9` `(1.1.8 => 1.1.9)`
+-   `fynpo@1.1.11` `(1.1.10 => 1.1.11)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: automatically figure out if package need copy in central mode [commit](https://github.com/electrode-io/fynpo/commit/f6cdab7effdf5790d9169e04f68a74b5d7d58903)
+    -   feat: load yarn.lock to resolve versions [commit](https://github.com/electrode-io/fynpo/commit/a3a14a7a5f56edfc00a11384cca09c4e1dc37097)
+
+-   `packages/fynpo`
+
+    -   fix: less log noise [commit](https://github.com/electrode-io/fynpo/commit/cb4c95ee89cd6a851abadd74acf9ab8ec38da27d)
+
+-   `MISC`
+
+    -   chore: update top dep [commit](https://github.com/electrode-io/fynpo/commit/d77734a6285ac3e595da78f37963311bb232f5b1)
+
 # 10/31/2021
 
 ## Packages
