@@ -50,7 +50,12 @@ const readFynpoData = async (cwd) => {
 };
 
 const makeOpts = async (parsed) => {
-  const cwd = parsed.opts.cwd || process.cwd();
+  let cwd = process.cwd();
+  if (parsed.opts.cwd) {
+    logger.info(`Setting CWD to ${parsed.opts.cwd}`);
+    cwd = parsed.opts.cwd;
+    process.chdir(cwd);
+  }
   const fynpo: any = utils.loadConfig(cwd);
   const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts, {
     cwd: fynpo.dir,
