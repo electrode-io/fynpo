@@ -264,14 +264,14 @@ class Fyn {
   }
 
   async saveFynpoIndirects() {
-    if (!this.isFynpo) {
+    if (!this.isFynpo || this._fynpo.dir === this.cwd || _.isEmpty(this._fynpo.indirects)) {
       return;
     }
 
     const lockFile = Path.join(this._fynpo.dir, ".fynpo/fynpo-data.lock");
+    const { indirects } = this._fynpo;
 
     try {
-      const indirects = this._fynpo.indirects;
       const dataFile = Path.join(this._fynpo.dir, ".fynpo-data.json");
       await Fs.$.mkdirp(Path.join(this._fynpo.dir, ".fynpo"));
       await Fs.$.acquireLock(lockFile, {
