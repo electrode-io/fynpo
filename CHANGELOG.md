@@ -1,3 +1,15 @@
+# 11/5/2021
+
+## Packages
+
+-   `fynpo@1.1.14` `(1.1.13 => 1.1.14)`
+
+## Commits
+
+-   `packages/fynpo`
+
+    -   fix: get packages options [commit](https://github.com/electrode-io/fynpo/commit/d05fd4e1a78cea2f4aff78c1f71af8c76efa90a6)
+
 # 11/4/2021
 
 ## Packages
