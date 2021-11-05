@@ -34,6 +34,10 @@ const base = {
       "iconv-lite": Path.resolve("stubs/iconv-lite.js"),
       "./iconv-loader": Path.resolve("stubs/iconv-loader.js"),
       debug: Path.resolve("stubs/debug.js"),
+      // Even if fyn's code import lodash APIs like lodash/get,
+      // other modules could be importing it whole, so it's better
+      // to just load it, and override it with the minified copy
+      // when bundling.
       lodash: require.resolve("lodash/lodash.min.js"),
       "resolve-from": Path.resolve("stubs/resolve-from.js")
     }
