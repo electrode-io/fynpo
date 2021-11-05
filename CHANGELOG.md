@@ -2,6 +2,36 @@
 
 ## Packages
 
+-   `@fynpo/base@1.1.4` `(1.1.3 => 1.1.4)`
+-   `fyn@1.1.12` `(1.1.11 => 1.1.12)`
+-   `fynpo@1.1.15` `(1.1.14 => 1.1.15)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: fynpo auto search avoid package.json in nested modules [commit](https://github.com/electrode-io/fynpo/commit/f3dbbeb98b1b1e8dcd97b602da68d8ca8bf2814b)
+
+-   `packages/fyn`
+
+    -   fix: avoid saving empty indirects for fynpo [commit](https://github.com/electrode-io/fynpo/commit/3e625de61fc0f09ec1f5f0a18554068aea48bd89)
+
+-   `packages/fynpo`
+
+    -   fix: fynpo auto search avoid package.json in nested modules [commit](https://github.com/electrode-io/fynpo/commit/f3dbbeb98b1b1e8dcd97b602da68d8ca8bf2814b)
+    -   fix: fynpo handle --cwd option [commit](https://github.com/electrode-io/fynpo/commit/c39bb6c31821e529fef04f967431b4810b292a5e)
+    -   fix: chdir to top for fynpo prepare [commit](https://github.com/electrode-io/fynpo/commit/14f0b077f378436c2b79c50f73ba68c5afdbc878)
+    -   fix: fynpo changelog handle no-changelog token [commit](https://github.com/electrode-io/fynpo/commit/19c119854196d58c315fc5b42daed807650f0f77)
+    -   fix: clean paths in log [commit](https://github.com/electrode-io/fynpo/commit/d73fcfa302e385d2f313ba1a836eeafd6052d30d)
+
+-   `MISC`
+
+    -   chore: update top dep [commit](https://github.com/electrode-io/fynpo/commit/52adc247e2de7667a4f596b4618f77291ca94b8e)
+
+# 11/5/2021
+
+## Packages
+
 -   `fynpo@1.1.14` `(1.1.13 => 1.1.14)`
 
 ## Commits
