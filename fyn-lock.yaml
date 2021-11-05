@@ -1,6 +1,8 @@
+$fyn:
+ layout: detail
 $pkg:
  dev:
-  fynpo: ^1.1.11
+  fynpo: ^1.1.14
 '@babel/code-frame':
  _latest: 7.15.8
  _:
@@ -157,12 +159,12 @@ $pkg:
   dependencies:
    chalk: ^4.0.0
 '@fynpo/base':
- _latest: 1.1.2
+ _latest: 1.1.3
  _:
-  ^1.1.2: 1.1.2
- 1.1.2:
-  $: sha512-+Ki4FiUO51rtH2XiORNFDhU7biuMxp+3R2Dx+1rGuhIxxuOdfpzJzKrMwm2e11ZBgMFsoTdL8UvSTo27zfA7RA==
-  _: 'https://registry.npmjs.org/@fynpo/base/-/base-1.1.2.tgz'
+  ^1.1.3: 1.1.3
+ 1.1.3:
+  $: sha512-wYZs+nxaT/PFwd++EWL4Fh78S+Emq1YfiS5yAszZ72QMjM/umbKZC4pgfmwY8ZnnozQC4WkYMU1D2VKAKeH1cg==
+  _: 'https://registry.npmjs.org/@fynpo/base/-/base-1.1.3.tgz'
   dependencies:
    filter-scan-dir: ^1.2.0
    lodash: ^4.17.21
@@ -614,27 +616,27 @@ function-bind:
   $: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   _: 'https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz'
 fyn:
- _latest: 1.1.9
- _:
-  ^1.1.9: 1.1.9
- 1.1.9:
-  $: sha512-ye0ydAwzbKbruh8LzLpCdHcFDMGfhof0CH+iiSExwpX1r6PzYyLy4eNpX2QnjfDq1xH03edUQ5wrFRmHJwQfwA==
-  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.9.tgz'
-fynpo:
  _latest: 1.1.11
  _:
   ^1.1.11: 1.1.11
  1.1.11:
+  $: sha512-vRqd+PVcjtIPfLiGoVMLWLoqgTJs9W6wIFqq58WI+9CCCaFEW1azhCPe0fqMwcxOBt/wroFpISU0/edfjy2WPg==
+  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.11.tgz'
+fynpo:
+ _latest: 1.1.14
+ _:
+  ^1.1.14: 1.1.14
+ 1.1.14:
   top: 1
-  $: sha512-fDSvljRgUctMyKkGvbaipFNpV6C2AWcOqgW4ibzr+gkm1nU1viekImhBj5WLA4haTzAJvk9HW5tEfrpE1r4zOQ==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.11.tgz'
+  $: sha512-2h0ToxzbLoP2l+BFZEyjPuLHaBBKcg1pln414c2Y5vQnCmIY/m1PsL+VYckuD2Eu580wEZifjbk0sRohkBkSVA==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.14.tgz'
   dependencies:
    '@commitlint/execute-rule': ^12.1.1
    '@commitlint/format': ^12.1.1
    '@commitlint/lint': ^12.1.1
    '@commitlint/read': ^12.1.1
    '@commitlint/resolve-extends': ^12.1.1
-   '@fynpo/base': ^1.1.2
+   '@fynpo/base': ^1.1.3
    bluebird: ^3.7.2
    boxen: ^5.1.2
    chalk: ^4.1.2
@@ -643,7 +645,7 @@ fynpo:
    execa: ^5.0.0
    filter-scan-dir: ^1.2.0
    fs-extra: ^9.1.0
-   fyn: ^1.1.9
+   fyn: ^1.1.11
    get-stdin: ^8.0.0
    item-queue: ^1.1.2
    lodash: ^4.17.21

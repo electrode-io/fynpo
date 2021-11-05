@@ -1,7 +1,8 @@
 {
   "fyn": {
     "options": {
-      "sourceMaps": false
+      "sourceMaps": false,
+      "layout": "detail"
     }
   },
   "packages": ["packages/*"]
