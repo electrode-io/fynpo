@@ -1,5 +1,6 @@
 /* eslint-disable no-magic-numbers, consistent-return, complexity */
 
+import Path from "path";
 import _ from "lodash";
 import { ItemQueueResult } from "item-queue";
 import VisualExec from "visual-exec";
@@ -12,6 +13,7 @@ import { startMetaMemoizer } from "./meta-memoizer";
 import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
 
 import { TopoRunner } from "./topo-runner";
+import os from "os";
 
 type PackageInstallInfo = {
   depData: PackageDepData;
@@ -122,7 +124,10 @@ is different from fynpo's internal version ${fynPkgJson.version}`
         }
       }
 
-      logger.info(`Executing fyn with '${process.argv[0]} ${this._fyn}'`);
+      const nodeDir = process.argv[0].replace(os.homedir(), "~");
+      const fynDir = `.${Path.sep}${Path.relative(process.cwd(), this._fyn)}`;
+
+      logger.info(`Executing fyn with '${nodeDir} ${fynDir}'`);
     }
 
     let mmOpt = "";
