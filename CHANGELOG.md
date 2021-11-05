@@ -1,3 +1,21 @@
+# 11/4/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.11` `(1.1.10 => 1.1.11)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.13` `(1.1.12 => 1.1.13)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   feat: support multiple node_modules layout [commit](https://github.com/electrode-io/fynpo/commit/12575a143b3b125db434deec534677f06c41e686)
+
 # 11/3/2021
 
 ## Packages
