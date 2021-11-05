@@ -1,3 +1,5 @@
+$fyn:
+ layout: detail
 $pkg:
   dep:
     mod-i: ^1.0.0

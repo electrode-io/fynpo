@@ -156,7 +156,7 @@ class PkgDistFetcher {
       srcDir = meta.urlVersions[info.semver].dist.fullPath;
     }
 
-    const destDir = dir || this._fyn.getInstalledPkgDir(pkg.name, pkg.version);
+    const destDir = dir || this._fyn.getInstalledPkgDir(pkg.name, pkg.version, pkg);
 
     await hardLinkDir.link(srcDir, destDir, { sourceMaps: this._fyn._options.sourceMaps });
     await Fs.$.rimraf(srcDir);
@@ -198,23 +198,43 @@ class PkgDistFetcher {
   async findPkgInNodeModules(pkg) {
     const { name, version } = pkg;
     const result = {
+      foundAtTop: false,
       search: []
     };
 
-    const existDir = this._fyn.getInstalledPkgDir(name, version);
-    const x = { dir: existDir };
-    result.search.push(x);
+    const find = async promoted => {
+      const existDir = this._fyn.getInstalledPkgDir(name, version, { promoted });
+      const x = { dir: existDir };
+      result.search.push(x);
 
-    try {
-      const pkgJson = await this._fyn.loadJsonForPkg(pkg, existDir, true);
-      x.pkgJson = pkgJson;
-      if (!pkgJson._invalid) {
-        result.existDir = existDir;
-        result.pkgJson = pkgJson;
+      try {
+        const pkgJson = await this._fyn.loadJsonForPkg(pkg, existDir, true);
+        x.pkgJson = pkgJson;
+        if (!pkgJson._invalid) {
+          result.existDir = existDir;
+          result.pkgJson = pkgJson;
+          return true;
+        } else if (pkgJson.name && promoted && pkg.promoted) {
+          // actually found a package.json file at top, so need to force
+          // extracting it to __fv_, and get it to the right place later after
+          // all resolve are done.
+          result.foundAtTop = true;
+        }
+      } catch (err) {
+        //
       }
-    } catch (err) {
-      //
+
+      return false;
+    };
+
+    if (this._fyn.isNormalLayout) {
+      // check if a copy already exist at top
+      if (await find(true)) {
+        return result;
+      }
     }
+
+    await find(false);
 
     return result;
   }
@@ -244,6 +264,7 @@ class PkgDistFetcher {
       this.addSinglePkg({
         pkg,
         listener,
+        foundAtTop: find.foundAtTop,
         optional
       });
     });

@@ -86,16 +86,13 @@ const fyntil = {
     if (fyntil.fynpoConfig) {
       return fyntil.fynpoConfig;
     }
+
     const fcm = new FynpoConfigManager({ cwd });
     const config = await fcm.load();
 
     if (config) {
       logger.info(`Detected a ${fcm.repoType} at ${fcm.topDir}`);
-      const opts = { cwd: fcm.topDir };
-      if (config.hasOwnProperty("packages")) {
-        opts.patterns = config.packgaes;
-      }
-      const graph = new FynpoDepGraph(opts);
+      const graph = new FynpoDepGraph({ cwd: fcm.topDir, patterns: config.packages });
       await graph.resolve();
 
       return (fyntil.fynpoConfig = {

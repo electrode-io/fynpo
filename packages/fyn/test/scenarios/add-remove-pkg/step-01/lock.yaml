@@ -1,3 +1,5 @@
+$fyn:
+ layout: detail
 $pkg:
  dep:
   mod-a: ^2.0.0

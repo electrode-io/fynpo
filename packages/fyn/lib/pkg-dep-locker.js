@@ -30,6 +30,7 @@ class PkgDepLocker {
     this._lockOnly = lockOnly;
     this._lockData = {};
     this._isFynFormat = true;
+    this._config = {};
   }
 
   get data() {
@@ -426,12 +427,19 @@ class PkgDepLocker {
   // save
   //
   save(filename) {
-    if (!this._enable) return;
-    if (!Path.isAbsolute(filename)) filename = Path.resolve(filename);
+    if (!this._enable) {
+      return;
+    }
+
+    if (!Path.isAbsolute(filename)) {
+      filename = Path.resolve(filename);
+    }
+
     if (!this._lockOnly) {
       assert(this._isFynFormat, "can't save lock data that's no longer in fyn format");
       const basedir = Path.dirname(filename);
       // sort by package names
+      this._lockData.$fyn = this._config;
       const sortData = sortObjKeys(this._lockData);
       this._relativeLocalPath(basedir, sortData);
       const data = Yaml.stringify(sortData, 4, 1);
@@ -446,15 +454,24 @@ class PkgDepLocker {
   }
 
   async read(filename) {
-    if (!this._enable) return false;
+    if (!this._enable) {
+      return false;
+    }
+
     try {
       if (!Path.isAbsolute(filename)) filename = Path.resolve(filename);
       const data = (await Fs.readFile(filename)).toString();
       this._shaSum = this.shasum(data);
       this._lockData = Yaml.parse(data);
+
       const basedir = Path.dirname(filename);
+
       this._fullLocalPath(basedir);
+
+      Object.assign(this._config, this._lockData.$fyn);
+
       logger.info(chalk.green(`loaded lockfile ${basedir}`));
+
       return true;
     } catch (err) {
       if (this._lockOnly) {
@@ -469,6 +486,18 @@ class PkgDepLocker {
     }
 
     return false;
+  }
+
+  setConfig(key, value) {
+    if (value === undefined) {
+      delete this._config[key];
+    } else {
+      this._config[key] = value;
+    }
+  }
+
+  getConfig(key) {
+    return this._config[key];
   }
 }
 

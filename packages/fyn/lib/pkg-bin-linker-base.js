@@ -37,7 +37,7 @@ class PkgBinLinkerBase {
   // top-level .bin already, need to link them privately.
   //
   async linkDepBin(depInfo) {
-    const pkgDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
+    const pkgDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
     let binDir;
     const privatelyLinked = {};
     const pkgData = this._fyn._data.getPkgsData();
@@ -81,7 +81,7 @@ class PkgBinLinkerBase {
           // so need to privately link it for the pkg of depInfo
           privatelyLinked[bin] = true;
           if (!depPkgDir) {
-            depPkgDir = this._fyn.getInstalledPkgDir(depPkg.name, depPkg.version);
+            depPkgDir = this._fyn.getInstalledPkgDir(depPkg.name, depPkg.version, depPkg);
           }
           const targetFile = Path.join(depPkgDir, file);
           await link(targetFile, bin);
@@ -112,7 +112,7 @@ class PkgBinLinkerBase {
   async linkBin(depInfo, binList) {
     const isPrivate = Boolean(binList);
     const conflicts = {};
-    const pkgDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
+    const pkgDir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
 
     const link = async (file, sym) => {
       const target = Path.join(pkgDir, file);

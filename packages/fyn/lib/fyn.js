@@ -37,6 +37,7 @@ class Fyn {
   constructor({ opts = {}, _cliSource = {}, _fynpo = true }) {
     this._cliSource = _cliSource;
     const options = (this._options = fynConfig(opts));
+    this._layout = options.layout;
     this._cwd = options.cwd || process.cwd();
     logger.debug(`fyn options`, JSON.stringify(fyntil.removeAuthInfo(options)));
     this.localPkgWithNestedDep = [];
@@ -68,6 +69,17 @@ class Fyn {
     this._depLocker = new PkgDepLocker(this.lockOnly, this._options.lockfile);
 
     const foundLock = await this._depLocker.read(Path.join(this._cwd, FYN_LOCK_FILE));
+    const layout = this._depLocker.getConfig("layout");
+    if (layout && layout !== this._layout) {
+      if (this._cliSource.layout === "cli") {
+        logger.info(`You are changing layout in your lockfile from ${layout} to ${this._layout}`);
+        this._depLocker.setConfig("layout", this._layout);
+      } else {
+        logger.info(`Setting layout to ${layout} from your lockfile`);
+      }
+    } else {
+      this._depLocker.setConfig("layout", this._layout);
+    }
 
     if (this._options.npmLock === true) {
       // force load npm lock data
@@ -100,6 +112,10 @@ class Fyn {
 
   get isFynpo() {
     return Boolean(this._fynpo && this._fynpo.config);
+  }
+
+  get isNormalLayout() {
+    return this._layout === "normal";
   }
 
   async _initCentralStore() {
@@ -177,7 +193,9 @@ class Fyn {
   async _initializePkg() {
     if (!this._fynpo) {
       this._fynpo = await fyntil.loadFynpo(this._cwd);
+      // TODO: options from CLI should not be override by fynpo config options
       _.merge(this._options, _.get(this, "_fynpo.fyn.options"));
+      this._layout = this._options.layout;
     }
 
     if (!this._pkg) {
@@ -194,7 +212,16 @@ class Fyn {
       try {
         const fynInstallConfig = JSON.parse(await Fs.readFile(filename));
         logger.debug("loaded fynInstallConfig", fynInstallConfig);
-        this._installConfig = { ...this._installConfig, ...fynInstallConfig };
+        const { layout } = fynInstallConfig;
+        if (layout && layout !== this._layout) {
+          if (this._cliSource.layout !== "default") {
+            logger.warn(
+              `Forcing layout to ${layout} from ${this._layout} because your existing node_modules uses that. To change it, please remove node_modules first.`
+            );
+          }
+          this._layout = layout;
+        }
+        this._installConfig = { ...this._installConfig, ...fynInstallConfig, layout };
       } catch (err) {
         logger.debug("failed loaded fynInstallConfig from", filename, err);
       }
@@ -326,18 +353,15 @@ class Fyn {
         // immediately before this
         time: Date.now() + 5,
         centralDir,
-        production: this.production
+        production: this.production,
+        layout: this._layout
         // not a good idea to save --run-npm options to install config because
         // future fyn install will automatically run them and would be unexpected.
         // if fynpo bootstrap should run certain npm scripts, user should set those
         // in fynpo config.  and fyn should look into those when detected a fynpo.
         // runNpm: this._runNpm
       };
-      await Fs.writeFile(
-        filename,
-        `${JSON.stringify(outputConfig, null, 2)}
-`
-      );
+      await Fs.writeFile(filename, `${JSON.stringify(outputConfig, null, 2)}\n`);
     } catch (err) {
       logger.debug(`saving install config file failed`, err);
     }
@@ -650,10 +674,16 @@ class Fyn {
    *
    * @param {*} name - name of the package
    * @param {*} version - version of the package
+   * @param {*} pkg - pkg data
    *
    * @returns {string} dir for package
    */
-  getInstalledPkgDir(name = "", version = "") {
+  getInstalledPkgDir(name = "", version = "", pkg) {
+    // in normal layout, promoted package should go to top node_modules dir directly
+    if (this.isNormalLayout && pkg && pkg.promoted) {
+      return Path.join(this.getOutputDir(), name);
+    }
+
     // it's important that each package is directly extracted to a directory
     // that has name exactly the same as the package because there are code
     // and tools that depend on that.
@@ -666,6 +696,7 @@ class Fyn {
         return Path.join(this.getOutputDir(), FV_DIR, "_", name, version, name);
       }
     }
+
     return Path.join(this.getOutputDir(), FV_DIR, "_", name);
   }
 
@@ -798,7 +829,7 @@ class Fyn {
   // else returns undefined.
   //
   async ensureProperPkgDir(pkg, dir) {
-    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version);
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
 
     let ostat;
 
@@ -829,7 +860,7 @@ class Fyn {
   }
 
   async loadJsonForPkg(pkg, dir) {
-    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version);
+    const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
     const json = await fyntil.readPkgJson(fullOutDir, true);
 
     const pkgId = `${pkg.name}@${pkg.version}`;

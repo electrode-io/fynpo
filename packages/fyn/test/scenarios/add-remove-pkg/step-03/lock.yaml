@@ -1,3 +1,5 @@
+$fyn:
+ layout: detail
 $pkg:
  dev:
   mod-d: ^1.0.0

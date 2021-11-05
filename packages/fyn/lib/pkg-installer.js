@@ -61,10 +61,12 @@ class PkgInstaller {
 
   async _linkLocalPkg(depInfo) {
     // avoid linking multiple times
-    if (depInfo.linkLocal) return;
+    if (depInfo.linkLocal) {
+      return;
+    }
     depInfo.linkLocal = true;
 
-    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
+    const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
     if (depInfo.local === "hard") {
       await hardLinkDir.link(depInfo.dir, vdir, {
         sourceMaps: this._fyn._options.sourceMaps
@@ -76,45 +78,41 @@ class PkgInstaller {
     }
   }
 
-  async _saveLocalFynSymlink() {
-    throw new Error("only hard linking local mode supported now.  symlinking local deprecated");
-  }
-
   async _savePkgJson(log) {
+    //
+    // TODO: skip modifying package.json in node_modules
+    // this was done to follow npm behavior of adding some extra fields
+    // like _id and _from to installed package.json, but modifying package.json
+    // is not compatible with central or local mode.
+    //
+    //
     for (const depInfo of this.toLink) {
       // can't touch package.json if package is a symlink to the real
       // local package.
       if (depInfo.local === "sym" || depInfo._removed) {
         continue;
       }
-
       depInfo.json._from = `${depInfo.name}@${depInfo[SEMVER]}`;
       depInfo.json._id = `${depInfo.name}@${depInfo.version}`;
       const outputStr = JSON.stringify(depInfo.json, null, 2);
-
       if (log && depInfo.linkDep) {
         const pkgJson = depInfo.json;
         logger.debug("linked dependencies for", pkgJson.name, pkgJson.version);
       }
-
       if (depInfo.str.trim() === outputStr.trim()) {
         continue;
       }
-
       let pkgJsonFp;
-
       if (depInfo.local === "hard") {
         // do not override hard linked package.json, instead remove it and
         // write a new physical file.
-        const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version);
+        const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
         pkgJsonFp = Path.join(vdir, "package.json");
         await Fs.unlink(pkgJsonFp);
       } else {
         pkgJsonFp = Path.join(depInfo.dir, "package.json");
       }
-
       depInfo.str = outputStr;
-
       try {
         await Fs.writeFile(pkgJsonFp, `${outputStr}\n`);
       } catch (err) {
@@ -267,7 +265,7 @@ class PkgInstaller {
     );
 
     await this._removeDepsOf(depInfo, failedId);
-    await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version));
+    await Fs.$.rimraf(this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo));
   }
 
   timeCheck(x) {
@@ -279,46 +277,108 @@ class PkgInstaller {
     this._stepTime = tmp;
   }
 
+  async _runPreInstallScripts(depInfo) {
+    return runNpmScript({
+      appDir: this._fyn.cwd,
+      fyn: this._fyn,
+      scripts: ["preinstall"],
+      depInfo
+    }).then(() => {
+      depInfo.json._fyn.preinstall = true;
+      if (depInfo.fynLinkData) {
+        depInfo.fynLinkData.preinstall = true;
+      }
+    });
+  }
+
+  async _runPostInstallScripts(depInfo) {
+    const integrity = fynTil.distIntegrity(depInfo.dist);
+    const centralBeforeSha =
+      this._fyn.central &&
+      (await this._fyn.central.allow(integrity)) &&
+      (await this._fyn.central.getMutation(integrity)) === undefined &&
+      (await this._fyn.central.getContentShasum(integrity));
+
+    let runningScript;
+    return Promise.each(depInfo.install, installScript => {
+      runningScript = installScript;
+      return runNpmScript({
+        appDir: this._fyn.cwd,
+        fyn: this._fyn,
+        scripts: [installScript],
+        depInfo
+      }).then(() => {
+        depInfo.json._fyn[installScript] = true;
+        if (depInfo.fynLinkData) {
+          depInfo.fynLinkData[installScript] = true;
+        }
+      });
+    })
+      .then(async () => {
+        if (centralBeforeSha) {
+          const afterSha = await this._fyn.central.getContentShasum(integrity);
+          const id = logFormat.pkgId(depInfo);
+          if (afterSha !== centralBeforeSha) {
+            logger.info(
+              `package ${id} can't use central store because its post install scripts ${depInfo.install} mutated content, before: ${centralBeforeSha} after: ${afterSha}`
+            );
+            await this._fyn.central.setMutation(integrity, true);
+          } else {
+            await this._fyn.central.setMutation(integrity, false);
+          }
+        }
+      })
+      .catch(err => {
+        if (this._isDepSrcOptionalOnly(depInfo)) {
+          logger.info(
+            "running package",
+            logFormat.pkgId(depInfo),
+            "script",
+            chalk.magenta(runningScript),
+            `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
+            "optional, so ignoring and removing."
+          );
+          return this._removeFailedOptional(depInfo);
+        } else {
+          throw err;
+        }
+      });
+  }
+
+  _checkDeprecated(depInfo) {
+    if (depInfo.deprecated && (depInfo.showDepr || this._fyn.showDeprecated)) {
+      const id = logFormat.pkgId(depInfo);
+      logger.warn(
+        `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
+        chalk.yellow(depInfo.deprecated)
+      );
+      const req = depInfo.requests[depInfo.firstReqIdx];
+      logger.verbose(
+        chalk.blue("  First seen through:"),
+        chalk.cyan((req.length > 1 ? req.slice(1) : req).reverse().join(chalk.magenta(" < ")))
+      );
+      if (depInfo.requests.length > 1) {
+        logger.verbose(chalk.blue(`  Number of other dep paths:`), depInfo.requests.length - 1);
+      }
+      return true;
+    }
+    return false;
+  }
+
   _doInstall() {
     const start = Date.now();
-    const appDir = this._fyn.cwd;
 
     this.timeCheck("starting preinstall");
 
     return (
-      Promise.map(
-        this.preInstall,
-        depInfo => {
-          return runNpmScript({ appDir, fyn: this._fyn, scripts: ["preinstall"], depInfo }).then(
-            () => {
-              depInfo.json._fyn.preinstall = true;
-              if (depInfo.fynLinkData) {
-                depInfo.fynLinkData.preinstall = true;
-              }
-            }
-          );
-        },
-        { concurrency: 3 }
-      )
+      Promise.map(this.preInstall, di => this._runPreInstallScripts(di), { concurrency: 3 })
         .tap(() => this.timeCheck("preInstall"))
         .tap(() => {
           logger.updateItem(INSTALL_PACKAGE, `linking packages...`);
         })
         .then(() => this._linkTopPackages())
         .return(this.toLink)
-        .each(async depInfo => {
-          this._fyn._depResolver.resolvePeerDep(depInfo);
-          await this._depLinker.linkPackage(depInfo);
-          //
-          if (depInfo.deprecated && !depInfo.json._deprecated) {
-            depInfo.json._deprecated = depInfo.deprecated;
-            depInfo.showDepr = true;
-          }
-          if (depInfo.top) {
-            return this._binLinker.linkBin(depInfo);
-          }
-          return undefined;
-        })
+        .each(depInfo => this._linkNestedPackages(depInfo))
         .tap(() => this.timeCheck("linking packages"))
         .tap(() => logger.debug("linking bin for non-top but promoted packages"))
         .return(this.toLink) // Link bin for all none top but promoted pkg first
@@ -331,11 +391,9 @@ class PkgInstaller {
         .return(this.toLink) // link bin for package's dep that conflicts
         .each(x => this._binLinker.linkDepBin(x))
         .tap(() => this.timeCheck("linking dep bin"))
-        .then(() => {
-          // we are about to run install/postInstall scripts
-          // save pkg JSON to disk in case any updates were done
-          return this._savePkgJson();
-        })
+        // we are about to run install/postInstall scripts
+        // save pkg JSON to disk in case any updates were done
+        .then(() => this._savePkgJson())
         .tap(() => this.timeCheck("first _savePkgJson"))
         .then(() => this._initFvVersions())
         .tap(() => this.timeCheck("_initFvVersions"))
@@ -346,89 +404,13 @@ class PkgInstaller {
         .then(() => this._cleanBin())
         .tap(() => this.timeCheck("_cleanBin"))
         .return(this.postInstall)
-        .map(
-          async depInfo => {
-            const integrity = fynTil.distIntegrity(depInfo.dist);
-            const centralBeforeSha =
-              this._fyn.central &&
-              (await this._fyn.central.allow(integrity)) &&
-              (await this._fyn.central.getMutation(integrity)) === undefined &&
-              (await this._fyn.central.getContentShasum(integrity));
-
-            let runningScript;
-            return Promise.each(depInfo.install, installScript => {
-              runningScript = installScript;
-              return runNpmScript({
-                appDir,
-                fyn: this._fyn,
-                scripts: [installScript],
-                depInfo
-              }).then(() => {
-                depInfo.json._fyn[installScript] = true;
-                if (depInfo.fynLinkData) {
-                  depInfo.fynLinkData[installScript] = true;
-                }
-              });
-            })
-              .then(async () => {
-                if (centralBeforeSha) {
-                  const afterSha = await this._fyn.central.getContentShasum(integrity);
-                  const id = logFormat.pkgId(depInfo);
-                  if (afterSha !== centralBeforeSha) {
-                    logger.info(
-                      `package ${id} can't use central store because its post install scripts ${depInfo.install} mutated content, before: ${centralBeforeSha} after: ${afterSha}`
-                    );
-                    await this._fyn.central.setMutation(integrity, true);
-                  } else {
-                    await this._fyn.central.setMutation(integrity, false);
-                  }
-                }
-              })
-              .catch(err => {
-                if (this._isDepSrcOptionalOnly(depInfo)) {
-                  logger.info(
-                    "running package",
-                    logFormat.pkgId(depInfo),
-                    "script",
-                    chalk.magenta(runningScript),
-                    `failed, but it's${depInfo.dsrc !== "opt" ? " indirect" : ""}`,
-                    "optional, so ignoring and removing."
-                  );
-                  return this._removeFailedOptional(depInfo);
-                } else {
-                  throw err;
-                }
-              });
-          },
-          { concurrency: 3 }
-        )
+        .map(depInfo => this._runPostInstallScripts(depInfo), { concurrency: 3 })
         .tap(() => this.timeCheck("postInstall"))
-        .then(() => {
-          // Go through save package.json again in case any changed
-          return this._savePkgJson(true);
-        })
+        // Go through save package.json again in case any changed
+        .then(() => this._savePkgJson(true))
         .tap(() => this.timeCheck("second _savePkgJson"))
-        // .then(() => this._saveLocalFynSymlink())
         .return(this.toLink)
-        .filter(di => {
-          if (di.deprecated && (di.showDepr || this._fyn.showDeprecated)) {
-            const id = logFormat.pkgId(di);
-            logger.warn(
-              `${chalk.black.bgYellow("WARN")} ${chalk.magenta("deprecated")} ${id}`,
-              chalk.yellow(di.deprecated)
-            );
-            const req = di.requests[di.firstReqIdx];
-            logger.verbose(
-              chalk.blue("  First seen through:"),
-              chalk.cyan((req.length > 1 ? req.slice(1) : req).reverse().join(chalk.magenta(" < ")))
-            );
-            if (di.requests.length > 1) {
-              logger.verbose(chalk.blue(`  Number of other dep paths:`), di.requests.length - 1);
-            }
-            return true;
-          }
-          return false;
-        })
+        .filter(depInfo => this._checkDeprecated(depInfo))
         .tap(() => this.timeCheck("show deprecated"))
         .then(warned => {
           if (this._fyn.showDeprecated && _.isEmpty(warned)) {
@@ -466,7 +448,7 @@ class PkgInstaller {
     const json = depInfo.json || {};
 
     if (_.isEmpty(json) || json.fromLocked) {
-      const dir = this._fyn.getInstalledPkgDir(name, version);
+      const dir = this._fyn.getInstalledPkgDir(name, version, depInfo);
       const file = Path.join(dir, "package.json");
       const str = (await Fs.readFile(file)).toString();
       Object.assign(json, JSON.parse(str));
@@ -542,12 +524,7 @@ class PkgInstaller {
       const pkgVersions = pkgsData[pkgName];
       const topPkg = _.find(pkgVersions, x => x.promoted);
 
-      // TODO: TASK_TOP_TO_FV update to check top pkg under FV_DIR instead
-      // This won't be needed anymore.  Since all packages will be extracted to
-      // node_modules/${FV_DIR}/${version}/${pkgName}
       if (!topPkg) {
-        logger.verbose("removing extraneous top level package", pkgName);
-
         this._removedCount++;
         await this._removeDir(Path.join(outDir, pkgName));
       }
@@ -563,12 +540,19 @@ class PkgInstaller {
   }
 
   /**
-   * Make links under node_modules for packages that exist in package.json and
+   * Process detail layout for node_modules.
+   *
+   * Make links under node_modules for packages that exist app's package.json and
    * flattened packages under node_modules/${FV_DIR}/node_modules
    *
    * @returns {*} none
    */
   async _linkTopPackages() {
+    // only for detail layout
+    if (this._fyn.isNormalLayout) {
+      return;
+    }
+
     const { flattenTop } = this._fyn._options;
     const pkgsData = this._data.getPkgsData();
     let createFvNmDir;
@@ -579,10 +563,11 @@ class PkgInstaller {
         let symLinkLocation;
         logger.debug("linkTop", pkgName, "top", verPkg.top, "promoted", verPkg.promoted);
         if (verPkg.top) {
-          // top level dep from package.json, link to node_modules
+          // top level dep from package.json, put or link it under node_modules
           symLinkLocation = this._fyn.getOutputDir();
         } else if (verPkg.promoted) {
           if (flattenTop) {
+            // put all packages that are promoted under node_modules
             symLinkLocation = this._fyn.getOutputDir();
           } else {
             // promoted flattened dep, link to node_modules/${FV_DIR}/node_modules
@@ -595,19 +580,39 @@ class PkgInstaller {
         } else {
           continue; // no need to link
         }
+
         const linkName = Path.join(symLinkLocation, pkgName);
         const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, version);
         logger.debug("linkTop", linkName, "=>", pkgInstalledPath);
+
         if (pkgName.startsWith("@")) {
-          // scope dir
+          // package has scope, create a scope dir for it
           await Fs.$.mkdirp(Path.dirname(linkName));
         }
+
         const symLinkExist = await fynTil.validateExistSymlink(linkName, pkgInstalledPath, true);
+
         if (!symLinkExist) {
           await fynTil.symlinkDir(linkName, pkgInstalledPath, true);
         }
       }
     }
+  }
+
+  async _linkNestedPackages(depInfo) {
+    this._fyn._depResolver.resolvePeerDep(depInfo);
+    await this._depLinker.linkPackage(depInfo);
+    //
+    if (depInfo.deprecated && !depInfo.json._deprecated) {
+      depInfo.json._deprecated = depInfo.deprecated;
+      depInfo.showDepr = true;
+    }
+
+    if (depInfo.top) {
+      return this._binLinker.linkBin(depInfo);
+    }
+
+    return undefined;
   }
 
   async _cleanUpVersions(pkgName) {
@@ -619,7 +624,7 @@ class PkgInstaller {
     const removed = [];
 
     for (const ver of versions) {
-      if (!pkg || !pkg[ver]) {
+      if (!pkg || !pkg[ver] || (this._fyn.isNormalLayout && pkg[ver].promoted)) {
         const pkgInstalledPath = this._fyn.getInstalledPkgDir(pkgName, ver);
 
         logger.verbose("removing extraneous version", ver, "of", pkgName, pkgInstalledPath);

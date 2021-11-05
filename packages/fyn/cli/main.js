@@ -241,6 +241,16 @@ const options = {
     default: true,
     desc: "flattening hoists pkg to top level node_modules"
   },
+  layout: {
+    type: "enum",
+    default: "normal",
+    // node_modules package directory layouts
+    // normal - top level and hoist deps are all copied node_modules
+    // detail - every packages in their own path with version detail and symlink to node_modules
+    // TODO: simple - where top level deps are copied, but promoted packages are hoisted with symlinks
+    enum: /^(normal|detail)$/,
+    desc: "set node_modules packages layout - normal or detail"
+  },
   "meta-memoize": {
     type: "string",
     alias: "meta-mem",

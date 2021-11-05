@@ -1,3 +1,5 @@
+$fyn:
+ layout: detail
 $pkg:
  dep:
   '@fynpo/base': ../fynpo-base
@@ -74,7 +76,7 @@ $pkg:
  7.16.0:
   top: 1
   $: sha1-pym3pI64C0n0ijOVKfxBKf17zvM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/cli/-/cli-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/cli/-/cli-7.16.0.tgz'
   dependencies:
    commander: ^4.0.1
    convert-source-map: ^1.1.0
@@ -94,7 +96,7 @@ $pkg:
   '^7.0.0,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-DfyAMJvuyEEeZecGRhxAiwu5tDE=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/code-frame/-/code-frame-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/code-frame/-/code-frame-7.16.0.tgz'
   dependencies:
    '@babel/highlight': ^7.16.0
 '@babel/compat-data':
@@ -103,7 +105,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-6iadf3jes6eCbDmkBI7s2lQevao=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/compat-data/-/compat-data-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/compat-data/-/compat-data-7.16.0.tgz'
 '@babel/core':
  _latest: 7.16.0
  _:
@@ -111,7 +113,7 @@ $pkg:
  7.16.0:
   top: 1
   $: sha1-xP9EBG9f4xBSXMnrTvUUfwxTdNQ=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/core/-/core-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/core/-/core-7.16.0.tgz'
   dependencies:
    '@babel/code-frame': ^7.16.0
    '@babel/generator': ^7.16.0
@@ -134,7 +136,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-1A89HVB15i01ALzLZ/PaqKlSZbI=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/generator/-/generator-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/generator/-/generator-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
    jsesc: ^2.5.1
@@ -164,7 +166,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-AdYVdi55bBeVLCnj7enW3gfSNag=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-compilation-targets/-/helper-compilation-targets-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-compilation-targets/-/helper-compilation-targets-7.16.0.tgz'
   dependencies:
    '@babel/compat-data': ^7.16.0
    '@babel/helper-validator-option': ^7.14.5
@@ -214,7 +216,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-t90Hl9ALv+5PB+nE6lsOMMi7FIE=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-function-name/-/helper-function-name-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-function-name/-/helper-function-name-7.16.0.tgz'
   dependencies:
    '@babel/helper-get-function-arity': ^7.16.0
    '@babel/template': ^7.16.0
@@ -225,7 +227,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-AIjHSGspqctdlIsaHeRttm4InPo=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-get-function-arity/-/helper-get-function-arity-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-get-function-arity/-/helper-get-function-arity-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-hoist-variables':
@@ -234,7 +236,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-TJAjwvHe9+KP9G/B2802o5vqqBo=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-hoist-variables/-/helper-hoist-variables-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-hoist-variables/-/helper-hoist-variables-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-member-expression-to-functions':
@@ -243,7 +245,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-KShwQO/Rl8d2Nu91GI6B2ovM1aQ=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-module-imports':
@@ -252,7 +254,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-kFOOYLZy7PG0SPX09UM9N+eaPsM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-module-imports/-/helper-module-imports-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-module-imports/-/helper-module-imports-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-module-transforms':
@@ -261,7 +263,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-HIKo3UyzRXdQLr0pCWmbGUw+m7U=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-module-transforms/-/helper-module-transforms-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-module-transforms/-/helper-module-transforms-7.16.0.tgz'
   dependencies:
    '@babel/helper-module-imports': ^7.16.0
    '@babel/helper-replace-supers': ^7.16.0
@@ -277,7 +279,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-zs2xRdcMVAlrFWT46fEM19GTszg=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-plugin-utils':
@@ -286,7 +288,7 @@ $pkg:
   '^7.0.0,^7.10.4,^7.12.13,^7.14.5,^7.8.0,^7.8.3': 7.14.5
  7.14.5:
   $: sha1-WsgizpfuxGdBq3ClF5ceRDpwxak=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-plugin-utils/-/helper-plugin-utils-7.14.5.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.14.5.tgz'
 '@babel/helper-remap-async-to-generator':
  _latest: 7.12.13
  _:
@@ -304,7 +306,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-cwVejTz5vLqN21XK2T/tyGD2jxc=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-replace-supers/-/helper-replace-supers-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-replace-supers/-/helper-replace-supers-7.16.0.tgz'
   dependencies:
    '@babel/helper-member-expression-to-functions': ^7.16.0
    '@babel/helper-optimise-call-expression': ^7.16.0
@@ -316,7 +318,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-IdaidiDjg+N1NM9sELugGab5BRc=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-simple-access/-/helper-simple-access-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-simple-access/-/helper-simple-access-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-skip-transparent-expression-wrappers':
@@ -334,7 +336,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-KWcvQ2Y+k23zcKrrIr7ds7rsdDg=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.16.0.tgz'
   dependencies:
    '@babel/types': ^7.16.0
 '@babel/helper-validator-identifier':
@@ -343,14 +345,14 @@ $pkg:
   '^7.12.11,^7.15.7': 7.15.7
  7.15.7:
   $: sha1-Ig35k7/pBKSmsCq08zhaXr9uI4k=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-validator-identifier/-/helper-validator-identifier-7.15.7.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.15.7.tgz'
 '@babel/helper-validator-option':
  _latest: 7.14.5
  _:
   '^7.12.11,^7.14.5': 7.14.5
  7.14.5:
   $: sha1-bnKh//GNXfy4eOHmLxoCHEty1aM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helper-validator-option/-/helper-validator-option-7.14.5.tgz'
+  _: 'https://registry.npmjs.com/@babel/helper-validator-option/-/helper-validator-option-7.14.5.tgz'
 '@babel/helper-wrap-function':
  _latest: 7.12.13
  _:
@@ -369,7 +371,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-h1UZyXnCMvQa371Do7A5jC44gYM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/helpers/-/helpers-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/helpers/-/helpers-7.16.0.tgz'
   dependencies:
    '@babel/template': ^7.16.0
    '@babel/traverse': ^7.16.0
@@ -380,7 +382,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-bOsysspLj182H7f9gh4/3fShclo=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/highlight/-/highlight-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/highlight/-/highlight-7.16.0.tgz'
   dependencies:
    '@babel/helper-validator-identifier': ^7.15.7
    chalk: ^2.0.0
@@ -391,7 +393,7 @@ $pkg:
   '^7.16.0,^7.7.0': 7.16.2
  7.16.2:
   $: sha1-NyPNXI2Hc+75bOV+odm3+qzNEqw=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/parser/-/parser-7.16.2.tgz'
+  _: 'https://registry.npmjs.com/@babel/parser/-/parser-7.16.2.tgz'
 '@babel/plugin-proposal-async-generator-functions':
  _latest: 7.12.13
  _:
@@ -601,7 +603,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-B0JwIdCT7XcBlAgiG+rwJyu8+uw=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/plugin-syntax-flow/-/plugin-syntax-flow-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/plugin-syntax-flow/-/plugin-syntax-flow-7.16.0.tgz'
   dependencies:
    '@babel/helper-plugin-utils': ^7.14.5
   peerDependencies:
@@ -820,7 +822,7 @@ $pkg:
   ^7.16.0: 7.16.0
  7.16.0:
   $: sha1-7dlo3CBBwbaeRRomLpSNZlSnncI=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/plugin-transform-flow-strip-types/-/plugin-transform-flow-strip-types-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/plugin-transform-flow-strip-types/-/plugin-transform-flow-strip-types-7.16.0.tgz'
   dependencies:
    '@babel/helper-plugin-utils': ^7.14.5
    '@babel/plugin-syntax-flow': ^7.16.0
@@ -1166,7 +1168,7 @@ $pkg:
  7.16.0:
   top: 1
   $: sha1-nx9ucnFNeUYNSAWMtWWPyH2nFQs=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/preset-flow/-/preset-flow-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/preset-flow/-/preset-flow-7.16.0.tgz'
   dependencies:
    '@babel/helper-plugin-utils': ^7.14.5
    '@babel/helper-validator-option': ^7.14.5
@@ -1203,7 +1205,7 @@ $pkg:
   '^7.12.13,^7.16.0': 7.16.0
  7.16.0:
   $: sha1-0Wo16/TNdOICCDNW+rId2JNj3dY=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/template/-/template-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/template/-/template-7.16.0.tgz'
   dependencies:
    '@babel/code-frame': ^7.16.0
    '@babel/parser': ^7.16.0
@@ -1214,7 +1216,7 @@ $pkg:
   '^7.12.13,^7.16.0,^7.7.0': 7.16.0
  7.16.0:
   $: sha1-ll32xr/AqVjB5zkoTTyfpKbjxFs=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/traverse/-/traverse-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/traverse/-/traverse-7.16.0.tgz'
   dependencies:
    '@babel/code-frame': ^7.16.0
    '@babel/generator': ^7.16.0
@@ -1231,7 +1233,7 @@ $pkg:
   '^7.12.1,^7.12.13,^7.16.0,^7.4.4,^7.7.0': 7.16.0
  7.16.0:
   $: sha1-2zsxOAT5aq3Qt3bEgj4SetZyibo=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@babel/types/-/types-7.16.0.tgz'
+  _: 'https://registry.npmjs.com/@babel/types/-/types-7.16.0.tgz'
   dependencies:
    '@babel/helper-validator-identifier': ^7.15.7
    to-fast-properties: ^2.0.0
@@ -1261,10 +1263,10 @@ $pkg:
    minimatch: ^3.0.4
    strip-json-comments: ^3.1.1
 '@fynpo/base':
- _latest: 1.1.2-fynlocal_h
+ _latest: 1.1.3-fynlocal_h
  _:
-  ../fynpo-base: 1.1.2-fynlocal_h
- 1.1.2-fynlocal_h:
+  ../fynpo-base: 1.1.3-fynlocal_h
+ 1.1.3-fynlocal_h:
   top: 1
   $: local
   _: ../fynpo-base
@@ -1682,7 +1684,7 @@ $pkg:
   2.1.8-no-fsevents.3: 2.1.8-no-fsevents.3
  2.1.8-no-fsevents.3:
   $: sha1-Mj1y3SUQPQxPvc6J2t9XSnh7H5s=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8-no-fsevents.3.tgz'
+  _: 'https://registry.npmjs.com/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8-no-fsevents.3.tgz'
 '@polka/url':
  _latest: 0.5.0
  _:
@@ -2204,7 +2206,7 @@ anymatch:
   '~3.1.1,~3.1.2': 3.1.2
  3.1.2:
   $: sha1-wFV8CWrzLxBhmPT04qODU343hxY=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/anymatch/-/anymatch-3.1.2.tgz'
+  _: 'https://registry.npmjs.com/anymatch/-/anymatch-3.1.2.tgz'
   dependencies:
    normalize-path: ^3.0.0
    picomatch: ^2.0.4
@@ -2432,7 +2434,7 @@ browserslist:
   '^4.14.5,^4.16.1,^4.16.6': 4.17.6
  4.17.6:
   $: sha1-x2vjPneGtJf2bK0lpzdWyLk4mF0=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/browserslist/-/browserslist-4.17.6.tgz'
+  _: 'https://registry.npmjs.com/browserslist/-/browserslist-4.17.6.tgz'
   dependencies:
    caniuse-lite: ^1.0.30001274
    electron-to-chromium: ^1.3.886
@@ -2537,7 +2539,7 @@ caniuse-lite:
   ^1.0.30001274: 1.0.30001275
  1.0.30001275:
   $: sha1-JvUHZin+TlK70kX5BGrXuQqv31c=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/caniuse-lite/-/caniuse-lite-1.0.30001275.tgz'
+  _: 'https://registry.npmjs.com/caniuse-lite/-/caniuse-lite-1.0.30001275.tgz'
 caseless:
  _latest: 0.12.0
  _:
@@ -2766,13 +2768,13 @@ commander:
   '^7.0.0,^7.2.0': 7.2.0
  7.2.0:
   $: sha1-o2y1fQtQHOEI5NIFWaFQo5HZerc=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/commander/-/commander-7.2.0.tgz'
+  _: 'https://registry.npmjs.com/commander/-/commander-7.2.0.tgz'
  4.1.1:
   $: sha1-n9YCvZNilOnp70aj9NaWQESxgGg=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/commander/-/commander-4.1.1.tgz'
+  _: 'https://registry.npmjs.com/commander/-/commander-4.1.1.tgz'
  2.20.3:
   $: sha1-/UhehMA+tIgcIHIrpIA16FMa6zM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/commander/-/commander-2.20.3.tgz'
+  _: 'https://registry.npmjs.com/commander/-/commander-2.20.3.tgz'
 comment-parser:
  _latest: 1.1.2
  _:
@@ -2828,7 +2830,7 @@ convert-source-map:
   '^1.1.0,^1.7.0': 1.8.0
  1.8.0:
   $: sha1-8zc8MtIbTXgN2ABFFGhPt5HKQ2k=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/convert-source-map/-/convert-source-map-1.8.0.tgz'
+  _: 'https://registry.npmjs.com/convert-source-map/-/convert-source-map-1.8.0.tgz'
   dependencies:
    safe-buffer: ~5.1.1
 copy-concurrently:
@@ -3071,7 +3073,7 @@ electron-to-chromium:
   ^1.3.886: 1.3.887
  1.3.887:
   $: sha1-s2ru0SooqqGUYKRngj9bvh88bwY=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/electron-to-chromium/-/electron-to-chromium-1.3.887.tgz'
+  _: 'https://registry.npmjs.com/electron-to-chromium/-/electron-to-chromium-1.3.887.tgz'
 emoji-regex:
  _latest: 9.2.1
  _:
@@ -3595,7 +3597,7 @@ fs-readdir-recursive:
   ^1.1.0: 1.1.0
  1.1.0:
   $: sha1-4y/AMKLM7kSmtTcTCNpUvgs5fSc=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/fs-readdir-recursive/-/fs-readdir-recursive-1.1.0.tgz'
+  _: 'https://registry.npmjs.com/fs-readdir-recursive/-/fs-readdir-recursive-1.1.0.tgz'
 fs-write-stream-atomic:
  _latest: 1.0.10
  _:
@@ -3674,7 +3676,7 @@ gensync:
   ^1.0.0-beta.2: 1.0.0-beta.2
  1.0.0-beta.2:
   $: sha1-MqbudsPX9S1GsrGuXZP+qFgKJeA=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/gensync/-/gensync-1.0.0-beta.2.tgz'
+  _: 'https://registry.npmjs.com/gensync/-/gensync-1.0.0-beta.2.tgz'
 get-caller-file:
  _latest: 2.0.5
  _:
@@ -3749,7 +3751,7 @@ glob-parent:
   '^5.0.0,~5.1.0,~5.1.2': 5.1.2
  5.1.2:
   $: sha1-hpgyxYA0/mikCTwX3BXoNA2EAcQ=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/glob-parent/-/glob-parent-5.1.2.tgz'
+  _: 'https://registry.npmjs.com/glob-parent/-/glob-parent-5.1.2.tgz'
   dependencies:
    is-glob: ^4.0.1
 glob-to-regexp:
@@ -4062,7 +4064,7 @@ invariant:
  2.2.4:
   top: 1
   $: sha1-YQ88ksk1nOHbYW5TgAjSP/NRWOY=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/invariant/-/invariant-2.2.4.tgz'
+  _: 'https://registry.npmjs.com/invariant/-/invariant-2.2.4.tgz'
   dependencies:
    loose-envify: ^1.0.0
 ip:
@@ -4332,14 +4334,14 @@ js-tokens:
   '^3.0.0 || ^4.0.0,^4.0.0': 4.0.0
  4.0.0:
   $: sha1-GSA/tZmR35jjoocFDUZHzerzJJk=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/js-tokens/-/js-tokens-4.0.0.tgz'
+  _: 'https://registry.npmjs.com/js-tokens/-/js-tokens-4.0.0.tgz'
 js-yaml:
  _latest: 4.1.0
  _:
   '3.14.0,^3.13.1,^3.5.3': 3.14.0
  3.14.0:
   $: sha1-p6NBcPJqIbsWJCTYray0ETpp5II=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/js-yaml/-/js-yaml-3.14.0.tgz'
+  _: 'https://registry.npmjs.com/js-yaml/-/js-yaml-3.14.0.tgz'
   dependencies:
    argparse: ^1.0.7
    esprima: ^4.0.0
@@ -4627,7 +4629,7 @@ loose-envify:
   ^1.0.0: 1.4.0
  1.4.0:
   $: sha1-ce5R+nvkyuwaY4OffmgtgTLTDK8=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/loose-envify/-/loose-envify-1.4.0.tgz'
+  _: 'https://registry.npmjs.com/loose-envify/-/loose-envify-1.4.0.tgz'
   dependencies:
    js-tokens: '^3.0.0 || ^4.0.0'
 lru-cache:
@@ -4659,12 +4661,12 @@ make-dir:
   '^3.0.0,^3.0.2,^3.1.0': 3.1.0
  3.1.0:
   $: sha1-QV6WcEazp/HRhSd9hKpYIDcmoT8=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/make-dir/-/make-dir-3.1.0.tgz'
+  _: 'https://registry.npmjs.com/make-dir/-/make-dir-3.1.0.tgz'
   dependencies:
    semver: ^6.0.0
  2.1.0:
   $: sha1-XwMQ4YuL6JjMBwCSlaMK5B6R5vU=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/make-dir/-/make-dir-2.1.0.tgz'
+  _: 'https://registry.npmjs.com/make-dir/-/make-dir-2.1.0.tgz'
   dependencies:
    pify: ^4.0.1
    semver: ^5.6.0
@@ -4967,7 +4969,7 @@ node-releases:
   ^2.0.1: 2.0.1
  2.0.1:
   $: sha1-PR05XyBPHy8ppUNYuftnh2WtL8U=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/node-releases/-/node-releases-2.0.1.tgz'
+  _: 'https://registry.npmjs.com/node-releases/-/node-releases-2.0.1.tgz'
 nopt:
  _latest: 5.0.0
  _:
@@ -5456,7 +5458,7 @@ picocolors:
   ^1.0.0: 1.0.0
  1.0.0:
   $: sha1-y1vcdP8/UYkiNur3nWi8RFZKuBw=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/picocolors/-/picocolors-1.0.0.tgz'
+  _: 'https://registry.npmjs.com/picocolors/-/picocolors-1.0.0.tgz'
 picomatch:
  _latest: 2.2.2
  _:
@@ -5470,7 +5472,7 @@ pify:
   ^4.0.1: 4.0.1
  4.0.1:
   $: sha1-SyzSXFDVmHNcUCkiJP2MbfQeMjE=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/pify/-/pify-4.0.1.tgz'
+  _: 'https://registry.npmjs.com/pify/-/pify-4.0.1.tgz'
 pkg-dir:
  _latest: 5.0.0
  _:
@@ -6090,7 +6092,7 @@ slash:
   ^2.0.0: 2.0.0
  2.0.0:
   $: sha1-3lUoUaF1nfOo8gZTVEL17E3eq0Q=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/slash/-/slash-2.0.0.tgz'
+  _: 'https://registry.npmjs.com/slash/-/slash-2.0.0.tgz'
 slice-ansi:
  _latest: 4.0.0
  _:
@@ -6345,10 +6347,10 @@ strip-bom:
  4.0.0:
   top: 1
   $: sha1-nDUFwdtFvO3KPZz3oW9cWqOQGHg=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/strip-bom/-/strip-bom-4.0.0.tgz'
+  _: 'https://registry.npmjs.com/strip-bom/-/strip-bom-4.0.0.tgz'
  3.0.0:
   $: sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=
-  _: 'https://registry.npmjs.intuit.com:443/artifactory/api/npm/npm-intuit/strip-bom/-/strip-bom-3.0.0.tgz'
+  _: 'https://registry.npmjs.com/strip-bom/-/strip-bom-3.0.0.tgz'
 strip-final-newline:
  _latest: 2.0.0
  _:

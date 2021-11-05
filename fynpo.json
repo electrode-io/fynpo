@@ -3,5 +3,6 @@
     "options": {
       "sourceMaps": false
     }
-  }
+  },
+  "packages": ["packages/*"]
 }
