@@ -138,6 +138,9 @@ const execLocal = async (parsed) => {
 const execPrepare = async (parsed) => {
   const opts = Object.assign({ cwd: process.cwd() }, parsed.opts);
 
+  // prepare only applies at top level, so switch CWD there
+  process.chdir(opts.cwd);
+
   return new Prepare(opts, await readPackages(opts)).exec();
 };
 
