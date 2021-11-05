@@ -54,7 +54,7 @@ const makeOpts = async (parsed) => {
   const fynpo: any = utils.loadConfig(cwd);
   const optConfig = Object.assign({}, fynpo.fynpoRc, parsed.opts, {
     cwd: fynpo.dir,
-    patterns: fynpo.packages,
+    patterns: fynpo.fynpoRc.packages,
   });
 
   return optConfig;
