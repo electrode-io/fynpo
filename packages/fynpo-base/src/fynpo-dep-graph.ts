@@ -412,12 +412,26 @@ export class FynpoDepGraph {
     let groups: MMGroups;
 
     // no patterns => setup to search for all package.json
-    if (_.isEmpty(patterns)) {
+    const autoSearch: boolean = _.isEmpty(patterns);
+    const autoSearchFound: string[] = [];
+    if (autoSearch) {
       groups = { ".": null };
     } else {
       const mms = patterns.map((p) => new mm.Minimatch(p));
       groups = groupMM(mms, {});
     }
+
+    const foundInAutoSearch = (path: string) => {
+      if (!autoSearch) {
+        return false;
+      }
+      for (const e of autoSearchFound) {
+        if (path.startsWith(e)) {
+          return true;
+        }
+      }
+      return false;
+    };
 
     const files: string[] = [];
     for (const prefix in groups) {
@@ -425,10 +439,24 @@ export class FynpoDepGraph {
         cwd,
         prefix,
         filter: (file: string, path: string) => {
-          return path && path !== "." && file === "package.json";
+          if (path && path !== "." && file === "package.json") {
+            if (foundInAutoSearch(path)) {
+              //
+              // In auto search, if we've found a package.json in a dir, we don't want to
+              // search any other package.json further under that dir
+              //
+              return false;
+            }
+            autoSearchFound.push(path);
+            return true;
+          }
+          return false;
         },
-        filterDir: (dir: string, _p: string, extras: any) => {
+        filterDir: (dir: string, path: string, extras: any) => {
           if (dir !== "node_modules") {
+            if (foundInAutoSearch(path)) {
+              return false;
+            }
             return prefix === "." && groups[prefix] === null
               ? !dir.startsWith(".")
               : groups[prefix].find((save) => save.mm.match(extras.dirFile));

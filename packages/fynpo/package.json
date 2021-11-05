@@ -58,7 +58,7 @@
     "chalker": "^1.2.0",
     "cosmiconfig": "^7.0.0",
     "execa": "^5.0.0",
-    "filter-scan-dir": "^1.2.0",
+    "filter-scan-dir": "^1.4.0",
     "fs-extra": "^9.1.0",
     "fyn": "^1.1.11",
     "get-stdin": "^8.0.0",
