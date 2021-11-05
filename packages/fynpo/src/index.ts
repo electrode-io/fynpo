@@ -146,6 +146,9 @@ const execChangelog = async (parsed) => {
   const opts = await makeOpts(parsed);
   const graph = await makeDepGraph(opts);
 
+  // changelog only applies at top level, so switch CWD there
+  process.chdir(opts.cwd);
+
   return new Changelog(opts, graph).exec();
 };
 

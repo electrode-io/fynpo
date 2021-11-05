@@ -123,6 +123,7 @@ export const determinePackageVersions = (collated) => {
       const deps = changed.depMap[name];
 
       const updateTypes = deps
+        .filter((depName) => collated.packages[depName])
         .map((depName) => collated.packages[depName])
         .map((x) => x.updateType);
       if (updateTypes.length > 0) {
