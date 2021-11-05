@@ -1263,15 +1263,15 @@ $pkg:
    minimatch: ^3.0.4
    strip-json-comments: ^3.1.1
 '@fynpo/base':
- _latest: 1.1.3-fynlocal_h
+ _latest: 1.1.4-fynlocal_h
  _:
-  ../fynpo-base: 1.1.3-fynlocal_h
- 1.1.3-fynlocal_h:
+  ../fynpo-base: 1.1.4-fynlocal_h
+ 1.1.4-fynlocal_h:
   top: 1
   $: local
   _: ../fynpo-base
   dependencies:
-   filter-scan-dir: ^1.2.0
+   filter-scan-dir: ^1.4.0
    lodash: ^4.17.21
    minimatch: ^3.0.4
    optional-require: ^1.1.8
@@ -3457,7 +3457,11 @@ fill-range:
 filter-scan-dir:
  _latest: 1.3.0
  _:
-  '^1.0.10,^1.2.0,^1.3.0': 1.3.0
+  '^1.0.10,^1.3.0': 1.3.0
+  ^1.4.0: 1.4.0
+ 1.4.0:
+  $: sha512-U7PqoKjQffRUu6BPsVaaPim9PTn7daSe74M/puTdPuoJLdDkh62GdwG4wRB1SeIUjsUXjOiP+BUlkoeguUbZvA==
+  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.4.0.tgz'
  1.3.0:
   top: 1
   $: sha512-IRx8HeVSJ05JeZjSQLFaopnSi/MjSI590t1EyMAnG8V5I7fvyJq83OTkK9N2j46RBba/a88IcRVRuaCWAttStg==
