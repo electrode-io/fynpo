@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "A node package manager, fast, workspace, and better productivity and efficiency",
   "main": "./bin/fyn.js",
   "homepage": "https://www.electrode.io/fynpo/",
@@ -19,6 +19,10 @@
   "bin": {
     "fyn": "./bin/fyn.js",
     "fun": "./bin/fun.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.com/"
   },
   "publishUtil": {
     "remove": [

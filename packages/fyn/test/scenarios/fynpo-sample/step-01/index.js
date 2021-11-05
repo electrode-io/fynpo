@@ -7,7 +7,7 @@ module.exports = {
   pkgDir: ".ignore-dir",
   timeout: 10000,
   getArgs(options) {
-    return [].concat(options.baseArgs).concat([`add`, `../packages/pkg2`]);
+    return [].concat(options.baseArgs).concat([`--layout=detail`, `add`, `../packages/pkg2`]);
   },
   async before(cwd, scenarioDir) {
     try {

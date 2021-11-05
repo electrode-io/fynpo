@@ -21,7 +21,8 @@
     "Joel Chen"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.com/"
   },
   "license": "Apache-2.0",
   "devDependencies": {
