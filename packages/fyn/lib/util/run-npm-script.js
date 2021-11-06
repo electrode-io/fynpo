@@ -19,8 +19,47 @@ const removeRunning = (step, pkgId) => {
   updateRunning(step);
 };
 
-const runNpmScript = ({ appDir, fyn, scripts, depInfo, ignoreFailure }) => {
+/**
+ * Add npm lifecycle pre and post scripts to an array of scripts
+ *
+ * @param {*} scripts - array of scripts
+ * @param {*} pkgScripts - scripts from package.json
+ * @returns
+ */
+function addNpmLifecycle(scripts, pkgScripts) {
+  return []
+    .concat(scripts)
+    .filter(x => x)
+    .reduce((added, script) => {
+      if (
+        pkgScripts[script] !== undefined &&
+        !script.startsWith("pre") &&
+        !script.startsWith("post")
+      ) {
+        added.push(`pre${script}`);
+        added.push(script);
+        added.push(`post${script}`);
+      } else {
+        added.push(script);
+      }
+
+      return added;
+    }, [])
+    .filter(x => x && pkgScripts[x] !== undefined);
+}
+
+/**
+ * Run a npm script with visual terminal display
+ *
+ * @param {*} param0
+ * @returns
+ */
+const runNpmScript = ({ appDir, fyn, scripts, depInfo, ignoreFailure, withLifecycle = false }) => {
   const pkgId = logFormat.pkgId(depInfo);
+
+  if (withLifecycle) {
+    scripts = addNpmLifecycle(scripts, fyn._pkg.scripts || {});
+  }
 
   return Promise.each(scripts, script => {
     running.push(pkgId);
@@ -42,4 +81,4 @@ const runNpmScript = ({ appDir, fyn, scripts, depInfo, ignoreFailure }) => {
   });
 };
 
-module.exports = runNpmScript;
+module.exports = { addNpmLifecycle, runNpmScript };

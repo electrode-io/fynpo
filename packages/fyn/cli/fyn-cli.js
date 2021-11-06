@@ -18,7 +18,7 @@ const fyntil = require("../lib/util/fyntil");
 const showStat = require("./show-stat");
 // const showSetupInfo = require("./show-setup-info");
 // const logFormat = require("../lib/util/log-format");
-const runNpmScript = require("../lib/util/run-npm-script");
+const { runNpmScript, addNpmLifecycle } = require("../lib/util/run-npm-script");
 const npmLifecycle = require("npm-lifecycle");
 const npmlog = require("npmlog");
 const xaa = require("../lib/util/xaa");
@@ -425,18 +425,30 @@ class FynCli {
 
         return installer.install();
       })
-      .then(() => {
+      .then(async () => {
         const pkg = this.fyn._pkg;
         const pkgScripts = pkg.scripts || {};
+        const npmInstallScripts = ["install", "postinstall", "prepare"];
         // https://docs.npmjs.com/cli/v6/using-npm/scripts#npm-install
         // Intentionally skipping the deprecated prepublish
-        const scripts = ["install", "postinstall", "prepare"]
-          .concat(this.fyn._runNpm)
-          .filter(x => x && Boolean(pkgScripts[x]));
+        const scripts = npmInstallScripts.filter(x => pkgScripts[x] !== undefined);
         if (scripts.length > 0) {
-          return runNpmScript({
+          await runNpmScript({
             appDir: this.fyn.cwd,
             scripts,
+            fyn: this.fyn,
+            depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn.cwd }
+          });
+        }
+        // run npm scripts from fynpo, with lifecycle scripts added
+        const fynpoNpmScripts = addNpmLifecycle(
+          _.without(this.fyn._runNpm, ...npmInstallScripts),
+          pkgScripts
+        );
+        if (fynpoNpmScripts.length > 0) {
+          await runNpmScript({
+            appDir: this.fyn.cwd,
+            scripts: fynpoNpmScripts,
             fyn: this.fyn,
             depInfo: { name: pkg.name, version: pkg.version, dir: this.fyn.cwd }
           });

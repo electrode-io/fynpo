@@ -13,7 +13,7 @@ const logFormat = require("./util/log-format");
 const fynTil = require("./util/fyntil");
 const hardLinkDir = require("./util/hard-link-dir");
 const { INSTALL_PACKAGE } = require("./log-items");
-const runNpmScript = require("./util/run-npm-script");
+const { runNpmScript } = require("./util/run-npm-script");
 const xaa = require("./util/xaa");
 
 const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");

@@ -204,7 +204,11 @@ class LifecycleScripts {
       this._pkg.scripts[name]
     );
 
-    if (!silent) return child.promise;
+    // exec not silent so it's dumping to stdout
+    // and it's not a good idea to try to show visual progress of the execution
+    if (!silent) {
+      return child.promise;
+    }
 
     const ve = new VisualExec({
       command: this._pkg.scripts[name],

@@ -159,7 +159,7 @@ class LocalPkgBuilder {
       .join(" ");
 
     const displayTitle = `building local pkg at ${dispPath}`;
-    logger.info(displayTitle);
+    logger.verbose(displayTitle);
 
     const ve = new VisualExec({
       displayTitle,
