@@ -7,6 +7,7 @@ import _ from "lodash";
 import Semver from "semver";
 import { groupMM, MMGroups } from "./minimatch-group";
 import { posixify } from "./util";
+import isPathInside from "is-path-inside";
 
 /**
  * Basic information about a package: name, version, and its path in the monorepo
@@ -426,7 +427,7 @@ export class FynpoDepGraph {
         return false;
       }
       for (const e of autoSearchFound) {
-        if (path.startsWith(e)) {
+        if (isPathInside(path, e)) {
           return true;
         }
       }
