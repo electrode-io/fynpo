@@ -186,15 +186,19 @@ class LifecycleScripts {
     const dimPkgName = chalk.dim(pkgName);
     const scriptName = chalk.magenta(name);
     const script = `"${chalk.cyan(this._pkg.scripts[name])}"`;
-    const pkgDir = logFormat.pkgPath(this._pkg.name, this._pkgDir);
+    const pkgDir = logFormat.pkgPath(this._pkg.name, this._pkgDir.replace(this._fyn.cwd, "."));
 
-    logger.verbose(`executing npm script ${scriptName} of ${dimPkgName} '${script}' ${pkgDir}`);
+    const env = this.makeEnv({ PWD: this._pkgDir });
+
+    logger.verbose(
+      `running npm script '${scriptName}' of ${dimPkgName}: ${script} - at dir ${pkgDir}`
+    );
 
     const child = xsh.exec(
       {
         silent,
         cwd: this._pkgDir,
-        env: this.makeEnv({ PWD: this._pkgDir }),
+        env,
         maxBuffer: ONE_MB
       },
       this._pkg.scripts[name]

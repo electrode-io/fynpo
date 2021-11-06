@@ -106,7 +106,7 @@
     "source-map": "^0.7.3",
     "strip-bom": "^4.0.0",
     "tar": "^4.4.19",
-    "visual-exec": "^0.1.9",
+    "visual-exec": "^0.1.12",
     "visual-logger": "^1.1.3",
     "xaa": "^1.7.0",
     "xenv-config": "^1.3.0",

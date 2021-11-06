@@ -158,14 +158,17 @@ class LocalPkgBuilder {
       .filter(x => x)
       .join(" ");
 
+    const displayTitle = `building local pkg at ${dispPath}`;
+    logger.info(displayTitle);
+
     const ve = new VisualExec({
-      displayTitle: `building local pkg at ${dispPath}`,
+      displayTitle,
       cwd: item.fullPath,
       command,
       visualLogger: logger
     });
 
-    ve.logFinalOutput = () => {};
+    ve.logFinalOutput = _.noop;
     return ve.execute();
   }
 }

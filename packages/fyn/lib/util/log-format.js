@@ -6,16 +6,29 @@ const chalk = require("chalk");
 const { posixify } = require("./fyntil");
 
 module.exports = {
-  pkgPath: (name, yp) => {
+  /**
+   * hightlight a path with node_modules and a package name.
+   *
+   * given a path with a package name, process it as follows:
+   *
+   * If `node_modules` exist before the name then only keep that part.
+   * Then highlight it:
+   *  - the part before package name blue
+   *  - the package name part magenta
+   *  - remaining as is
+   * @param {*} name - package name
+   * @param {*} path - path to highlight
+   * @returns
+   */
+  pkgPath: (name, path) => {
     const nm = "node_modules";
-    const posixPath = posixify(yp);
+    const posixPath = posixify(path);
     const ixName = posixPath.indexOf(name);
     if (ixName > 0) {
       const ixNm = posixPath.lastIndexOf(nm, ixName);
+      const dirName = posixPath.substring(ixNm >= 0 ? ixNm : 0, ixName);
       return (
-        chalk.blue(`${posixPath.substr(ixNm, ixName - ixNm)}`) +
-        chalk.magenta(name) +
-        posixPath.substr(ixName + name.length)
+        chalk.blue(`${dirName}`) + chalk.magenta(name) + posixPath.substr(ixName + name.length)
       );
     } else {
       return chalk.blue(posixPath);
