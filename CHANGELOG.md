@@ -1,3 +1,27 @@
+# 11/8/2021
+
+## Packages
+
+-   `@fynpo/base@1.1.5` `(1.1.4 => 1.1.5)`
+-   `fyn@1.1.13` `(1.1.12 => 1.1.13)`
+-   `fynpo@1.1.16` `(1.1.15 => 1.1.16)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: use is-path-inside [commit](https://github.com/electrode-io/fynpo/commit/fb575309f424f3cc30c5ee85234045e60ec73192)
+
+-   `packages/fyn`
+
+    -   fix: run npm scripts from fynpo config with lifecycle [commit](https://github.com/electrode-io/fynpo/commit/06370aa71dac0e7b8125a82b9c048a55b8bc7d66)
+    -   fix: make fyns various logging output better [commit](https://github.com/electrode-io/fynpo/commit/3c5560cc7cc1e66b4481cb09d2273ce55b9d0687)
+
+-   `packages/fynpo`
+
+    -   fix: run npm scripts from fynpo config with lifecycle [commit](https://github.com/electrode-io/fynpo/commit/06370aa71dac0e7b8125a82b9c048a55b8bc7d66)
+    -   fix: make fyns various logging output better [commit](https://github.com/electrode-io/fynpo/commit/3c5560cc7cc1e66b4481cb09d2273ce55b9d0687)
+
 # 11/5/2021
 
 ## Packages
