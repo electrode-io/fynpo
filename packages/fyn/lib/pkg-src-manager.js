@@ -35,6 +35,7 @@ const { MARK_URL_SPEC } = require("./constants");
 const nodeFetch = require("node-fetch-npm");
 const { AggregateError } = require("@jchip/error");
 const { prePackObj } = require("publish-util");
+const { PackageRef } = require("@fynpo/base");
 
 const WATCH_TIME = 5000;
 
@@ -166,11 +167,41 @@ class PkgSrcManager {
     return Object.assign({}, extra, this._pacoteOpts);
   }
 
+  getPublishUtil(json, fullPath) {
+    let config;
+    let pkgInfo;
+    let configFromFynpo;
+
+    if (this._fyn.isFynpo && (pkgInfo = this._fyn._fynpo.graph.getPackageAtDir(fullPath))) {
+      const fynpoPublishUtil = _.get(this._fyn, "_fynpo.config.publishUtil", {});
+
+      for (const ref in fynpoPublishUtil) {
+        const pkgRef = new PackageRef(ref);
+        if (pkgRef.match(pkgInfo)) {
+          configFromFynpo = fynpoPublishUtil[ref];
+          break;
+        }
+      }
+    }
+
+    if (
+      json.publishUtil ||
+      _.get(json, ["dependencies", "publish-util"]) ||
+      _.get(json, ["devDependencies", "publish-util"])
+    ) {
+      config = json.publishUtil;
+    }
+
+    return configFromFynpo || config;
+  }
+
   /* eslint-disable max-statements */
   fetchLocalItem(item) {
     const localPath = item.semverPath;
 
-    if (!localPath) return false;
+    if (!localPath) {
+      return false;
+    }
 
     let fullPath;
 
@@ -197,15 +228,12 @@ class PkgSrcManager {
     }
 
     return readPkgJson(fullPath, true, true).then(json => {
-      if (
-        json.publishUtil ||
-        _.get(json, ["dependencies", "publish-util"]) ||
-        _.get(json, ["devDependencies", "publish-util"])
-      ) {
+      const publishUtilConfig = this.getPublishUtil(json, fullPath);
+      if (publishUtilConfig) {
         logger.info(
           `processing local package.json at ${fullPath} with https://www.npmjs.com/package/publish-util prePackObj`
         );
-        prePackObj(json, { ...json.publishUtil, silent: true });
+        prePackObj(json, { ...publishUtilConfig, silent: true });
       }
 
       const version = semverUtil.localify(json.version, item.localType);
