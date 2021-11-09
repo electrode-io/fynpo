@@ -295,6 +295,7 @@ class PkgInstaller {
     const integrity = fynTil.distIntegrity(depInfo.dist);
     const centralBeforeSha =
       this._fyn.central &&
+      integrity &&
       (await this._fyn.central.allow(integrity)) &&
       (await this._fyn.central.getMutation(integrity)) === undefined &&
       (await this._fyn.central.getContentShasum(integrity));

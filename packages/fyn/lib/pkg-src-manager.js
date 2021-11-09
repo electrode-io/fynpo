@@ -205,7 +205,7 @@ class PkgSrcManager {
         logger.info(
           `processing local package.json at ${fullPath} with https://www.npmjs.com/package/publish-util prePackObj`
         );
-        prePackObj(json, json.publishUtil || {});
+        prePackObj(json, { ...json.publishUtil, silent: true });
       }
 
       const version = semverUtil.localify(json.version, item.localType);

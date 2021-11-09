@@ -26,6 +26,7 @@ const { scanFileStats } = require("../lib/util/stat-dir");
 const { checkPkgNewVersionEngine } = require("check-pkg-new-version-engine");
 const fetch = require("node-fetch-npm");
 const myPkg = require("./mypkg");
+const { cleanErrorStack } = require("@jchip/error");
 
 function checkNewVersion(npmConfig) {
   checkPkgNewVersionEngine({
@@ -97,8 +98,11 @@ class FynCli {
       msg,
       `Also check ${chalk.magenta(dbgLog)} for more details. ${lessCmd} if you are on Un*x.`
     );
-    logger.error(msg, err.message);
-    logger.debug("STACK:", err.stack);
+    if (err.stack) {
+      logger.error(msg, cleanErrorStack(err));
+    } else if (err.message) {
+      logger.error(msg, err.message);
+    }
     await this.saveLogs(dbgLog);
     fyntil.exit(err);
   }
