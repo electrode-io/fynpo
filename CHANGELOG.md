@@ -1,3 +1,23 @@
+# 11/9/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.14` `(1.1.13 => 1.1.14)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.17` `(1.1.16 => 1.1.17)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: allow fynpo config to override publish-util config [commit](https://github.com/electrode-io/fynpo/commit/6d4347c0a0e27935def146f872d24953561c2327)
+    -   fix: handle null integrity when checking central store [commit](https://github.com/electrode-io/fynpo/commit/d8a1d893c61cb500dba11badb5070a090cda7814)
+    -   fix: process local package.json with publish-util [commit](https://github.com/electrode-io/fynpo/commit/14525ce1ff0182fd7b29c9e9ebf69a597d01f41a)
+
 # 11/8/2021
 
 ## Packages
