@@ -34,6 +34,7 @@ const { readPkgJson, missPipe } = require("./util/fyntil");
 const { MARK_URL_SPEC } = require("./constants");
 const nodeFetch = require("node-fetch-npm");
 const { AggregateError } = require("@jchip/error");
+const { prePackObj } = require("publish-util");
 
 const WATCH_TIME = 5000;
 
@@ -196,6 +197,17 @@ class PkgSrcManager {
     }
 
     return readPkgJson(fullPath, true, true).then(json => {
+      if (
+        json.publishUtil ||
+        _.get(json, ["dependencies", "publish-util"]) ||
+        _.get(json, ["devDependencies", "publish-util"])
+      ) {
+        logger.info(
+          `processing local package.json at ${fullPath} with https://www.npmjs.com/package/publish-util prePackObj`
+        );
+        prePackObj(json, json.publishUtil || {});
+      }
+
       const version = semverUtil.localify(json.version, item.localType);
       const name = item.name || json.name;
       json.dist = {
