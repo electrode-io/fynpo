@@ -16,6 +16,7 @@ const VisualExec = require("visual-exec");
 const xaa = require("xaa");
 const Fs = require("./util/file-ops");
 const _ = require("lodash");
+const { runNpmScript } = require("./util/run-npm-script");
 
 class LocalPkgBuilder {
   constructor(options) {
@@ -132,20 +133,24 @@ class LocalPkgBuilder {
     }
     const x = this._waitItems[fullPath];
     assert(x !== undefined, `No local pkg build job started for pkg at ${fullPath}`);
+
     if (x && x.promise) {
       logger.debug("waiting for build local item", fullPath, x);
-      await x.promise;
+      const localBuildResult = await x.promise;
       logger.debug("build local item awaited", fullPath);
+      return localBuildResult;
     } else {
       logger.debug("status is false => no build local job for pkg at", fullPath, x);
     }
+
+    return {};
   }
 
   waitForDone() {
     return this._defer && this._defer.promise;
   }
 
-  processItem(item) {
+  async processItem(item) {
     const dispPath = Path.relative(this._options.fyn._cwd, item.fullPath);
 
     const command = [
@@ -169,7 +174,65 @@ class LocalPkgBuilder {
     });
 
     ve.logFinalOutput = _.noop;
-    return ve.execute();
+    await ve.execute();
+
+    const pkgJsonFile = Path.join(item.fullPath, "package.json");
+    let pkgJson;
+    const prePkgJson = (pkgJson = JSON.parse(await Fs.readFile(pkgJsonFile)));
+
+    if (_.get(prePkgJson, "scripts.prepublish") !== undefined) {
+      if (_.get(prePkgJson, "scripts.prepare") !== undefined) {
+        logger.warn(`
+  Local package has 'prepare' and 'prepublish', skipping 'prepublish'.  dir at ${dispPath} 
+        `);
+      } else {
+        logger.warn(`
+  Build local dep package - running npm script 'prepublish' at ${dispPath}
+
+  ==NOTE== While fyn will run 'prepublish' as part of installing this local package as a dependency,
+  ==NOTE== Please note that npm depreated this script and recommend other npm lifecycle script
+  ==NOTE== such as 'prepare'.  See docs here https://docs.npmjs.com/cli/v7/using-npm/scripts#prepare-and-prepublish
+  ==NOTE== If you want to use 'prepublishOnly', please note that fyn won't execute it as part of
+  ==NOTE== installing local packages.
+`);
+        await runNpmScript({
+          scripts: ["prepublish"],
+          appDir: item.fullPath,
+          dir: item.fullPath,
+          fyn: this._fyn,
+          depInfo: item,
+          pkgJson: prePkgJson
+        });
+        pkgJson = JSON.parse(await Fs.readFile(pkgJsonFile));
+      }
+    }
+
+    if (_.get(prePkgJson, "scripts.prepack") !== undefined) {
+      logger.debug(`Build local dep package - running npm script 'prepack' at ${dispPath}`);
+      await runNpmScript({
+        scripts: ["prepack"],
+        appDir: item.fullPath,
+        dir: item.fullPath,
+        fyn: this._fyn,
+        depInfo: item,
+        pkgJson: prePkgJson
+      });
+      pkgJson = JSON.parse(await Fs.readFile(pkgJsonFile));
+    }
+
+    if (_.get(pkgJson, "scripts.postpack") !== undefined) {
+      logger.debug(`Build local dep package - running npm script 'postpack' at ${dispPath}`);
+      await runNpmScript({
+        scripts: ["postpack"],
+        appDir: item.fullPath,
+        dir: item.fullPath,
+        fyn: this._fyn,
+        depInfo: item,
+        pkgJson
+      });
+    }
+
+    return { pkgJson };
   }
 }
 

@@ -199,7 +199,7 @@ class LifecycleScripts {
         silent,
         cwd: this._pkgDir,
         env,
-        maxBuffer: ONE_MB
+        maxBuffer: 20 * ONE_MB
       },
       this._pkg.scripts[name]
     );

@@ -5,6 +5,7 @@ const LifecycleScripts = require("../lifecycle-scripts");
 const chalk = require("chalk");
 const logFormat = require("./log-format");
 const logger = require("../logger");
+const _ = require("lodash");
 
 const { INSTALL_PACKAGE } = require("../log-items");
 
@@ -54,17 +55,27 @@ function addNpmLifecycle(scripts, pkgScripts) {
  * @param {*} param0
  * @returns
  */
-const runNpmScript = ({ appDir, fyn, scripts, depInfo, ignoreFailure, withLifecycle = false }) => {
+const runNpmScript = ({
+  appDir,
+  fyn,
+  scripts,
+  dir,
+  pkgJson,
+  depInfo,
+  ignoreFailure,
+  withLifecycle = false
+}) => {
   const pkgId = logFormat.pkgId(depInfo);
 
-  if (withLifecycle) {
-    scripts = addNpmLifecycle(scripts, fyn._pkg.scripts || {});
+  const options = Object.assign({ appDir, _fyn: fyn, dir, json: pkgJson }, depInfo);
+  if (withLifecycle && options.json) {
+    scripts = addNpmLifecycle(scripts, _.get(options.json, "scripts", {}));
   }
 
   return Promise.each(scripts, script => {
     running.push(pkgId);
     updateRunning(script);
-    const ls = new LifecycleScripts(Object.assign({ appDir, _fyn: fyn }, depInfo));
+    const ls = new LifecycleScripts(options);
     return ls
       .execute(script, true)
       .then(() => undefined)
