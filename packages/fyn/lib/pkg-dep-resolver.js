@@ -412,13 +412,13 @@ class PkgDepResolver {
       const fynDeps = _.get(pkg, ["fyn", depSec], {});
       let fromDir = pkg[PACKAGE_RAW_INFO] && pkg[PACKAGE_RAW_INFO].dir;
 
-      // if in fynpo mode, gather deps that are actually local packages in the mono-repo
+      // if in fynpo mode, gather deps that are actually local packages in the monorepo
       if (this._fyn.isFynpo) {
         const locals = [];
         const fynpo = this._fyn._fynpo;
         if (!fromDir) {
-          // this case means an downstream pkg has a dep on a mono-repo package
-          // TODO: should make sure mono-repo local copy's version satisfies
+          // this case means an downstream pkg has a dep on a monorepo package
+          // TODO: should make sure monorepo local copy's version satisfies
           // downstream pkg's semver
           fromDir = this._fyn.cwd;
         }
@@ -427,11 +427,18 @@ class PkgDepResolver {
             continue;
           }
           // is pkg 'name@semver' a fynpo package?
-          const fynpoPkg = fynpo.graph.resolvePackage(name, deps[name]);
+          const semver = deps[name];
+          const fynpoPkg = fynpo.graph.resolvePackage(name, semver, false);
           if (fynpoPkg) {
             locals.push(fynpoPkg);
             const fullPkgDir = Path.join(fynpo.dir, fynpoPkg.path);
             fynDeps[name] = relativePath(fromDir, fullPkgDir, true);
+          } else if (fynpo.graph.getPackageByName(name)) {
+            const dispName = logFormat.pkgId(name);
+            const versions = fynpo.graph.packages.byName[name].map(x => x.version).join(", ");
+            logger.info(
+              `No version of package in fynpo match semver: ${semver} name: ${dispName} versions: ${versions}`
+            );
           }
         }
         if (locals.length > 0 && !this._options.deDuping) {
@@ -453,7 +460,7 @@ class PkgDepResolver {
           }
           const names = locals.map(x => x.name).join(", ");
           logger.info(
-            `These packages in ${pkg.name}'s ${depSec} using local copies from your mono-repo: ${names}`
+            `These packages in ${pkg.name}'s ${depSec} using local copies from your monorepo: ${names}`
           );
         }
       }

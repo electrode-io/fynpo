@@ -14,7 +14,7 @@ Additionally, it has more unique features to improve productivity and efficiency
 - efficient disk space usage with [central storage](#central-storage)
 - smaller `node_modules` with [guaranteed single copy of a package](#smaller-node_modules)
 - flexible dependencies lock by using a [lock time stamp](#locking-dependencies-by-time)
-- built-in support for a mono-repo workspace
+- built-in support for a monorepo workspace
 - and [more](#features)
 
 ![fyn demo][fyn-demo-gif]
@@ -101,7 +101,7 @@ Want to find out more? Please read on below:
 - Compatible with [npm] by internally using the same modules as [npm].
 - Maintains as much of [npm]'s behaviors as possible.
 - Able to use [npm]'s `npm-shrinkwrap.json` or `package-lock.json`.
-- built-in support for maintaining a mono-repo workspace.
+- built-in support for maintaining a monorepo workspace.
 
 ## Overview
 
@@ -121,11 +121,11 @@ So why would you want to use this?
 
 It also has a special `fynlocal` mode that's a better [npm link] for handling local packages.
 
-It's workspace aware and fits perfectly with the mono-repo concept.
+It's workspace aware and fits perfectly with the monorepo concept.
 
 ## Enhanced `npm link`
 
-`fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It effectively makes your disk a npm registry by treating packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It fits perfectly with the mono-repo workspace concept. It would be very useful if you've ever done any of these:
+`fyn` has a `fynlocal` mode that's designed specifically to be a much better [npm link]. It effectively makes your disk a npm registry by treating packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It fits perfectly with the monorepo workspace concept. It would be very useful if you've ever done any of these:
 
 - Debug your application by inspecting code inside `node_modules`.
 - Live edit your package that's installed to `node_modules`, and then have to copy the changes out to commit.

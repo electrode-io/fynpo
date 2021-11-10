@@ -63,22 +63,22 @@ class LocalPkgBuilder {
     // localsByDepth is array of array: level 1 depths, level 2 packages
     //
     const flatLocals = [].concat(...localsByDepth);
-    const allNames = flatLocals.map(x => x.name);
+    const allPaths = flatLocals.map(x => x.fullPath);
 
     //
-    // convert items into array of names and then use _.uniq to only keep
-    // the first occurrence of duplicate names, and reverse them so the
+    // convert items into array of paths and then use _.uniq to only keep
+    // the first occurrence of duplicate paths, and reverse them so the
     // ones that has no dependence on the ones before them are build first.
     //
-    const uniqNames = _.uniq(allNames).reverse();
-    const byName = flatLocals.reduce((a, x) => {
-      a[x.name] = x;
+    const uniqPaths = _.uniq(allPaths).reverse();
+    const byPathLookup = flatLocals.reduce((a, x) => {
+      a[x.fullPath] = x;
       return a;
     }, {});
-    logger.debug("local pkgs for build all names", allNames, "uniq names", uniqNames);
+    logger.debug("local pkgs for build all paths", allPaths, "uniq paths", uniqPaths);
 
-    for (const name of uniqNames) {
-      await this.addItem(byName[name]);
+    for (const path of uniqPaths) {
+      await this.addItem(byPathLookup[path]);
     }
 
     logger.debug("resolving build local _started promise");

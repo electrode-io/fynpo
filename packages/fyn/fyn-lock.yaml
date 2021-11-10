@@ -29,7 +29,7 @@ $pkg:
   optional-require: ^1.1.8
   pacote: jchip/pacote
   pkg-preper: ^0.1.0
-  publish-util: ^1.3.2
+  publish-util: ^1.3.3
   rimraf: ^3.0.2
   semver: ^7.3.5
   source-map: ^0.7.3
@@ -61,7 +61,6 @@ $pkg:
   node-fetch-npm: ^2.0.4
   nyc: ^15.1.0
   prettier: ^1.19.1
-  publish-util: ^1.3.1
   sinon: ^9.2.2
   sinon-chai: ^3.5.0
   v8-compile-cache: ^2.3.0
@@ -5583,14 +5582,14 @@ psl:
   $: sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==
   _: 'https://registry.npmjs.com/psl/-/psl-1.8.0.tgz'
 publish-util:
- _latest: 1.3.2
+ _latest: 1.3.3
  _:
-  '^1.3.1,^1.3.2': 1.3.2
- 1.3.2:
+  ^1.3.3: 1.3.3
+ 1.3.3:
   top: 1
   hasI: 1
-  $: sha512-y1xyBl47RUmp4T7K8BGu3Jsxe6gkF98tVcZG2OdgP114l2EsJE18/FZsAwPWzgCZFAVQCtUbktLr9CuDubPgOg==
-  _: 'https://registry.npmjs.org/publish-util/-/publish-util-1.3.2.tgz'
+  $: sha512-Zy1fLZ4Z8dlJkQNi14DZ7lRdcs1TepNzib5CxzM0F9wADjMGL4CQNdMAuRsyUS5W1QlRB4AB/8iT06IL0Ekkiw==
+  _: 'https://registry.npmjs.org/publish-util/-/publish-util-1.3.3.tgz'
   dependencies:
    execa: ^5.1.1
    find-up: ^5.0.0

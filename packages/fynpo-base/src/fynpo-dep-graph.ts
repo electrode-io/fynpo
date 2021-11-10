@@ -277,11 +277,21 @@ export function pkgId(name: string, version?: string) {
  * @param packages array of package info
  * @returns package info
  */
-function resolvePackage(semver: string, packages: FynpoPackageInfo[]): FynpoPackageInfo {
-  return (
-    (packages.length > 1 && packages.find((pkg) => Semver.satisfies(pkg.version, semver))) ||
-    packages[0]
-  );
+function resolvePackage(
+  semver: string,
+  packages: FynpoPackageInfo[],
+  fallbackToFirst = true
+): FynpoPackageInfo {
+  const found = packages.find((pkg) => Semver.satisfies(pkg.version, semver));
+  if (found) {
+    return found;
+  }
+
+  if (fallbackToFirst) {
+    return packages[0];
+  }
+
+  return undefined;
 }
 
 /**
@@ -574,11 +584,12 @@ export class FynpoDepGraph {
    *
    * @param name - package name
    * @param semver - semver
+   * @param fallbackToFirst - should use the first entry if semver didn't match any version
    * @returns fynpo package info
    */
-  resolvePackage(name: string, semver: string): FynpoPackageInfo {
+  resolvePackage(name: string, semver: string, fallbackToFirst = true): FynpoPackageInfo {
     if (this.packages.byName[name]) {
-      return resolvePackage(semver, this.packages.byName[name]);
+      return resolvePackage(semver, this.packages.byName[name], fallbackToFirst);
     }
     return undefined;
   }
