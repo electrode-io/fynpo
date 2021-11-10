@@ -1,3 +1,27 @@
+# 11/10/2021
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.6` `(1.1.5 => 1.1.6)`
+-   `fyn@1.1.15` `(1.1.14 => 1.1.15)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.18` `(1.1.17 => 1.1.18)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix: match local fynpo packages with semver [commit](https://github.com/electrode-io/fynpo/commit/e658be28084ec4a4ea3007d967958032212aa273)
+
+-   `packages/fyn`
+
+    -   fix: run prepublish/prepack/postpack as part of building local pkg [commit](https://github.com/electrode-io/fynpo/commit/382d22fb752705c6078534dce8c0dfefc1401322)
+    -   fix: match local fynpo packages with semver [commit](https://github.com/electrode-io/fynpo/commit/e658be28084ec4a4ea3007d967958032212aa273)
+
 # 11/9/2021
 
 ## Packages
