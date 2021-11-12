@@ -1,3 +1,21 @@
+# 11/11/2021
+
+## Packages
+
+-   `fyn@1.1.16` `(1.1.15 => 1.1.16)`
+-   `fynpo@1.1.19` `(1.1.18 => 1.1.19)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: allow option to override semver for local dep [commit](https://github.com/electrode-io/fynpo/commit/a6668072127e34a8e9821ca607ef289a0de90ed9)
+    -   fix: handle array in npmRunScripts option [commit](https://github.com/electrode-io/fynpo/commit/5d1c1e606fa5b225ebe28577b6574f31add99bbf)
+
+-   `packages/fynpo`
+
+    -   fix: allow option to override semver for local dep [commit](https://github.com/electrode-io/fynpo/commit/a6668072127e34a8e9821ca607ef289a0de90ed9)
+
 # 11/10/2021
 
 ## Packages
