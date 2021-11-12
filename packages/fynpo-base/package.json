@@ -11,7 +11,8 @@
     "coverage": "xrun xarc/test-cov",
     "docs": "xrun xarc/docs",
     "ci:check": "xrun xarc/check",
-    "prepublishOnly": "xrun [[build, docs], xarc/check] && publish-util-prepublishonly",
+    "prepublishOnly": "xrun [[build, docs], xarc/check]",
+    "prepack": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },
   "keywords": [],
@@ -33,7 +34,7 @@
     "@xarc/module-dev": "^4.0.0",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
-    "publish-util": "^1.1.5",
+    "publish-util": "^2.0.0",
     "source-map-support": "^0.5.19",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",

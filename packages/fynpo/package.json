@@ -94,7 +94,7 @@
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-tsdoc": "^0.2.11",
     "jest": "^27.3.1",
-    "publish-util": "^1.1.5",
+    "publish-util": "^2.0.0",
     "source-map-support": "^0.5.19",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
