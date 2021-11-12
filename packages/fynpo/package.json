@@ -11,7 +11,8 @@
     "lint": "xrun xarc/lint",
     "coverage": "xrun xarc/test-cov",
     "ci:check": "xrun xarc/check",
-    "prepublishOnly": "xrun --serial [build, xarc/check] && publish-util-prepublishonly",
+    "prepublishOnly": "xrun --serial [build, xarc/check]",
+    "prepack": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },
   "keywords": [

@@ -190,7 +190,7 @@ class LocalPkgBuilder {
   Build local dep package - running npm script 'prepublish' at ${dispPath}
 
   ==NOTE== While fyn will run 'prepublish' as part of installing this local package as a dependency,
-  ==NOTE== Please note that npm depreated this script and recommend other npm lifecycle script
+  ==NOTE== Please note that npm deprecated this script and recommend other npm lifecycle script
   ==NOTE== such as 'prepare'.  See docs here https://docs.npmjs.com/cli/v7/using-npm/scripts#prepare-and-prepublish
   ==NOTE== If you want to use 'prepublishOnly', please note that fyn won't execute it as part of
   ==NOTE== installing local packages.

@@ -328,6 +328,28 @@ class PkgDepResolver {
     }
   }
 
+  getAutoSemver(semver) {
+    const autoSemver = _.get(this._fyn._fynpo, "config.localDepAutoSemver");
+    if (autoSemver) {
+      const parsedSv = Semver.coerce(semver);
+      if (parsedSv && parsedSv.raw) {
+        switch (autoSemver) {
+          case "patch":
+            semver = `~${parsedSv.raw}`;
+            break;
+          case "minor":
+            semver = `^${parsedSv.raw}`;
+            break;
+          case "major":
+            semver = "*";
+            break;
+        }
+      }
+    }
+
+    return semver;
+  }
+
   /**
    * create the dep relation items for a package
    *
@@ -417,23 +439,25 @@ class PkgDepResolver {
         const locals = [];
         const fynpo = this._fyn._fynpo;
         if (!fromDir) {
-          // this case means an downstream pkg has a dep on a monorepo package
-          // TODO: should make sure monorepo local copy's version satisfies
-          // downstream pkg's semver
+          // this case means a downstream pkg has a dep on a monorepo package
           fromDir = this._fyn.cwd;
         }
+
         for (const name in deps) {
-          if (this._fyn.checkNoFynLocal(name)) {
+          if (this._fyn.checkNoFynLocal(name) || !fynpo.graph.getPackageByName(name)) {
             continue;
           }
-          // is pkg 'name@semver' a fynpo package?
-          const semver = deps[name];
+          //
+          // Check if there is a fynpo package that match 'name@semver'?
+          //
+          const semver = this.getAutoSemver(deps[name]);
           const fynpoPkg = fynpo.graph.resolvePackage(name, semver, false);
+
           if (fynpoPkg) {
             locals.push(fynpoPkg);
             const fullPkgDir = Path.join(fynpo.dir, fynpoPkg.path);
             fynDeps[name] = relativePath(fromDir, fullPkgDir, true);
-          } else if (fynpo.graph.getPackageByName(name)) {
+          } else {
             const dispName = logFormat.pkgId(name);
             const versions = fynpo.graph.packages.byName[name].map(x => x.version).join(", ");
             logger.info(
