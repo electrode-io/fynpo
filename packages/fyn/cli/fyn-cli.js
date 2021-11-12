@@ -445,8 +445,11 @@ class FynCli {
           });
         }
         // run npm scripts from fynpo, with lifecycle scripts added
+        const _runNpm = this.fyn._runNpm.map(s =>
+          Array.isArray(s) ? s.find(s1 => pkgScripts[s1] !== undefined) : s
+        );
         const fynpoNpmScripts = addNpmLifecycle(
-          _.without(this.fyn._runNpm, ...npmInstallScripts),
+          _.without(_runNpm, ...npmInstallScripts),
           pkgScripts
         );
         if (fynpoNpmScripts.length > 0) {

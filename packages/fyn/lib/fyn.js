@@ -232,6 +232,11 @@ class Fyn {
 
       if (this._fynpo.config) {
         if (this._fynpo.graph.getPackageAtDir(this._cwd)) {
+          // the command.bootstrap.npmRunScripts can be
+          // - a string
+          // - an array of strings
+          // - an array of strings and/or array of strings - each sub array indicates a list of
+          //   script names and fyn will run only the first one that exist
           fynpoNpmRun = _.get(this, "_fynpo.config.command.bootstrap.npmRunScripts", undefined);
           if (_.isArray(fynpoNpmRun) && !_.isEmpty(fynpoNpmRun)) {
             logger.info("fynpo monorepo: npm run scripts", fynpoNpmRun);

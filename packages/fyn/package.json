@@ -13,7 +13,8 @@
     "coverage": "xrun xarc/check",
     "ci:check": "xrun xarc/check",
     "coveralls": "cat coverage/lcov.info | coveralls",
-    "prepublishOnly": "xrun xarc/check compile-yarn bundle && publish-util-prepublishonly",
+    "prepublishOnly": "xrun build",
+    "prepack": "publish-util-prepack",
     "postpack": "publish-util-postpack"
   },
   "bin": {
