@@ -35,7 +35,7 @@ $pkg:
   source-map: ^0.7.3
   strip-bom: ^4.0.0
   tar: ^4.4.19
-  visual-exec: ^0.1.13
+  visual-exec: ^0.1.14
   visual-logger: ^1.1.3
   xaa: ^1.7.0
   xenv-config: ^1.3.0
@@ -6753,13 +6753,13 @@ verror:
    core-util-is: 1.0.2
    extsprintf: ^1.2.0
 visual-exec:
- _latest: 0.1.13
+ _latest: 0.1.14
  _:
-  '^0.1.0,^0.1.13': 0.1.13
- 0.1.13:
+  '^0.1.0,^0.1.14': 0.1.14
+ 0.1.14:
   top: 1
-  $: sha512-IftHmIrzmf/8OvB6Mrq6/mDvVnTQ9EGbF3SgLJmmTh31thBfG3BR2/zi5XKKExzI4g/d1fDcDHM0DRw2c7L/Nw==
-  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.13.tgz'
+  $: sha512-lVCXzIJuagm/CTKA6d2uC8epuIxot8608CxRD9R0o24aHYWPz1s2IRlUahKbz1SNegtoNtzsqZm469g8gU3oMw==
+  _: 'https://registry.npmjs.org/visual-exec/-/visual-exec-0.1.14.tgz'
   dependencies:
    chalk: ^4.1.2
    ci-info: ^3.2.0
