@@ -1,3 +1,27 @@
+# 11/15/2021
+
+## Packages
+
+-   `@fynpo/base@1.1.7` `(1.1.6 => 1.1.7)`
+-   `fyn@1.1.17` `(1.1.16 => 1.1.17)`
+-   `fynpo@1.1.20` `(1.1.19 => 1.1.20)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   dep: publish-util 2.0.0 [commit](https://github.com/electrode-io/fynpo/commit/5c58d154bf660f134dba49360564c71bc5401f32)
+
+-   `packages/fyn`
+
+    -   dep: visual-exec 0.1.14 [commit](https://github.com/electrode-io/fynpo/commit/2f43075b66023ddbc14931bf60d72ef7a454eb32)
+    -   dep: publish-util 2.0.0 [commit](https://github.com/electrode-io/fynpo/commit/5c58d154bf660f134dba49360564c71bc5401f32)
+
+-   `packages/fynpo`
+
+    -   dep: visual-exec 0.1.14 [commit](https://github.com/electrode-io/fynpo/commit/2f43075b66023ddbc14931bf60d72ef7a454eb32)
+    -   dep: publish-util 2.0.0 [commit](https://github.com/electrode-io/fynpo/commit/5c58d154bf660f134dba49360564c71bc5401f32)
+
 # 11/11/2021
 
 ## Packages
