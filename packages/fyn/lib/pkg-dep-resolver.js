@@ -1046,7 +1046,7 @@ ${item.depPath.join(" > ")}`
       return false;
     }
 
-    const force = this._lockOnly && isOpt;
+    const force = this._lockOnly && !isOpt;
 
     // check if an already resolved local package satisfies item
     // before trying to resolve with lock data
