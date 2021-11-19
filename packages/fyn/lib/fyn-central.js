@@ -90,13 +90,7 @@ class FynCentral {
       const stat = await Fs.stat(info.contentPath);
       info.exist = true;
       if (stat.isDirectory()) {
-        const treeFile = Path.join(info.contentPath, "tree.json");
-        const tree = await Fs.readFile(treeFile)
-          .then(JSON.parse)
-          .catch(err => {
-            throw new Error(`fyn-central: reading ${treeFile} - ${err.message}`);
-          });
-        info.tree = tree;
+        await this.readInfoTree(info);
         if (!noSet) this._map.set(integrity, info);
       }
       return info;
@@ -122,6 +116,44 @@ class FynCentral {
       throw new Error(`fyn-central can't get package for integrity ${integrity}`);
     }
     return info;
+  }
+
+  /**
+   * Read the content dir tree from file into into
+   * (backport from fyn 1.0, for which mutates is used)
+   *
+   * @param {*} info - info
+   */
+  async readInfoTree(info) {
+    const treeFile = Path.join(info.contentPath, "tree.json");
+    try {
+      const data = await Fs.readFile(treeFile);
+      const tree = JSON.parse(data);
+      if (tree._ >= 1 && tree.$) {
+        if (tree.mutates !== undefined) {
+          info.mutates = tree.mutates;
+        }
+        info.tree = tree.$;
+      } else {
+        info.tree = tree;
+      }
+    } catch (err) {
+      throw new Error(`fyn-central: reading ${treeFile} - ${err.message}`);
+    }
+  }
+
+  /**
+   * Save the content dir tree from info to file
+   * (backport from fyn 1.0, for which mutates is used)
+   *
+   * @param {*} info - info
+   * @param {*} path - path to save the file
+   */
+  async saveInfoTree(info, path) {
+    await Fs.writeFile(
+      Path.join(path || info.contentPath, "tree.json"),
+      JSON.stringify({ $: info.tree, mutates: info.mutates, _: 1 })
+    );
   }
 
   async replicate(integrity, destDir) {
@@ -222,7 +254,7 @@ class FynCentral {
     }
     // TODO: user could break during untar and cause corruptted module
     info.tree = await this._untarStream(stream, targetDir, info);
-    await Fs.writeFile(Path.join(tmp, "tree.json"), JSON.stringify(info.tree));
+    await this.saveInfoTree(info, tmp);
 
     await Fs.rename(tmp, info.contentPath);
     info.exist = true;
