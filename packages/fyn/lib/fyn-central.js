@@ -134,6 +134,7 @@ class FynCentral {
           info.mutates = tree.mutates;
         }
         info.tree = tree.$;
+        info._ = tree._;
       } else {
         info.tree = tree;
       }
@@ -150,10 +151,12 @@ class FynCentral {
    * @param {*} path - path to save the file
    */
   async saveInfoTree(info, path) {
-    await Fs.writeFile(
-      Path.join(path || info.contentPath, "tree.json"),
-      JSON.stringify({ $: info.tree, mutates: info.mutates, _: 1 })
-    );
+    const treeFile = Path.join(path || info.contentPath, "tree.json");
+    if (info._ >= 1) {
+      await Fs.writeFile(treeFile, JSON.stringify({ $: info.tree, mutates: info.mutates, _: 1 }));
+    } else {
+      await Fs.writeFile(treeFile, JSON.stringify(info.tree));
+    }
   }
 
   async replicate(integrity, destDir) {
