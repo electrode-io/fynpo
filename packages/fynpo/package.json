@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A JavaScript monorepo manager - the benefits of a monorepo without the usual downsides",
   "main": "index.js",
   "scripts": {
@@ -60,7 +60,7 @@
     "execa": "^5.0.0",
     "filter-scan-dir": "^1.2.0",
     "fs-extra": "^9.1.0",
-    "fyn": "^0.4.38",
+    "fyn": "^0.4.40",
     "get-stdin": "^8.0.0",
     "item-queue": "^1.0.4",
     "lodash": "^4.17.20",

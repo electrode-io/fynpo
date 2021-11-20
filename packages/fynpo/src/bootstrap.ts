@@ -228,7 +228,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       Promise,
       concurrency,
       stopOnError: true,
-      processItem: (item) => {
+      processItem: (item: any) => {
         const name = chalk.magenta(item.name);
         if (skip && skip.includes(item.name)) {
           logger.info("bootstrap skipping", name);
