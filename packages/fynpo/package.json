@@ -39,6 +39,11 @@
   "bin": {
     "fynpo": "dist/fynpo-cli.js"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.com/",
+    "tag": "0.4.x"
+  },
   "dependencies": {
     "@commitlint/execute-rule": "^12.1.1",
     "@commitlint/format": "^12.1.1",
