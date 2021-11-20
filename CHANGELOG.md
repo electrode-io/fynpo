@@ -1,3 +1,22 @@
+# 11/20/2021
+
+## Packages
+
+-   `fyn@0.4.40` `(0.4.39 => 0.4.40)`
+-   `fynpo@0.4.8` `(0.4.7 => 0.4.8)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   only save tree in new format if its already using it [commit](https://github.com/electrode-io/fynpo/commit/9027cd81f761bfa2ebd2649fa3b9d1256f1ecc5a)
+    -   fyn 0.4.39 [commit](https://github.com/electrode-io/fynpo/commit/949d67385d09afde0e5f2ffb5c6c25f702e5fb6b)
+    -   fix: backport central tree.json format from 1.x [commit](https://github.com/electrode-io/fynpo/commit/e3c7dc28fed380f558ab36e0b208f831e80c7f2b)
+
+-   `packages/fynpo`
+
+    -   add npm tag [commit](https://github.com/electrode-io/fynpo/commit/4bc29836d2936f3d96c32516f962536c7695d491)
+
 # 9/8/2021
 
 ## Packages
