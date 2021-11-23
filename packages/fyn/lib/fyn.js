@@ -812,14 +812,25 @@ class Fyn {
     }
   }
 
-  async moveToBackup(dir, reason) {
-    // TODO: create backup dir and move
-    logger.warn("Removing", dir, "due to", reason);
-    return await Fs.$.rimraf(dir);
+  async moveToFv(dir, pkg, pkgJson) {
+    const toDir = this.getInstalledPkgDir(pkgJson.name, pkgJson.version, {});
+
+    try {
+      await Fs.access(toDir);
+      // a copy already exist in FV dir, so remove it
+      logger.warn(
+        `Removing ${dir} because its version ${pkgJson.version} is different from ${pkg.version}`
+      );
+      await Fs.$.rimraf(dir);
+    } catch (err) {
+      logger.debug(`Moving ${dir} to ${toDir} to replace with version ${pkg.version}`);
+      await Fs.$.mkdirp(Path.dirname(toDir));
+      await Fs.rename(dir, toDir);
+    }
   }
 
-  async unlinkLocalPackage(pkg, dir) {
-    logger.warn("Removing symlink", dir);
+  async unlinkLocalPackage(dir, reason) {
+    logger.warn(`Removing ${dir} because it's ${reason}`);
     return await Fs.$.rimraf(dir);
   }
 
@@ -846,19 +857,19 @@ class Fyn {
     }
 
     if (ostat.isSymbolicLink()) {
-      await this.unlinkLocalPackage(pkg, fullOutDir);
+      await this.unlinkLocalPackage(fullOutDir, "a symlink");
     } else if (!ostat.isDirectory()) {
-      await this.moveToBackup(fullOutDir, "not a directory");
+      await this.unlinkLocalPackage(fullOutDir, "not a directory");
     } else {
       try {
         const pkgJson = await this.loadJsonForPkg(pkg, fullOutDir);
         if (!pkgJson._invalid) {
           return pkgJson;
         }
-        // no valid package.json found
-        const id = pkgJson._id ? ` (id ${pkgJson._id})` : "";
-        await this.moveToBackup(fullOutDir, `invalid existing package${id}`);
-      } catch (err) {}
+        await this.moveToFv(fullOutDir, pkg, pkgJson);
+      } catch (err) {
+        logger.warn(`ensureProperPkgdir:`, err);
+      }
     }
 
     return null;

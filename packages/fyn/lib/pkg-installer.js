@@ -537,14 +537,18 @@ class PkgInstaller {
     if (scope) await xaa.try(() => Fs.rmdir(Path.join(outDir, scope)));
 
     // get rid of potentially empty FV_DIR dir
-    await xaa.try(() => Fs.rmdir(this._fyn.getFvDir()));
+    await xaa.try(() => Fs.rmdir(this._fyn.getFvDir("_")));
   }
 
   /**
    * Process detail layout for node_modules.
    *
-   * Make links under node_modules for packages that exist app's package.json and
-   * flattened packages under node_modules/${FV_DIR}/node_modules
+   * Real copies of packages are store under FV_DIR.
+   *
+   * 1. For top level packages that exist in app's package.json, make symlinks under node_modules.
+   * 2. For packages that could be promoted to the top level:
+   * - If flattenTop enabled, make symlinks under node_modules
+   * - flattenTop disabled, make symlinks under FV_Dir/node_modules
    *
    * @returns {*} none
    */

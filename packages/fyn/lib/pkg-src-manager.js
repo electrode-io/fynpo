@@ -230,7 +230,7 @@ class PkgSrcManager {
     return readPkgJson(fullPath, true, true).then(json => {
       const publishUtilConfig = this.getPublishUtil(json, fullPath);
       if (publishUtilConfig) {
-        logger.info(
+        logger.debug(
           `processing local package.json at ${fullPath} with https://www.npmjs.com/package/publish-util prePackObj`
         );
         prePackObj(json, { ...publishUtilConfig, silent: true });
