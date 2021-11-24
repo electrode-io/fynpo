@@ -1,3 +1,22 @@
+# 11/23/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.18` `(1.1.17 => 1.1.18)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.21` `(1.1.20 => 1.1.21)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: move different version of a package to FV dir [commit](https://github.com/electrode-io/fynpo/commit/36b4e6557f7e66b1dea84494fd642d785505ed2b)
+    -   fix: fyn lock-only not fail for optionals [commit](https://github.com/electrode-io/fynpo/commit/3902174872171db1b5fdf7d01f92217819bea944)
+
 # 11/15/2021
 
 ## Packages
