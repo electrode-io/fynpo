@@ -108,7 +108,7 @@ class PkgInstaller {
         // write a new physical file.
         const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
         pkgJsonFp = Path.join(vdir, "package.json");
-        await Fs.unlink(pkgJsonFp);
+        await xaa.try(() => Fs.unlink(pkgJsonFp));
       } else {
         pkgJsonFp = Path.join(depInfo.dir, "package.json");
       }

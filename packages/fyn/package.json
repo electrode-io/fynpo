@@ -95,7 +95,7 @@
     "mkdirp": "^0.5.5",
     "nix-clap": "^1.3.13",
     "npm-lifecycle": "^2.1.1",
-    "npm-packlist": "^1.4.8",
+    "npm-packlist": "jchip/npm-packlist",
     "npm-registry-fetch": "jchip/npm-registry-fetch",
     "npmlog": "^4.1.2",
     "opfs": "^1.1.1",

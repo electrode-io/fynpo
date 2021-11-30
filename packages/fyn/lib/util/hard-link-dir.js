@@ -18,6 +18,17 @@ const logger = require("../logger");
 const { SourceMapGenerator } = require("source-map");
 const ci = require("ci-info");
 
+/**
+ * Hard link a file
+ *
+ * - if the link exist and is link to a different file, then remove it
+ *   and create a new link that points to the new file.
+ *
+ * @param {*} srcFp
+ * @param {*} destFp
+ * @param {*} srcStat
+ * @returns
+ */
 async function linkFile(srcFp, destFp, srcStat) {
   try {
     return await Fs.link(srcFp, destFp);
@@ -41,6 +52,12 @@ async function linkFile(srcFp, destFp, srcStat) {
   return undefined;
 }
 
+/**
+ * Copy a file
+ * @param {*} srcFp
+ * @param {*} destFp
+ * @returns
+ */
 async function copyFile(srcFp, destFp) {
   if (Fs.copyFile) {
     return Fs.copyFile(srcFp, destFp);
@@ -82,9 +99,16 @@ async function cleanExtraDest(dest, destFiles) {
 
 const FILES = Symbol("files");
 
+/**
+ * Generate a tree of files using npm-pack that a package would publish with.
+ *
+ * @param {*} path
+ * @returns
+ */
 async function generatePackTree(path) {
   const files = await npmPacklist({
-    path
+    path,
+    includeSymlinks: Boolean(process.env.FYN_LOCAL_PACK_SYMLINKS)
   });
 
   logger.debug(
@@ -150,7 +174,9 @@ function getSourceMapConfig(content, sig = SOURCE_MAP_URL_SIG) {
 }
 
 /**
- * process or generate source map back to original file
+ * process or generate source map back to original file.
+ *
+ * - Do nothing if in CI mode
  *
  * @param {*} param0
  */
@@ -258,6 +284,8 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
 /**
  * Link tree of files generated from npm pack
  *
+ * - if env `FYN_LOCAL_COPY_MODE` is defined, then copy file instead  of linking
+ *
  * @param {*} tree
  * @param {*} src
  * @param {*} dest
@@ -281,7 +309,12 @@ async function linkPackTree({ tree, src, dest, sym1, sourceMaps }) {
     destFiles[file] = true;
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
-    await linkFile(srcFp, destFp);
+    if (process.env.FYN_LOCAL_COPY_MODE) {
+      await copyFile(srcFp, destFp);
+    } else {
+      await linkFile(srcFp, destFp);
+    }
+
     await handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sourceMaps });
   }
 
