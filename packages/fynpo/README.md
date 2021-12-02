@@ -1,4 +1,4 @@
-# fynpo <sup>[![Version Badge][npm-version-svg]][package-url]</sup> <!-- omit in toc -->
+# fynpo <!-- omit in toc -->
 
 [![dependency status][deps-svg]][deps-url]
 [![dev dependency status][dev-deps-svg]][dev-deps-url]
@@ -56,8 +56,6 @@
 Copyright (c) 2015-present, WalmartLabs
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-
-
 
 <!-- License badges -->
 

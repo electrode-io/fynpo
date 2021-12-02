@@ -1,4 +1,4 @@
-# fynpo <sup>[![Version Badge][npm-version-svg]][package-url]</sup> <!-- omit in toc -->
+# fynpo <!-- omit in toc -->
 
 [![dependency status][deps-svg]][deps-url]
 [![dev dependency status][dev-deps-svg]][dev-deps-url]
