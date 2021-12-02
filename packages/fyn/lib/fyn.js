@@ -14,7 +14,7 @@ const DepData = require("./dep-data");
 const fynConfig = require("./fyn-config");
 const semverUtil = require("./util/semver");
 const Fs = require("./util/file-ops");
-const fyntil = require("./util/fyntil");
+const fynTil = require("./util/fyntil");
 const FynCentral = require("./fyn-central");
 const xaa = require("./util/xaa");
 const { checkPkgNeedInstall } = require("./util/check-pkg-need-install");
@@ -39,7 +39,7 @@ class Fyn {
     const options = (this._options = fynConfig(opts));
     this._layout = options.layout;
     this._cwd = options.cwd || process.cwd();
-    logger.debug(`fyn options`, JSON.stringify(fyntil.removeAuthInfo(options)));
+    logger.debug(`fyn options`, JSON.stringify(fynTil.removeAuthInfo(options)));
     this.localPkgWithNestedDep = [];
     if (options.lockTime) {
       this._lockTime = new Date(options.lockTime);
@@ -125,13 +125,19 @@ class Fyn {
     if (this._installConfig.centralDir) {
       centralDir = this._installConfig.centralDir;
       logger.debug(`Enabling central store using dir from install config ${centralDir}`);
-    } else if (process.env.FYN_CENTRAL_DIR) {
+    } else if ((centralDir = process.env.FYN_CENTRAL_DIR)) {
       // env wins
-      centralDir = process.env.FYN_CENTRAL_DIR;
-      logger.debug(`Enabling central store using dir from env FYN_CENTRAL_DIR ${centralDir}`);
+      if (fynTil.strToBool(centralDir) === false) {
+        logger.debug(`Disabling central store by env FYN_CENTRAL_DIR set to ${centralDir}`);
+        return (this._central = false);
+      }
+      if (fynTil.isTrueStr(centralDir)) {
+        centralDir = Path.join(this.fynDir, "_central-storage");
+      }
+      logger.debug(`Enabling central store by env FYN_CENTRAL_DIR using dir ${centralDir}`);
     } else if (options.centralStore) {
       centralDir = Path.join(this.fynDir, "_central-storage");
-      logger.debug(`Enabling central store for flag using dir ${centralDir}`);
+      logger.debug(`Enabling central store by CLI flag using dir ${centralDir}`);
     } else if (!this._fynpo.config) {
       return (this._central = false);
     } else {
@@ -139,7 +145,7 @@ class Fyn {
       if (!centralDir) {
         centralDir = Path.join(this._fynpo.dir, ".fynpo", "_store");
       }
-      logger.info(`fynpo monorepo: enabling central dir ${centralDir}`);
+      logger.info(`Enabling central store by fynpo monorepo using dir ${centralDir}`);
     }
 
     return (this._central = new FynCentral({ centralDir }));
@@ -192,7 +198,7 @@ class Fyn {
 
   async _initializePkg() {
     if (!this._fynpo) {
-      this._fynpo = await fyntil.loadFynpo(this._cwd);
+      this._fynpo = await fynTil.loadFynpo(this._cwd);
       // TODO: options from CLI should not be override by fynpo config options
       _.merge(this._options, _.get(this, "_fynpo.fyn.options"));
       this._layout = this._options.layout;
@@ -287,7 +293,7 @@ class Fyn {
         retryWait: 500
       });
       const path = posixify(Path.relative(this._fynpo.dir, this.cwd));
-      const fynpoData = await fyntil.readJson(dataFile, { indirects: { [path]: [] } });
+      const fynpoData = await fynTil.readJson(dataFile, { indirects: { [path]: [] } });
       if (JSON.stringify(indirects) !== JSON.stringify(fynpoData.indirects[path])) {
         logger.info(
           `saving indirect dep to .fynpo-data.json. fyn recommends that you commit the file.`
@@ -373,7 +379,7 @@ class Fyn {
   }
 
   async loadPkgFyn() {
-    this._pkgFyn = await xaa.try(() => fyntil.readJson(Path.resolve(this._cwd, PACKAGE_FYN_JSON)));
+    this._pkgFyn = await xaa.try(() => fynTil.readJson(Path.resolve(this._cwd, PACKAGE_FYN_JSON)));
     return this._pkgFyn;
   }
 
@@ -397,11 +403,11 @@ class Fyn {
       logger.debug("package.json file", pkgFile);
       this._pkgFile = pkgFile;
       try {
-        this._pkg = await fyntil.readPkgJson(pkgFile, true);
+        this._pkg = await fynTil.readPkgJson(pkgFile, true);
       } catch (err) {
         logger.error("failed to read package.json file", pkgFile);
         logger.error(err.message);
-        fyntil.exit(err);
+        fynTil.exit(err);
       }
       const pkgFyn = await this.loadPkgFyn(options);
       if (pkgFyn) {
@@ -877,7 +883,7 @@ class Fyn {
 
   async loadJsonForPkg(pkg, dir) {
     const fullOutDir = dir || this.getInstalledPkgDir(pkg.name, pkg.version, pkg);
-    const json = await fyntil.readPkgJson(fullOutDir, true);
+    const json = await fynTil.readPkgJson(fullOutDir, true);
 
     const pkgId = `${pkg.name}@${pkg.version}`;
     const id = `${json.name}@${json.version}`;

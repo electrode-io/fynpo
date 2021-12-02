@@ -270,6 +270,46 @@ const fyntil = {
     return true;
   },
 
+  /**
+   * Convert a string to a bool value.  Considering 0, off, false, no to be `false`, else true.
+   *
+   * @param {*} v
+   * @returns true or false
+   */
+  strToBool: v => {
+    if (!v) {
+      return false;
+    }
+
+    const lv = v.toLowerCase();
+
+    if (lv === "0" || lv === "off" || lv === "false" || lv === "no") {
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   * Check if a string looks like a true bool value, considering 1, on, true, yes to be `true`, else `false`
+   *
+   * @param {*} v
+   * @returns true or false
+   */
+  isTrueStr: v => {
+    if (!v) {
+      return false;
+    }
+
+    const lv = v.toLowerCase();
+
+    if (lv === "1" || lv === "on" || lv === "true" || lv === "yes") {
+      return true;
+    }
+
+    return false;
+  },
+
   posixify
 };
 

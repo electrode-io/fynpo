@@ -2,8 +2,6 @@
 
 const Fs = require("./lib/util/file-ops");
 const Path = require("path");
-const mkdirp = require("mkdirp");
-const rimraf = require("rimraf");
 const which = require("which");
 
 const { loadTasks, xrun } = require("@xarc/module-dev");

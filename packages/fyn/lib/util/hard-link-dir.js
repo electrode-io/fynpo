@@ -108,7 +108,7 @@ const FILES = Symbol("files");
 async function generatePackTree(path) {
   const files = await npmPacklist({
     path,
-    includeSymlinks: Boolean(process.env.FYN_LOCAL_PACK_SYMLINKS)
+    includeSymlinks: fynTil.strToBool(process.env.FYN_LOCAL_PACK_SYMLINKS)
   });
 
   logger.debug(
@@ -309,7 +309,7 @@ async function linkPackTree({ tree, src, dest, sym1, sourceMaps }) {
     destFiles[file] = true;
     const srcFp = Path.join(src, file);
     const destFp = Path.join(dest, file);
-    if (process.env.FYN_LOCAL_COPY_MODE) {
+    if (fynTil.strToBool(process.env.FYN_LOCAL_COPY_MODE)) {
       await copyFile(srcFp, destFp);
     } else {
       await linkFile(srcFp, destFp);

@@ -2000,12 +2000,12 @@ $pkg:
    tslib: ^2.1.0
    xsh: ^0.4.5
 '@xarc/run':
- _latest: 1.1.0
+ _latest: 1.1.1
  _:
-  ^1.0.4: 1.1.0
- 1.1.0:
-  $: sha512-i3ktssZWph6mwWfcVbCXrG9pWnJ7tyPakK0/27cBHUN6HNYlnYOV1u3MF20ghiWSU+jy43iM3Q456pYFh/etzQ==
-  _: 'https://registry.npmjs.org/@xarc/run/-/run-1.1.0.tgz'
+  ^1.0.4: 1.1.1
+ 1.1.1:
+  $: sha512-aGfJ6Jusq41eZuMzlzvsqIzGiOzWu94u1XRoKhamu6hXenC7e7wsvQzWmVzWV02Ug/xL++5/pRNv1Cbp3CZu3g==
+  _: 'https://registry.npmjs.org/@xarc/run/-/run-1.1.1.tgz'
   dependencies:
    chalk: ^4.1.0
    chalker: ^1.2.0
