@@ -5,7 +5,7 @@ import minimatch from "minimatch";
 import { logger } from "../logger";
 import { execSync } from "../child-process";
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
 
 export const isAnythingCommitted = (opts) => {
   const anyCommits = execSync("git", ["rev-list", "--count", "--all", "--max-count=1"], opts);

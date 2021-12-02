@@ -10,8 +10,10 @@ import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
 
 export const defaultTagTemplate = `fynpo-rel-{YYYY}{MM}{DD}-{COMMIT}`;
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
+
 const optionalRequire = _optionalRequire(xrequire);
+
 /**
  * Make a publish tag from template
  * - template is a string with special tokens in `{}`

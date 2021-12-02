@@ -17,7 +17,7 @@ import * as utils from "./utils";
 import Fs from "fs";
 import _ from "lodash";
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
 
 const globalCmnds = ["bootstrap", "local", "run"];
 

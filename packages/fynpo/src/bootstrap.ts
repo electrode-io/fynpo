@@ -15,7 +15,7 @@ import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
 import { TopoRunner } from "./topo-runner";
 import os from "os";
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
 
 type PackageInstallInfo = {
   depData: PackageDepData;

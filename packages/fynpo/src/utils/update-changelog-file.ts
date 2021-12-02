@@ -5,7 +5,7 @@ import Fs from "fs";
 import semver from "semver";
 import _ from "lodash";
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
 
 const getTaggedVersion = (pkg, fynpoRc) => {
   const newVer = pkg.newVersion;

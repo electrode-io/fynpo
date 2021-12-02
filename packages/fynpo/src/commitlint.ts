@@ -13,7 +13,7 @@ import executeRule from "@commitlint/execute-rule";
 import lint from "@commitlint/lint";
 import read from "@commitlint/read";
 
-const xrequire = eval("require");
+const xrequire = eval("require"); // eslint-disable-line
 
 export interface LoadOptions {
   cwd?: string;
