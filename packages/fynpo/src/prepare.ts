@@ -4,8 +4,8 @@ import Fs from "fs";
 import Path from "path";
 import _ from "lodash";
 import xsh from "xsh";
-import logger from "./logger";
-import readChangelogVersions from "./read-changelog-versions";
+import { logger } from "./logger";
+import { readChangelogVersions } from "./read-changelog-versions";
 import Promise from "bluebird";
 import Chalk from "chalk";
 import assert from "assert";
@@ -13,7 +13,7 @@ import semver from "semver";
 import * as utils from "./utils";
 // prepare packages for publish
 
-class Prepare {
+export class Prepare {
   name;
   _cwd;
   _fynpoRc;
@@ -236,5 +236,3 @@ that's not latest but none set in fynpo config`
     }
   }
 }
-
-export = Prepare;

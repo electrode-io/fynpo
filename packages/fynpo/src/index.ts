@@ -2,20 +2,22 @@
 
 import Path from "path";
 import NixClap from "nix-clap";
-import Bootstrap from "./bootstrap";
-import Prepare from "./prepare";
+import { Bootstrap } from "./bootstrap";
+import { Prepare } from "./prepare";
 import Changelog from "./update-changelog";
 import Publish from "./publish";
-import Run from "./run";
-import Init from "./init";
-import Updated from "./updated";
-import Commitlint from "./commitlint";
-import Version from "./version";
+import { Run } from "./run";
+import { Init } from "./init";
+import { Updated } from "./updated";
+import { Commitlint } from "./commitlint";
+import { Version } from "./version";
 import { makePkgDeps, readFynpoPackages, FynpoDepGraph } from "@fynpo/base";
-import logger from "./logger";
+import { logger } from "./logger";
 import * as utils from "./utils";
 import Fs from "fs";
 import _ from "lodash";
+
+const xrequire = eval("require");
 
 const globalCmnds = ["bootstrap", "local", "run"];
 
@@ -206,7 +208,7 @@ const nixClap = new NixClap({
       try {
         const cwd = data.parsed.opts.cwd || process.cwd();
         /* eslint-disable @typescript-eslint/no-var-requires */
-        data.nixClap.applyConfig(require(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
+        data.nixClap.applyConfig(xrequire(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
       } catch (e) {
         // Error
       }

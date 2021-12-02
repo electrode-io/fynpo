@@ -1,6 +1,6 @@
 /* eslint-disable complexity, consistent-return, max-depth */
 
-import logger from "../logger";
+import { logger } from "../logger";
 import { execSync } from "../child-process";
 import minimatch from "minimatch";
 import Path from "path";

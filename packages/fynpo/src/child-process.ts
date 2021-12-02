@@ -6,7 +6,7 @@ import execa from "execa";
 import logTransformer from "strong-log-transformer";
 import os from "os";
 import boxen from "boxen";
-import logger from "./logger";
+import { logger } from "./logger";
 
 const colorWheel = ["cyan", "magenta", "blue", "yellow", "green", "red"];
 const NUM_COLORS = colorWheel.length;

@@ -1,7 +1,7 @@
 import xsh from "xsh";
 import Path from "path";
 import Promise from "bluebird";
-import logger from "./logger";
+import { logger } from "./logger";
 import * as utils from "./utils";
 import * as _ from "lodash";
 import fyn from "fyn/bin";

@@ -3,13 +3,13 @@
 import xsh from "xsh";
 import fs from "fs-extra";
 import Path from "path";
-import logger from "./logger";
+import { logger } from "./logger";
 import * as utils from "./utils";
 import _ from "lodash";
 import ck from "chalker";
 import prettier from "prettier";
 
-export default class Init {
+export class Init {
   _cwd;
   _options;
   _config;

@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 
 import xsh from "xsh";
-import logger from "./logger";
+import { logger } from "./logger";
 import * as utils from "./utils";
 import _ from "lodash";
 import { npmRunScriptStreaming, npmRunScript } from "./npm-run-script";
@@ -14,7 +14,7 @@ import { TopoRunner } from "./topo-runner";
 
 type RunResult = { failed: boolean; exitCode: number } & Error;
 
-export default class Run {
+export class Run {
   _cwd;
   _script;
   _options;

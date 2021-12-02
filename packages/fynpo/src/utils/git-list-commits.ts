@@ -2,8 +2,10 @@ import Promise from "bluebird";
 import Path from "path";
 import Fs from "fs";
 import minimatch from "minimatch";
-import logger from "../logger";
+import { logger } from "../logger";
 import { execSync } from "../child-process";
+
+const xrequire = eval("require");
 
 export const isAnythingCommitted = (opts) => {
   const anyCommits = execSync("git", ["rev-list", "--count", "--all", "--max-count=1"], opts);
@@ -109,7 +111,7 @@ export const collateCommitsPackages = ({ commits, changed, opts }) => {
         if (parts[0] === "packages" || parts[0] === "samples") {
           if (Fs.existsSync(Path.resolve("packages", parts[1]))) {
             /* eslint-disable @typescript-eslint/no-var-requires */
-            const Pkg = require(Path.resolve("packages", parts[1], "package.json"));
+            const Pkg = xrequire(Path.resolve("packages", parts[1], "package.json"));
             if (parts[0] === "packages" && collated.realPackages.indexOf(Pkg.name) < 0) {
               collated.realPackages.push(Pkg.name);
               a.packages[Pkg.name] = { dirName: parts[1] };

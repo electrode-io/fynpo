@@ -1,4 +1,4 @@
-import logger from "../logger";
+import { logger } from "../logger";
 import { execSync } from "../child-process";
 
 export const getCurrentBranch = (opts) => {

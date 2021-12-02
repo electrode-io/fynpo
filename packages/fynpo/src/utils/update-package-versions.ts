@@ -4,7 +4,7 @@ import Fs from "fs";
 import Chalk from "chalk";
 import assert from "assert";
 import semver from "semver";
-import logger from "../logger";
+import { logger } from "../logger";
 
 const checkNupdateTag = (pkg, newV, opts) => {
   const { pkgJson } = pkg;

@@ -1,16 +1,17 @@
 import Fs from "fs";
 const pFs = Fs.promises;
 import Path from "path";
-import logger from "./logger";
+import { logger } from "./logger";
 import _ from "lodash";
 import { cosmiconfigSync } from "cosmiconfig";
 import shcmd from "shcmd";
 import _optionalRequire from "optional-require";
-const optionalRequire = _optionalRequire(require);
 import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
 
 export const defaultTagTemplate = `fynpo-rel-{YYYY}{MM}{DD}-{COMMIT}`;
 
+const xrequire = eval("require");
+const optionalRequire = _optionalRequire(xrequire);
 /**
  * Make a publish tag from template
  * - template is a string with special tokens in `{}`
@@ -98,7 +99,7 @@ export const locateGlobalFyn = async (globalNmDir = null) => {
   try {
     const dir = Path.join(globalNmDir, "fyn");
     /* eslint-disable @typescript-eslint/no-var-requires */
-    const pkgJson = require(Path.join(dir, "package.json"));
+    const pkgJson = xrequire(Path.join(dir, "package.json"));
     return {
       dir,
       pkgJson,

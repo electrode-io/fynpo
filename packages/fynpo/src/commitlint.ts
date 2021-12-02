@@ -4,7 +4,7 @@
 import stdin from "get-stdin";
 import * as utils from "./utils";
 import Path from "path";
-import logger from "./logger";
+import { logger } from "./logger";
 import _ from "lodash";
 import resolveFrom from "resolve-from";
 import resolveGlobal from "resolve-global";
@@ -13,12 +13,14 @@ import executeRule from "@commitlint/execute-rule";
 import lint from "@commitlint/lint";
 import read from "@commitlint/read";
 
+const xrequire = eval("require");
+
 export interface LoadOptions {
   cwd?: string;
   file?: string;
 }
 
-export default class Commitlint {
+export class Commitlint {
   _cwd;
   _options;
   name;
@@ -107,7 +109,7 @@ export default class Commitlint {
       resolveGlobal.silent(moduleName);
 
     if (modulePath) {
-      const moduleInstance = require(modulePath);
+      const moduleInstance = xrequire(modulePath);
 
       if (_.isFunction(moduleInstance.default)) {
         return moduleInstance.default;
@@ -151,7 +153,7 @@ export default class Commitlint {
       config.parserPreset = {
         name: config.parserPreset,
         path: resolvedParserPreset,
-        parserOpts: require(resolvedParserPreset),
+        parserOpts: xrequire(resolvedParserPreset),
       };
     }
 

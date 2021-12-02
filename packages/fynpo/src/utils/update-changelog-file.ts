@@ -5,6 +5,8 @@ import Fs from "fs";
 import semver from "semver";
 import _ from "lodash";
 
+const xrequire = eval("require");
+
 const getTaggedVersion = (pkg, fynpoRc) => {
   const newVer = pkg.newVersion;
   const semv = pkg.semver;
@@ -54,7 +56,7 @@ export const updateChangelog = (collated) => {
 
   let rootPkg;
   try {
-    rootPkg = require(Path.join(cwd, "package.json"));
+    rootPkg = xrequire(Path.join(cwd, "package.json"));
   } catch (err) {
     rootPkg = {};
   }

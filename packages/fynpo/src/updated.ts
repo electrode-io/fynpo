@@ -1,11 +1,11 @@
 /* reuses some of the logics from https://github.com/lerna/lerna/blob/main/commands/changed/index.js */
 import * as utils from "./utils";
-import logger from "./logger";
+import { logger } from "./logger";
 import { getUpdatedPackages } from "./utils/get-updated-packages";
 import _ from "lodash";
 import { FynpoDepGraph } from "@fynpo/base";
 
-export default class Updated {
+export class Updated {
   _cwd;
   _options;
   name;

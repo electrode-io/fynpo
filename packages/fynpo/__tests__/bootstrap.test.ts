@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "@jest/globals";
-import Bootstrap from "../src/bootstrap";
+import { Bootstrap } from "../src/bootstrap";
 import path from "path";
 import { FynpoDepGraph } from "@fynpo/base";
 

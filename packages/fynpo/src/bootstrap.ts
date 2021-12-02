@@ -4,7 +4,7 @@ import Path from "path";
 import _ from "lodash";
 import { ItemQueueResult } from "item-queue";
 import VisualExec from "visual-exec";
-import logger from "./logger";
+import { logger } from "./logger";
 import chalk from "chalk";
 import { isCI } from "./is-ci";
 
@@ -15,12 +15,14 @@ import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
 import { TopoRunner } from "./topo-runner";
 import os from "os";
 
+const xrequire = eval("require");
+
 type PackageInstallInfo = {
   depData: PackageDepData;
   status?: string;
 };
 
-class Bootstrap {
+export class Bootstrap {
   _opts;
   _fyn;
   graph: FynpoDepGraph;
@@ -110,9 +112,9 @@ ${output.stderr}
     skip = [],
   }) {
     if (!this._fyn) {
-      this._fyn = require.resolve("fyn");
+      this._fyn = xrequire.resolve("fyn");
       /* eslint-disable @typescript-eslint/no-var-requires */
-      const fynPkgJson = require("fyn/package.json");
+      const fynPkgJson = xrequire("fyn/package.json");
 
       const globalFynInfo = await locateGlobalFyn();
       if (globalFynInfo.dir) {
@@ -177,5 +179,3 @@ is different from fynpo's internal version ${fynPkgJson.version}`
     });
   }
 }
-
-export = Bootstrap;

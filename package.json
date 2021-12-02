@@ -30,7 +30,7 @@
     "url": "https://github.com/electrode-io/fynpo/issues"
   },
   "devDependencies": {
-    "fynpo": "^1.1.15"
+    "fynpo": "^1.1.21"
   },
   "fyn": {
     "devDependencies": {

@@ -20,7 +20,7 @@ xsh.Promise = Promise;
 xsh.envPath.addToFront(Path.join(__dirname, "../node_modules/.bin"));
 import _ from "lodash";
 import * as utils from "./utils";
-import logger from "./logger";
+import { logger } from "./logger";
 import { getUpdatedPackages } from "./utils/get-updated-packages";
 import { determinePackageVersions } from "./utils/get-package-version";
 import { updateChangelog } from "./utils/update-changelog-file";
@@ -33,7 +33,7 @@ import {
 } from "./utils/git-list-commits";
 import { FynpoDepGraph } from "@fynpo/base";
 
-export default class Version {
+export class Version {
   name;
   _cwd;
   _fynpoRc;

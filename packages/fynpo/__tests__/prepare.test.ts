@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
-import Prepare from "../src/prepare";
+import { Prepare } from "../src/prepare";
 import path from "path";
 import fs from "fs";
 import shcmd from "shcmd";

@@ -3,7 +3,7 @@
 import _ from "lodash";
 import * as utils from "../utils";
 import semver from "semver";
-import logger from "../logger";
+import { logger } from "../logger";
 
 const findVersion = (name, updateType, collated) => {
   const types = ["patch", "minor", "major"];
