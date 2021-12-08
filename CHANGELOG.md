@@ -1,3 +1,23 @@
+# 12/8/2021
+
+## Packages
+
+-   `fyn@1.1.19` `(1.1.18 => 1.1.19)`
+-   `fynpo@1.1.22` `(1.1.21 => 1.1.22)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   allow FYN_CENTRAL_DIR env to turn off central store [commit](https://github.com/electrode-io/fynpo/commit/ad24ab8f1bb3565fe8ea7f1f1a2bb9b07b0cf027)
+    -   fyn local allow copy files and packing symlinks [commit](https://github.com/electrode-io/fynpo/commit/072f0ab639e3fba8c7f8f00fb983648407d57650)
+
+-   `packages/fynpo`
+
+    -   update readme [commit](https://github.com/electrode-io/fynpo/commit/58807ee5a84c4e42152d4cd462def854ba1d6369)
+    -   fix lint [commit](https://github.com/electrode-io/fynpo/commit/856f0760153bbaeb304467b4f518ca53a5a0241c)
+    -   release fynpo with webpack bundled code [commit](https://github.com/electrode-io/fynpo/commit/4170a78e08f25f221840ab643c4380a046f91b12)
+
 # 11/23/2021
 
 ## Packages
