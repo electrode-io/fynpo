@@ -461,7 +461,7 @@ class PkgDepResolver {
             const dispName = logFormat.pkgId(name);
             const versions = fynpo.graph.packages.byName[name].map(x => x.version).join(", ");
             logger.info(
-              `No version of package in fynpo match semver: ${semver} name: ${dispName} versions: ${versions}`
+              `No match version in your monorepo found for dependency ${dispName}@${semver}. Versions available: ${versions}`
             );
           }
         }
@@ -484,7 +484,7 @@ class PkgDepResolver {
           }
           const names = locals.map(x => x.name).join(", ");
           logger.info(
-            `These packages in ${pkg.name}'s ${depSec} using local copies from your monorepo: ${names}`
+            `Using local copies from your monorepo for these packages in ${pkg.name}'s ${depSec}: ${names}`
           );
         }
       }
@@ -506,7 +506,7 @@ class PkgDepResolver {
           Fs.statSync(Path.join(fromDir, fynDeps[name]));
           deps[name] = fynDeps[name];
           if (!this._options.deDuping) {
-            logger.info(`${dispSec} ${dispName} of ${ownerName} will use`, dispSemver);
+            logger.verbose(`${dispSec} ${dispName} of ${ownerName} will use`, dispSemver);
           }
         } catch (err) {
           logger.warn(

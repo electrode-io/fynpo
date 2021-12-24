@@ -470,7 +470,7 @@ class PkgDepLocker {
 
       Object.assign(this._config, this._lockData.$fyn);
 
-      logger.info(chalk.green(`loaded lockfile ${basedir}`));
+      logger.verbose(chalk.green(`loaded lockfile ${basedir}`));
 
       return true;
     } catch (err) {

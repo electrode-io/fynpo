@@ -245,10 +245,10 @@ class Fyn {
           //   script names and fyn will run only the first one that exist
           fynpoNpmRun = _.get(this, "_fynpo.config.command.bootstrap.npmRunScripts", undefined);
           if (_.isArray(fynpoNpmRun) && !_.isEmpty(fynpoNpmRun)) {
-            logger.info("fynpo monorepo: npm run scripts", fynpoNpmRun);
+            logger.verbose("fynpo monorepo: npm run scripts", fynpoNpmRun);
           } else if (fynpoNpmRun !== false) {
             fynpoNpmRun = ["build"];
-            logger.info("fynpo monorepo: default to auto run npm scripts:", fynpoNpmRun);
+            logger.verbose("fynpo monorepo: default to auto run npm scripts:", fynpoNpmRun);
           }
         } else if (this._cwd !== this._fynpo.dir) {
           logger.info(

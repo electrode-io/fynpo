@@ -80,7 +80,7 @@ const pickOptions = async (argv, nixClap, checkFynpo = true) => {
 
   nixClap.applyConfig(_.get(fynpo, "config.fyn.options", {}), argv);
 
-  logger.verbose("Final RC", JSON.stringify(fynTil.removeAuthInfo(argv.opts)));
+  logger.debug("Final RC", JSON.stringify(fynTil.removeAuthInfo(argv.opts)));
 
   setLogLevel(argv.opts.logLevel);
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
