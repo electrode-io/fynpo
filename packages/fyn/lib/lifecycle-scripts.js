@@ -18,9 +18,7 @@ const logFormat = require("./util/log-format");
 const VisualExec = require("visual-exec");
 const fyntil = require("./util/fyntil");
 const requireAt = require("require-at");
-const Fs = require("fs");
-
-let nodeGypBinPath;
+const { setupNodeGypFromNpm } = require("./util/setup-node-gyp");
 
 const npmConfigEnv = require("./util/npm-config-env");
 
@@ -46,19 +44,6 @@ const fynCli = requireAt(fynInstalledDir).resolve("./bin/fyn.js");
 
 const ONE_MB = 1024 * 1024;
 
-const getGlobalNodeModules = () => {
-  const nodeDir = Path.dirname(process.execPath);
-  if (process.platform === "win32") {
-    // windows put node binary under <installed_dir>/node.exe
-    // and node_modules under <installed_dir>/node_modules
-    return Path.join(nodeDir, "node_modules");
-  } else {
-    // node install on unix put node binary under <installed_dir>/bin/node
-    // and node_modules under <installed_dir>/lib/node_modules
-    return Path.join(Path.dirname(nodeDir), "lib/node_modules");
-  }
-};
-
 class LifecycleScripts {
   constructor(options) {
     if (typeof options === "string") {
@@ -69,78 +54,6 @@ class LifecycleScripts {
     this._options = Object.assign({}, options);
   }
 
-  _searchNodeGypBin({ npmDir, searchPath }) {
-    if (!nodeGypBinPath) {
-      nodeGypBinPath = [
-        searchPath,
-        // npm 7 and above pull node-gyp directly and provides node-gyp-bin under its bin dir
-        Path.join(npmDir, "bin/node-gyp-bin"),
-        // npm 6 and lower uses npm-lifecycle package, which has its own node-gyp-bin
-        Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin")
-      ].find(path => path && Fs.existsSync(path));
-    }
-
-    return nodeGypBinPath;
-  }
-
-  _getNpm6NodeGyp({ version, npmDir, xrequire }) {
-    try {
-      const npmLifecycleDir = Path.dirname(xrequire.resolve("npm-lifecycle/package.json"));
-      return {
-        envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
-        envPath: this._searchNodeGypBin({
-          npmDir,
-          // search in npm-lifecycle's dir that's found through require
-          searchPath: Path.join(npmLifecycleDir, "node-gyp-bin")
-        })
-      };
-    } catch (err) {
-      logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
-      return {
-        envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
-        envPath: this._searchNodeGypBin({ npmDir })
-      };
-    }
-  }
-
-  _getNpm7NodeGyp({ version, npmDir, xrequire }) {
-    try {
-      return {
-        // npm 7, 8 have node-gyp as dep directly
-        envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
-        envPath: this._searchNodeGypBin({ npmDir })
-      };
-    } catch (err) {
-      logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
-      return {
-        envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
-        envPath: this._searchNodeGypBin({ npmDir })
-      };
-    }
-  }
-
-  _findNodeGypFromNpm(env) {
-    const npmDir = Path.join(getGlobalNodeModules(), "npm");
-    const xrequire = requireAt(npmDir);
-    const npmPkg = xrequire("./package.json");
-    const version = parseInt(npmPkg.version.split(".")[0]);
-    if (version > 8) {
-      logger.error(`Unknown npm version ${version} - can't provide node-gyp binary`);
-      return;
-    }
-    const { envFile, envPath } =
-      version <= 6
-        ? this._getNpm6NodeGyp({ version: npmPkg.version, npmDir, xrequire })
-        : this._getNpm7NodeGyp({ version: npmPkg.version, npmDir, xrequire });
-
-    env.npm_config_node_gyp = envFile;
-    xsh.envPath.addToFront(envPath, env);
-
-    logger.debug(
-      `env npm_config_node_gyp set to ${env.npm_config_node_gyp}, path ${envPath} added`
-    );
-  }
-
   makeEnv(override) {
     // let env = Object.assign({}, process.env, override);
     // this._addNpmPackageConfig(this._appPkg.config, env);
@@ -148,7 +61,7 @@ class LifecycleScripts {
 
     const env = Object.assign({}, npmConfigEnv(this._pkg, this._fyn.allrc || {}), override);
 
-    this._findNodeGypFromNpm(env);
+    setupNodeGypFromNpm(env);
 
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);

@@ -310,7 +310,20 @@ const fyntil = {
     return false;
   },
 
-  posixify
+  posixify,
+
+  getGlobalNodeModules() {
+    const nodeDir = Path.dirname(process.execPath);
+    if (process.platform === "win32") {
+      // windows put node binary under <installed_dir>/node.exe
+      // and node_modules under <installed_dir>/node_modules
+      return Path.join(nodeDir, "node_modules");
+    } else {
+      // node install on unix put node binary under <installed_dir>/bin/node
+      // and node_modules under <installed_dir>/lib/node_modules
+      return Path.join(Path.dirname(nodeDir), "lib/node_modules");
+    }
+  }
 };
 
 module.exports = fyntil;

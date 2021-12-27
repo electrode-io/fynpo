@@ -27,6 +27,8 @@ const { checkPkgNewVersionEngine } = require("check-pkg-new-version-engine");
 const fetch = require("node-fetch-npm");
 const myPkg = require("./mypkg");
 const { cleanErrorStack } = require("@jchip/error");
+const { setupNodeGypFromNpm } = require("../lib/util/setup-node-gyp");
+const xsh = require("xsh");
 
 function checkNewVersion(npmConfig) {
   checkPkgNewVersionEngine({
@@ -506,7 +508,7 @@ class FynCli {
     });
   }
 
-  async runScript(pkg, script) {
+  async runScript(pkg, script, env) {
     const config = x => this.fyn.allrc[x];
 
     const options = {
@@ -523,7 +525,8 @@ class FynCli {
       scriptShell: config("script-shell"),
       scriptsPrependNodePath: config("scripts-prepend-node-path"),
       unsafePerm: config("unsafe-perm"),
-      user: config("user")
+      user: config("user"),
+      env
     };
 
     return npmLifecycle(pkg, script, this.fyn.cwd, options);
@@ -547,7 +550,15 @@ class FynCli {
       })
     );
 
-    return Promise.each(_scripts, s => _.get(pkg, ["scripts", s]) && this.runScript(pkg, s));
+    const pathKey = xsh.envPath.envKey;
+    const env = { [pathKey]: process.env[pathKey] };
+
+    setupNodeGypFromNpm(env);
+
+    return Promise.each(
+      _scripts,
+      s => _.get(pkg, ["scripts", s]) && this.runScript(pkg, s, Object.assign({}, env))
+    );
   }
 
   async run(argv, script = "") {
