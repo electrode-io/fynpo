@@ -1,3 +1,26 @@
+# 12/26/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.20` `(1.1.19 => 1.1.20)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.23` `(1.1.22 => 1.1.23)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   add fyn init [commit](https://github.com/electrode-io/fynpo/commit/ef00660a441d5b30b9e803e6253a1d37c82ed877)
+    -   reduce normal log noise [commit](https://github.com/electrode-io/fynpo/commit/9bb3fc70bb2d2bf591d1112fc7d310a4e4ce595f)
+
+-   `packages/init-package`
+
+    -   add fyn init [commit](https://github.com/electrode-io/fynpo/commit/ef00660a441d5b30b9e803e6253a1d37c82ed877)
+
 # 12/8/2021
 
 ## Packages
