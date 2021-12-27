@@ -16,3 +16,7 @@ package-fyn.*
 fyn-debug*.log
 package-lock.*
 yarn/lib
+gyp
+node-gyp-bin
+src
+addon.gypi

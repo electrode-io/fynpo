@@ -67,6 +67,11 @@ const node8 = Object.assign({}, base, {
             presets: [["@babel/env", { targets: { node: "8" } }]]
           }
         }
+      },
+      {
+        // skip node-gyp/lib/Find-VisualStudiio.cs
+        test: /\.cs$/,
+        use: "null-loader"
       }
     ]
   }

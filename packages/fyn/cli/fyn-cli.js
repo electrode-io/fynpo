@@ -27,7 +27,7 @@ const { checkPkgNewVersionEngine } = require("check-pkg-new-version-engine");
 const fetch = require("node-fetch-npm");
 const myPkg = require("./mypkg");
 const { cleanErrorStack } = require("@jchip/error");
-const { setupNodeGypFromNpm } = require("../lib/util/setup-node-gyp");
+const { setupNodeGypEnv } = require("../lib/util/setup-node-gyp");
 const xsh = require("xsh");
 
 function checkNewVersion(npmConfig) {
@@ -553,7 +553,7 @@ class FynCli {
     const pathKey = xsh.envPath.envKey;
     const env = { [pathKey]: process.env[pathKey] };
 
-    setupNodeGypFromNpm(env);
+    setupNodeGypEnv(env);
 
     return Promise.each(
       _scripts,

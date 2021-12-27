@@ -9,7 +9,7 @@
     "test": "xrun xarc/test-only",
     "lint": "xrun xarc/lint",
     "compile-yarn": "babel yarn/src --out-dir yarn/lib",
-    "build": "xrun --serial fyn/create-tgz compile-yarn bundle",
+    "build": "xrun --serial .setup-gyp fyn/create-tgz compile-yarn bundle",
     "analyze": "ANALYZE_BUNDLE=1 xrun compile-yarn bundle",
     "coverage": "xrun xarc/check",
     "ci:check": "xrun xarc/check",
@@ -29,7 +29,11 @@
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    "gyp",
+    "src",
+    "node-gyp-bin",
+    "addon.gypi"
   ],
   "keywords": [
     "node",
@@ -134,6 +138,8 @@
     "mocha": "^8.2.1",
     "mock-require": "^2.0.2",
     "node-fetch-npm": "^2.0.4",
+    "node-gyp": "^8.4.1",
+    "null-loader": "^4.0.1",
     "nyc": "^15.1.0",
     "prettier": "^1.19.1",
     "sinon": "^9.2.2",

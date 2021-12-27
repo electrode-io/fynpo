@@ -6,6 +6,7 @@ const requireAt = require("require-at");
 const logger = require("../logger");
 const { getGlobalNodeModules } = require("./fyntil");
 const xsh = require("xsh");
+const fyntil = require("./fyntil");
 
 let nodeGypBinPath;
 
@@ -35,11 +36,8 @@ function _getNpm6NodeGyp({ version, npmDir, xrequire }) {
       })
     };
   } catch (err) {
-    logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
-    return {
-      envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
-      envPath: _searchNodeGypBin({ npmDir })
-    };
+    logger.debug(`failed to resolve node-gyp dir from npm ${version}`, err);
+    return {};
   }
 }
 
@@ -51,11 +49,8 @@ function _getNpm7NodeGyp({ version, npmDir, xrequire }) {
       envPath: _searchNodeGypBin({ npmDir })
     };
   } catch (err) {
-    logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
-    return {
-      envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
-      envPath: _searchNodeGypBin({ npmDir })
-    };
+    logger.debug(`failed to resolve node-gyp dir from npm ${version}`, err);
+    return {};
   }
 }
 
@@ -65,27 +60,54 @@ function _getNpm7NodeGyp({ version, npmDir, xrequire }) {
  * @returns
  */
 function setupNodeGypFromNpm(env) {
-  const npmDir = Path.join(getGlobalNodeModules(), "npm");
-  const xrequire = requireAt(npmDir);
-  const npmPkg = xrequire("./package.json");
-  const version = parseInt(npmPkg.version.split(".")[0]);
+  try {
+    const npmDir = Path.join(getGlobalNodeModules(), "npm");
+    const xrequire = requireAt(npmDir);
+    const npmPkg = xrequire("./package.json");
+    const version = parseInt(npmPkg.version.split(".")[0]);
 
-  if (version > 8) {
-    logger.error(`Unknown npm version ${version} - can't provide node-gyp binary`);
+    if (version <= 8) {
+      const { envFile, envPath } =
+        version <= 6
+          ? _getNpm6NodeGyp({ version: npmPkg.version, npmDir, xrequire })
+          : _getNpm7NodeGyp({ version: npmPkg.version, npmDir, xrequire });
+
+      if (envFile && envPath) {
+        env.npm_config_node_gyp = envFile; // eslint-disable-line
+        xsh.envPath.addToFront(envPath, env);
+
+        logger.debug(
+          `using node-gyp from npm ${version}: env npm_config_node_gyp set to ${env.npm_config_node_gyp}, path ${envPath} added`
+        );
+        return true;
+      }
+    }
+  } catch (err) {
+    //
+  }
+
+  return false;
+}
+
+/**
+ *
+ * @param {*} env
+ * @returns
+ */
+function setupNodeGypEnv(env) {
+  if (process.env.FYN_NPM_NODE_GYP !== "false" && setupNodeGypFromNpm(env)) {
     return;
   }
 
-  const { envFile, envPath } =
-    version <= 6
-      ? _getNpm6NodeGyp({ version: npmPkg.version, npmDir, xrequire })
-      : _getNpm7NodeGyp({ version: npmPkg.version, npmDir, xrequire });
-
-  env.npm_config_node_gyp = envFile; // eslint-disable-line
+  env.npm_config_node_gyp = Path.join(fyntil.fynDir, "bin/node-gyp.js"); // eslint-disable-line
+  const envPath = Path.join(fyntil.fynDir, "node-gyp-bin");
   xsh.envPath.addToFront(envPath, env);
-
-  logger.debug(`env npm_config_node_gyp set to ${env.npm_config_node_gyp}, path ${envPath} added`);
+  logger.debug(
+    `using fyn's node-gyp: env npm_config_node_gyp set to ${env.npm_config_node_gyp}, path ${envPath} added`
+  );
 }
 
 module.exports = {
-  setupNodeGypFromNpm
+  setupNodeGypFromNpm,
+  setupNodeGypEnv
 };

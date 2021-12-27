@@ -18,7 +18,7 @@ const logFormat = require("./util/log-format");
 const VisualExec = require("visual-exec");
 const fyntil = require("./util/fyntil");
 const requireAt = require("require-at");
-const { setupNodeGypFromNpm } = require("./util/setup-node-gyp");
+const { setupNodeGypEnv } = require("./util/setup-node-gyp");
 
 const npmConfigEnv = require("./util/npm-config-env");
 
@@ -61,7 +61,7 @@ class LifecycleScripts {
 
     const env = Object.assign({}, npmConfigEnv(this._pkg, this._fyn.allrc || {}), override);
 
-    setupNodeGypFromNpm(env);
+    setupNodeGypEnv(env);
 
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);

@@ -323,7 +323,9 @@ const fyntil = {
       // and node_modules under <installed_dir>/lib/node_modules
       return Path.join(Path.dirname(nodeDir), "lib/node_modules");
     }
-  }
+  },
+  fynDir:
+    Path.basename(__dirname) === "util" ? Path.join(__dirname, "../..") : Path.join(__dirname, "..")
 };
 
 module.exports = fyntil;

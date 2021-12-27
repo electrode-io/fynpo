@@ -456,7 +456,12 @@ const fun = () => {
   return run(argv, 2, false);
 };
 
+const nodeGyp = () => {
+  require("node-gyp/bin/node-gyp");
+};
+
 module.exports = {
   run,
-  fun
+  fun,
+  nodeGyp
 };
