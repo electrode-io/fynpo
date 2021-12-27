@@ -18,6 +18,9 @@ const logFormat = require("./util/log-format");
 const VisualExec = require("visual-exec");
 const fyntil = require("./util/fyntil");
 const requireAt = require("require-at");
+const Fs = require("fs");
+
+let nodeGypBinPath;
 
 const npmConfigEnv = require("./util/npm-config-env");
 
@@ -66,35 +69,52 @@ class LifecycleScripts {
     this._options = Object.assign({}, options);
   }
 
+  _searchNodeGypBin({ npmDir, searchPath }) {
+    if (!nodeGypBinPath) {
+      nodeGypBinPath = [
+        searchPath,
+        // npm 7 and above pull node-gyp directly and provides node-gyp-bin under its bin dir
+        Path.join(npmDir, "bin/node-gyp-bin"),
+        // npm 6 and lower uses npm-lifecycle package, which has its own node-gyp-bin
+        Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin")
+      ].find(path => path && Fs.existsSync(path));
+    }
+
+    return nodeGypBinPath;
+  }
+
   _getNpm6NodeGyp({ version, npmDir, xrequire }) {
     try {
       const npmLifecycleDir = Path.dirname(xrequire.resolve("npm-lifecycle/package.json"));
       return {
         envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
-        envPath: Path.join(npmLifecycleDir, "node-gyp-bin")
+        envPath: this._searchNodeGypBin({
+          npmDir,
+          // search in npm-lifecycle's dir that's found through require
+          searchPath: Path.join(npmLifecycleDir, "node-gyp-bin")
+        })
       };
     } catch (err) {
       logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
       return {
         envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
-        envPath: Path.join(npmDir, "node_modules/npm-lifecycle/node-gyp-bin")
+        envPath: this._searchNodeGypBin({ npmDir })
       };
     }
   }
 
   _getNpm7NodeGyp({ version, npmDir, xrequire }) {
     try {
-      // npm 7 has node-gyp as dep directly
-      // node-gyp-bin is under npm/bin
       return {
+        // npm 7, 8 have node-gyp as dep directly
         envFile: xrequire.resolve("node-gyp/bin/node-gyp"),
-        envPath: Path.join(npmDir, "bin")
+        envPath: this._searchNodeGypBin({ npmDir })
       };
     } catch (err) {
       logger.debug(`failed to resolve node-gyp dir from npm ${version}, using defaults.`, err);
       return {
-        envFile: Path.join(npmDir, "node_modules", "node-gyp", "bin", "node-gyp.js"),
-        envPath: Path.join(npmDir, "bin")
+        envFile: Path.join(npmDir, "node_modules/node-gyp/bin/node-gyp.js"),
+        envPath: this._searchNodeGypBin({ npmDir })
       };
     }
   }
