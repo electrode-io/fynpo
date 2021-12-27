@@ -1,3 +1,21 @@
+# 12/26/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@0.4.41` `(0.4.40 => 0.4.41)`
+
+### Fynpo Updated
+
+-   `fynpo@0.4.9` `(0.4.8 => 0.4.9)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fix: handle npm 8 [commit](https://github.com/electrode-io/fynpo/commit/7be5c153c6858dbeca4b770b997acdea7f8c51d6)
+
 # 11/20/2021
 
 ## Packages
