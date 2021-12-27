@@ -12,6 +12,7 @@ const myPkg = require("./mypkg");
 const loadRc = require("./load-rc");
 const defaultRc = require("./default-rc");
 const fynTil = require("../lib/util/fyntil");
+const { runInitPackage } = require("init-package");
 
 function setLogLevel(ll) {
   if (ll) {
@@ -374,6 +375,24 @@ const commands = {
       list: {
         desc: "list scripts",
         alias: "l",
+        type: "boolean"
+      }
+    }
+  },
+  init: {
+    desc: "initialize a package.json file",
+    usage: "$0 $1 <command> [--yes]",
+    exec: async argv => {
+      try {
+        await runInitPackage(argv.opts.yes);
+      } catch (err) {
+        process.exit(1);
+      }
+    },
+    options: {
+      yes: {
+        alias: ["y"],
+        desc: "skip prompt and use default values",
         type: "boolean"
       }
     }

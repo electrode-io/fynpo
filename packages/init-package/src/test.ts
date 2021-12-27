@@ -1,0 +1,3 @@
+import { runInitPackage } from ".";
+
+runInitPackage();
