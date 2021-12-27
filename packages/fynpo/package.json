@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "1.1.22",
+  "version": "1.1.23",
   "description": "A node.js monorepo manager",
   "main": "dist/index.js",
   "homepage": "https://www.electrode.io/fynpo/",
@@ -47,7 +47,7 @@
     "registry": "https://registry.npmjs.com/"
   },
   "dependencies": {
-    "fyn": "^1.1.19",
+    "fyn": "^1.1.20",
     "import-fresh": "3.3.0",
     "resolve-global": "1.0.0"
   },
