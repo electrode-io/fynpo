@@ -1,3 +1,23 @@
+# 12/27/2021
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.21` `(1.1.20 => 1.1.21)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.24` `(1.1.23 => 1.1.24)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   bundle node-gyp [commit](https://github.com/electrode-io/fynpo/commit/a43b704224f87819bf663a46248d142d10d24b57)
+    -   setup node-gyp for fyn run [commit](https://github.com/electrode-io/fynpo/commit/d65f4a9c493097f76a14d4cdd6de7a3115fb48cf)
+    -   improve node-gyp-bin search for npm8 [commit](https://github.com/electrode-io/fynpo/commit/5a09f3a0f63c44823d292b2bd3e8a8d2cc505682)
+
 # 12/26/2021
 
 ## Packages
