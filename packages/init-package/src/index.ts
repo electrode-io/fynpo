@@ -261,8 +261,10 @@ export async function generateNpmPackage(
     delete answers.main;
   }
 
-  if (_.get(exist, "publishConfig") || !answers.name.startsWith("@")) {
+  if (!answers.name.startsWith("@")) {
     delete answers.publishConfig;
+  } else if (_.get(exist, "publishConfig")) {
+    answers.publishConfig = _.pick(answers.publishConfig, Object.keys(exist.publishConfig));
   }
 
   const finalData = _.mergeWith({}, exist, answers, mergeReplaceArray);
