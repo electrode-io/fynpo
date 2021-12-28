@@ -550,8 +550,7 @@ class FynCli {
       })
     );
 
-    const pathKey = xsh.envPath.envKey;
-    const env = { [pathKey]: process.env[pathKey] };
+    const env = npmLifecycle.initEnv(process.env, this.fyn.production);
 
     setupNodeGypEnv(env);
 

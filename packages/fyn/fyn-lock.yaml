@@ -5292,8 +5292,8 @@ npm-lifecycle:
   jchip/npm-lifecycle: 3.1.5
  3.1.5:
   top: 1
-  $: sha512-H8+mQkziLPfLfZgNJSus/442dQnLxidIoVfgrfXHHjJx7HPyO76SkE3665LrGt60nZTZEgUSOiKMx4n9EtHnVw==
-  _: '~url-spec~{"urlType":"github","semver":"jchip/npm-lifecycle","_resolved":"github:jchip/npm-lifecycle#8b09fc2be36c07162f4bf7aa6cafdce15eda1fa8"}'
+  $: sha512-iGGudBmLErMm5ig737sGhqvKXrWcnHecpqt8T7RM78cpBhdyQAJb1kjGddReVTmtQiGZu3ctITm0BShSfug/fg==
+  _: '~url-spec~{"urlType":"github","semver":"jchip/npm-lifecycle","_resolved":"github:jchip/npm-lifecycle#b76462a360c57fb6065e8d50fb4dea8e17fb850d"}'
   dependencies:
    byline: ^5.0.0
    graceful-fs: ^4.1.15
