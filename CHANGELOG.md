@@ -1,3 +1,25 @@
+# 1/3/2022
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.22` `(1.1.21 => 1.1.22)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.25` `(1.1.24 => 1.1.25)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   init env with npm-lifecycle [commit](https://github.com/electrode-io/fynpo/commit/9faa8bbd0c42385715be0b9306657e29495dc402)
+
+-   `packages/init-package`
+
+    -   update publishConfig when fyn init exist package [commit](https://github.com/electrode-io/fynpo/commit/445a44ebc14cd425384c3018cb1798f953654053)
+
 # 12/27/2021
 
 ## Packages
