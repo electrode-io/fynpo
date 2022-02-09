@@ -36,7 +36,9 @@ async function _scanFileStats(dir, ignores, baseDir = "") {
     dir: fullDir,
     includeRoot: false,
     filter,
-    filterDir: filter
+    filterDir: filter,
+    concurrency: 500,
+    fullStat: true // we need full stat to get the mtimeMs prop
   });
 
   return { latestMtimeMs, latestFile };

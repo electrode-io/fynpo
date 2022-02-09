@@ -157,6 +157,15 @@ class FynCentral {
     return info;
   }
 
+  /**
+   * Get the hash of a npm package's extracted content.
+   * - only consider the file names and their mtime and size because npm tar files
+   *   with a fixed timestamp to publish, so the mtime give us some assurance
+   *   to know if file changed.
+   *
+   * @param {*} integrity - shasum integrity for the package
+   * @returns
+   */
   async getContentShasum(integrity) {
     try {
       const info = await this.getInfo(integrity);
@@ -170,12 +179,14 @@ class FynCentral {
         cwd: packageDir,
         filter,
         filterDir: filter,
-        sortFiles: true,
+        fullStat: true, // need full stat for mtimeMs and size prop
+        concurrency: 500,
+        sortFiles: false, // concurrency breaks sorting, sort files all at once after
         includeDir: true
       });
 
       const hash = Crypto.createHash("sha512");
-      const shaSum = hash.update(JSON.stringify(files)).digest("base64");
+      const shaSum = hash.update(JSON.stringify(files.sort())).digest("base64");
       return shaSum;
     } catch (_err) {
       return undefined;

@@ -81,7 +81,6 @@
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-tsdoc": "^0.2.11",
     "execa": "^5.0.0",
-    "filter-scan-dir": "^1.4.0",
     "fs-extra": "^9.1.0",
     "get-stdin": "^8.0.0",
     "item-queue": "^1.1.2",
