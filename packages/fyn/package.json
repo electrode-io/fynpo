@@ -2,7 +2,7 @@
   "name": "fyn",
   "version": "1.1.22",
   "description": "A node package manager, fast, workspace, and better productivity and efficiency",
-  "main": "./bin/fyn.js",
+  "main": "./bin/index.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "license": "Apache-2.0",
   "scripts": {
@@ -19,6 +19,7 @@
     "postpack": "publish-util-postpack"
   },
   "bin": {
+    "0-npx-please-run-this-for-fyn": "./bin/fyn.js",
     "fyn": "./bin/fyn.js",
     "fun": "./bin/fun.js"
   },
