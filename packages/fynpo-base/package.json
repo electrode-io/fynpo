@@ -42,7 +42,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "filter-scan-dir": "^1.4.0",
+    "filter-scan-dir": "^1.5.0",
     "is-path-inside": "^3.0.3",
     "lodash": "^4.17.21",
     "minimatch": "^3.0.4",

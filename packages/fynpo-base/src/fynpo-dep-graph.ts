@@ -444,7 +444,7 @@ export class FynpoDepGraph {
       return false;
     };
 
-    const files: string[] = [];
+    const files: string[][] = [];
     for (const prefix in groups) {
       const scanned = await filterScanDir({
         cwd,
@@ -470,13 +470,13 @@ export class FynpoDepGraph {
             }
             return prefix === "." && groups[prefix] === null
               ? !dir.startsWith(".")
-              : groups[prefix].find((save) => save.mm.match(extras.dirFile));
+              : Boolean(groups[prefix].find((save) => save.mm.match(extras.dirFile)));
           }
           return false;
         },
       });
 
-      files.push(scanned);
+      files.push(scanned as string[]);
     }
 
     const allFiles: string[] = [].concat(...files);

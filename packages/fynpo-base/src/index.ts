@@ -177,7 +177,7 @@ export async function readFynpoPackages({
         filter: (f) => f === "package.json",
         filterDir: (dir, _p, extras) => {
           if (dir !== "node_modules") {
-            return groups[prefix].find((save) => save.mm.match(extras.dirFile));
+            return Boolean(groups[prefix].find((save) => save.mm.match(extras.dirFile)));
           }
           return false;
         },
