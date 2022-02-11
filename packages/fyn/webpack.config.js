@@ -66,6 +66,21 @@ const node8 = Object.assign({}, base, {
           options: {
             presets: [["@babel/env", { targets: { node: "8" } }]]
           }
+        },
+        parser: {
+          amd: false, // disable AMD
+          // commonjs: false, // disable CommonJS
+          system: false, // disable SystemJS
+          // harmony: false, // disable ES2015 Harmony import/export
+          requireInclude: false, // disable require.include
+          requireEnsure: false, // disable require.ensure
+          requireContext: false, // disable require.context
+          browserify: false, // disable special handling of Browserify bundles
+          requireJs: false // disable requirejs.*
+          // node: false, // disable __dirname, __filename, module, require.extensions, require.main, etc.
+          // commonjsMagicComments: false // disable magic comments support for CommonJS
+          // node: {...}, // reconfigure [node](/configuration/node) layer on module level
+          // worker: ["default from web-worker", "..."] // Customize the WebWorker handling for javascript files, "..." refers to the defaults.
         }
       },
       {
