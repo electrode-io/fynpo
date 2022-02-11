@@ -1,7 +1,5 @@
 # fynpo <!-- omit in toc -->
 
-[![dependency status][deps-svg]][deps-url]
-[![dev dependency status][dev-deps-svg]][dev-deps-url]
 [![License][license-image]][license-url]
 [![build][build-image]][build-url]
 [![coverage][coverage-image]][coverage-url]
@@ -10,7 +8,9 @@
 
 [![npm badge][npm-badge-png]][package-url]
 
-**A node.js JavaScript monorepo manager, that solves some common issues with monorepos.**
+**fynpo is a zero setup monorepo manager for node.js**
+
+- See [this express monorepo PoC](https://github.com/jchip/express-monorepo) that put [express](https://expressjs.com/) and all its dependencies together in a monorepo, with their source cloned from their repos directly.
 
 - [docs](https://www.electrode.io/fynpo/docs/intro)
 

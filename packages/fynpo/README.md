@@ -1,7 +1,5 @@
 # fynpo <!-- omit in toc -->
 
-[![dependency status][deps-svg]][deps-url]
-[![dev dependency status][dev-deps-svg]][dev-deps-url]
 [![License][license-image]][license-url]
 [![build][build-image]][build-url]
 [![coverage][coverage-image]][coverage-url]

@@ -4,7 +4,6 @@
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
 [![Build Status][travis-image]][travis-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
-[![Dependency Status][daviddm-image]][daviddm-url] [![devDependency Status][daviddm-dev-image]][daviddm-dev-url]
 
 **fyn** is a node package manager that makes your disk a direct registry. It enables you to develop, publish, and test all your packages using local copies directly.
 
