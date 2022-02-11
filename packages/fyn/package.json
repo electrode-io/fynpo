@@ -2,7 +2,7 @@
   "name": "fyn",
   "version": "1.1.22",
   "description": "A node package manager, fast, workspace, and better productivity and efficiency",
-  "main": "./bin/index.js",
+  "main": "./bin/fyn.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "license": "Apache-2.0",
   "scripts": {
