@@ -12,7 +12,7 @@
 
 - See [this express monorepo PoC](https://github.com/jchip/express-monorepo) that put [express](https://expressjs.com/) and all its dependencies together in a monorepo, with their source cloned from their repos directly.
 
-- [docs](https://www.electrode.io/fynpo/docs/intro)
+- [docs](https://jchip.github.io/fynpo/docs/intro)
 
 ## License
 
@@ -27,8 +27,8 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 
 <!-- CI and coverage badges -->
 
-[build-image]: https://github.com/electrode-io/fynpo/actions/workflows/ci.yml/badge.svg
-[build-url]: https://github.com/electrode-io/fynpo/actions/workflows/ci.yml
+[build-image]: https://github.com/jchip/fynpo/actions/workflows/ci.yml/badge.svg
+[build-url]: https://github.com/jchip/fynpo/actions/workflows/ci.yml
 [coverage-image]: https://coveralls.io/repos/github/electrode-io/fynpo/badge.svg?branch=main
 [coverage-url]: https://coveralls.io/github/electrode-io/fynpo?branch=main
 

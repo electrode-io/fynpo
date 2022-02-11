@@ -2,7 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![Apache 2.0 License][apache-2.0-blue-image]][apache-2.0-url]
-[![Build Status][travis-image]][travis-url]
+[![Build Status][build-image]][build-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
 
 **fyn** is a node package manager that makes your disk a direct registry. It enables you to develop, publish, and test all your packages using local copies directly.
@@ -464,3 +464,5 @@ Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses
 [npm link]: https://docs.npmjs.com/cli/link.html
 [npm-lifecycle]: https://www.npmjs.com/package/npm-lifecycle
 [npmlog]: https://www.npmjs.com/package/npmlog
+[build-image]: https://github.com/jchip/fynpo/actions/workflows/ci.yml/badge.svg
+[build-url]: https://github.com/jchip/fynpo/actions/workflows/ci.yml
