@@ -97,7 +97,7 @@ async function cleanExtraDest(dest, destFiles) {
   }
 }
 
-const FILES = Symbol("files");
+const SYM_FILES = Symbol("files");
 
 /**
  * Generate a tree of files using npm-pack that a package would publish with.
@@ -105,30 +105,30 @@ const FILES = Symbol("files");
  * @param {*} path
  * @returns
  */
-async function generatePackTree(path) {
+async function generatePackTree(path, _logger = logger) {
   const files = await npmPacklist({
     path,
     includeSymlinks: fynTil.strToBool(process.env.FYN_LOCAL_PACK_SYMLINKS)
   });
 
-  logger.debug(
+  _logger.debug(
     `local package linking - pack tree returned ${files.length} files to link`,
     JSON.stringify(files, null, 2)
   );
 
   if (files.length > 1000) {
-    logger.warn(
+    _logger.warn(
       `Local linking package at ${path} has more than ${files.length} files.
   >>> This is unusual, please check package .npmignore or 'files' in package.json <<<`
     );
   }
 
-  const fmap = { [FILES]: [] };
+  const fmap = { [SYM_FILES]: [] };
 
   files.sort().forEach(filePath => {
     const dir = Path.dirname(filePath);
     if (dir === ".") {
-      fmap[FILES].push(filePath);
+      fmap[SYM_FILES].push(filePath);
       return;
     }
 
@@ -136,12 +136,12 @@ async function generatePackTree(path) {
     // npm pack list always generate file path with /
     dir.split("/").forEach(d => {
       if (!dmap[d]) {
-        dmap[d] = { [FILES]: [] };
+        dmap[d] = { [SYM_FILES]: [] };
       }
       dmap = dmap[d];
     });
 
-    dmap[FILES].push(Path.basename(filePath));
+    dmap[SYM_FILES].push(Path.basename(filePath));
   });
 
   return fmap;
@@ -292,7 +292,7 @@ async function handleSourceMap({ file, destFiles, src, dest, srcFp, destFp, sour
  * @param {*} sym1
  */
 async function linkPackTree({ tree, src, dest, sym1, sourceMaps }) {
-  const files = tree[FILES];
+  const files = tree[SYM_FILES];
 
   const destFiles = await prepDestDir(dest);
 
@@ -359,5 +359,7 @@ module.exports = {
   link,
   linkFile,
   copyFile,
-  linkSym1
+  linkSym1,
+  generatePackTree,
+  SYM_FILES
 };

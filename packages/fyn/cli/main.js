@@ -460,8 +460,11 @@ const nodeGyp = () => {
   require("node-gyp/bin/node-gyp");
 };
 
+const hardLinkDir = require("../lib/util/hard-link-dir");
+
 module.exports = {
   run,
   fun,
-  nodeGyp
+  nodeGyp,
+  hardLinkDir
 };
