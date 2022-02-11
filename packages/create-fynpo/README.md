@@ -19,7 +19,6 @@ When run, `create-fynpo` will:
 - Add `commitlint` config if enabled
 - Create an empty `packages` directory
 
-
 ## Getting Started
 
 To create a new fynpo monorepo,
@@ -34,7 +33,7 @@ fyn  # Install dependencies
 
 ### Options:
 
-**`commitlint`** : Used to initialize the repo with commitlint configuration. This is enabled by default. 
+**`commitlint`** : Used to initialize the repo with commitlint configuration. This is enabled by default.
 
 To initialize the repo without commitlint configuration, run the command with `no-commitlint` options. In this case, a simple `fynpo.json` config file will be added instead of `fynpo.config.js`.
 
@@ -55,12 +54,12 @@ npx fynpo init --commitlint
 If `commitlint` is enabled, the initialized repo will include `fynpo.config.js` with the default `commitlint` config. This can be customized as per the team's needs.
 
 The default configuration supports commmit message in `[<semver>][feat|bug|chore] <message>` format, where:
-   `<semver>` can be:
+`<semver>` can be:
 
-   - `major`
-   - `minor`
-   - `patch`
-   - `chore`
+- `major`
+- `minor`
+- `patch`
+- `chore`
 
 The format of commit type can be modified by updating the below config:
 

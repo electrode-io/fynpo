@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://www.electrode.io/blog</id>
-    <title>Fynpo Blog</title>
+    <id>https://jchip.github.io/fynpo/blog</id>
+    <title>fynpo Blog</title>
     <updated>2015-10-25T23:29:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://www.electrode.io/blog"/>
-    <subtitle>Fynpo Blog</subtitle>
-    <icon>https://www.electrode.io/img/favicon.png</icon>
+    <link rel="alternate" href="https://jchip.github.io/fynpo/blog"/>
+    <subtitle>fynpo Blog</subtitle>
+    <icon>https://jchip.github.io/fynpo/img/favicon.png</icon>
 </feed>
