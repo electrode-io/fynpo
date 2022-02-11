@@ -10,23 +10,25 @@
 
 [![npm badge][npm-badge-png]][package-url]
 
-**A node.js JavaScript monorepo manager, that solves some common issues with monorepos.**
+**fynpo is a zero setup monorepo manager for node.js**
+
+- See [this express monorepo PoC](https://github.com/jchip/express-monorepo) that put [express](https://expressjs.com/) and all its dependencies together in a monorepo, with their source cloned from their repos directly.
 
 - [docs](https://www.electrode.io/fynpo/docs/intro)
 
 ### Features:
 
+- **zero setup monorepo manager for node.js** - Put existing npm packages together in a monorepo without changes.
+
+  > Fynpo is designed to work with npm packages and their npm scripts. Just put your existing npm packages together and fynpo will manage them as a monorepo without any fuss. All the things you know about development using npm, like `npm run`, continue to work. This makes switching to another monorepo solution simple should you want to. fyn can even use npm's package-lock.json file.
+
 - **Integrated Local Package Handling**: No symlink magic, no dependencies hoisting, and no mixing packages.
 
   > Fynpo has a local package resolution logic that's fully integrated with the normal NPM package.json install process, free of the issues other solutions have because their local package handling is either just an add-on to the actual install process or depends on some hack like hoisting packages. **This solves all of yarn's issues listed [here](https://classic.yarnpkg.com/en/docs/workspaces/#toc-limitations-caveats)**.
 
-- **Locally Published Workflow**: packages install in their published form locally in the monorepo.
+- **Locally Published Workflow**: packages installed in their published form locally in the monorepo.
 
   > No more surprises after packages are published. If things work locally, then they will work published.
-
-- **100% npm Compatible workflow**: all the things you know about development using npm, like `npm run`, continue to work.
-
-  > This makes switching to another monorepo solution simple should you want to. fyn can even use npm's package-lock.json file.
 
 - **Freedom and Flexibility**: your development is **not** restricted to a monorepo utopia bubble.
 

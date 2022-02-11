@@ -3,29 +3,25 @@ id: intro
 title: Introduction
 ---
 
-[fynpo] is a node.js JavaScript monorepo manager that solves some common issues with monorepos.
+**[fynpo] is a zero setup monorepo manager for node.js**
 
-In JavaScript development, using a monorepo to manage multiple components or packages is very beneficial and saves a lot of time. `fynpo` is a monorepo management tool that uses [fyn] for installing dependencies. `fynpo` is designed from the ground up to enable a monorepo that 100% retains the standard npm workflow. It offers all the benefits of monorepo workspace plus more and none of the usual downsides.
+In JavaScript development, using a monorepo to manage multiple components or packages is makes it very convenient to work on them together. `fynpo` is a monorepo manager tool designed to work with npm packages and their npm scripts. Just put your existing npm packages together and fynpo will manage them as a monorepo without any fuss.
 
-This solution has two parts:
-
-**[fyn](https://www.npmjs.com/package/fyn)**: a fully npm compatible Node.js Package Manager (NPM) with support for integrated local handling.
-
-**[fynpo](https://github.com/electrode-io/fynpo)**: a lerna based mono-repo management tool that uses fyn for installing dependencies.
+See [this express monorepo PoC](https://github.com/jchip/express-monorepo) that put [express](https://expressjs.com/) and all its dependencies together in a monorepo, with their source cloned from their repos directly.
 
 ### Features:
+
+- **zero setup monorepo manager for node.js** - Put existing npm packages together in a monorepo without changes.
+
+  > Fynpo is designed to work with npm packages and their npm scripts. Just put your existing npm packages together and fynpo will orchestrate and manage them in a monorepo without any fuss. All the things you know about development using npm, like `npm run`, continue to work. This makes switching to another monorepo solution simple should you want to. fyn can even use npm's package-lock.json file.
 
 - **Integrated Local Package Handling**: No symlink magic, no dependencies hoisting, and no mixing packages.
 
   > Fynpo has a local package resolution logic that's fully integrated with the normal NPM package.json install process, free of the issues other solutions have because their local package handling is either just an add-on to the actual install process or depends on some hack like hoisting packages. **This solves all of yarn's issues listed [here](https://classic.yarnpkg.com/en/docs/workspaces/#toc-limitations-caveats)**.
 
-- **Locally Published Workflow**: packages install in their published form locally in the monorepo.
+- **Locally Published Workflow**: packages installed in their published form locally in the monorepo.
 
   > No more surprises after packages are published. If things work locally, then they will work published.
-
-- **100% npm Compatible workflow**: all the things you know about development using npm, like `npm run`, continue to work.
-
-  > This makes switching to another monorepo solution simple should you want to. fyn can even use npm's package-lock.json file.
 
 - **Freedom and Flexibility**: your development is **not** restricted to a monorepo utopia bubble.
 
@@ -54,41 +50,18 @@ This solution has two parts:
 
 **fynpo** uses [fyn](https://www.npmjs.com/package/fyn) for managing dependencies. fyn is a node package manager that makes your disk a direct registry. It enables you to develop, publish, and test all your packages using local copies directly.
 
-#### fynlocal mode
+### fynlocal mode
 
-**fyn** subjects local packages to the same dependency resolution logic as those from the npm registry. It effectively makes your disk a npm registry by treating packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It fits perfectly with the mono-repo workspace concept.
+**fyn** subjects local packages to the same dependency resolution logic as those from the npm registry. It effectively makes your disk a npm registry by treating packages on your local disk like they've been published. You can install and use them directly, and quickly test changes iteratively. It fits perfectly with the monorepo workspace concept.
 
 To enable, use the path to your local modules as semver in your package.json, or you can use the fyn add command.
 
-For example:
+For example, from any package, to install another package in your local disk, just do:
 
 ```
 fyn add ../my-awesome-module
 ```
 
 That will install `my-awesome-module` into your `node_modules`. You can continue to develop and test my-awesome-module in its own directory and have the changes within existing files reflected in your app directly. Unlike [npm link](https://docs.npmjs.com/cli/v7/commands/npm-link), your app resolves dependencies for my-awesome-module instead of relying on having them installed under my-awesome-module/node_modules.
-
-#### Smaller node_modules
-
-fyn's node_modules structure is the smallest possible in size because there are no multiple copies of the exact same package installed.
-
-As a package manager, fyn employs a different approach that installs only one copy of every required versions of a package in a flat node*modules structure. It installs a copy of each version under the directory "node_modules/.f/*/package_name/version". And it uses symlink to hoist a single version to node_modules for visibility. A package may have their own node_modules to resolve version differences.
-
-This approach has the benefit of guaranteeing a single copy of a package installed and therefore slightly smaller size node_modules.
-
-## Fynpo repo
-
-File structure of a fynpo monorepo will look like:
-
-```
-fynpo-repo/
-  package.json
-  fynpo.config.js
-  packages/
-    package-1/
-      package.json
-    package-2/
-      package.json
-```
 
 [fynpo]: https://github.com/electrode-io/fynpo
