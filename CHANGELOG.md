@@ -1,3 +1,51 @@
+# 2/13/2022
+
+## Packages
+
+-   `@fynpo/base@1.1.8` `(1.1.7 => 1.1.8)`
+-   `create-fynpo@1.0.5` `(1.0.4 => 1.0.5)`
+-   `fyn@1.1.23` `(1.1.22 => 1.1.23)`
+-   `fynpo@1.1.26` `(1.1.25 => 1.1.26)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   update dep filter-scan-dir [commit](https://github.com/electrode-io/fynpo/commit/4063da33aa9f7515165c5ea63d8349c46fd31555)
+
+-   `packages/create-fynpo`
+
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/881c28ff28d09f6922201c5dd77b81458eff19c4)
+
+-   `packages/fyn`
+
+    -   update build urls [commit](https://github.com/electrode-io/fynpo/commit/17c2639552ae897466a62c7f72b24c280278edbd)
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/881c28ff28d09f6922201c5dd77b81458eff19c4)
+    -   expose fyns generatePackTree function [commit](https://github.com/electrode-io/fynpo/commit/e58e9c1b724d517d0b9d1505aeaf0705847758d6)
+    -   update READMEs [commit](https://github.com/electrode-io/fynpo/commit/31ba1d5a31f8ed67b8eac7d28cb6f75631411580)
+    -   restore fyns main [commit](https://github.com/electrode-io/fynpo/commit/990193e28dff20d9567445cfedad6397c360692b)
+    -   disable other module systems in webpack [commit](https://github.com/electrode-io/fynpo/commit/8241d2c5eb094a52afc1d6c1291fd4f87e788b10)
+    -   fix default command for npx [commit](https://github.com/electrode-io/fynpo/commit/f612741db44d78bbfc8ca9ef4cf0c93e81721682)
+    -   dep: update filter-scan-dir to 1.5.0 [commit](https://github.com/electrode-io/fynpo/commit/7ec33290a9a2480a71fa9adce75001f501c03bea)
+
+-   `packages/fynpo`
+
+    -   update build urls [commit](https://github.com/electrode-io/fynpo/commit/17c2639552ae897466a62c7f72b24c280278edbd)
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/881c28ff28d09f6922201c5dd77b81458eff19c4)
+    -   update READMEs [commit](https://github.com/electrode-io/fynpo/commit/31ba1d5a31f8ed67b8eac7d28cb6f75631411580)
+    -   set webpack module to commonjs and esm only for fynpo [commit](https://github.com/electrode-io/fynpo/commit/bf42fbcfc70bfba1c283e142bcc8d2aedb4a1732)
+    -   update fynpo docs [commit](https://github.com/electrode-io/fynpo/commit/df5e2ecebecf3608682f2f2c2e72feada69a071c)
+    -   dep: update filter-scan-dir to 1.5.0 [commit](https://github.com/electrode-io/fynpo/commit/7ec33290a9a2480a71fa9adce75001f501c03bea)
+
+-   `docs`
+
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/881c28ff28d09f6922201c5dd77b81458eff19c4)
+
+-   `docusaurus`
+
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/881c28ff28d09f6922201c5dd77b81458eff19c4)
+    -   update fynpo docs [commit](https://github.com/electrode-io/fynpo/commit/df5e2ecebecf3608682f2f2c2e72feada69a071c)
+
 # 1/3/2022
 
 ## Packages
