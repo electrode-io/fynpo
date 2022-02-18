@@ -1,5 +1,6 @@
 import xsh from "xsh";
 import Path from "path";
+import Fs from "fs";
 import Promise from "bluebird";
 import { logger } from "./logger";
 import * as utils from "./utils";
@@ -258,6 +259,19 @@ export default class Publish {
     logger.info(`Found these packages to publish:\n${messages.join("\n")}`);
 
     try {
+      const fynpoPkgJson = JSON.parse(
+        await Fs.promises.readFile(Path.join(this._cwd, "package.json"), "utf-8")
+      );
+      await this.runScript(
+        {
+          name: fynpoPkgJson.name,
+          version: fynpoPkgJson.version,
+          path: ".",
+          pkgDir: this._cwd,
+          pkgJson: fynpoPkgJson,
+        } as FynpoPackageInfo,
+        "prepublishOnly"
+      );
       const errors = await this.publishPackages();
       if (errors.length > 0) {
         logger.error(`Some error occurred with publishing - skipping create git release tag`);
