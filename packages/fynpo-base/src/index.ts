@@ -1,6 +1,6 @@
 import Path from "path";
 import { promises as Fs } from "fs";
-import filterScanDir from "filter-scan-dir";
+import { filterScanDir } from "filter-scan-dir";
 import mm from "minimatch";
 import _ from "lodash";
 import { groupMM } from "./minimatch-group";
@@ -168,7 +168,7 @@ export async function readFynpoPackages({
   const mms = patterns.map((p) => new mm.Minimatch(p));
   const groups = groupMM(mms, {});
 
-  const files = [];
+  const files: string[][] = [];
   for (const prefix in groups) {
     files.push(
       await filterScanDir({

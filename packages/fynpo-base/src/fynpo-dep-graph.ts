@@ -1,7 +1,7 @@
 import assert from "assert";
 import Path from "path";
 import { promises as Fs } from "fs";
-import filterScanDir from "filter-scan-dir";
+import { filterScanDir } from "filter-scan-dir";
 import mm from "minimatch";
 import _ from "lodash";
 import Semver from "semver";
@@ -477,7 +477,7 @@ export class FynpoDepGraph {
         },
       });
 
-      files.push(scanned as string[]);
+      files.push(scanned);
     }
 
     const allFiles: string[] = [].concat(...files).sort();
