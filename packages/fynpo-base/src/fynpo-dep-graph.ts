@@ -449,6 +449,7 @@ export class FynpoDepGraph {
       const scanned = await filterScanDir({
         cwd,
         prefix,
+        concurrency: 500,
         filter: (file: string, path: string) => {
           if (path && path !== "." && file === "package.json") {
             if (foundInAutoSearch(path)) {
@@ -479,7 +480,7 @@ export class FynpoDepGraph {
       files.push(scanned as string[]);
     }
 
-    const allFiles: string[] = [].concat(...files);
+    const allFiles: string[] = [].concat(...files).sort();
 
     // Read each package.json and generate PackageInfo for it
     for (const pkgFile of allFiles) {

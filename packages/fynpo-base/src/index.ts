@@ -174,6 +174,7 @@ export async function readFynpoPackages({
       await filterScanDir({
         cwd,
         prefix,
+        concurrency: 500,
         filter: (f) => f === "package.json",
         filterDir: (dir, _p, extras) => {
           if (dir !== "node_modules") {
@@ -185,7 +186,7 @@ export async function readFynpoPackages({
     );
   }
 
-  const allFiles = [].concat(...files);
+  const allFiles = [].concat(...files).sort();
 
   const allPkgs = {};
 
