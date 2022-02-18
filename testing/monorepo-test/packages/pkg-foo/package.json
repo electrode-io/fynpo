@@ -1,0 +1,23 @@
+{
+  "name": "pkg-foo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "homepage": "",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "rm -rf dist; tsc"
+  },
+  "author": "",
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
+}

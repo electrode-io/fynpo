@@ -11,7 +11,9 @@
     "coverage": "fynpo run coverage",
     "lint": "fynpo run lint",
     "bootstrap": "fynpo",
-    "install": "fynpo"
+    "install": "fynpo",
+    "testing": "cd testing/monorepo-test && npm run clean-test",
+    "prepublishOnly": "npm run testing"
   },
   "files": [
     "packages",
@@ -30,7 +32,7 @@
     "url": "https://github.com/electrode-io/fynpo/issues"
   },
   "devDependencies": {
-    "fynpo": "^1.1.21"
+    "fynpo": "^1.1.27"
   },
   "fyn": {
     "devDependencies": {

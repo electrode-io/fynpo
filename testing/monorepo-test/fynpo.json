@@ -1,0 +1,7 @@
+{
+  "command": {
+    "bootstrap": {
+      "npmRunScripts": [["prepare", "prepublish", "build"]]
+    }
+  }
+}

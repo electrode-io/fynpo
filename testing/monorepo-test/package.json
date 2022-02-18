@@ -1,0 +1,25 @@
+{
+  "name": "monorepo-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "homepage": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "test": "node ../../packages/fyn/cli/fyn && fynpo && fynpo run test --stream",
+    "clean-test": "npm run clean && npm run test",
+    "clean": "rm -rf .fynpo node_modules */*/node_modules */*/dist */*/fyn-lock.* fyn-lock.*",
+    "prepublishOnly": "exit 1"
+  },
+  "author": "",
+  "files": [],
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "fynpo": "../../packages/fynpo"
+  }
+}
