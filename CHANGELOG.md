@@ -1,3 +1,31 @@
+# 2/18/2022
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.9` `(1.1.8 => 1.1.9)`
+-   `fyn@1.1.24` `(1.1.23 => 1.1.24)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.27` `(1.1.26 => 1.1.27)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/2746766f2c3fdb6c39c56c23dc07d8cdd64dbf5d)
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/3764dc95ca92f33adbf5a84c981889f749b2cfa9)
+
+-   `packages/create-fynpo`
+
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/3764dc95ca92f33adbf5a84c981889f749b2cfa9)
+
+-   `packages/fyn`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/2746766f2c3fdb6c39c56c23dc07d8cdd64dbf5d)
+
 # 2/13/2022
 
 ## Packages
