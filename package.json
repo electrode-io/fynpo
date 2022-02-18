@@ -6,7 +6,7 @@
   "homepage": "https://www.electrode.io/fynpo/",
   "private": true,
   "scripts": {
-    "test": "fynpo run test",
+    "test": "fynpo run test --stream",
     "ci:check": "fynpo run ci:check --stream",
     "coverage": "fynpo run coverage",
     "lint": "fynpo run lint",

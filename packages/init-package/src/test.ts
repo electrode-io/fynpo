@@ -1,3 +1,0 @@
-import { runInitPackage } from ".";
-
-runInitPackage();
