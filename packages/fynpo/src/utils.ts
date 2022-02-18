@@ -7,6 +7,8 @@ import { cosmiconfigSync } from "cosmiconfig";
 import shcmd from "shcmd";
 import _optionalRequire from "optional-require";
 import { FynpoDepGraph, PackageInfo, PackageRef } from "@fynpo/base";
+import os from "os";
+import { startMetaMemoizer } from "./meta-memoizer";
 
 export const defaultTagTemplate = `fynpo-rel-{YYYY}{MM}{DD}-{COMMIT}`;
 
@@ -297,4 +299,75 @@ export function makeVersionLockMap(
     });
     return mapping;
   }, {});
+}
+
+let fynExecutable: string;
+
+/**
+ * Get path to fyn's executable file
+ *
+ * @returns
+ */
+export function getFynExecutable() {
+  if (fynExecutable) {
+    return fynExecutable;
+  }
+  fynExecutable = xrequire.resolve("fyn");
+
+  const nodeDir = process.argv[0].replace(os.homedir(), "~");
+  const fynDir = `.${Path.sep}${Path.relative(process.cwd(), fynExecutable)}`;
+
+  logger.info(`Executing fyn with '${nodeDir} ${fynDir}'`);
+
+  return fynExecutable;
+}
+
+let warnGlobalFynVersion = false;
+
+/**
+ * Check and warn if global fyn's version is different from fynpo's fyn version.
+ */
+export async function checkGlobalFynVersion() {
+  if (warnGlobalFynVersion) {
+    return;
+  }
+  warnGlobalFynVersion = true;
+  getFynExecutable();
+
+  /* eslint-disable @typescript-eslint/no-var-requires */
+  const fynPkgJson = xrequire("fyn/package.json");
+
+  const globalFynInfo = await locateGlobalFyn();
+  if (globalFynInfo.dir) {
+    if (globalFynInfo.pkgJson.version !== fynPkgJson.version) {
+      logger.warn(
+        `You have fyn installed globally but its version ${globalFynInfo.pkgJson.version} \
+is different from fynpo's internal version ${fynPkgJson.version}`
+      );
+    }
+  }
+}
+
+let metaMemoizerOpts: string;
+
+/**
+ * Start the server for multiple fyn process to memoize and share package meta info
+ * during the same fynpo bootstrap session.
+ *
+ * @returns
+ */
+export async function startFynMetaMemoizer() {
+  if (metaMemoizerOpts !== undefined) {
+    return metaMemoizerOpts;
+  }
+  metaMemoizerOpts = "";
+
+  try {
+    const metaMemoizer = await startMetaMemoizer();
+    metaMemoizerOpts = `--meta-mem=http://localhost:${metaMemoizer.info.port}`;
+  } catch (err) {
+    //
+  }
+
+  return metaMemoizerOpts;
 }

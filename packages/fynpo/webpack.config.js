@@ -54,6 +54,7 @@ const base = {
       "./parser-meriyah.js": Path.resolve("stubs/parser-flow.js"),
       "./parser-postcss.js": Path.resolve("stubs/parser-flow.js"),
       "./parser-yaml.js": Path.resolve("stubs/parser-flow.js"),
+      "util/types": Path.resolve("stubs/util-types.js"),
     },
     extensions: [".tsx", ".ts", ".js"],
   },

@@ -3,7 +3,7 @@
   "version": "1.1.27",
   "description": "fynpo is a zero setup monorepo manager for node.js",
   "main": "dist/index.js",
-  "homepage": "https://www.electrode.io/fynpo/",
+  "homepage": "https://jchip.github.io/fynpo/",
   "scripts": {
     "build": "rm -rf dist && webpack",
     "docs": "xrun xarc/docs",
@@ -38,7 +38,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/electrode-io/fynpo.git",
+    "url": "https://github.com/jchip/fynpo.git",
     "directory": "packages/fynpo"
   },
   "bin": {
@@ -49,9 +49,13 @@
     "registry": "https://registry.npmjs.com/"
   },
   "dependencies": {
+    "env-paths": "^2.2.1",
     "fyn": "^1.1.24",
     "import-fresh": "3.3.0",
-    "resolve-global": "1.0.0"
+    "mkdirp": "^1.0.4",
+    "resolve-global": "1.0.0",
+    "undici": "^4.14.1",
+    "xaa": "^1.7.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -87,6 +91,7 @@
     "fs-extra": "^9.1.0",
     "get-stdin": "^8.0.0",
     "item-queue": "^1.1.2",
+    "npm-packlist": "jchip/npm-packlist",
     "jest": "^27.3.1",
     "lodash": "^4.17.21",
     "minimatch": "^3.0.4",

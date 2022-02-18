@@ -11,6 +11,8 @@ export * from "./fynpo-config";
 
 export * from "./util";
 
+export * as caching from "./caching";
+
 /**
  * Information about a package within the mono-repo
  */

@@ -1,9 +1,9 @@
 {
   "name": "@fynpo/base",
   "version": "1.1.9",
-  "description": "a node.js monorepo manager, support package",
+  "description": "zero setup monorepo manager for node.js",
   "main": "dist/index.js",
-  "homepage": "https://www.electrode.io/fynpo/",
+  "homepage": "https://jchip.github.io/fynpo/",
   "scripts": {
     "build": "rm -rf dist && tsc",
     "test": "xrun xarc/test-only",
@@ -32,6 +32,7 @@
     "@types/minimatch": "^3.0.5",
     "@types/node": "^14.14.16",
     "@xarc/module-dev": "^4.0.0",
+    "npm-packlist": "jchip/npm-packlist",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "publish-util": "^2.0.0",

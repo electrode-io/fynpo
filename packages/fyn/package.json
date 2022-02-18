@@ -1,9 +1,9 @@
 {
   "name": "fyn",
   "version": "1.1.24",
-  "description": "A node package manager, fast, workspace, and better productivity and efficiency",
+  "description": "The package manager for fynpo, a zero setup monorepo manager",
   "main": "./bin/fyn.js",
-  "homepage": "https://www.electrode.io/fynpo/",
+  "homepage": "https://jchip.github.io/fynpo/",
   "license": "Apache-2.0",
   "scripts": {
     "test": "xrun xarc/test-only",
@@ -63,7 +63,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/electrode-io/fynpo.git",
+    "url": "https://github.com/jchip/fynpo.git",
     "directory": "packages/fyn"
   },
   "publishUtil": {

@@ -186,7 +186,16 @@ const execVersion = async (parsed) => {
 const execRunScript = async (parsed) => {
   const opts = await makeOpts(parsed);
   const graph = await makeDepGraph(opts);
-  return new Run(opts, parsed.args, graph).exec();
+  let exitCode = 0;
+  try {
+    return await new Run(opts, parsed.args, graph).exec();
+  } catch (err) {
+    exitCode = 1;
+  } finally {
+    process.exit(exitCode);
+  }
+
+  return undefined;
 };
 
 const execInit = (parsed) => {
@@ -369,6 +378,11 @@ const nixClap = new NixClap({
           type: "boolean",
           default: true,
           desc: "run the script through packages in topological sort order, --no-sort to disable",
+        },
+        cache: {
+          type: "boolean",
+          default: false,
+          desc: "cache the run results",
         },
       },
     },

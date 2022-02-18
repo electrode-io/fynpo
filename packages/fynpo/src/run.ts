@@ -1,6 +1,8 @@
 /* reuses some of the awesome work from https://github.com/lerna/lerna/blob/main/commands/run/index.js */
-/* eslint-disable consistent-return */
+/* eslint-disable consistent-return, complexity */
 
+import Path from "path";
+import Fs from "fs";
 import xsh from "xsh";
 import { logger } from "./logger";
 import * as utils from "./utils";
@@ -11,6 +13,9 @@ import chalk from "chalk";
 import { FynpoDepGraph, FynpoTopoPackages, PackageDepData, FynpoPackageInfo } from "@fynpo/base";
 import ItemQueue from "item-queue";
 import { TopoRunner } from "./topo-runner";
+import { PkgBuildCache } from "./caching";
+import * as xaa from "xaa";
+import { InstallDeps } from "./install-deps";
 
 type RunResult = { failed: boolean; exitCode: number } & Error;
 
@@ -90,12 +95,12 @@ path: ${pkg.path}`,
     msg.split("\n").forEach((l) => logger.prefix(false).info(l));
   }
 
-  _logRunResult({ timer, error, output, pkg }) {
+  _logRunResult({ timer, error, output, pkg }, moreInfo = " ") {
     const name = pkg.name;
 
     const duration = (timer() / 1000).toFixed(1);
     const m1 = error ? "ERROR - Failed" : "Completed";
-    const m2 = `${m1} run script '${this._script}' for package ${name}.  Time: ${duration}s
+    const m2 = `${m1} run script '${this._script}' for package ${name}.${moreInfo}Time: ${duration}s
 path: ${pkg.path}`;
     const m3 = `${this._options.stream ? "" : "\nOutput follows:"}`;
     const m4 = `${m2}${m3}`;
@@ -120,11 +125,13 @@ path: ${pkg.path}`;
     }
   }
 
-  async runPackage(pkgInfo: FynpoPackageInfo, results: RunResult[], errors: Error[]) {
+  async runPackage(depData: PackageDepData, results: RunResult[], errors: Error[]) {
     // TODO: expose continueOnError option
     if (!this._options.continueOnError && errors.length > 0) {
       return;
     }
+
+    const pkgInfo = depData.pkgInfo;
 
     this._logQueueMsg(pkgInfo);
 
@@ -133,17 +140,46 @@ path: ${pkg.path}`;
       timer: utils.timer(),
     };
 
-    try {
-      runData.output = await this.getRunner()(pkgInfo);
-      results.push(runData.output);
-    } catch (err: any) {
-      err.pkg = pkgInfo;
-      errors.push(err);
-      results.push(err);
-      runData.error = err;
-      runData.output = err;
-    } finally {
-      this._logRunResult(runData);
+    const cacheRules = _.get(this._options, "lifecycleCache.default");
+
+    let cached: PkgBuildCache;
+
+    if (this._options.cache && !_.isEmpty(cacheRules)) {
+      cached = new PkgBuildCache(this._cwd, this._options, cacheRules, `run-${this._script}`);
+      await cached.checkCache(depData);
+    }
+
+    if (cached && cached.exist) {
+      if (cached.exist === "remote") {
+        await cached.downloadCacheFromRemote();
+      }
+      await cached.restoreFromCache();
+      runData.output = { stderr: "", stdout: "" };
+      this._logRunResult(runData, chalk.cyan(` (${cached.exist} cached) `));
+    } else {
+      try {
+        const nmPath = Path.join(this._cwd, pkgInfo.path, "node_modules");
+        if (_.get(cacheRules, "requireDeps") !== false && !Fs.existsSync(nmPath)) {
+          logger.info(
+            `node_modules is missing in ${pkgInfo.path} - installing before running script`
+          );
+          const installDeps = new InstallDeps(this._cwd, []);
+          await installDeps.runVisualInstall(pkgInfo, `installing node_modules in ${pkgInfo.path}`);
+        }
+        runData.output = await this.getRunner()(pkgInfo);
+        results.push(runData.output);
+        if (!runData.error && cached && cached.enable) {
+          await xaa.try(() => cached.copyToCache());
+        }
+      } catch (err: any) {
+        err.pkg = pkgInfo;
+        errors.push(err);
+        results.push(err);
+        runData.error = err;
+        runData.output = err;
+      } finally {
+        this._logRunResult(runData);
+      }
     }
   }
 
@@ -151,11 +187,11 @@ path: ${pkg.path}`;
     const errors: Error[] = [];
     const results: RunResult[] = [];
 
-    const queue = new ItemQueue<FynpoPackageInfo>({
-      processItem: async (pkgInfo) => {
-        return this.runPackage(pkgInfo, results, errors);
+    const queue = new ItemQueue<PackageDepData>({
+      processItem: async (depData) => {
+        return this.runPackage(depData, results, errors);
       },
-      itemQ: packagesToRun.map((d) => d.pkgInfo),
+      itemQ: packagesToRun,
       concurrency: this._concurrency,
     });
 
@@ -172,8 +208,8 @@ path: ${pkg.path}`;
 
     await topoRunner.start({
       concurrency: this._concurrency,
-      processor: (pkgInfo: FynpoPackageInfo) => {
-        return this.runPackage(pkgInfo, results, errors);
+      processor: (_pkgInfo: FynpoPackageInfo, depData: PackageDepData) => {
+        return this.runPackage(depData, results, errors);
       },
     });
 

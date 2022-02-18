@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "@jest/globals";
 import { Bootstrap } from "../src/bootstrap";
 import path from "path";
 import { FynpoDepGraph } from "@fynpo/base";
+import * as xaa from "xaa";
 
 describe("fynpo bootstrap", () => {
   const dir = path.join(__dirname, "sample");
@@ -26,7 +27,8 @@ describe("fynpo bootstrap", () => {
     bootstrap = new Bootstrap(graph, parsed.opts);
   });
 
-  it("should initialize bootstrap class", () => {
+  it("should initialize bootstrap class", async () => {
+    await xaa.delay(500);
     expect(bootstrap._opts).toStrictEqual(parsed.opts);
     expect(bootstrap.failed).toEqual(0);
   });

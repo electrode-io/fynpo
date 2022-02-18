@@ -1,21 +1,23 @@
 /* eslint-disable no-magic-numbers, consistent-return, complexity */
 
-import Path from "path";
 import _ from "lodash";
 import { ItemQueueResult } from "item-queue";
-import VisualExec from "visual-exec";
 import { logger } from "./logger";
 import chalk from "chalk";
 import { isCI } from "./is-ci";
-
-import { locateGlobalFyn } from "./utils";
-import { startMetaMemoizer } from "./meta-memoizer";
-import { FynpoDepGraph, PackageDepData, pkgInfoId } from "@fynpo/base";
+import {
+  FynpoDepGraph,
+  FynpoPackageInfo,
+  FynpoTopoPackages,
+  PackageDepData,
+  pkgInfoId,
+} from "@fynpo/base";
 
 import { TopoRunner } from "./topo-runner";
-import os from "os";
-
-const xrequire = eval("require"); // eslint-disable-line
+import { PkgBuildCache } from "./caching";
+import * as xaa from "xaa";
+import { InstallDeps } from "./install-deps";
+import { checkGlobalFynVersion } from "./utils";
 
 type PackageInstallInfo = {
   depData: PackageDepData;
@@ -24,15 +26,16 @@ type PackageInstallInfo = {
 
 export class Bootstrap {
   _opts;
-  _fyn;
   graph: FynpoDepGraph;
+  topoPkgs: FynpoTopoPackages;
   installInfo: Record<string, PackageInstallInfo>;
   _topoRunner: TopoRunner;
 
   constructor(graph: FynpoDepGraph, opts) {
     this._opts = opts;
-    this._topoRunner = new TopoRunner(graph.getTopoSortPackages(), opts);
-    this._fyn = null;
+    this.topoPkgs = graph.getTopoSortPackages();
+    this._topoRunner = new TopoRunner(this.topoPkgs, opts);
+    this.graph = graph;
   }
 
   get cwd() {
@@ -111,50 +114,16 @@ ${output.stderr}
     concurrency = 6,
     skip = [],
   }) {
-    if (!this._fyn) {
-      this._fyn = xrequire.resolve("fyn");
-      /* eslint-disable @typescript-eslint/no-var-requires */
-      const fynPkgJson = xrequire("fyn/package.json");
+    const installDeps = new InstallDeps(this.cwd, fynOpts);
+    await checkGlobalFynVersion();
 
-      const globalFynInfo = await locateGlobalFyn();
-      if (globalFynInfo.dir) {
-        if (globalFynInfo.pkgJson.version !== fynPkgJson.version) {
-          logger.warn(
-            `You have fyn installed globally but its version ${globalFynInfo.pkgJson.version} \
-is different from fynpo's internal version ${fynPkgJson.version}`
-          );
-        }
-      }
-
-      const nodeDir = process.argv[0].replace(os.homedir(), "~");
-      const fynDir = `.${Path.sep}${Path.relative(process.cwd(), this._fyn)}`;
-
-      logger.info(`Executing fyn with '${nodeDir} ${fynDir}'`);
-    }
-
-    let mmOpt = "";
-
-    try {
-      const metaMemoizer = await startMetaMemoizer();
-      mmOpt = `--meta-mem=http://localhost:${metaMemoizer.info.port}`;
-    } catch (err) {
-      //
-    }
-
-    let logLevelOpts = "";
-    if (fynOpts.indexOf("-q") < 0 && fynOpts.indexOf("--log-level") < 0) {
-      logLevelOpts = "-q d";
-    }
-
-    const fynOptArgs = [isCI ? "--pg simple" : ""]
-      .concat(fynOpts, logLevelOpts, `install`, `--sl`, `--no-build-local`, mmOpt)
-      .filter((x) => x);
-
-    const dispCmd = chalk.cyan([`fyn`].concat(fynOptArgs).join(" "));
+    const dispCmd = chalk.cyan([`fyn`].concat(installDeps.fynOptArgs).join(" "));
     logger.info(`bootstrap command: ${dispCmd}`);
+    const colorFyn = chalk.cyan(`fyn`);
+
     await this._topoRunner.start({
       concurrency,
-      processor: (pkgInfo) => {
+      processor: async (pkgInfo: FynpoPackageInfo, depData: PackageDepData) => {
         const colorId = chalk.magenta(pkgInfoId(pkgInfo));
         if (skip && skip.includes(pkgInfo.name)) {
           logger.info("bootstrap skipping", colorId);
@@ -162,18 +131,27 @@ is different from fynpo's internal version ${fynPkgJson.version}`
         }
         const colorPath = chalk.blue(pkgInfo.path);
 
-        const command = [process.argv[0], this._fyn].concat(fynOptArgs).join(" ");
-        const colorFyn = chalk.cyan(`fyn`);
-        logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
-        const ve = new VisualExec({
-          displayTitle: `bootstrap ${colorId} in ${colorPath} ${colorFyn}`,
-          cwd: pkgInfo.path,
-          command,
-          visualLogger: logger,
-        });
+        const cacheRules = _.get(this._opts, "packageCache.default");
+        let cached: PkgBuildCache;
+        if (!_.isEmpty(cacheRules)) {
+          cached = new PkgBuildCache(this.cwd, this._opts, cacheRules, "bootstrap");
+          await cached.checkCache(depData);
+        }
 
-        ve.logFinalOutput = _.noop;
-        return ve.execute();
+        if (cached && cached.exist) {
+          if (cached.exist === "remote") {
+            await cached.downloadCacheFromRemote();
+          }
+          await cached.restoreFromCache();
+          logger.info("Done bootstrap", colorId, colorPath, chalk.cyan(`(${cached.exist} cached)`));
+        } else {
+          logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
+          const displayTitle = `bootstrap ${colorId} in ${colorPath} ${colorFyn}`;
+          await installDeps.runVisualInstall(pkgInfo, displayTitle);
+          if (cached && cached.enable) {
+            await xaa.try(() => cached.copyToCache());
+          }
+        }
       },
       stopOnError: true,
     });

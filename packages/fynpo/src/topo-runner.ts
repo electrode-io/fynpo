@@ -104,7 +104,7 @@ export class TopoRunner {
       stopOnError,
       processItem: (item: PackageRunInfo) => {
         const pkgInfo = item.depData.pkgInfo;
-        return processor(pkgInfo);
+        return processor(pkgInfo, item.depData);
       },
       handlers: {
         doneItem: (data: any) => {

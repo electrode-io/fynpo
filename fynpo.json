@@ -5,5 +5,54 @@
       "layout": "detail"
     }
   },
-  "packages": ["packages/*"]
+  "packages": ["packages/*"],
+  "caching": {
+    "enable": true,
+    "server": "http://localhost:8080/upload",
+    "pruning": {
+      "highCount": 12,
+      "keepCount": 6
+    },
+    "alwaysUploadToRemote": true
+  },
+  "packageCache": {
+    "default": {
+      "input": {
+        "npmScripts": ["prepare", "prepublish", "build:release", "build"],
+        "include": ["**/*"],
+        "exclude": [
+          "**/?(node_modules|.vscode|.DS_Store|coverage|.nyc_output|.fynpo|.git|.github|.gitignore|docs|docusaurus|packages|tmp|.etmp|samples|dist|dist-*|build)",
+          "**/*.?(log|md)"
+        ],
+        "includeEnv": ["NODE_ENV"],
+        "includeVersions": ["node"]
+      },
+      "output": {
+        "include": "",
+        "filesFromNpmPack": true,
+        "exclude": [
+          "**/?(node_modules|.vscode|.DS_Store|coverage|.nyc_output|.fynpo|src|docusaurus)",
+          "**/*.log"
+        ]
+      }
+    }
+  },
+  "lifecycleCache": {
+    "default": {
+      "input": {
+        "npmScripts": ["test", "coverage", "ci:check"],
+        "include": ["**/*"],
+        "exclude": [
+          "**/?(node_modules|.vscode|.DS_Store|coverage|.nyc_output|.fynpo|.git|.github|.gitignore|docs|docusaurus|packages|tmp|.etmp|samples|dist|dist-*|build)",
+          "**/*.?(log|md)",
+          "**/.fynpo-data.json"
+        ],
+        "includeEnv": ["NODE_ENV"]
+      },
+      "output": {
+        "include": ["coverage"],
+        "exclude": []
+      }
+    }
+  }
 }
