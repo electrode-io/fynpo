@@ -10,7 +10,7 @@ $pkg:
   check-pkg-new-version-engine: ^1.0.3
   ci-info: ^2.0.0
   es6-promisify: ./es6-promisify
-  filter-scan-dir: ^1.5.0
+  filter-scan-dir: ^1.5.5
   ini: ^2.0.0
   init-package: ../init-package
   invariant: ^2.2.4
@@ -1266,15 +1266,15 @@ $pkg:
    minimatch: ^3.0.4
    strip-json-comments: ^3.1.1
 '@fynpo/base':
- _latest: 1.1.7-fynlocal_h
+ _latest: 1.1.8-fynlocal_h
  _:
-  ../fynpo-base: 1.1.7-fynlocal_h
- 1.1.7-fynlocal_h:
+  ../fynpo-base: 1.1.8-fynlocal_h
+ 1.1.8-fynlocal_h:
   top: 1
   $: local
   _: ../fynpo-base
   dependencies:
-   filter-scan-dir: ^1.5.0
+   filter-scan-dir: ^1.5.5
    is-path-inside: ^3.0.3
    lodash: ^4.17.21
    minimatch: ^3.0.4
@@ -3557,13 +3557,13 @@ fill-range:
   dependencies:
    to-regex-range: ^5.0.1
 filter-scan-dir:
- _latest: 1.5.0
+ _latest: 1.5.5
  _:
-  '^1.0.10,^1.5.0': 1.5.0
- 1.5.0:
+  '^1.0.10,^1.5.5': 1.5.5
+ 1.5.5:
   top: 1
-  $: sha512-ah80qDpI5quyhRduhNrZpXMk0Q2djzDy2tCodbFDQioEH4Jo7fQ2JJd6GRfzqEVaSSFePv50igp6Llhpg7H2qw==
-  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.5.0.tgz'
+  $: sha512-6mjGuIpeh3OoLxWPWYa4OHSzKrT2gfNJzcObHYMyp6+FTsZXe44up+CUMhoGu/Gqx8ZsV5KOT3JjvjA9ZuEVjA==
+  _: 'https://registry.npmjs.org/filter-scan-dir/-/filter-scan-dir-1.5.5.tgz'
 find-cache-dir:
  _latest: 3.3.1
  _:
@@ -6400,23 +6400,23 @@ slide:
   $: sha1-VusCfWW00tzmyy4tMsTUr8nh1wc=
   _: 'https://registry.npmjs.com/slide/-/slide-1.1.6.tgz'
 smart-buffer:
- _latest: 4.1.0
+ _latest: 4.2.0
  _:
-  ^4.1.0: 4.1.0
- 4.1.0:
-  $: sha512-iVICrxOzCynf/SNaBQCw34eM9jROU/s5rzIhpOvzhzuYHfJR/DhZfDkXiZSgKXfgv26HT3Yni3AV/DGw0cGnnw==
-  _: 'https://registry.npmjs.com/smart-buffer/-/smart-buffer-4.1.0.tgz'
+  '^4.1.0,^4.2.0': 4.2.0
+ 4.2.0:
+  $: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
+  _: 'https://registry.npmjs.org/smart-buffer/-/smart-buffer-4.2.0.tgz'
 socks:
  _latest: 2.6.2
  _:
-  ^2.6.1: 2.6.1
+  ^2.6.1: 2.6.2
   ~2.3.2: 2.3.3
- 2.6.1:
-  $: sha512-kLQ9N5ucj8uIcxrDwjm0Jsqk06xdpBjGNQtpXy4Q8/QY2k+fY7nZH8CARy+hkbG+SGAovmzzuauCpBlb8FrnBA==
-  _: 'https://registry.npmjs.org/socks/-/socks-2.6.1.tgz'
+ 2.6.2:
+  $: sha512-zDZhHhZRY9PxRruRMR7kMhnf3I8hDs4S3f9RecfnGxvcBHQcKcIH/oUcEWffsfl1XxdYlA7nnlGbbTvPz9D8gA==
+  _: 'https://registry.npmjs.org/socks/-/socks-2.6.2.tgz'
   dependencies:
    ip: ^1.1.5
-   smart-buffer: ^4.1.0
+   smart-buffer: ^4.2.0
  2.3.3:
   $: sha512-o5t52PCNtVdiOvzMry7wU4aOqYWL0PeCXRWBEiJow4/i/wr+wpsJQ9awEu1EonLIqsfGd5qSgDdxEOvCdmBEpA==
   _: 'https://registry.npmjs.org/socks/-/socks-2.3.3.tgz'

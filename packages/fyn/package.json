@@ -88,7 +88,7 @@
     "check-pkg-new-version-engine": "^1.0.3",
     "ci-info": "^2.0.0",
     "es6-promisify": "./es6-promisify",
-    "filter-scan-dir": "^1.5.0",
+    "filter-scan-dir": "^1.5.5",
     "ini": "^2.0.0",
     "init-package": "^1.0.0",
     "invariant": "^2.2.4",
