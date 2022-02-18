@@ -1,11 +1,11 @@
 {
   "name": "@fynpo/base",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "a node.js monorepo manager, support package",
   "main": "dist/index.js",
   "homepage": "https://www.electrode.io/fynpo/",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "test": "xrun xarc/test-only",
     "lint": "xrun xarc/lint",
     "coverage": "xrun xarc/test-cov",
