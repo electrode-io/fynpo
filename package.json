@@ -8,8 +8,8 @@
   "scripts": {
     "test": "fynpo run test --stream",
     "ci:check": "fynpo run ci:check --stream",
-    "coverage": "fynpo run coverage",
-    "lint": "fynpo run lint",
+    "coverage": "fynpo run coverage --stream",
+    "lint": "fynpo run lint --stream",
     "bootstrap": "fynpo",
     "install": "fynpo",
     "testing": "cd testing/monorepo-test && npm run clean-test",
