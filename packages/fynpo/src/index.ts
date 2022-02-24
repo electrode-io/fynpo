@@ -87,12 +87,12 @@ const makeBootstrap = async (parsed) => {
   return new Bootstrap(graph, opts);
 };
 
-const execBootstrap = async (parsed, cli, second = false) => {
+const execBootstrap = async (parsed, cli, firstRunTime = 0) => {
   const bootstrap = await makeBootstrap(parsed);
   const fynpoDataStart = await readFynpoData(bootstrap.cwd);
   let statusCode = 0;
 
-  if (!second) {
+  if (!firstRunTime) {
     logger.debug("CLI options", JSON.stringify(parsed));
   }
 
@@ -105,14 +105,14 @@ const execBootstrap = async (parsed, cli, second = false) => {
       skip: parsed.opts.skip,
     });
 
-    if (!second) {
+    if (!firstRunTime) {
       const fynpoDataEnd = await readFynpoData(bootstrap.cwd);
       if (fynpoDataEnd.__timestamp !== fynpoDataStart.__timestamp) {
         logger.info(
           "=== fynpo data changed - running bootstrap again - fynpo recommands that you commit the .fynpo-data.json file ==="
         );
         secondRun = true;
-        return await execBootstrap(parsed, cli, true);
+        return await execBootstrap(parsed, cli, bootstrap.elapsedTime);
       }
     }
 
@@ -125,7 +125,7 @@ const execBootstrap = async (parsed, cli, second = false) => {
     }
   } finally {
     if (!secondRun) {
-      const sec = (bootstrap.elapsedTime / 1000).toFixed(2);
+      const sec = ((bootstrap.elapsedTime + firstRunTime) / 1000).toFixed(2);
       logger.info(`bootstrap completed in ${sec}secs`);
       if (statusCode !== 0 || parsed.opts.saveLog) {
         Fs.writeFileSync("fynpo-debug.log", logger.logData.join("\n") + "\n");

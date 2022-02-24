@@ -146,7 +146,7 @@ is different from fynpo's internal version ${fynPkgJson.version}`
       logLevelOpts = "-q d";
     }
 
-    const fynOptArgs = [process.env.CI ? "--pg simple" : ""]
+    const fynOptArgs = [isCI ? "--pg simple" : ""]
       .concat(fynOpts, logLevelOpts, `install`, `--sl`, `--no-build-local`, mmOpt)
       .filter((x) => x);
 
