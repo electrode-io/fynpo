@@ -1,3 +1,28 @@
+# 2/25/2022
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.11` `(1.1.10 => 1.1.11)`
+-   `fynpo@1.1.29` `(1.1.28 => 1.1.29)`
+
+### Fynpo Updated
+
+-   `fyn@1.1.26` `(1.1.25 => 1.1.26)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   save cache missed details for debugging [commit](https://github.com/electrode-io/fynpo/commit/f2e665b787203dab1b437b25017fd0851717155a)
+    -   polyfill hash digest base64url for older node versions [commit](https://github.com/electrode-io/fynpo/commit/4f9a2e213ffed00d3874e6f29499dcaaa4eeba2a)
+    -   update docs [commit](https://github.com/electrode-io/fynpo/commit/be812191be2fec623e161836b2a26ad69b4bad4e)
+
+-   `packages/fynpo`
+
+    -   save cache missed details for debugging [commit](https://github.com/electrode-io/fynpo/commit/f2e665b787203dab1b437b25017fd0851717155a)
+
 # 2/24/2022
 
 ## Packages
