@@ -1,3 +1,41 @@
+# 2/24/2022
+
+## Packages
+
+-   `@fynpo/base@1.1.10` `(1.1.9 => 1.1.10)`
+-   `fyn@1.1.25` `(1.1.24 => 1.1.25)`
+-   `fynpo@1.1.28` `(1.1.27 => 1.1.28)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   implement caching [commit](https://github.com/electrode-io/fynpo/commit/7223d3718ec4df4e419753e141c20d01d53d35ad)
+    -   update filterScanDir types [commit](https://github.com/electrode-io/fynpo/commit/17a63d86f225df5b117d8a7a5cceffcfb9549096)
+    -   scan files concurrently [commit](https://github.com/electrode-io/fynpo/commit/edea1cd6778c00867ca616a444f46faee83604b0)
+
+-   `packages/fyn`
+
+    -   implement caching [commit](https://github.com/electrode-io/fynpo/commit/7223d3718ec4df4e419753e141c20d01d53d35ad)
+
+-   `packages/fynpo`
+
+    -   implement caching [commit](https://github.com/electrode-io/fynpo/commit/7223d3718ec4df4e419753e141c20d01d53d35ad)
+    -   report total bootstrap time with second run [commit](https://github.com/electrode-io/fynpo/commit/963c5c1e55464f7c14cc49ccdab624873b67e62e)
+    -   fynpo publish support running top prepublishOnly script [commit](https://github.com/electrode-io/fynpo/commit/3ef97d6a491ad141b230f4238be592305aa1c835)
+
+-   `packages/init-package`
+
+    -   fix init-package test [commit](https://github.com/electrode-io/fynpo/commit/fab42128c92642ec984894760e8a42136cbc441d)
+
+-   `.github`
+
+    -   add node 16 to ci [commit](https://github.com/electrode-io/fynpo/commit/404e3be99b237fc804d58638ccb6ba3e04e70d07)
+
+-   `MISC`
+
+    -   fynpo run with stream [commit](https://github.com/electrode-io/fynpo/commit/94607ee0ac03825fde27c133a733bc4b707f25ba)
+
 # 2/18/2022
 
 ## Packages
