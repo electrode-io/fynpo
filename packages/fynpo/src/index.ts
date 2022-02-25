@@ -210,256 +210,258 @@ const execLinting = (parsed) => {
   return new Commitlint(opts).exec();
 };
 
-const nixClap = new NixClap({
-  usage: "$0 [command] [options]",
-  handlers: {
-    parsed: (data) => {
-      try {
-        const cwd = data.parsed.opts.cwd || process.cwd();
-        /* eslint-disable @typescript-eslint/no-var-requires */
-        data.nixClap.applyConfig(xrequire(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
-      } catch (e) {
-        // Error
-      }
-    },
-  },
-}).init(
-  {
-    cwd: {
-      type: "string",
-      desc: "set fynpo's working directory",
-    },
-    ignore: {
-      alias: "i",
-      type: "string array",
-      desc: "list of packages to ignore",
-      allowCmd: ["bootstrap", "local", "run"],
-    },
-    only: {
-      alias: "o",
-      type: "string array",
-      desc: "list of packages to handle only",
-      allowCmd: ["bootstrap", "local", "run"],
-    },
-    scope: {
-      alias: "s",
-      type: "string array",
-      desc: "include only packages with names matching the given scopes",
-      allowCmd: ["bootstrap", "local", "run"],
-    },
-    deps: {
-      alias: "d",
-      type: "number",
-      default: 10,
-      desc: "level of deps to include even if they were ignored",
-      allowCmd: ["bootstrap", "local", "run"],
-    },
-    commit: {
-      type: "boolean",
-      default: true,
-      desc: "no-commit to disable committing the changes to changelog and package.json",
-      allowCmd: ["changelog", "version", "prepare"],
-    },
-    "force-publish": {
-      alias: "fp",
-      type: "string array",
-      desc: "force publish packages",
-      allowCmd: ["updated", "changelog", "version"],
-    },
-    "ignore-changes": {
-      alias: "ic",
-      type: "string array",
-      desc: "ignore patterns",
-      allowCmd: ["updated", "changelog", "version"],
-    },
-    "save-log": {
-      alias: "sl",
-      type: "boolean",
-      default: false,
-      desc: "save logs to fynpo-debug.log",
-    },
-  },
-  {
-    bootstrap: {
-      alias: "b",
-      desc: "bootstrap packages",
-      default: true,
-      exec: execBootstrap,
-      options: {
-        build: {
-          type: "boolean",
-          default: true,
-          desc: "run npm script build if no prepare",
-        },
-        concurrency: {
-          alias: "cc",
-          type: "number",
-          default: 6,
-          desc: "number of packages to bootstrap concurrently",
-        },
-        skip: {
-          type: "string array",
-          desc: "list of packages to skip running fyn install on, but won't ignore",
-        },
+export const fynpoMain = () => {
+  const nixClap = new NixClap({
+    usage: "$0 [command] [options]",
+    handlers: {
+      parsed: (data) => {
+        try {
+          const cwd = data.parsed.opts.cwd || process.cwd();
+          /* eslint-disable @typescript-eslint/no-var-requires */
+          data.nixClap.applyConfig(xrequire(Path.join(cwd, "lerna.json")).fynpo, data.parsed);
+        } catch (e) {
+          // Error
+        }
       },
     },
-    local: {
-      alias: "l",
-      desc: "update packages dependencies to point to local",
-      exec: execLocal,
-    },
-    prepare: {
-      alias: "p",
-      desc: "Prepare packages versions for publish",
-      exec: execPrepare,
-      options: {
-        tag: {
-          type: "boolean",
-          default: false,
-          desc: "create tags for individual packages",
-        },
+  }).init(
+    {
+      cwd: {
+        type: "string",
+        desc: "set fynpo's working directory",
+      },
+      ignore: {
+        alias: "i",
+        type: "string array",
+        desc: "list of packages to ignore",
+        allowCmd: ["bootstrap", "local", "run"],
+      },
+      only: {
+        alias: "o",
+        type: "string array",
+        desc: "list of packages to handle only",
+        allowCmd: ["bootstrap", "local", "run"],
+      },
+      scope: {
+        alias: "s",
+        type: "string array",
+        desc: "include only packages with names matching the given scopes",
+        allowCmd: ["bootstrap", "local", "run"],
+      },
+      deps: {
+        alias: "d",
+        type: "number",
+        default: 10,
+        desc: "level of deps to include even if they were ignored",
+        allowCmd: ["bootstrap", "local", "run"],
+      },
+      commit: {
+        type: "boolean",
+        default: true,
+        desc: "no-commit to disable committing the changes to changelog and package.json",
+        allowCmd: ["changelog", "version", "prepare"],
+      },
+      "force-publish": {
+        alias: "fp",
+        type: "string array",
+        desc: "force publish packages",
+        allowCmd: ["updated", "changelog", "version"],
+      },
+      "ignore-changes": {
+        alias: "ic",
+        type: "string array",
+        desc: "ignore patterns",
+        allowCmd: ["updated", "changelog", "version"],
+      },
+      "save-log": {
+        alias: "sl",
+        type: "boolean",
+        default: false,
+        desc: "save logs to fynpo-debug.log",
       },
     },
-    updated: {
-      alias: "u",
-      desc: "list changed packages",
-      exec: execUpdated,
-    },
-    changelog: {
-      alias: "c",
-      desc: "Update changelog",
-      exec: execChangelog,
-      options: {
-        publish: {
-          type: "boolean",
-          default: false,
-          desc: "enable to trigger publish with changelog commit",
-        },
-        tag: {
-          type: "boolean",
-          default: false,
-          desc: "create tags for individual packages",
-        },
-      },
-    },
-    run: {
-      alias: "r",
-      desc: "Run passed npm script in each package",
-      args: "<script>",
-      exec: execRunScript,
-      options: {
-        stream: {
-          type: "boolean",
-          default: false,
-          desc: "stream output from child processes, prefixed with the originating package name",
-        },
-        parallel: {
-          type: "boolean",
-          default: false,
-          desc: "run script immediately in up to concurrency number of matching packages",
-        },
-        prefix: {
-          type: "boolean",
-          default: true,
-          desc: "add package name prefixing for stream output, --no-prefix to disable",
-        },
-        bail: {
-          type: "boolean",
-          default: true,
-          desc: "immediately stop if any package's script fail, --no-bail to disable",
-        },
-        concurrency: {
-          alias: "cc",
-          type: "number",
-          default: 6,
-          desc: "number of packages to run script concurrently when parallel is not set",
-        },
-        sort: {
-          type: "boolean",
-          default: true,
-          desc: "run the script through packages in topological sort order, --no-sort to disable",
-        },
-        cache: {
-          type: "boolean",
-          default: false,
-          desc: "cache the run results",
+    {
+      bootstrap: {
+        alias: "b",
+        desc: "bootstrap packages",
+        default: true,
+        exec: execBootstrap,
+        options: {
+          build: {
+            type: "boolean",
+            default: true,
+            desc: "run npm script build if no prepare",
+          },
+          concurrency: {
+            alias: "cc",
+            type: "number",
+            default: 6,
+            desc: "number of packages to bootstrap concurrently",
+          },
+          skip: {
+            type: "string array",
+            desc: "list of packages to skip running fyn install on, but won't ignore",
+          },
         },
       },
-    },
-    version: {
-      alias: "v",
-      desc: "Update changelog and bump version",
-      exec: execVersion,
-      options: {
-        tag: {
-          type: "boolean",
-          default: false,
-          desc: "create tags for individual packages",
+      local: {
+        alias: "l",
+        desc: "update packages dependencies to point to local",
+        exec: execLocal,
+      },
+      prepare: {
+        alias: "p",
+        desc: "Prepare packages versions for publish",
+        exec: execPrepare,
+        options: {
+          tag: {
+            type: "boolean",
+            default: false,
+            desc: "create tags for individual packages",
+          },
         },
       },
-    },
-    publish: {
-      alias: "pb",
-      desc: "Publish Packages",
-      exec: execPublish,
-      options: {
-        "dist-tag": {
-          type: "string",
-          desc: "set publish tag for all packages",
-        },
-        "dry-run": {
-          type: "boolean",
-          default: false,
-          desc: "publish dry run",
-        },
-        push: {
-          type: "boolean",
-          default: true,
-          desc: "no-push to skip pushing release tag to remote",
+      updated: {
+        alias: "u",
+        desc: "list changed packages",
+        exec: execUpdated,
+      },
+      changelog: {
+        alias: "c",
+        desc: "Update changelog",
+        exec: execChangelog,
+        options: {
+          publish: {
+            type: "boolean",
+            default: false,
+            desc: "enable to trigger publish with changelog commit",
+          },
+          tag: {
+            type: "boolean",
+            default: false,
+            desc: "create tags for individual packages",
+          },
         },
       },
-    },
-    init: {
-      alias: "i",
-      desc: "Initialize a new fynpo repo",
-      exec: execInit,
-      options: {
-        commitlint: {
-          type: "boolean",
-          default: false,
-          desc: "To add commitlint configuration",
+      run: {
+        alias: "r",
+        desc: "Run passed npm script in each package",
+        args: "<script>",
+        exec: execRunScript,
+        options: {
+          stream: {
+            type: "boolean",
+            default: false,
+            desc: "stream output from child processes, prefixed with the originating package name",
+          },
+          parallel: {
+            type: "boolean",
+            default: false,
+            desc: "run script immediately in up to concurrency number of matching packages",
+          },
+          prefix: {
+            type: "boolean",
+            default: true,
+            desc: "add package name prefixing for stream output, --no-prefix to disable",
+          },
+          bail: {
+            type: "boolean",
+            default: true,
+            desc: "immediately stop if any package's script fail, --no-bail to disable",
+          },
+          concurrency: {
+            alias: "cc",
+            type: "number",
+            default: 6,
+            desc: "number of packages to run script concurrently when parallel is not set",
+          },
+          sort: {
+            type: "boolean",
+            default: true,
+            desc: "run the script through packages in topological sort order, --no-sort to disable",
+          },
+          cache: {
+            type: "boolean",
+            default: false,
+            desc: "cache the run results",
+          },
         },
       },
-    },
-    commitlint: {
-      alias: "cl",
-      desc: "Commit lint",
-      exec: execLinting,
-      options: {
-        config: {
-          type: "string",
-          description: "path to the config file",
-        },
-        color: {
-          alias: "c",
-          default: true,
-          description: "toggle colored output",
-          type: "boolean",
-        },
-        edit: {
-          alias: "e",
-          description:
-            "read last commit message from the specified file or fallbacks to ./.git/COMMIT_EDITMSG",
-          type: "string",
-        },
-        verbose: {
-          alias: "V",
-          type: "boolean",
-          description: "enable verbose output for reports without problems",
+      version: {
+        alias: "v",
+        desc: "Update changelog and bump version",
+        exec: execVersion,
+        options: {
+          tag: {
+            type: "boolean",
+            default: false,
+            desc: "create tags for individual packages",
+          },
         },
       },
-    },
-  }
-);
+      publish: {
+        alias: "pb",
+        desc: "Publish Packages",
+        exec: execPublish,
+        options: {
+          "dist-tag": {
+            type: "string",
+            desc: "set publish tag for all packages",
+          },
+          "dry-run": {
+            type: "boolean",
+            default: false,
+            desc: "publish dry run",
+          },
+          push: {
+            type: "boolean",
+            default: true,
+            desc: "no-push to skip pushing release tag to remote",
+          },
+        },
+      },
+      init: {
+        alias: "i",
+        desc: "Initialize a new fynpo repo",
+        exec: execInit,
+        options: {
+          commitlint: {
+            type: "boolean",
+            default: false,
+            desc: "To add commitlint configuration",
+          },
+        },
+      },
+      commitlint: {
+        alias: "cl",
+        desc: "Commit lint",
+        exec: execLinting,
+        options: {
+          config: {
+            type: "string",
+            description: "path to the config file",
+          },
+          color: {
+            alias: "c",
+            default: true,
+            description: "toggle colored output",
+            type: "boolean",
+          },
+          edit: {
+            alias: "e",
+            description:
+              "read last commit message from the specified file or fallbacks to ./.git/COMMIT_EDITMSG",
+            type: "string",
+          },
+          verbose: {
+            alias: "V",
+            type: "boolean",
+            description: "enable verbose output for reports without problems",
+          },
+        },
+      },
+    }
+  );
 
-nixClap.parseAsync();
+  return nixClap.parseAsync();
+};

@@ -58,7 +58,7 @@ function hashData2(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url
   if (encoding === "base64url") {
     return hashData1(data, "base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
   }
-  return Crypto.createHash("sha256").update(data).digest(encoding);
+  return hashData1(data, encoding);
 }
 
 const hashData =

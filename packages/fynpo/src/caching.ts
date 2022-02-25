@@ -11,6 +11,7 @@ import envPaths from "env-paths";
 import { request, stream } from "undici";
 import { caching } from "@fynpo/base";
 import * as xaa from "xaa";
+import { detailedDiff } from "deep-object-diff";
 
 export type CacheExistType = false | "fs" | "remote";
 
@@ -159,22 +160,6 @@ export class PkgBuildCache {
   }
 
   /**
-   * Read a package's cache meta stored in the monorepo's directory, by using its
-   * path in the monorepo.
-   *
-   * @param path
-   * @returns
-   */
-  async readRepoPkgCacheMetaByPath(path: string) {
-    const pkgCachingFile = Path.join(this.repoCacheMetaDir, this.pkgPathToRepoMetaFilename(path));
-    try {
-      return JSON.parse(await Fs.promises.readFile(pkgCachingFile, "utf-8"));
-    } catch {
-      return undefined;
-    }
-  }
-
-  /**
    * check if cache exist for a package
    *
    * @param pkgInfo
@@ -209,7 +194,7 @@ export class PkgBuildCache {
       cwd: Path.join(this.topDir, pkgInfo.path),
       input: _.get(this.cacheRules, "input"),
       packageJson: pkgInfo.pkgJson,
-      extra: `label:${this.label}\t${localDepHashes.join("\t")}`,
+      extra: [`label:${this.label}`].concat(localDepHashes).join("\t"),
     });
 
     this.cacheDir = Path.join(this.opts.dir, this.label, pkgInfo.name);
@@ -333,6 +318,23 @@ export class PkgBuildCache {
         output: this.output,
       })
     );
+  }
+
+  /**
+   * Read a package's cache meta stored in the monorepo's directory, by using its
+   * path in the monorepo.
+   *
+   * @param path
+   * @returns
+   */
+  async readRepoPkgCacheMetaByPath(path: string) {
+    const pkgCachingFile = Path.join(this.repoCacheMetaDir, this.pkgPathToRepoMetaFilename(path));
+    try {
+      return JSON.parse(await Fs.promises.readFile(pkgCachingFile, "utf-8"));
+    } catch (err) {
+      logger.error(`readRepoPkgCacheMetaByPath - ${pkgCachingFile}`, err);
+      return undefined;
+    }
   }
 
   /**
@@ -563,5 +565,41 @@ export class PkgBuildCache {
     output.access = Date.now();
     await this.saveOutputMetaToCache();
     await this.savePkgCacheMetaToRepo();
+  }
+
+  /**
+   * When cache missed and there is existing cache details, compare it with the new input meta
+   * and save the details to a log file for debugging.
+   *
+   * @returns
+   */
+  async saveCacheMissDetails() {
+    if (!this.input) {
+      return;
+    }
+    const repoCacheMeta = await this.readRepoPkgCacheMetaByPath(this.pkgInfo.path);
+    if (repoCacheMeta) {
+      const replacer = (_key: unknown, value: unknown) => (value === undefined ? null : value);
+      const oldData = repoCacheMeta.input.data;
+      const newData = this.input.data;
+      const diff = detailedDiff(oldData, newData);
+      await Fs.promises.writeFile(
+        Path.join(this.topDir, this.pkgInfo.path, `${this.label}-cache-diff.log`),
+        `${this.label} cache missed.  Date: ${new Date().toString()}
+---
+input data diff details
+---
+${JSON.stringify(diff, replacer, 2)}
+---
+old input data
+---
+${JSON.stringify(oldData, replacer, 2)}
+---
+new input data
+---
+${JSON.stringify(newData, replacer, 2)}
+`
+      );
+    }
   }
 }

@@ -138,17 +138,20 @@ ${output.stderr}
           await cached.checkCache(depData);
         }
 
-        if (cached && cached.exist) {
+        if (cached?.exist) {
           if (cached.exist === "remote") {
             await cached.downloadCacheFromRemote();
           }
           await cached.restoreFromCache();
           logger.info("Done bootstrap", colorId, colorPath, chalk.cyan(`(${cached.exist} cached)`));
         } else {
+          if (cached?.enable) {
+            await cached.saveCacheMissDetails();
+          }
           logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
           const displayTitle = `bootstrap ${colorId} in ${colorPath} ${colorFyn}`;
           await installDeps.runVisualInstall(pkgInfo, displayTitle);
-          if (cached && cached.enable) {
+          if (cached?.enable) {
             await xaa.try(() => cached.copyToCache());
           }
         }

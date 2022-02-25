@@ -149,7 +149,7 @@ path: ${pkg.path}`;
       await cached.checkCache(depData);
     }
 
-    if (cached && cached.exist) {
+    if (cached?.exist) {
       if (cached.exist === "remote") {
         await cached.downloadCacheFromRemote();
       }
@@ -157,6 +157,9 @@ path: ${pkg.path}`;
       runData.output = { stderr: "", stdout: "" };
       this._logRunResult(runData, chalk.cyan(` (${cached.exist} cached) `));
     } else {
+      if (cached?.enable) {
+        await cached.saveCacheMissDetails();
+      }
       try {
         const nmPath = Path.join(this._cwd, pkgInfo.path, "node_modules");
         if (_.get(cacheRules, "requireDeps") !== false && !Fs.existsSync(nmPath)) {

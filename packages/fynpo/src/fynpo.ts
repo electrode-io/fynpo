@@ -1,0 +1,2 @@
+import { fynpoMain } from ".";
+fynpoMain();

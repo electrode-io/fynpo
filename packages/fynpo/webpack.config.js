@@ -20,13 +20,7 @@ const base = {
     moduleIds: "named",
     nodeEnv: "production",
   },
-  plugins: [
-    new webpack.BannerPlugin({
-      banner: "#!/usr/bin/env node",
-      raw: true,
-    }),
-    process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin(),
-  ].filter((x) => x),
+  plugins: [process.env.ANALYZE_BUNDLE && new BundleAnalyzerPlugin()].filter((x) => x),
   resolve: {
     symlinks: true, // resolve symlinks to their real path
     alias: {
