@@ -47,7 +47,8 @@
           "**/*.?(log|md)",
           "**/.fynpo-data.json"
         ],
-        "includeEnv": ["NODE_ENV"]
+        "includeEnv": ["NODE_ENV"],
+        "includeVersions": ["node"]
       },
       "output": {
         "include": ["coverage"],

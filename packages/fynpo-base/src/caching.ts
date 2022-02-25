@@ -45,6 +45,26 @@ type CacheOutput = FilesFilterPatterns & {
 };
 
 /**
+ * create a sha256 hash for some data
+ *
+ * @param data
+ * @returns
+ */
+function hashData1(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url") {
+  return Crypto.createHash("sha256").update(data).digest(encoding);
+}
+
+function hashData2(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url") {
+  if (encoding === "base64url") {
+    return hashData1(data, "base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  }
+  return Crypto.createHash("sha256").update(data).digest(encoding);
+}
+
+const hashData =
+  typeof Crypto.createHash("sha256").digest("base64url") === "string" ? hashData1 : hashData2;
+
+/**
  * generate sha256 has of a file
  *
  * @param filename
@@ -55,18 +75,8 @@ async function hashFile(
   encoding: Crypto.BinaryToTextEncoding = "base64url"
 ): Promise<string> {
   const data = await Fs.promises.readFile(filename);
-  const hash = Crypto.createHash("sha256").update(data).digest(encoding);
+  const hash = hashData(data, encoding);
   return hash;
-}
-
-/**
- * create a sha256 hash for some data
- *
- * @param data
- * @returns
- */
-function hashData(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url") {
-  return Crypto.createHash("sha256").update(data).digest(encoding);
 }
 
 /**
