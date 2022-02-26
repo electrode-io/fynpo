@@ -146,7 +146,7 @@ export class PkgBuildCache {
    * @returns
    */
   getRemoteCacheUrl(hash: string, ext: string) {
-    return `${this.opts.server}${this.segmentHash(hash)}${ext}`;
+    return `${this.opts.server}${this.label}/${this.segmentHash(hash)}${ext}`;
   }
 
   /**
@@ -332,7 +332,6 @@ export class PkgBuildCache {
     try {
       return JSON.parse(await Fs.promises.readFile(pkgCachingFile, "utf-8"));
     } catch (err) {
-      logger.error(`readRepoPkgCacheMetaByPath - ${pkgCachingFile}`, err);
       return undefined;
     }
   }

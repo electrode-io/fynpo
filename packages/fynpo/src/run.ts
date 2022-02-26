@@ -126,12 +126,15 @@ path: ${pkg.path}`;
   }
 
   async runPackage(depData: PackageDepData, results: RunResult[], errors: Error[]) {
+    const pkgInfo = depData.pkgInfo;
+
     // TODO: expose continueOnError option
     if (!this._options.continueOnError && errors.length > 0) {
+      logger.error(
+        `Error occurred and 'continueOnError' is not set to true - skipping run script for ${pkgInfo.path}.`
+      );
       return;
     }
-
-    const pkgInfo = depData.pkgInfo;
 
     this._logQueueMsg(pkgInfo);
 
@@ -167,11 +170,15 @@ path: ${pkg.path}`;
             `node_modules is missing in ${pkgInfo.path} - installing before running script`
           );
           const installDeps = new InstallDeps(this._cwd, []);
-          await installDeps.runVisualInstall(pkgInfo, `installing node_modules in ${pkgInfo.path}`);
+          await installDeps.runVisualInstall(
+            pkgInfo,
+            `installing node_modules in ${pkgInfo.path} to run script ${this._script}`
+          );
+          logger.info(`    - continuing to run npm script ${this._script}`);
         }
         runData.output = await this.getRunner()(pkgInfo);
         results.push(runData.output);
-        if (!runData.error && cached && cached.enable) {
+        if (!runData.error && cached?.enable) {
           await xaa.try(() => cached.copyToCache());
         }
       } catch (err: any) {
