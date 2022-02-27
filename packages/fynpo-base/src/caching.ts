@@ -179,7 +179,7 @@ export async function processInput(
     input: CacheInput;
     packageJson?: Record<string, string | unknown>;
     // additional data to add to data for generating hash
-    extra?: string;
+    extra?: any;
   } = { input: {} }
 ) {
   const files = await scanFiles(cwd, makeMmPatterns(input.include), makeMmPatterns(input.exclude));
@@ -193,7 +193,7 @@ export async function processInput(
       input.npmScripts
     ),
     fileHashes,
-    extra: extra || "", // additional data
+    extra: extra || {}, // additional data
   };
 
   const hash = hashData(JSON.stringify(data));

@@ -174,7 +174,7 @@ export class PkgBuildCache {
     const pkgInfo = (this.pkgInfo = depData.pkgInfo);
 
     // find meta from local deps
-    const localDepHashes = [];
+    const localDepHashes = {};
     for (const localPath in depData.localDepsByPath) {
       const repoMeta = await this.readRepoPkgCacheMetaByPath(localPath);
       if (!repoMeta) {
@@ -186,7 +186,10 @@ export class PkgBuildCache {
       } else {
         const { output } = repoMeta;
         logger.debug(`found local dep cache meta - '${pkgInfo.path}' -> '${localPath}'`);
-        localDepHashes.push(`${localPath} input:${output.data.inputHash} output:${output.hash}`);
+        localDepHashes[localPath] = {
+          input: output.data.inputHash,
+          output: output.hash,
+        };
       }
     }
 
@@ -194,7 +197,7 @@ export class PkgBuildCache {
       cwd: Path.join(this.topDir, pkgInfo.path),
       input: _.get(this.cacheRules, "input"),
       packageJson: pkgInfo.pkgJson,
-      extra: [`label:${this.label}`].concat(localDepHashes).join("\t"),
+      extra: { label: this.label, localDepHashes },
     });
 
     this.cacheDir = Path.join(this.opts.dir, this.label, pkgInfo.name);
