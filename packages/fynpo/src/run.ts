@@ -125,14 +125,49 @@ path: ${pkg.path}`;
     }
   }
 
+  /**
+   * Install node_modules if it's missing in order to run the script.
+   *
+   * @param pkgInfo
+   * @param cacheRules
+   * @returns flag indicate if install node_modules occurred
+   */
+  async installDeps(pkgInfo: FynpoPackageInfo, cacheRules: any) {
+    const nmPath = Path.join(this._cwd, pkgInfo.path, "node_modules");
+    if (_.get(cacheRules, "requireDeps") !== false && !Fs.existsSync(nmPath)) {
+      logger.info(`node_modules is missing in ${pkgInfo.path} - installing before running script`);
+      const installDeps = new InstallDeps(this._cwd, []);
+      await installDeps.runVisualInstall(
+        pkgInfo,
+        `installing node_modules in ${pkgInfo.path} to run script ${this._script}`
+      );
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Run the script for a package
+   * @param depData
+   * @param results
+   * @param errors
+   * @returns
+   */
   async runPackage(depData: PackageDepData, results: RunResult[], errors: Error[]) {
     const pkgInfo = depData.pkgInfo;
 
     // TODO: expose continueOnError option
-    if (!this._options.continueOnError && errors.length > 0) {
-      logger.error(
-        `Error occurred and 'continueOnError' is not set to true - skipping run script for ${pkgInfo.path}.`
-      );
+    const shouldContinue = () => {
+      if (!this._options.continueOnError && errors.length > 0) {
+        logger.error(
+          `Error occurred and 'continueOnError' is not set to true - skipping run script for ${pkgInfo.path}.`
+        );
+        return false;
+      }
+      return true;
+    };
+
+    if (!shouldContinue()) {
       return;
     }
 
@@ -163,19 +198,17 @@ path: ${pkg.path}`;
       if (cached?.enable) {
         await cached.saveCacheMissDetails();
       }
+
+      let aborted = false;
+
       try {
-        const nmPath = Path.join(this._cwd, pkgInfo.path, "node_modules");
-        if (_.get(cacheRules, "requireDeps") !== false && !Fs.existsSync(nmPath)) {
-          logger.info(
-            `node_modules is missing in ${pkgInfo.path} - installing before running script`
-          );
-          const installDeps = new InstallDeps(this._cwd, []);
-          await installDeps.runVisualInstall(
-            pkgInfo,
-            `installing node_modules in ${pkgInfo.path} to run script ${this._script}`
-          );
-          logger.info(`    - continuing to run npm script ${this._script}`);
+        if (await this.installDeps(pkgInfo, cacheRules)) {
+          if ((aborted = !shouldContinue())) {
+            return;
+          }
+          logger.info(`  - continuing to run npm script ${this._script}`);
         }
+
         runData.output = await this.getRunner()(pkgInfo);
         results.push(runData.output);
         if (!runData.error && cached?.enable) {
@@ -188,7 +221,9 @@ path: ${pkg.path}`;
         runData.error = err;
         runData.output = err;
       } finally {
-        this._logRunResult(runData);
+        if (!aborted) {
+          this._logRunResult(runData);
+        }
       }
     }
   }
