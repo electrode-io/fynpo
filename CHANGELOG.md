@@ -1,3 +1,21 @@
+# 2/27/2022
+
+## Packages
+
+-   `fyn@1.1.27` `(1.1.26 => 1.1.27)`
+-   `fynpo@1.1.30` `(1.1.29 => 1.1.30)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   readme [commit](https://github.com/electrode-io/fynpo/commit/7c4c2cf0a4ba3b7c3aaace7f93cd02a7347cab07)
+    -   update log messages and cache paths [commit](https://github.com/electrode-io/fynpo/commit/d03e9ffec7ababa8ff7b2b6612437249fd446248)
+
+-   `packages/fynpo`
+
+    -   update log messages and cache paths [commit](https://github.com/electrode-io/fynpo/commit/d03e9ffec7ababa8ff7b2b6612437249fd446248)
+
 # 2/25/2022
 
 ## Packages
