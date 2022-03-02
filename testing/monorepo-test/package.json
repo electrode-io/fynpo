@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "test": "node ../../packages/fyn/cli/fyn && fynpo && fynpo run test --stream",
+    "test": "node ../../packages/fyn/cli/fyn --no-build-local && fynpo && fynpo run test --stream",
     "clean-test": "npm run clean && npm run test",
     "clean": "rm -rf .fynpo node_modules */*/node_modules */*/dist */*/fyn-lock.* fyn-lock.*",
     "prepublishOnly": "exit 1"
@@ -20,6 +20,8 @@
     "url": ""
   },
   "dependencies": {
-    "fynpo": "../../packages/fynpo"
+    "@fynpo/base": "../../packages/fynpo-base",
+    "fynpo": "../../packages/fynpo",
+    "fyn": "../../packages/fyn"
   }
 }
