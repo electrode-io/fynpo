@@ -1,3 +1,31 @@
+# 3/2/2022
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.12` `(1.1.11 => 1.1.12)`
+-   `fynpo@1.1.31` `(1.1.30 => 1.1.31)`
+
+### Fynpo Updated
+
+-   `fyn@1.1.28` `(1.1.27 => 1.1.28)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   detail extra data for caching [commit](https://github.com/electrode-io/fynpo/commit/075ecdd26fcae5d1f1b4caad866df229342323ff)
+
+-   `packages/fynpo`
+
+    -   detail extra data for caching [commit](https://github.com/electrode-io/fynpo/commit/075ecdd26fcae5d1f1b4caad866df229342323ff)
+    -   fynpo run check error after installing node_modules [commit](https://github.com/electrode-io/fynpo/commit/dead3e3a959d8ea6bcbacd7091dd651b310341b0)
+
+-   `MISC`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/893deb5e3f68a7920ed82866044a5d85f84d6546)
+
 # 2/27/2022
 
 ## Packages
