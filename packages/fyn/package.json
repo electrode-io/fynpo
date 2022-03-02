@@ -16,7 +16,8 @@
     "coveralls": "cat coverage/lcov.info | coveralls",
     "prepublishOnly": "xrun build",
     "prepack": "publish-util-prepack",
-    "postpack": "publish-util-postpack"
+    "postpack": "publish-util-postpack",
+    "blah": "exit 5"
   },
   "bin": {
     "0-npx-please-run-this-for-fyn": "./bin/fyn.js",

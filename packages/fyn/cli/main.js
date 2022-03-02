@@ -369,7 +369,16 @@ const commands = {
     alias: ["rum", "r"],
     usage: "$0 $1 <command> [-- <args>...]",
     exec: async (argv, parsed) => {
-      return new FynCli(await pickOptions(argv, parsed.nixClap, !argv.opts.list)).run(argv);
+      try {
+        return await new FynCli(await pickOptions(argv, parsed.nixClap, !argv.opts.list)).run(argv);
+      } catch (err) {
+        if (err.errno !== undefined) {
+          process.exit(err.errno);
+        } else {
+          logger.error("fyn run caught error without errno", err);
+          process.exit(1);
+        }
+      }
     },
     options: {
       list: {
