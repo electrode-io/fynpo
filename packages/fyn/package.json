@@ -1,6 +1,6 @@
 {
   "name": "fyn",
-  "version": "1.1.28",
+  "version": "1.1.29",
   "description": "The package manager for fynpo, a zero setup monorepo manager",
   "main": "./bin/fyn.js",
   "homepage": "https://jchip.github.io/fynpo/",
