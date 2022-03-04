@@ -1,3 +1,20 @@
+# 3/3/2022
+
+## Packages
+
+-   `fyn@1.1.29` `(1.1.28 => 1.1.29)`
+-   `fynpo@1.1.32` `(1.1.31 => 1.1.32)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   fyn run handles error with exit code [commit](https://github.com/electrode-io/fynpo/commit/0c0c835d35aea073566443dca1c21a580f57ffaf)
+
+-   `packages/fynpo`
+
+    -   add compress for fynpo fs caching [commit](https://github.com/electrode-io/fynpo/commit/4d2d3527031cae42ef49cfd3007693b1d08ab89a)
+
 # 3/2/2022
 
 ## Packages
