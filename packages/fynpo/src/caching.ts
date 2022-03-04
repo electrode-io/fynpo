@@ -12,6 +12,8 @@ import { request, stream } from "undici";
 import { caching } from "@fynpo/base";
 import * as xaa from "xaa";
 import { detailedDiff } from "deep-object-diff";
+import Zlib from "zlib";
+import { pipeline } from "stream";
 
 export type CacheExistType = false | "fs" | "remote";
 
@@ -23,12 +25,95 @@ export type CacheExistType = false | "fs" | "remote";
  * @returns
  */
 async function copyFile(src: string, dest: string): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    const rs = Fs.createReadStream(src);
-    rs.on("end", resolve);
-    rs.on("error", reject);
-    rs.pipe(Fs.createWriteStream(dest));
-  });
+  const defer = xaa.makeDefer();
+  pipeline(Fs.createReadStream(src), Fs.createWriteStream(dest), defer.done);
+  return defer.promise;
+}
+
+/**
+ * compress a file
+ *
+ * @param src
+ * @param dest
+ * @param algorithm
+ * @returns
+ */
+export async function compressFile(
+  src: string,
+  dest: string,
+  algorithm: "brotli" | "gzip" = "brotli"
+): Promise<unknown> {
+  const defer = xaa.makeDefer();
+
+  const streams: any[] = [Fs.createReadStream(src)];
+  let ext = "";
+
+  if (algorithm === "brotli") {
+    ext = ".br";
+    streams.push(Zlib.createBrotliCompress());
+  } else if (algorithm === "gzip") {
+    ext = ".gz";
+    streams.push(Zlib.createGzip());
+  } else {
+    throw new Error(`fynpo caching: unknown compression algorithm ${algorithm}`);
+  }
+
+  streams.push(Fs.createWriteStream(`${dest}${ext}`));
+  pipeline(streams, defer.done);
+
+  return defer.promise;
+}
+
+/**
+ * search for a cache file or its compressed versions
+ *
+ * @param name
+ * @returns
+ */
+async function searchCacheFile(name: string) {
+  let compress: string;
+  let ext: string;
+  for (const ext1 of [".br", ".gz"]) {
+    const fname = `${name}${ext1}`;
+    const found = await Fs.promises
+      .access(fname, Fs.constants.R_OK)
+      .then(() => true)
+      .catch(() => false);
+
+    if (found) {
+      ext = ext1;
+      compress = fname;
+      break;
+    }
+  }
+
+  return { name, compress, ext };
+}
+
+/**
+ * Try to decompress a file by detecting for file with .br or .gz extensions
+ * - If no file with .br or .gz are found, then acts as a copy file
+ * @param src
+ * @param dest
+ * @returns
+ */
+async function tryDecompressFile(src: string, dest: string): Promise<unknown> {
+  const defer = xaa.makeDefer();
+
+  const { compress, ext } = await searchCacheFile(src);
+
+  const streams: any[] = [Fs.createReadStream(compress || src)];
+
+  if (ext === ".br") {
+    streams.push(Zlib.createBrotliDecompress());
+  } else if (ext === ".gz") {
+    streams.push(Zlib.createGunzip());
+  }
+
+  streams.push(Fs.createWriteStream(dest));
+  pipeline(streams, defer.done);
+
+  return defer.promise;
 }
 
 /**
@@ -213,7 +298,7 @@ export class PkgBuildCache {
       this.output.files = Object.keys(this.output.data.fileHashes);
       this.exist = "fs";
     } catch {
-      if (!this._warnRemoteFailure) {
+      if (!this._warnRemoteFailure && this.opts.server) {
         try {
           const remote = await request(this.getRemoteCacheUrl(this.input.hash, ".json"));
           if (remote.statusCode === 200) {
@@ -246,7 +331,11 @@ export class PkgBuildCache {
     for (const file of files) {
       const srcFile = Path.join(srcDir, file);
       const targetFile = Path.join(targetDir, `${nameMapping[file]}${Path.extname(file)}`);
-      await copyFile(srcFile, targetFile);
+      if (this.opts.compression) {
+        await compressFile(srcFile, targetFile, this.opts.compression);
+      } else {
+        await copyFile(srcFile, targetFile);
+      }
     }
   }
 
@@ -277,7 +366,7 @@ export class PkgBuildCache {
         //  ?? else just ignore and overwrite?
         destDirs[destDir] = true;
       }
-      await copyFile(srcFile, targetFile);
+      await tryDecompressFile(srcFile, targetFile);
     }
   }
 
@@ -384,18 +473,22 @@ export class PkgBuildCache {
             const hash = remove.data.fileHashes[file];
             if (!removed[hash] && !saveFiles[hash]) {
               removed[hash] = file;
-
-              await xaa.try(() =>
-                Fs.promises.unlink(Path.join(this.filesCacheDir, `${hash}${Path.extname(file)}`))
-              );
+              const fname = Path.join(this.filesCacheDir, `${hash}${Path.extname(file)}`);
+              await Promise.all([
+                Fs.promises.unlink(fname).catch(_.noop),
+                Fs.promises.unlink(`${fname}.br`).catch(_.noop),
+                Fs.promises.unlink(`${fname}.gz`).catch(_.noop),
+              ]);
             }
           },
           { concurrency: 5 }
         );
 
-        await xaa.try(() =>
-          Fs.promises.unlink(Path.join(this.cacheDir, `${remove.data.inputHash}.json`))
-        );
+        await Fs.promises
+          .unlink(Path.join(this.cacheDir, `${remove.data.inputHash}.json`))
+          .catch(() => {
+            //
+          });
       },
       { concurrency: 5 }
     );
@@ -502,14 +595,20 @@ export class PkgBuildCache {
       async (file: string) => {
         const hash = output.data.fileHashes[file];
         const ext = Path.extname(file);
-        const cacheFile = Path.join(this.filesCacheDir, `${hash}${ext}`);
-        if (!(await xaa.try(() => Fs.promises.access(cacheFile, Fs.constants.F_OK)))) {
-          await stream(
-            this.getRemoteCacheUrl(hash, ext),
-            {
-              method: "GET",
-            },
-            () => Fs.createWriteStream(cacheFile)
+        const file1 = Path.join(this.filesCacheDir, `${hash}${ext}`);
+        const cached = await searchCacheFile(file1);
+        if (
+          // did not find a compress version
+          !cached.compress &&
+          // an uncompressed version also not found
+          !(await Fs.promises
+            .access(file1, Fs.constants.R_OK)
+            .then(() => true)
+            .catch(() => false))
+        ) {
+          // download from server as uncompressed version
+          await stream(this.getRemoteCacheUrl(hash, ext), { method: "GET" }, () =>
+            Fs.createWriteStream(file1)
           );
         }
       },
