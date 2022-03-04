@@ -4,6 +4,7 @@ import _ from "lodash";
 import Fs from "fs";
 import Path from "path";
 import Crypto from "crypto";
+import { checkMmMatch, deconstructMM, unrollMmMatch } from "./minimatch-group";
 
 /**
  *
@@ -24,25 +25,38 @@ type FilesFilterPatterns = {
 /**
  *
  */
-type CacheInput = FilesFilterPatterns & {
-  /** npm scripts to include as the input */
-  npmScripts?: string | string[];
-  /** env variables to include as the input */
-  includeEnv?: string | string[];
-  /** versions to include as the input */
-  includeVersions?: string | string[];
+type CacheBaseRule = {
+  /**
+   * minimatch options to be passed directly to minimatch
+   * Default: `{ dot: true }`
+   */
+  minimatchOptions?: any;
 };
 
 /**
  *
  */
-type CacheOutput = FilesFilterPatterns & {
-  /**
-   * use npm pack to create a list of files to include.
-   * will check them against the exclude patterns and ignore any that match
-   */
-  filesFromNpmPack?: boolean;
-};
+type CacheInputRule = FilesFilterPatterns &
+  CacheBaseRule & {
+    /** npm scripts to include as the input */
+    npmScripts?: string | string[];
+    /** env variables to include as the input */
+    includeEnv?: string | string[];
+    /** versions to include as the input */
+    includeVersions?: string | string[];
+  };
+
+/**
+ *
+ */
+type CacheOutputRule = FilesFilterPatterns &
+  CacheBaseRule & {
+    /**
+     * use npm pack to create a list of files to include.
+     * will check them against the exclude patterns and ignore any that match
+     */
+    filesFromNpmPack?: boolean;
+  };
 
 /**
  * create a sha256 hash for some data
@@ -129,16 +143,6 @@ function makeMmPatterns(patterns: string | string[], options = { dot: true }) {
 }
 
 /**
- *
- * @param fullPath
- * @param patterns
- * @returns
- */
-function checkMmMatch(fullPath: string, patterns: mm.IMinimatch[]) {
-  return !_.isEmpty(patterns) && patterns.find((patternMm) => patternMm.match(fullPath));
-}
-
-/**
  * Scan for files using include and exclude patterns
  *
  * @param cwd
@@ -157,17 +161,37 @@ async function scanFiles(
     return true;
   };
 
+  const dirIncludes = includes.map((mx) => deconstructMM(mx));
+
+  const filterDir = (_file: string, _path: string, extras: ExtrasData) => {
+    const dir = `${extras.dirFile}/`; // add extra / to force matching directory
+    const inc = dirIncludes.find((di) => checkMmMatch(dir, di.mms));
+    if (inc) {
+      const exc = checkMmMatch(dir, excludes);
+      if (!exc) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   return (
     await filterScanDir({
       cwd,
       filter,
-      filterDir: filter,
+      filterDir,
       fullStat: false,
       concurrency: 500,
     })
   ).sort();
 }
 
+/**
+ * process caching input rules and return result from it
+ *
+ * @param param0
+ * @returns result from processing input rules
+ */
 export async function processInput(
   {
     cwd,
@@ -176,13 +200,17 @@ export async function processInput(
     extra,
   }: {
     cwd?: string;
-    input: CacheInput;
+    input: CacheInputRule;
     packageJson?: Record<string, string | unknown>;
     // additional data to add to data for generating hash
     extra?: any;
   } = { input: {} }
 ) {
-  const files = await scanFiles(cwd, makeMmPatterns(input.include), makeMmPatterns(input.exclude));
+  const files = await scanFiles(
+    cwd,
+    makeMmPatterns(input.include, input.minimatchOptions),
+    makeMmPatterns(input.exclude, input.minimatchOptions)
+  );
   const fileHashes = await hashFiles(cwd, files);
 
   const data = {
@@ -202,6 +230,7 @@ export async function processInput(
 }
 
 /**
+ * process lifecycle caching input rules
  *
  * @param param0
  * @returns
@@ -213,7 +242,7 @@ export async function processLifecycleInput(
     packageJson,
   }: {
     cwd?: string;
-    input: CacheInput;
+    input: CacheInputRule;
     packageJson?: Record<string, string | unknown>;
   } = { input: {} }
 ) {
@@ -228,7 +257,7 @@ export async function processLifecycleInput(
 }
 
 /**
- * Process build cache output file config.
+ * Process build cache output rules.
  *
  * @param param0
  * @returns
@@ -248,20 +277,20 @@ export async function processOutput(
     /** Should we calculate hash for the output files? */
     calcHash?: boolean;
     /** output config */
-    output: CacheOutput;
+    output: CacheOutputRule;
     /** list of pre-determined files, will be filtered with output.exclude */
     preFiles?: string[];
   } = { output: {} }
 ) {
-  const mmIncludes = makeMmPatterns(output.include);
-  const mmExcludes = makeMmPatterns(output.exclude);
+  const mmIncludes = makeMmPatterns(output.include, output.minimatchOptions);
+  const mmExcludes = makeMmPatterns(output.exclude, output.minimatchOptions);
 
   const files = await scanFiles(cwd, mmIncludes, mmExcludes);
 
   preFiles = []
     .concat(preFiles)
     .filter((x) => {
-      if (!x || checkMmMatch(x, mmExcludes)) {
+      if (!x || unrollMmMatch(x, mmExcludes)) {
         return false;
       }
       return true;
