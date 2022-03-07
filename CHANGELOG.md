@@ -1,3 +1,22 @@
+# 3/7/2022
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.13` `(1.1.12 => 1.1.13)`
+
+### Fynpo Updated
+
+-   `fyn@1.1.30` `(1.1.29 => 1.1.30)`
+-   `fynpo@1.1.33` `(1.1.32 => 1.1.33)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   fix caching dir minimatch check [commit](https://github.com/electrode-io/fynpo/commit/80b3c73e3f085cf7f3703ff78f5929a416efdbca)
+
 # 3/3/2022
 
 ## Packages
