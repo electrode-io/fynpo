@@ -429,10 +429,8 @@ class PkgInstaller {
   }
 
   async _buildLocalPkg(depInfo) {
-    if (this._fyn._localPkgBuilder) {
+    if (this._fyn._options.buildLocal && this._fyn._localPkgBuilder) {
       await this._fyn._localPkgBuilder.waitForItem(depInfo.dir);
-    } else {
-      logger.error("pkg-installer: there is no this._fyn._localPkgBuilder");
     }
   }
 
