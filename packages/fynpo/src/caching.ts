@@ -207,7 +207,7 @@ export class PkgBuildCache {
    */
   warnRemoteCacheFailure(err: Error, tag: string) {
     if (!this._warnRemoteFailure) {
-      logger.warn(`${tag} - remote cache server failure`, err);
+      logger.warn(`${tag} - remote cache server failure ${err.stack}`);
       this._warnRemoteFailure = true;
     }
   }

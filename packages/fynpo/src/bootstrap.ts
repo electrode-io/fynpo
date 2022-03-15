@@ -135,25 +135,40 @@ ${output.stderr}
         let cached: PkgBuildCache;
         if (!_.isEmpty(cacheRules)) {
           cached = new PkgBuildCache(this.cwd, this._opts, cacheRules, "bootstrap");
-          await cached.checkCache(depData);
+          await xaa.try(cached.checkCache(depData));
         }
 
         if (cached?.exist) {
-          if (cached.exist === "remote") {
-            await cached.downloadCacheFromRemote();
+          try {
+            if (cached.exist === "remote") {
+              await cached.downloadCacheFromRemote();
+            }
+            await cached.restoreFromCache();
+            logger.info(
+              "Done bootstrap",
+              colorId,
+              colorPath,
+              chalk.cyan(`(${cached.exist} cached)`)
+            );
+            return;
+          } catch (err) {
+            logger.warn(
+              `Failed restore from cache for ${colorId} in ${colorPath} - doing full bootstrap`
+            );
           }
-          await cached.restoreFromCache();
-          logger.info("Done bootstrap", colorId, colorPath, chalk.cyan(`(${cached.exist} cached)`));
-        } else {
-          if (cached?.enable) {
-            await cached.saveCacheMissDetails();
-          }
-          logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
-          const displayTitle = `bootstrap ${colorId} in ${colorPath} ${colorFyn}`;
-          await installDeps.runVisualInstall(pkgInfo, displayTitle);
-          if (cached?.enable) {
-            await xaa.try(() => cached.copyToCache());
-          }
+        }
+        //
+        // cache didn't exist or not able to restore => do full bootstrap
+        //
+        if (cached?.enable) {
+          await xaa.try(cached.saveCacheMissDetails());
+        }
+        logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
+        const displayTitle = `bootstrap ${colorId} in ${colorPath} ${colorFyn}`;
+        await installDeps.runVisualInstall(pkgInfo, displayTitle);
+        if (cached?.enable) {
+          logger.debug(`Copying output to cache for ${colorId}`);
+          await xaa.try(() => cached.copyToCache());
         }
       },
       stopOnError: true,
