@@ -68,15 +68,37 @@ function hashData1(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url
   return Crypto.createHash("sha256").update(data).digest(encoding);
 }
 
+function makeBase64Url(hash: string) {
+  return hash.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+
 function hashData2(data: any, encoding: Crypto.BinaryToTextEncoding = "base64url") {
   if (encoding === "base64url") {
-    return hashData1(data, "base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    return makeBase64Url(hashData1(data, "base64"));
   }
   return hashData1(data, encoding);
 }
 
-const hashData =
-  typeof Crypto.createHash("sha256").digest("base64url") === "string" ? hashData1 : hashData2;
+const hasBase64Url = typeof Crypto.createHash("sha256").digest("base64url") === "string";
+
+const hashData = hasBase64Url ? hashData1 : hashData2;
+
+export const readHashDigest = hasBase64Url
+  ? (hash: Crypto.Hash, encoding: BufferEncoding = "base64url") => {
+      hash.setEncoding(encoding);
+      hash.end();
+      return hash.read();
+    }
+  : (hash: Crypto.Hash, encoding: BufferEncoding = "base64url") => {
+      if (encoding === "base64url") {
+        hash.setEncoding("base64");
+        hash.end();
+        return makeBase64Url(hash.read());
+      }
+      hash.setEncoding(encoding);
+      hash.end();
+      return hash.read();
+    };
 
 /**
  * generate sha256 has of a file

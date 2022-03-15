@@ -13,7 +13,8 @@ import { caching } from "@fynpo/base";
 import * as xaa from "xaa";
 import { detailedDiff } from "deep-object-diff";
 import Zlib from "zlib";
-import { pipeline } from "stream";
+import { PassThrough, pipeline } from "stream";
+import Crypto from "crypto";
 
 export type CacheExistType = false | "fs" | "remote";
 
@@ -104,14 +105,27 @@ async function tryDecompressFile(src: string, dest: string): Promise<unknown> {
 
   const streams: any[] = [Fs.createReadStream(compress || src)];
 
+  let hash: Crypto.Hash;
+
   if (ext === ".br") {
     streams.push(Zlib.createBrotliDecompress());
   } else if (ext === ".gz") {
     streams.push(Zlib.createGunzip());
+  } else {
+    hash = Crypto.createHash("sha256");
+    const pass = new PassThrough();
+    pass.on("data", (data) => hash.update(data));
+    streams.push(pass);
   }
 
   streams.push(Fs.createWriteStream(dest));
-  pipeline(streams, defer.done);
+  pipeline(streams, (err: Error) => {
+    let sha: string;
+    if (!err && hash) {
+      sha = caching.readHashDigest(hash);
+    }
+    defer.done(err, sha);
+  });
 
   return defer.promise;
 }
@@ -366,7 +380,11 @@ export class PkgBuildCache {
         //  ?? else just ignore and overwrite?
         destDirs[destDir] = true;
       }
-      await tryDecompressFile(srcFile, targetFile);
+      const sha = await tryDecompressFile(srcFile, targetFile);
+      if (sha && sha !== nameMapping[file]) {
+        const msg = `copy file ${file} from cache shasum mismatched ${sha} - ${nameMapping[file]}`;
+        throw new Error(msg);
+      }
     }
   }
 
