@@ -49,6 +49,7 @@
     "registry": "https://registry.npmjs.com/"
   },
   "dependencies": {
+    "@jchip/error": "^1.0.3",
     "env-paths": "^2.2.1",
     "fyn": "^1.1.30",
     "import-fresh": "3.3.0",

@@ -605,14 +605,9 @@ class PkgSrcManager {
         const packument = cached && cached.data && JSON.parse(cached.data);
         foundCache = cached;
         const stale = Date.now() - cached.refreshTime;
+        const since = (stale / 1000).toFixed(2);
         logger.debug(
-          "found",
-          pkgName,
-          "packument cache, refreshTime",
-          cached.refreshTime,
-          "since",
-          (stale / 1000).toFixed(2),
-          "secs"
+          `found packument cache for '${pkgName}' - refreshed ${since}secs ago at ${cached.refreshTime}`
         );
         if (
           this._fyn._options.refreshMeta !== true &&
@@ -628,7 +623,7 @@ class PkgSrcManager {
           return nodeFetch(`${metaMemoizeUrl}?key=${encKey}`).then(
             res => {
               if (res.status === 200) {
-                logger.debug(pkgName, "using memoized packument cache");
+                logger.debug(`using memoized packument cache for '${pkgName}'`);
                 cacheMemoized = true;
                 this._metaStat.wait--;
                 return packument;
@@ -643,12 +638,8 @@ class PkgSrcManager {
       })
       .catch(err => {
         if (foundCache) {
-          logger.debug(
-            "fail to process packument cache",
-            err.message,
-            "data",
-            foundCache.data && foundCache.data.toString()
-          );
+          const data = foundCache.data && foundCache.data.toString();
+          logger.debug(`fail to process packument cache - ${err.message}; data ${data}`);
           throw err;
         }
         return queueMetaFetchRequest();

@@ -15,6 +15,7 @@ import { detailedDiff } from "deep-object-diff";
 import Zlib from "zlib";
 import { PassThrough, pipeline } from "stream";
 import Crypto from "crypto";
+import { cleanErrorStack } from "@jchip/error";
 
 export type CacheExistType = false | "fs" | "remote";
 
@@ -130,6 +131,8 @@ async function tryDecompressFile(src: string, dest: string): Promise<unknown> {
   return defer.promise;
 }
 
+let warnRemoteFailure = false;
+
 /**
  * Handle caching of package build
  */
@@ -170,7 +173,6 @@ export class PkgBuildCache {
    * directory in the repo to hold cache meta info
    */
   repoCacheMetaDir: string;
-  _warnRemoteFailure: boolean;
   label: string;
 
   /**
@@ -182,7 +184,6 @@ export class PkgBuildCache {
    */
   constructor(topDir: string, fynpoOpts: any, rules: any, label: string) {
     this.topDir = topDir;
-    this._warnRemoteFailure = false;
 
     const cachingOpts = {
       enable: true,
@@ -220,9 +221,9 @@ export class PkgBuildCache {
    * @param tag
    */
   warnRemoteCacheFailure(err: Error, tag: string) {
-    if (!this._warnRemoteFailure) {
-      logger.warn(`${tag} - remote cache server failure ${err.stack}`);
-      this._warnRemoteFailure = true;
+    if (!warnRemoteFailure) {
+      warnRemoteFailure = true;
+      logger.warn(`${tag} - remote cache server failure - ${cleanErrorStack(err)}`);
     }
   }
 
@@ -239,9 +240,8 @@ export class PkgBuildCache {
   /**
    * Get the remote URL of a cache file by its cache
    *
-   * @param server
-   * @param hasha
-   * @param ext
+   * @param hash - hash of the cache
+   * @param ext - file extension
    * @returns
    */
   getRemoteCacheUrl(hash: string, ext: string) {
@@ -261,7 +261,6 @@ export class PkgBuildCache {
   /**
    * check if cache exist for a package
    *
-   * @param pkgInfo
    * @param depData
    * @returns
    */
@@ -312,7 +311,7 @@ export class PkgBuildCache {
       this.output.files = Object.keys(this.output.data.fileHashes);
       this.exist = "fs";
     } catch {
-      if (!this._warnRemoteFailure && this.opts.server) {
+      if (!warnRemoteFailure && this.opts.server) {
         try {
           const remote = await request(this.getRemoteCacheUrl(this.input.hash, ".json"));
           if (remote.statusCode === 200) {
@@ -390,8 +389,6 @@ export class PkgBuildCache {
 
   /**
    * gather the output files
-   *
-   * @param cached
    * @param calcHash
    * @returns
    */
@@ -448,7 +445,6 @@ export class PkgBuildCache {
 
   /**
    * cleanup cache files, to ensure that they doesn't blow up the disk
-   * @param this
    * @returns
    */
   async cleanCacheFiles() {
@@ -504,9 +500,7 @@ export class PkgBuildCache {
 
         await Fs.promises
           .unlink(Path.join(this.cacheDir, `${remove.data.inputHash}.json`))
-          .catch(() => {
-            //
-          });
+          .catch(_.noop);
       },
       { concurrency: 5 }
     );
@@ -523,7 +517,6 @@ export class PkgBuildCache {
 
   /**
    * Save the output meta to local filesystem cache storage
-   * @param cached
    * @returns
    */
   async saveOutputMetaToCache() {
@@ -580,7 +573,7 @@ export class PkgBuildCache {
       return;
     }
 
-    if (this._warnRemoteFailure) {
+    if (warnRemoteFailure) {
       return;
     }
 
@@ -664,7 +657,6 @@ export class PkgBuildCache {
   /**
    * Restore output files from local filesystem cache storage
    *
-   * @param cached
    */
   async restoreFromCache() {
     const output = await this.loadOutputMetaFromCache();
