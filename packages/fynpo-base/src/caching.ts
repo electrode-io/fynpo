@@ -333,11 +333,6 @@ export async function processOutput(
   }
 
   //
-  return {
-    files: allFiles,
-    data,
-    hash,
-    access: Date.now(),
-    create: Date.now(),
-  };
+  const now = Date.now();
+  return { files: allFiles, data, hash, access: now, create: now };
 }

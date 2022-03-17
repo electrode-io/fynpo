@@ -145,10 +145,7 @@ ${output.stderr}
             }
             await cached.restoreFromCache();
             logger.info(
-              "Done bootstrap",
-              colorId,
-              colorPath,
-              chalk.cyan(`(${cached.exist} cached)`)
+              `Done bootstrap ${colorId} ${colorPath} ${chalk.cyan(`(${cached.exist} cached)`)}`
             );
             return;
           } catch (err) {
@@ -156,13 +153,12 @@ ${output.stderr}
               `Failed restore from cache for ${colorId} in ${colorPath} - doing full bootstrap`
             );
           }
+        } else if (cached?.enable) {
+          await xaa.try(cached.saveCacheMissDetails());
         }
         //
         // cache didn't exist or not able to restore => do full bootstrap
         //
-        if (cached?.enable) {
-          await xaa.try(cached.saveCacheMissDetails());
-        }
         logger[isCI ? "info" : "debug"]("bootstrap", colorId, colorPath);
         const displayTitle = `bootstrap ${colorId} in ${colorPath} ${colorFyn}`;
         await installDeps.runVisualInstall(pkgInfo, displayTitle);
