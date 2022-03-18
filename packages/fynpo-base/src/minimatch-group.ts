@@ -55,7 +55,7 @@ export function groupMM(mms: mm.IMinimatch[], groups: MMGroups) {
  * process a minimatch pattern to group them for matching directories
  *
  * - needs to create a new pattern at every non-string part
- * @param pattern
+ * @param m0 minimatch pattern
  */
 export function deconstructMM(m0: mm.IMinimatch) {
   const mms: mm.IMinimatch[] = [];
@@ -101,7 +101,7 @@ export function deconstructMM(m0: mm.IMinimatch) {
  * @param patterns
  * @returns the first pattern that match or false
  */
-export function checkMmMatch(fullPath: string, patterns: mm.IMinimatch[]) {
+export function checkMmMatch(fullPath: string, patterns: mm.IMinimatch[]): false | mm.IMinimatch {
   return !_.isEmpty(patterns) && patterns.find((patternMm) => patternMm.match(fullPath));
 }
 
@@ -112,16 +112,17 @@ export function checkMmMatch(fullPath: string, patterns: mm.IMinimatch[]) {
  * @param mms
  * @returns
  */
-export function unrollMmMatch(path: string, mms: mm.IMinimatch[]): boolean {
+export function unrollMmMatch(path: string, mms: mm.IMinimatch[]): false | mm.IMinimatch {
   const parts = path.split("/");
   let rp: string;
 
   for (let i = 0; i < parts.length - 1; i++) {
     rp = rp !== undefined ? rp + "/" + parts[i] : parts[i];
-    if (checkMmMatch(`${rp}/`, mms)) {
-      return true;
+    const m1 = checkMmMatch(`${rp}/`, mms);
+    if (m1) {
+      return m1;
     }
   }
 
-  return !!checkMmMatch(path, mms);
+  return checkMmMatch(path, mms);
 }

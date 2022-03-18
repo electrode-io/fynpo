@@ -25,8 +25,8 @@ describe("unrollMmMatch", function () {
     const t1 = "src";
     expect(m0.match(t1)).toBe(true);
     expect(m1.match(t1)).toBe(false);
-    expect(unrollMmMatch(t1, [m0])).toBe(true);
-    expect(unrollMmMatch(t1, [m1])).toBe(false);
+    expect(unrollMmMatch(t1, [m0])).toBeTruthy;
+    expect(unrollMmMatch(t1, [m1])).toBeFalsy;
   });
 
   it("should handle path with two parts", () => {
@@ -35,8 +35,8 @@ describe("unrollMmMatch", function () {
     const t1 = "src/a";
     expect(m0.match(t1)).toBe(false);
     expect(m1.match(t1)).toBe(true);
-    expect(unrollMmMatch(t1, [m0])).toBe(true);
-    expect(unrollMmMatch(t1, [m1])).toBe(true);
+    expect(unrollMmMatch(t1, [m0])).toBeTruthy;
+    expect(unrollMmMatch(t1, [m1])).toBeTruthy;
   });
 
   it("should match partial prefix of a path", () => {
@@ -45,8 +45,8 @@ describe("unrollMmMatch", function () {
     const t1 = "src/test/a/b/c";
     expect(m0.match(t1)).toBe(false);
     expect(m1.match(t1)).toBe(true);
-    expect(unrollMmMatch(t1, [m0])).toBe(true);
-    expect(unrollMmMatch(t1, [m1])).toBe(true);
+    expect(unrollMmMatch(t1, [m0])).toBeTruthy;
+    expect(unrollMmMatch(t1, [m1])).toBeTruthy;
   });
 
   it("should match the full path only", () => {
@@ -55,7 +55,7 @@ describe("unrollMmMatch", function () {
     const t2 = "src/test/a/b/c/xyz.js";
     expect(m1.match(t1)).toBe(false);
     expect(m1.match(t2)).toBe(true);
-    expect(unrollMmMatch(t1, [m1])).toBe(false);
-    expect(unrollMmMatch(t2, [m1])).toBe(true);
+    expect(unrollMmMatch(t1, [m1])).toBeFalsy;
+    expect(unrollMmMatch(t2, [m1])).toBeTruthy;
   });
 });
