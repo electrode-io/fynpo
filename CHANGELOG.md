@@ -1,3 +1,32 @@
+# 3/18/2022
+
+## Packages
+
+-   `@fynpo/base@1.1.14` `(1.1.13 => 1.1.14)`
+-   `fyn@1.1.31` `(1.1.30 => 1.1.31)`
+-   `fynpo@1.1.34` `(1.1.33 => 1.1.34)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   add some types to functions [commit](https://github.com/electrode-io/fynpo/commit/cac9459ed18e5df44f7f2fbd77abb1f2a967f219)
+    -   add tests [commit](https://github.com/electrode-io/fynpo/commit/5194dee3f59f77dd65346688ee0b4e5e81a9a400)
+    -   fynpo bootstrap only save cache miss details if it was missed [commit](https://github.com/electrode-io/fynpo/commit/a7bec8420c0a38954cc87ca067559e3eaac47802)
+    -   verify non-compress cache file hash when copying [commit](https://github.com/electrode-io/fynpo/commit/1b09d63fae3f146f187ee1e83aaba1ac844ec97a)
+
+-   `packages/fyn`
+
+    -   improve log messages [commit](https://github.com/electrode-io/fynpo/commit/a4c359e15e06cd7f564377813c7a4f2bcdf4650f)
+    -   pkg install check buildLocal flag [commit](https://github.com/electrode-io/fynpo/commit/0a18dce5979d9fa2097fccdb119da5b75b7950aa)
+
+-   `packages/fynpo`
+
+    -   fynpo bootstrap only save cache miss details if it was missed [commit](https://github.com/electrode-io/fynpo/commit/a7bec8420c0a38954cc87ca067559e3eaac47802)
+    -   improve log messages [commit](https://github.com/electrode-io/fynpo/commit/a4c359e15e06cd7f564377813c7a4f2bcdf4650f)
+    -   verify non-compress cache file hash when copying [commit](https://github.com/electrode-io/fynpo/commit/1b09d63fae3f146f187ee1e83aaba1ac844ec97a)
+    -   handle bootstrap restore from cache failure [commit](https://github.com/electrode-io/fynpo/commit/f93d69dcdc465f200dfa2f893e3bff98118c7785)
+
 # 3/7/2022
 
 ## Packages
