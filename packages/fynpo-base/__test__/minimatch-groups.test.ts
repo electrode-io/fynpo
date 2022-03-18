@@ -19,6 +19,26 @@ describe("deconstructMM", function () {
 });
 
 describe("unrollMmMatch", function () {
+  it("should handle path with only one part", () => {
+    const m0 = new mm.Minimatch("src");
+    const m1 = new mm.Minimatch("src/**");
+    const t1 = "src";
+    expect(m0.match(t1)).toBe(true);
+    expect(m1.match(t1)).toBe(false);
+    expect(unrollMmMatch(t1, [m0])).toBe(true);
+    expect(unrollMmMatch(t1, [m1])).toBe(false);
+  });
+
+  it("should handle path with two parts", () => {
+    const m0 = new mm.Minimatch("src");
+    const m1 = new mm.Minimatch("src/**");
+    const t1 = "src/a";
+    expect(m0.match(t1)).toBe(false);
+    expect(m1.match(t1)).toBe(true);
+    expect(unrollMmMatch(t1, [m0])).toBe(true);
+    expect(unrollMmMatch(t1, [m1])).toBe(true);
+  });
+
   it("should match partial prefix of a path", () => {
     const m0 = new mm.Minimatch("src");
     const m1 = new mm.Minimatch("src/**");
