@@ -2,7 +2,14 @@ $fyn:
  layout: detail
 $pkg:
  dev:
-  fynpo: ^1.1.30
+  fynpo: ^1.1.34
+'@jchip/error':
+ _latest: 1.0.3
+ _:
+  ^1.0.3: 1.0.3
+ 1.0.3:
+  $: sha512-4mh+7ucOm55u7USv2mwumdp7r020J+bZ1PkkUi+Zn+AAzU1+QoXVmN/5W2thZ1kkpHjJXS7tY1SDkUjI2FZgvw==
+  _: 'https://registry.npmjs.org/@jchip/error/-/error-1.0.3.tgz'
 callsites:
  _latest: 4.0.0
  _:
@@ -18,28 +25,29 @@ env-paths:
   $: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
   _: 'https://registry.npmjs.org/env-paths/-/env-paths-2.2.1.tgz'
 fyn:
- _latest: 1.1.27
+ _latest: 1.1.31
  _:
-  ^1.1.27: 1.1.27
- 1.1.27:
-  $: sha512-gmsU7BAsdMobgQcteTEico6jEGRyp9jgORilU6SJE6T/4OvAQcDixOPxBEJFEIcKUp5JUnnYgeJYvi2lZfz1IA==
-  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.27.tgz'
+  ^1.1.31: 1.1.31
+ 1.1.31:
+  $: sha512-te5vVHKkK0yoieAB34fShmLLle1oNbN9azCVjh50JaHay2+RnUmgGDoj7UCLtmP8UeTuTWG1wJ4nL2NMzScjwA==
+  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.31.tgz'
 fynpo:
- _latest: 1.1.30
+ _latest: 1.1.34
  _:
-  ^1.1.30: 1.1.30
- 1.1.30:
+  ^1.1.34: 1.1.34
+ 1.1.34:
   top: 1
-  $: sha512-XZpgPH40e7sAlXtdRTKJm2w6TMmNOvsTh1CyQqEClFuafSvyB+xSj4QMK/KjsBxqax4D7wVy2JHRdVJZU4nXjA==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.30.tgz'
+  $: sha512-QDegUhquB7aMTJASlHUpOzGsu0t+hVdfNaOGfpgkOzTrEMm87a/ryN6FLr9O6XwoVjB2B2W3A5Er6o1HDKmuLg==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.34.tgz'
   dependencies:
+   '@jchip/error': ^1.0.3
    env-paths: ^2.2.1
-   fyn: ^1.1.27
+   fyn: ^1.1.31
    import-fresh: 3.3.0
    mkdirp: ^1.0.4
    resolve-global: 1.0.0
    undici: ^4.14.1
-   xaa: ^1.7.1
+   xaa: ^1.7.2
 global-dirs:
  _latest: 3.0.0
  _:
@@ -98,13 +106,6 @@ resolve-global:
   _: 'https://registry.npmjs.org/resolve-global/-/resolve-global-1.0.0.tgz'
   dependencies:
    global-dirs: ^0.1.1
-tslib:
- _latest: 2.3.1
- _:
-  ^2.1.0: 2.3.1
- 2.3.1:
-  $: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
-  _: 'https://registry.npmjs.org/tslib/-/tslib-2.3.1.tgz'
 undici:
  _latest: 4.14.1
  _:
@@ -113,11 +114,9 @@ undici:
   $: sha512-WJ+g+XqiZcATcBaUeluCajqy4pEDcQfK1vy+Fo+bC4/mqXI9IIQD/XWHLS70fkGUT6P52Drm7IFslO651OdLPQ==
   _: 'https://registry.npmjs.org/undici/-/undici-4.14.1.tgz'
 xaa:
- _latest: 1.7.1
+ _latest: 1.7.3
  _:
-  ^1.7.1: 1.7.1
- 1.7.1:
-  $: sha512-SLb9sd9sWeQMqyrghmdhXOb4NKHTvRchG34nzVvxP+Cf8UvkGuxu6VM7+fsPbFWSBNfGFsLvHeZf9X6ifbPRrg==
-  _: 'https://registry.npmjs.org/xaa/-/xaa-1.7.1.tgz'
-  dependencies:
-   tslib: ^2.1.0
+  ^1.7.2: 1.7.3
+ 1.7.3:
+  $: sha512-GBA/59U8+INwVb1gfNQ5GEnV8lnBJj+9GUacvqeAWACbdl7v/73qgmdmo+rLkTp6rLU8xSEzFhWX+Akbj6Wh3A==
+  _: 'https://registry.npmjs.org/xaa/-/xaa-1.7.3.tgz'
