@@ -120,7 +120,7 @@ function localSplit(v) {
 
 // https://docs.npmjs.com/files/package.json#dependencies
 function getAsFilepath(semver) {
-  if (semver.startsWith("file:")) {
+  if (semver.startsWith("file:") || semver.startsWith("link:")) {
     return semver.substr(5);
   }
 
@@ -233,7 +233,7 @@ function analyze(semver) {
     } else if (urlType === "sym1") {
       sv.path = semver.substr(5);
       sv.localType = "sym1";
-    } else if (urlType === "file") {
+    } else if (urlType === "file" || urlType === "link") {
       setHardLocal(semver.substr(5));
     } else {
       sv.urlType = urlType;
