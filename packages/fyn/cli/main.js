@@ -86,7 +86,7 @@ const pickOptions = async (argv, nixClap, checkFynpo = true) => {
   setLogLevel(argv.opts.logLevel);
   if (argv.opts.progress) logger.setItemType(argv.opts.progress);
 
-  return { opts: argv.opts, rcData, _cliSource: argv.source };
+  return { opts: argv.opts, rcData, _cliSource: argv.source, _fynpo: fynpo };
 };
 
 const options = {
@@ -370,7 +370,8 @@ const commands = {
     usage: "$0 $1 <command> [-- <args>...]",
     exec: async (argv, parsed) => {
       try {
-        return await new FynCli(await pickOptions(argv, parsed.nixClap, !argv.opts.list)).run(argv);
+        const options = await pickOptions(argv, parsed.nixClap, !argv.opts.list);
+        return await new FynCli(options).run(argv);
       } catch (err) {
         if (err.errno !== undefined) {
           process.exit(err.errno);

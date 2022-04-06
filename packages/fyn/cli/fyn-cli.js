@@ -552,6 +552,11 @@ class FynCli {
 
     const env = npmLifecycle.initEnv(process.env, this.fyn.production);
 
+    // add fynpo top dir node_modules/.bin to PATH
+    if (this._config._fynpo.config) {
+      xsh.envPath.addToFront(Path.join(this._config._fynpo.dir, "node_modules/.bin"), env);
+    }
+
     setupNodeGypEnv(env);
 
     return Promise.each(
@@ -561,7 +566,9 @@ class FynCli {
   }
 
   async run(argv, script = "") {
-    this._config._fynpo = false;
+    if (!this._config._fynpo) {
+      this._config._fynpo = {};
+    }
 
     script = script || argv.args.script;
     if (argv.opts.list || !script) {

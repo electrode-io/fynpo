@@ -63,6 +63,11 @@ class LifecycleScripts {
 
     setupNodeGypEnv(env);
 
+    // add fynpo node_modules/.bin to PATH
+    if (this._fyn.isFynpo) {
+      xsh.envPath.addToFront(Path.join(this._fyn._fynpo.dir, "node_modules/.bin"), env);
+    }
+
     if (this._appDir) {
       xsh.envPath.addToFront(Path.join(this._appDir, "node_modules/.bin"), env);
     }
