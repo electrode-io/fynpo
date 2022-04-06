@@ -1,3 +1,22 @@
+# 4/6/2022
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.32` `(1.1.31 => 1.1.32)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.35` `(1.1.34 => 1.1.35)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   add fynpo node_modules bin to PATH when running npm script [commit](https://github.com/electrode-io/fynpo/commit/a077528f2680142cffdaacb6f9d6ff03464cc39f)
+    -   update dep and lockfiles [commit](https://github.com/electrode-io/fynpo/commit/ee8996250b921529d1f293f21730958b23f7c073)
+
 # 3/18/2022
 
 ## Packages
