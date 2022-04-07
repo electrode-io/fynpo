@@ -15,6 +15,7 @@ const hardLinkDir = require("./util/hard-link-dir");
 const { INSTALL_PACKAGE } = require("./log-items");
 const { runNpmScript } = require("./util/run-npm-script");
 const xaa = require("./util/xaa");
+const { AggregateError } = require("@jchip/error");
 
 const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");
 
@@ -430,7 +431,13 @@ class PkgInstaller {
 
   async _buildLocalPkg(depInfo) {
     if (this._fyn._options.buildLocal && this._fyn._localPkgBuilder) {
-      await this._fyn._localPkgBuilder.waitForItem(depInfo.dir);
+      const itemRes = await this._fyn._localPkgBuilder.waitForItem(depInfo.dir);
+      if (itemRes && itemRes.error) {
+        throw new AggregateError(
+          [itemRes.error],
+          `install fail because local package build failed`
+        );
+      }
     }
   }
 

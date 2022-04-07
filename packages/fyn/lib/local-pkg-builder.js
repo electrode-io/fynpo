@@ -17,12 +17,14 @@ const xaa = require("xaa");
 const Fs = require("./util/file-ops");
 const _ = require("lodash");
 const { runNpmScript } = require("./util/run-npm-script");
+const { AggregateError } = require("@jchip/error");
 
 class LocalPkgBuilder {
   constructor(options) {
     this._options = options;
     this._fyn = options.fyn;
     this._waitItems = {};
+    this._failedItems = {};
   }
 
   async start() {
@@ -44,20 +46,29 @@ class LocalPkgBuilder {
     const { localsByDepth } = this._options;
 
     this._promiseQ.on("doneItem", data => {
-      this._waitItems[data.item.fullPath].resolve();
+      this._waitItems[data.item.fullPath].resolve({});
     });
     this._promiseQ.on("failItem", data => {
-      this._waitItems[data.item.fullPath].reject(data.error);
+      const itemRes = {
+        error: new AggregateError(
+          [data.error],
+          `failed build local package at ${data.item.fullPath}`
+        )
+      };
+      this._waitItems[data.item.fullPath].resolve(itemRes);
+      this._failedItems[data.item.fullPath] = itemRes;
     });
 
     this._defer = xaa.makeDefer();
+
     this._promiseQ.on("done", () => {
       if (!this._promiseQ.isPending) {
         this._defer.resolve();
       }
     });
+
     this._promiseQ.on("fail", data => {
-      this._defer.reject(data.error);
+      this._defer.reject(new AggregateError([data.error], `failed to build local packages`));
     });
 
     //
@@ -151,6 +162,9 @@ class LocalPkgBuilder {
   }
 
   async processItem(item) {
+    if (!_.isEmpty(this._failedItems)) {
+      return;
+    }
     const dispPath = Path.relative(this._options.fyn._cwd, item.fullPath);
 
     const command = [
@@ -174,6 +188,7 @@ class LocalPkgBuilder {
     });
 
     ve.logFinalOutput = _.noop;
+
     await ve.execute();
 
     const pkgJsonFile = Path.join(item.fullPath, "package.json");

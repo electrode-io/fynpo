@@ -21,6 +21,7 @@ const requireAt = require("require-at");
 const { setupNodeGypEnv } = require("./util/setup-node-gyp");
 
 const npmConfigEnv = require("./util/npm-config-env");
+const { AggregateError } = require("@jchip/error");
 
 const readPkgJson = dir => {
   return fyntil.readPkgJson(dir).catch(() => {
@@ -157,7 +158,14 @@ class LifecycleScripts {
       outputLabel: `${dimPkgName} npm script ${scriptName}`
     });
 
-    return ve.show(child);
+    try {
+      return await ve.show(child);
+    } catch (err) {
+      throw new AggregateError(
+        [err],
+        `Failed running npm script '${name}' for package ${pkgName} at ${pkgDir}`
+      );
+    }
   }
 }
 
