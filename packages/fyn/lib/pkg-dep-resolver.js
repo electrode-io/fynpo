@@ -444,9 +444,14 @@ class PkgDepResolver {
         }
 
         for (const name in deps) {
-          if (this._fyn.checkNoFynLocal(name) || !fynpo.graph.getPackageByName(name)) {
+          if (
+            this._fyn.checkNoFynLocal(name) ||
+            !fynpo.graph.getPackageByName(name) ||
+            semverUtil.checkUrl(deps[name])
+          ) {
             continue;
           }
+
           //
           // Check if there is a fynpo package that match 'name@semver'?
           //
