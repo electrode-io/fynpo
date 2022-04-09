@@ -1,3 +1,24 @@
+# 4/8/2022
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.33` `(1.1.32 => 1.1.33)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.36` `(1.1.35 => 1.1.36)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   replace env in rc config [commit](https://github.com/electrode-io/fynpo/commit/d1da9103ef9267ef27ef95494605903998389468)
+    -   better errors with AggregateError [commit](https://github.com/electrode-io/fynpo/commit/c5b01669bf5d30623d0e367099fa87e6bace4d52)
+    -   avoid checking fynpo local copies for URL semver [commit](https://github.com/electrode-io/fynpo/commit/7f83f14fda6009c3a657029c43d1068dbcb5cd30)
+    -   handle semver using link: [commit](https://github.com/electrode-io/fynpo/commit/f8958ee19e350336c97996f56371e1acbb75c6ba)
+
 # 4/6/2022
 
 ## Packages
