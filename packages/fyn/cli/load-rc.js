@@ -12,6 +12,32 @@ const defaultRc = require("./default-rc");
 const npmConfig = require("./config/npm-config");
 const fynTil = require("../lib/util/fyntil");
 
+// replace any ${ENV} values with the appropriate environ.
+// copied from https://github.com/npm/config/blob/1f47a6c6ae7864b412d45c6a4a74930cf3365395/lib/env-replace.js
+
+const envExpr = /(?<!\\)(\\*)\$\{([^${}]+)\}/g;
+
+function replaceEnv(f, env) {
+  return f.replace(envExpr, (orig, esc, name) => {
+    const val = env[name] !== undefined ? env[name] : `$\{${name}}`;
+
+    // consume the escape chars that are relevant.
+    if (esc.length % 2) {
+      return orig.slice((esc.length + 1) / 2);
+    }
+
+    return esc.slice(esc.length / 2) + val;
+  });
+}
+
+function replaceRcEnv(rc, env) {
+  for (const k in rc) {
+    if (rc[k] && rc[k].replace) {
+      rc[k] = replaceEnv(rc[k], env);
+    }
+  }
+}
+
 function readRc(fname) {
   const rcFname = Path.basename(fname);
 
@@ -73,6 +99,9 @@ function loadRc(cwd, fynpoDir) {
 
   const all = _.merge.apply(_, [{}, npmConfig.defaults, defaultRc].concat(data));
   const npmrc = _.merge.apply(_, [{}, npmConfig.defaults].concat(npmrcData));
+
+  replaceRcEnv(all, process.env);
+  replaceRcEnv(npmrc, process.env);
 
   return {
     all,
