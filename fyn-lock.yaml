@@ -2,7 +2,7 @@ $fyn:
  layout: detail
 $pkg:
  dev:
-  fynpo: ^1.1.34
+  fynpo: ^1.1.35
 '@jchip/error':
  _latest: 1.0.3
  _:
@@ -25,24 +25,24 @@ env-paths:
   $: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
   _: 'https://registry.npmjs.org/env-paths/-/env-paths-2.2.1.tgz'
 fyn:
- _latest: 1.1.31
- _:
-  ^1.1.31: 1.1.31
- 1.1.31:
-  $: sha512-te5vVHKkK0yoieAB34fShmLLle1oNbN9azCVjh50JaHay2+RnUmgGDoj7UCLtmP8UeTuTWG1wJ4nL2NMzScjwA==
-  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.31.tgz'
-fynpo:
  _latest: 1.1.34
  _:
   ^1.1.34: 1.1.34
  1.1.34:
+  $: sha512-bbHusR5rqZfpOEtCK0VOisksuP6aEEnVcROLFF65dBTzEChdJCFiJr8S7kylvD4Tk5Gu6He5GWyUi0eXMd5uRA==
+  _: 'https://registry.npmjs.org/fyn/-/fyn-1.1.34.tgz'
+fynpo:
+ _latest: 1.1.37
+ _:
+  ^1.1.35: 1.1.37
+ 1.1.37:
   top: 1
-  $: sha512-QDegUhquB7aMTJASlHUpOzGsu0t+hVdfNaOGfpgkOzTrEMm87a/ryN6FLr9O6XwoVjB2B2W3A5Er6o1HDKmuLg==
-  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.34.tgz'
+  $: sha512-KwA0Cyn8zS5i6XUlcdp9VDANyMrDa2cLyNXC6Y5uSEnSb5WtmFlVScqMfJgDO0OWzCWLsFT2DYs8dTcYtBcAUw==
+  _: 'https://registry.npmjs.org/fynpo/-/fynpo-1.1.37.tgz'
   dependencies:
    '@jchip/error': ^1.0.3
    env-paths: ^2.2.1
-   fyn: ^1.1.31
+   fyn: ^1.1.34
    import-fresh: 3.3.0
    mkdirp: ^1.0.4
    resolve-global: 1.0.0
