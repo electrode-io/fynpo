@@ -1,3 +1,22 @@
+# 4/12/2022
+
+## Packages
+
+### Directly Updated
+
+-   `fyn@1.1.34` `(1.1.33 => 1.1.34)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.37` `(1.1.36 => 1.1.37)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   minor linting updates [commit](https://github.com/electrode-io/fynpo/commit/81fb75d4a7a30e2ece28879076ccd872e762e6f7)
+    -   avoid file name conflict with normal object prototypes [commit](https://github.com/electrode-io/fynpo/commit/937d0518a32abd74b065e0ce0b2c535cdaccbc4b)
+
 # 4/8/2022
 
 ## Packages
