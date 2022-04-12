@@ -163,7 +163,7 @@ class LocalPkgBuilder {
 
   async processItem(item) {
     if (!_.isEmpty(this._failedItems)) {
-      return;
+      return {};
     }
     const dispPath = Path.relative(this._options.fyn._cwd, item.fullPath);
 

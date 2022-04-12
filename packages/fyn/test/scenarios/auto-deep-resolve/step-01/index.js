@@ -24,7 +24,13 @@
 
 module.exports = {
   expectFailure: err => {
-    if (err.message.indexOf("exit Error") < 0) throw err;
+    if (
+      !err.message.includes(
+        "exit AggregateError: Failed running npm script 'install' for package mod-c@4.0.0"
+      )
+    ) {
+      throw err;
+    }
   },
   title: "should auto deep resolve deps that has optional only"
 };

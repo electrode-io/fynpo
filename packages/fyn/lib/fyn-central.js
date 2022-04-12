@@ -277,7 +277,16 @@ class FynCentral {
   }
 
   _untarStream(tarStream, targetDir) {
-    const dirTree = { "/": {} };
+    // since we are using objects to store directory tree we have to
+    // create objects without the normal prototypes to avoid name conflict
+    // with file names
+    const newDirObj = () => {
+      const n = Object.create(null, {});
+      n["/"] = Object.create(null, {});
+      return n;
+    };
+
+    const dirTree = newDirObj();
 
     const strip = 1;
 
@@ -291,7 +300,7 @@ class FynCentral {
         const dirs = parts.slice(strip, isDir ? parts.length : parts.length - 1);
 
         const wtree = dirs.reduce((wt, dir) => {
-          return wt[dir] || (wt[dir] = { "/": {} });
+          return wt[dir] || (wt[dir] = newDirObj());
         }, dirTree);
 
         if (isDir) return;

@@ -206,7 +206,9 @@ const debug = false;
             }
 
             return fynRun(args.filter(x => x)).catch(err => {
-              if (err.message !== "exit 0") failError = err;
+              if (err.message !== "exit 0") {
+                failError = err;
+              }
             });
           })
           .then(() => {
@@ -275,11 +277,11 @@ const debug = false;
   const filter = debug
     ? {
         // "add-remove-pkg": { stopStep: "step-02", debugStep: "step-02" }
-        // "auto-deep-resolve": {}
+        "auto-deep-resolve": {}
         // "bin-linker": {}
         // "build-local": {}
         // "fyn-central": {},
-        "fynpo-sample": { stopStep: "step-01" }
+        // "fynpo-sample": { stopStep: "step-01" }
         // "fyn-shrinkwrap": {}
         // "local-hard-linking": {}
         // "local-sym-linking": {}

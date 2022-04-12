@@ -123,7 +123,16 @@ async function generatePackTree(path, _logger = logger) {
     );
   }
 
-  const fmap = { [SYM_FILES]: [] };
+  // since we are using objects to store directory tree we have to
+  // create objects without the normal prototypes to avoid name conflict
+  // with file names
+  const newDirObj = () => {
+    const n = Object.create(null, {});
+    n[SYM_FILES] = [];
+    return n;
+  };
+
+  const fmap = newDirObj();
 
   files.sort().forEach(filePath => {
     const dir = Path.dirname(filePath);
@@ -136,7 +145,7 @@ async function generatePackTree(path, _logger = logger) {
     // npm pack list always generate file path with /
     dir.split("/").forEach(d => {
       if (!dmap[d]) {
-        dmap[d] = { [SYM_FILES]: [] };
+        dmap[d] = newDirObj();
       }
       dmap = dmap[d];
     });

@@ -92,7 +92,7 @@ describe("lifecycle-scripts", function() {
         const output = extractOutput(intercept);
         expect(output.stdout).to.be.empty;
         expect(output.stderr[0]).to.equal("stderr blah");
-        expect(error.message).includes("exit code 127");
+        expect(error.stack).includes("exit code 127");
       });
 
     return promise;
