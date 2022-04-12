@@ -27,6 +27,7 @@ const Crypto = require("crypto");
  *  ]
  * }
  * ```
+ *
  * @param {*} tree - the dir tree
  * @param {*} output - output object
  * @param {*} baseDir - base dir path
@@ -164,7 +165,7 @@ class FynCentral {
    *   to know if file changed.
    *
    * @param {*} integrity - shasum integrity for the package
-   * @returns
+   * @returns void
    */
   async getContentShasum(integrity) {
     try {
@@ -281,8 +282,8 @@ class FynCentral {
     // create objects without the normal prototypes to avoid name conflict
     // with file names
     const newDirObj = () => {
-      const n = Object.create(null, {});
-      n["/"] = Object.create(null, {});
+      const n = Object.create(null);
+      n["/"] = Object.create(null);
       return n;
     };
 
@@ -385,7 +386,7 @@ class FynCentral {
         } else {
           logger.debug("storing tar to central store", pkgId, integrity);
           await this._storeTarStream(info, stream);
-          stream = undefined;
+          stream = undefined; // eslint-disable-line
           this._map.set(integrity, info);
           logger.debug("fyn-central storeTarStream: stored", pkgId, info.contentPath);
         }

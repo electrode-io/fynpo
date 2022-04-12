@@ -8,7 +8,7 @@
 // - npm registry
 //
 
-/* eslint-disable no-magic-numbers, prefer-template, max-statements */
+/* eslint-disable no-magic-numbers, prefer-template, max-statements, no-param-reassign */
 
 const Promise = require("bluebird");
 const cacache = require("cacache");

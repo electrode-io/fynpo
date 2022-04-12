@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers, max-statements */
+/* eslint-disable no-magic-numbers, max-statements, no-param-reassign */
 
 const MAX_PENDING_SHOW = 10;
 const chalk = require("chalk");

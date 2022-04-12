@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks, no-param-reassign */
 
 const assert = require("assert");
 const xsh = require("xsh");

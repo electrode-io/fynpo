@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable max-params */
+/* eslint-disable max-params, no-param-reassign */
 
 const _ = require("lodash");
 const Promise = require("bluebird");

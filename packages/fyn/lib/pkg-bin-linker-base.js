@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable global-require, max-statements */
+/* eslint-disable global-require, max-statements, no-param-reassign */
 
 const Fs = require("./util/file-ops");
 const Path = require("path");

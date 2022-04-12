@@ -1,5 +1,7 @@
 "use strict";
 
+/* eslint-disable no-param-reassign */
+
 const Path = require("path");
 
 /*

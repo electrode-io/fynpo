@@ -19,7 +19,7 @@ const { AggregateError } = require("@jchip/error");
 
 const { RESOLVE_ORDER, RSEMVERS, LOCK_RSEMVERS, SEMVER } = require("./symbols");
 
-/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len, max-depth */
+/* eslint-disable max-statements,no-magic-numbers,no-empty,complexity,prefer-template,max-len, max-depth, no-param-reassign */
 
 class PkgInstaller {
   constructor(options) {

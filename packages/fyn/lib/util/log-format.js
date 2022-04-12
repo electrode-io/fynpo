@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers */
+/* eslint-disable no-magic-numbers, no-param-reassign */
 
 const chalk = require("chalk");
 const { posixify } = require("./fyntil");

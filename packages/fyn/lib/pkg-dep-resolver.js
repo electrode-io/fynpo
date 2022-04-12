@@ -1,6 +1,6 @@
 "use strict";
 
-/* eslint-disable no-magic-numbers, max-params, max-statements, complexity */
+/* eslint-disable no-magic-numbers, max-params, max-statements, complexity, no-param-reassign */
 
 const _ = require("lodash");
 const Fs = require("./util/file-ops");

@@ -127,7 +127,7 @@ async function generatePackTree(path, _logger = logger) {
   // create objects without the normal prototypes to avoid name conflict
   // with file names
   const newDirObj = () => {
-    const n = Object.create(null, {});
+    const n = Object.create(null);
     n[SYM_FILES] = [];
     return n;
   };
