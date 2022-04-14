@@ -316,12 +316,12 @@ export class FynpoDepGraph {
 
   constructor(options: ReadFynpoOptions = {}) {
     this._options = { cwd: process.cwd(), ...options };
-    this.depMapByPath = {};
-    this.resolvedCache = {};
+    this.depMapByPath = Object.create(null);
+    this.resolvedCache = Object.create(null);
     this.packages = {
-      byId: {},
-      byName: {},
-      byPath: {},
+      byId: Object.create(null),
+      byName: Object.create(null),
+      byPath: Object.create(null),
     };
   }
 
@@ -332,11 +332,15 @@ export class FynpoDepGraph {
     if (_.isEmpty(this.packages.byName)) {
       await this.readPackages();
     }
-    this.updateDepMap();
+    this.resolveDirectDeps();
+    // we don't need indirect deps
+    // topo sort works with only direct deps
+    // this.resolveIndirectDeps();
   }
 
   /**
    * update package depdencies map
+   *
    * - re-entrant safe
    */
   updateDepMap() {
@@ -358,6 +362,9 @@ export class FynpoDepGraph {
     const depRecords: Record<string, DepCount> = {};
     const changed = [];
 
+    //
+    // first start with packages that has zero local dependencies
+    //
     for (const path in this.depMapByPath) {
       const depData = this.depMapByPath[path];
       const count = Object.keys(depData.localDepsByPath).length;
@@ -374,11 +381,14 @@ export class FynpoDepGraph {
     const sorted = [];
 
     while (changed.length > 0) {
+      // remove the zero local dependencies packages from queue
       const record = depRecords[changed.pop()];
       /* istanbul ignore else */
       if (record.count === 0) {
+        // add package to result
         record.count = -1;
         sorted.push(record.depData.pkgInfo.path);
+        // subtract depdendencies count for all packages depending on the removed package
         for (const path in record.depData.dependentsByPath) {
           const record2 = depRecords[path];
           /* istanbul ignore else */
@@ -548,7 +558,7 @@ export class FynpoDepGraph {
 
     const { byName } = this.packages;
 
-    if (byName.hasOwnProperty(pkgJson.name)) {
+    if (byName[pkgJson.name]) {
       byName[pkgJson.name].push(pkgInfo);
     } else {
       byName[pkgJson.name] = [pkgInfo];
@@ -633,8 +643,8 @@ export class FynpoDepGraph {
       if (!depMapByPath[path]) {
         depMapByPath[path] = {
           pkgInfo: byPath[path],
-          localDepsByPath: {},
-          dependentsByPath: {},
+          localDepsByPath: Object.create(null),
+          dependentsByPath: Object.create(null),
         };
       }
     }
@@ -692,7 +702,7 @@ export class FynpoDepGraph {
     const dataDep = this.depMapByPath[depPkg.path];
 
     // check circular
-    if (dataDep.localDepsByPath.hasOwnProperty(pkgInfo.path)) {
+    if (dataDep.localDepsByPath[pkgInfo.path]) {
       // remember circular package's path
       if (!dataPkg.pathOfCirculars) {
         dataPkg.pathOfCirculars = [];
@@ -788,6 +798,7 @@ export class FynpoDepGraph {
   /**
    * Figure out all the packages' indirect dependencies on other local packages
    *
+   * TODO: very inefficient. optimize this.
    */
   private resolveIndirectDeps(nestedLevel = 0) {
     const { byPath } = this.packages;
@@ -817,7 +828,7 @@ export class FynpoDepGraph {
         }
 
         // check if pkg is already part of localDeps
-        if (!dataPkg.localDepsByPath.hasOwnProperty(depInfo.path)) {
+        if (!dataPkg.localDepsByPath[depInfo.path]) {
           change++;
           this.addDep(pkgInfo, depInfo, sec, stepsCopy);
         }
