@@ -347,6 +347,10 @@ class Fyn {
     return Path.join(this.getFvDir(FYN_INSTALL_CONFIG_FILE));
   }
 
+  setLocalPkgLinks(localLinks) {
+    this._installConfig.localPkgLinks = localLinks;
+  }
+
   // save the config to outputDir
   async saveInstallConfig() {
     const outputDir = this.getOutputDir();
@@ -657,7 +661,7 @@ class Fyn {
    * - Rare but could occur if fyn is used for monorepo and user has script
    *   that run concurrent installs
    *
-   * @returns {boolean} if lock was acquired
+   * @returns {Promise<boolean>} if lock was acquired
    */
   async createInstallLock() {
     await this.createDir(this.getFvDir());

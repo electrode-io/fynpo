@@ -64,6 +64,7 @@ const pickOptions = async (argv, nixClap, checkFynpo = true) => {
       process.exit(1);
     }
   }
+
   const rcData = loadRc(argv.opts.rcfile && cwd, fynpo.dir);
 
   const rc = rcData.all || defaultRc;
@@ -404,6 +405,20 @@ const commands = {
         alias: ["y"],
         desc: "skip prompt and use default values",
         type: "boolean"
+      }
+    }
+  },
+
+  "sync-local": {
+    desc: "Refresh locally linked package files",
+    alias: "sl",
+    async exec(argv, parsed) {
+      try {
+        const opts = await pickOptions(argv, parsed.nixClap, true);
+        const cli = new FynCli(opts);
+        return cli.syncLocalLinks();
+      } catch (err) {
+        process.exit(1);
       }
     }
   }

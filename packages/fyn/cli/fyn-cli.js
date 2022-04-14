@@ -28,6 +28,7 @@ const fetch = require("node-fetch-npm");
 const myPkg = require("./mypkg");
 const { cleanErrorStack } = require("@jchip/error");
 const { setupNodeGypEnv } = require("../lib/util/setup-node-gyp");
+const hardLinkDir = require("../lib/util/hard-link-dir");
 const xsh = require("xsh");
 
 function checkNewVersion(npmConfig) {
@@ -351,6 +352,22 @@ class FynCli {
     logger.error("No package was removed");
 
     return false;
+  }
+
+  async syncLocalLinks() {
+    await this.fyn._initializePkg();
+
+    const { localPkgLinks } = this.fyn._installConfig;
+    if (!_.isEmpty(localPkgLinks)) {
+      for (const vdir in localPkgLinks) {
+        const tgtDir = Path.join(this.fyn._cwd, vdir);
+        const srcDir = Path.join(this.fyn._cwd, localPkgLinks[vdir].srcDir);
+        await hardLinkDir.link(srcDir, tgtDir, { sourceMaps: localPkgLinks[vdir].sourceMaps });
+      }
+      logger.info(`refreshed linked files for local packages`);
+    } else {
+      logger.info(`There are no local packages`);
+    }
   }
 
   /*

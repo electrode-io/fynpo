@@ -26,6 +26,7 @@ class PkgInstaller {
     this._fyn = options.fyn;
     this._data = this._fyn._data;
     this._depLinker = new PkgDepLinker({ fyn: this._fyn });
+    this._localLinks = {};
   }
 
   async install() {
@@ -57,6 +58,7 @@ class PkgInstaller {
       this.preInstall = undefined;
       this.postInstall = undefined;
       this.toLink = undefined;
+      this._fyn.setLocalPkgLinks(this._localLinks);
     });
   }
 
@@ -69,9 +71,12 @@ class PkgInstaller {
 
     const vdir = this._fyn.getInstalledPkgDir(depInfo.name, depInfo.version, depInfo);
     if (depInfo.local === "hard") {
-      await hardLinkDir.link(depInfo.dir, vdir, {
-        sourceMaps: this._fyn._options.sourceMaps
-      });
+      const { sourceMaps } = this._fyn._options;
+      this._localLinks[Path.relative(this._fyn._cwd, vdir)] = {
+        srcDir: Path.relative(this._fyn._cwd, depInfo.dir),
+        sourceMaps
+      };
+      await hardLinkDir.link(depInfo.dir, vdir, { sourceMaps });
     } else {
       // await this._depLinker.symlinkLocalPackage(vdir, depInfo.dir);
       // await this._depLinker.loadLocalPackageAppFynLink(depInfo, vdir);
