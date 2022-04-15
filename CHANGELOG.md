@@ -1,3 +1,30 @@
+# 4/14/2022
+
+## Packages
+
+### Directly Updated
+
+-   `@fynpo/base@1.1.15` `(1.1.14 => 1.1.15)`
+-   `fyn@1.1.35` `(1.1.34 => 1.1.35)`
+
+### Fynpo Updated
+
+-   `fynpo@1.1.38` `(1.1.37 => 1.1.38)`
+
+## Commits
+
+-   `packages/fynpo-base`
+
+    -   avoid resolving indirect dep in graph [commit](https://github.com/electrode-io/fynpo/commit/7f1e0a802deff50f63ce753ca6a456913d9d80fd)
+
+-   `packages/fyn`
+
+    -   new fyn sync-local command [commit](https://github.com/electrode-io/fynpo/commit/ed6de91990e58549108f8e4fd7c6fdb10f8fc0bc)
+
+-   `MISC`
+
+    -   update dep fynpo@1.1.35 [commit](https://github.com/electrode-io/fynpo/commit/656f0273902d62fcdae7e3763222971653caed4a)
+
 # 4/12/2022
 
 ## Packages
