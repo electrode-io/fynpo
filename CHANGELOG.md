@@ -1,3 +1,24 @@
+# 4/16/2022
+
+## Packages
+
+-   `fyn@1.1.36` `(1.1.35 => 1.1.36)`
+-   `fynpo@1.1.39` `(1.1.38 => 1.1.39)`
+
+## Commits
+
+-   `packages/fyn`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/534a482c2086a3aeeefd2d0f03616aab307ca143)
+
+-   `packages/fynpo`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/534a482c2086a3aeeefd2d0f03616aab307ca143)
+
+-   `testing`
+
+    -   update deps [commit](https://github.com/electrode-io/fynpo/commit/534a482c2086a3aeeefd2d0f03616aab307ca143)
+
 # 4/14/2022
 
 ## Packages
