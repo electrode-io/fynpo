@@ -1,6 +1,6 @@
 {
   "name": "fynpo",
-  "version": "1.1.38",
+  "version": "1.1.39",
   "description": "fynpo is a zero setup monorepo manager for node.js",
   "main": "dist/index.js",
   "homepage": "https://jchip.github.io/fynpo/",
@@ -49,7 +49,7 @@
     "registry": "https://registry.npmjs.com/"
   },
   "dependencies": {
-    "fyn": "^1.1.35",
+    "fyn": "^1.1.36",
     "import-fresh": "3.3.0",
     "resolve-global": "1.0.0"
   },
