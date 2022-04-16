@@ -20,7 +20,6 @@
     "url": ""
   },
   "dependencies": {
-    "@fynpo/base": "../../packages/fynpo-base",
     "fynpo": "../../packages/fynpo",
     "fyn": "../../packages/fyn"
   }

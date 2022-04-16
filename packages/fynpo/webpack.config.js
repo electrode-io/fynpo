@@ -31,7 +31,8 @@ const base = {
       // Even if fyn's code import lodash APIs like lodash/get,
       // other modules could be importing it whole, so it's better
       // to just load it, and override it with the minified copy
-      // when bundling.
+      // when bundling.  Override when importing exact match of
+      // "lodash".
       lodash$: require.resolve("lodash/lodash.min.js"),
       "resolve-from": Path.resolve("stubs/resolve-from.js"),
       "@commitlint/resolve-extends": Path.resolve("stubs/resolve-extends.js"),
@@ -67,13 +68,20 @@ const base = {
     "fyn/bin": "fyn/bin",
     fyn: "fyn",
     // prettier: "prettier",
+    // "@commitlint/resolve-extends": "@commitlint/resolve-extends",
+    // lodash: "lodash",
+
+    //
+    // the modules import-fresh and resolve-global manipulates require so can't bundle
+    // them.  they also pull in other modules also (found by install deps in testing/monorepo-test and
+    // look inside node_modules)
+    // - so list all of them as external
+    //
     "resolve-global": "resolve-global",
     "global-dirs": "global-dirs",
     callsites: "callsites",
     "resolve-from": "resolve-from",
-    // "@commitlint/resolve-extends": "@commitlint/resolve-extends",
     "import-fresh": "import-fresh",
-    // lodash: "lodash",
     "parent-module": "parent-module",
     ini: "ini",
   },
